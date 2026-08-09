@@ -46,6 +46,7 @@ Proven live, through the app's own API routes and the first-flight script:
 - NL allocation (`/api/vision/allocate`) against real Groq, reconciled cent-perfect by the engine (model even hallucinated a note about the service charge; the engine split it correctly anyway).
 - Real KeeperHub execution on Base Sepolia, end to end: simulate -> execute -> poll -> chain-verified receipt -> **VERIFIED_SETTLED**. Proof: [tx 0x1130...278c](https://sepolia.basescan.org/tx/0x11300427473e95d241d924891b2cc0131b0047263e461787c27a2f854c39278c) (executionId `g0w11wukbk1v0psyditx4`, block 45243955, `verified: true`, `receiptStatus: "success"`).
 - CLI contribution shipped upstream: [KeeperHub/cli PR #95](https://github.com/KeeperHub/cli/pull/95) (open, not merged).
+- 92.7s demo video recorded in one continuous session against the real app (live Groq extraction and allocation on screen, honest blocked states left in); as-recorded notes in [docs/demo-storyboard.md](docs/demo-storyboard.md).
 
 Blocked, disclosed in [docs/blockers.md](docs/blockers.md):
 

@@ -28,7 +28,7 @@ Group expenses die in the last mile: someone fronts the bill, an app computes sp
 
 - Live app: https://finaltab.vercel.app
 - Repo: https://github.com/vaibhav4046/finaltab
-- Demo: [VIDEO_URL]
+- Demo: [VIDEO_URL] (produced: `proof-output/finaltab-demo.mp4`, 92.7s, 1080p, 8 scenes with voiceover, recorded in one continuous session against the real app — upload it and fill the URL before submitting)
 - Verified KeeperHub execution (chain-verified receipt, Base Sepolia): https://sepolia.basescan.org/tx/0x11300427473e95d241d924891b2cc0131b0047263e461787c27a2f854c39278c
   (executionId `g0w11wukbk1v0psyditx4`, block 45243955, `verified: true`, `receiptStatus: "success"`; full report in `proof-output/`. The batch-settlement contract deploy tx will replace this link once the org wallet holds deploy gas; simulation already passes clean.)
 

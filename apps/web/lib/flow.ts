@@ -1,16 +1,15 @@
 "use client";
 
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
-import { parseSignature } from "viem";
+import { parseSignature, keccak256, encodeAbiParameters } from "viem";
 import {
   BASE_SEPOLIA_CHAIN_ID,
   BASE_SEPOLIA_USDC,
-  buildTransferAuthorizationTypedData,
+  buildReceiveAuthorizationTypedData,
   canonicalizeLedger,
   ledgerToCanonicalJson,
   ledgerHash as computeLedgerHash,
   settlementId as computeSettlementId,
-  transferNonce,
   type CanonicalLedger,
 } from "@finaltab/engine";
 import type { Person, FrozenLedgerState, SignedTransfer } from "./types";
@@ -68,12 +67,28 @@ export function freezeLedger(
   };
 }
 
+/** Derive receive authorization nonce from ledgerHash, debtor, and amount. */
+function receiveNonce(ledgerHash: `0x${string}`, from: `0x${string}`, value: bigint): `0x${string}` {
+  return keccak256(
+    encodeAbiParameters(
+      [{ type: "bytes32" }, { type: "address" }, { type: "uint256" }],
+      [ledgerHash, from, value],
+    ),
+  );
+}
+
 /**
- * Sign every transfer with its debtor's demo key. Nonces derive from the
- * ledger hash, so editing ANYTHING after freeze invalidates every signature.
+ * Sign every transfer as a ReceiveWithAuthorization to the settlement contract.
+ * Debtors sign authorization to pull funds TO the settlement contract.
+ * Nonces derive from ledger hash + debtor + amount, binding to this settlement only.
  */
 export async function signAllTransfers(people: Person[], frozen: FrozenLedgerState): Promise<SignedTransfer[]> {
+  console.log("[signAllTransfers] Starting with", frozen.transfers.length, "transfers");
   const byAddress = new Map(people.map((p) => [p.address.toLowerCase(), p]));
+  const settlementContract = (process.env.NEXT_PUBLIC_SETTLEMENT_CONTRACT || "") as `0x${string}`;
+  if (!settlementContract) throw new Error("NEXT_PUBLIC_SETTLEMENT_CONTRACT not configured");
+  console.log("[signAllTransfers] Contract:", settlementContract);
+
   const now = BigInt(Math.floor(Date.now() / 1000));
   const validAfter = 0n;
   const validBefore = now + AUTH_VALIDITY_SECONDS;
@@ -81,25 +96,30 @@ export async function signAllTransfers(people: Person[], frozen: FrozenLedgerSta
   const out: SignedTransfer[] = [];
   for (let i = 0; i < frozen.transfers.length; i++) {
     const t = frozen.transfers[i]!;
+    console.log(`[signAllTransfers] Transfer ${i}:`, t);
     const person = byAddress.get(t.from.toLowerCase());
     if (!person?.demoPrivateKey) throw new Error(`No demo key for debtor ${t.from}`);
+    console.log(`[signAllTransfers] Found person:`, person.name, person.address);
     const account = privateKeyToAccount(person.demoPrivateKey);
+    console.log(`[signAllTransfers] Created account:`, account.address);
 
     const value = BigInt(t.value);
-    const nonce = transferNonce(frozen.ledgerHash, t.from, t.to, value, i);
-    const typed = buildTransferAuthorizationTypedData({
+    const nonce = receiveNonce(frozen.ledgerHash, t.from, value);
+    const typed = buildReceiveAuthorizationTypedData({
       from: t.from,
-      to: t.to,
+      to: settlementContract,
       value,
       validAfter,
       validBefore,
       nonce,
     });
+    console.log(`[signAllTransfers] Built typed data, about to sign...`);
     const signature = await account.signTypedData(typed);
+    console.log(`[signAllTransfers] Got signature:`, signature);
     const { v, r, s } = parseSignature(signature);
     out.push({
       from: t.from,
-      to: t.to,
+      to: settlementContract,
       value: t.value,
       validAfter: validAfter.toString(),
       validBefore: validBefore.toString(),
@@ -109,6 +129,7 @@ export async function signAllTransfers(people: Person[], frozen: FrozenLedgerSta
       s,
     });
   }
+  console.log("[signAllTransfers] Completed successfully with", out.length, "signatures");
   return out;
 }
 

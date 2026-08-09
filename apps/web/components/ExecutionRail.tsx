@@ -110,15 +110,34 @@ export function ExecutionRail({ people, netted, receiptId, stage, onStage, onLoc
   };
 
   const doSign = async () => {
-    if (!rail.frozen) return;
+    console.log("[doSign] Entered, rail.frozen:", !!rail.frozen);
+    if (!rail.frozen) {
+      console.log("[doSign] Early return: no frozen state");
+      return;
+    }
+    console.log("[doSign] Setting busy=true");
     setBusy(true);
     setError(null);
+
+    const timeoutId = setTimeout(() => {
+      console.error("[doSign] TIMEOUT: signing took >10s, likely hung");
+      setError("Signing timeout (>10s) — likely hung process");
+      setBusy(false);
+    }, 10000);
+
     try {
+      console.log("[doSign] Calling signAllTransfers with", people.length, "people and", rail.frozen.transfers.length, "transfers");
       const signed = await signAllTransfers(people, rail.frozen);
+      console.log("[doSign] signAllTransfers returned", signed.length, "signatures");
+      clearTimeout(timeoutId);
       setRail((r) => ({ ...r, signed }));
       onStage("signed");
+      console.log("[doSign] Complete");
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Signing failed");
+      clearTimeout(timeoutId);
+      const msg = e instanceof Error ? e.message : String(e);
+      console.error("[doSign] Failed:", msg, e);
+      setError(msg);
     } finally {
       setBusy(false);
     }

@@ -3,6 +3,7 @@
 import { useCallback, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Panel, Badge, Button, ErrorNote, Spinner, BlockedNote } from "./ui";
+import { checkLocalImageQuality } from "@/lib/imageOptimization";
 import type { ReceiptState } from "@/lib/types";
 
 interface ReceiptPanelProps {
@@ -24,12 +25,26 @@ export function ReceiptPanel({ receipt, onReceipt }: ReceiptPanelProps) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [blocked, setBlocked] = useState<string | null>(null);
+  const [qualityWarning, setQualityWarning] = useState<string | null>(null);
 
   const handleFile = useCallback(
     async (file: File) => {
       setBusy(true);
       setError(null);
       setBlocked(null);
+      setQualityWarning(null);
+
+      // Check image quality before upload
+      try {
+        const quality = await checkLocalImageQuality(file);
+        if (quality.recommendation) {
+          setQualityWarning(quality.recommendation);
+        }
+      } catch (e) {
+        // Quality check error is non-fatal
+        console.warn("[receipt-panel] quality check failed:", e);
+      }
+
       try {
         const dataUrl = await fileToDataUrl(file);
         const res = await fetch("/api/vision/extract", {
@@ -184,6 +199,12 @@ export function ReceiptPanel({ receipt, onReceipt }: ReceiptPanelProps) {
             </li>
           ))}
         </ul>
+      )}
+
+      {qualityWarning && (
+        <div className="mt-3 rounded-md border border-amber-400/40 bg-amber-400/10 p-3">
+          <p className="font-mono text-xs text-amber-600">{qualityWarning}</p>
+        </div>
       )}
 
       {error && <ErrorNote message={error} />}

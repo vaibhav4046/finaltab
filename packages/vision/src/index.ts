@@ -7,6 +7,8 @@ export {
   type GroqClientOptions,
   type GroqMessage,
 } from "./groqClient.js";
+export { extractReceiptWithFallback, type ExtractReceiptResult } from "./fallbackRouter.js";
+export { analyzeImageQuality, type ImageQualityResult } from "./imageQuality.js";
 export { parseReceiptImage, type ParseReceiptResult } from "./parseReceipt.js";
 export {
   proposeAllocation,

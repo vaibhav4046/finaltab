@@ -1,102 +1,169 @@
 @import "tailwindcss";
 
 @theme {
-  /* MIDNIGHT RECEIPT LAB */
-  --color-night: #0b0b0d;
-  --color-panel: #131316;
-  --color-panel-2: #17171b;
-  --color-edge: #26262c;
-  --color-edge-soft: #1d1d22;
+  /* ── Obsidian Ledger · semantic tokens ─────────────────────────────
+     canvas: warm graphite near-black. paper: receipt ivory.
+     signal (acid lime) is reserved for action + verified states only. */
+  --color-canvas: #121110;
+  --color-surface-1: #191714;
+  --color-surface-2: #201d19;
+  --color-quiet: #2c2822;
+  --color-quiet-soft: #221f1b;
+
   --color-paper: #f4eddc;
   --color-paper-dim: #e7dfc9;
   --color-ink: #1a1712;
   --color-ink-soft: #4d4639;
+
+  --color-signal: #c8f542;
+  --color-signal-dim: #97bd2a;
+  --color-danger: #ff6f61;
+  --color-warn: #f5c542;
+  --color-info: #5bd1e8;
+
+  --color-txt: #ece8de;
+  --color-muted: #a49d8f;
+  --color-faint: #6e6759;
+
+  /* legacy aliases — older components reference these names */
+  --color-night: #121110;
+  --color-panel: #191714;
+  --color-panel-2: #201d19;
+  --color-edge: #2c2822;
+  --color-edge-soft: #221f1b;
   --color-lime: #c8f542;
   --color-lime-dim: #97bd2a;
   --color-coral: #ff6f61;
   --color-amber: #f5c542;
-  --color-fog: #9b9ba4;
-  --color-fog-dim: #5d5d66;
+  --color-fog: #a49d8f;
+  --color-fog-dim: #6e6759;
 
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, "Cascadia Code", monospace;
-}
+  --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", monospace;
 
-html {
-  background: var(--color-night);
-  color: #ececef;
-}
-
-body {
-  font-family: var(--font-sans);
-  min-height: 100dvh;
-}
-
-/* Receipt paper: warm surface, dark ink, torn bottom edge. */
-.receipt-paper {
-  background: var(--color-paper);
-  color: var(--color-ink);
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.25) inset,
-    0 18px 40px -18px rgba(0, 0, 0, 0.85);
-}
-
-.receipt-tear {
-  --tooth: 10px;
-  height: var(--tooth);
-  background: var(--color-paper);
-  clip-path: polygon(
-    0 0, 100% 0,
-    100% 30%, 97.5% 100%, 95% 30%, 92.5% 100%, 90% 30%, 87.5% 100%,
-    85% 30%, 82.5% 100%, 80% 30%, 77.5% 100%, 75% 30%, 72.5% 100%,
-    70% 30%, 67.5% 100%, 65% 30%, 62.5% 100%, 60% 30%, 57.5% 100%,
-    55% 30%, 52.5% 100%, 50% 30%, 47.5% 100%, 45% 30%, 42.5% 100%,
-    40% 30%, 37.5% 100%, 35% 30%, 32.5% 100%, 30% 30%, 27.5% 100%,
-    25% 30%, 22.5% 100%, 20% 30%, 17.5% 100%, 15% 30%, 12.5% 100%,
-    10% 30%, 7.5% 100%, 5% 30%, 2.5% 100%, 0 30%
-  );
-}
-
-/* Dotted leader between a label and its amount, receipt-style. */
-.leader {
-  flex: 1;
-  border-bottom: 2px dotted color-mix(in srgb, var(--color-ink) 30%, transparent);
-  margin: 0 0.5rem 0.28em;
-}
-
-.rail-line {
-  background: linear-gradient(
-    to bottom,
-    var(--color-edge) 0%,
-    var(--color-edge) 100%
-  );
+  /* motion tokens */
+  --duration-control: 140ms;
+  --duration-ui: 220ms;
+  --duration-sheet: 300ms;
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 ::selection {
-  background: var(--color-lime);
-  color: var(--color-ink);
+  background: #c8f542;
+  color: #1a1712;
 }
 
-/* Landing ticker: continuous marquee, pauses for reduced motion. */
+:focus-visible {
+  outline: 2px solid #c8f542;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+html {
+  scroll-behavior: smooth;
+  background: #121110;
+}
+
+body {
+  background: #121110;
+  color: #ece8de;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* warm receipt paper card */
+.receipt-paper {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 18%),
+    #f4eddc;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 18px 40px -18px rgba(0, 0, 0, 0.65),
+    0 2px 8px rgba(0, 0, 0, 0.35);
+  border-radius: 6px 6px 0 0;
+}
+
+.receipt-tear {
+  height: 10px;
+  background: #f4eddc;
+  clip-path: polygon(
+    0 0, 100% 0, 100% 30%,
+    97.5% 100%, 95% 30%, 92.5% 100%, 90% 30%, 87.5% 100%, 85% 30%,
+    82.5% 100%, 80% 30%, 77.5% 100%, 75% 30%, 72.5% 100%, 70% 30%,
+    67.5% 100%, 65% 30%, 62.5% 100%, 60% 30%, 57.5% 100%, 55% 30%,
+    52.5% 100%, 50% 30%, 47.5% 100%, 45% 30%, 42.5% 100%, 40% 30%,
+    37.5% 100%, 35% 30%, 32.5% 100%, 30% 30%, 27.5% 100%, 25% 30%,
+    22.5% 100%, 20% 30%, 17.5% 100%, 15% 30%, 12.5% 100%, 10% 30%,
+    7.5% 100%, 5% 30%, 2.5% 100%, 0 30%
+  );
+}
+
+/* dotted leaders between item and price, receipt style */
+.leader {
+  border-bottom: 1.5px dotted rgba(77, 70, 57, 0.5);
+  transform: translateY(-3px);
+}
+
+.rail-line {
+  transition: background-color 400ms ease;
+}
+
+/* atmospheric wash for hero surfaces — additive light only, no blobs */
+.atmosphere {
+  position: relative;
+}
+.atmosphere::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(1100px 500px at 70% -10%, rgba(200, 245, 66, 0.05), transparent 60%),
+    radial-gradient(900px 600px at 10% 110%, rgba(91, 209, 232, 0.04), transparent 60%);
+}
+
+.ticker {
+  display: flex;
+  gap: 3rem;
+  width: max-content;
+  animation: ticker-scroll 28s linear infinite;
+}
 @keyframes ticker-scroll {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
 }
-.ticker {
-  animation: ticker-scroll 28s linear infinite;
+
+/* the single verified micro-celebration — one pulse, no confetti */
+@keyframes verified-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(200, 245, 66, 0.35); }
+  100% { box-shadow: 0 0 0 24px rgba(200, 245, 66, 0); }
 }
+.verified-pulse {
+  animation: verified-pulse 900ms var(--ease-out-soft) 1;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .ticker {
-    animation: none;
+  html { scroll-behavior: auto; }
+  .ticker { animation: none; }
+  .verified-pulse { animation: none; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
   }
 }
 
-/* Thin scrollbars for the lab panels. */
 .lab-scroll::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
 .lab-scroll::-webkit-scrollbar-thumb {
-  background: var(--color-edge);
-  border-radius: 3px;
+  background: #2c2822;
+  border-radius: 4px;
+}
+.lab-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* mobile bottom nav safe area */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }

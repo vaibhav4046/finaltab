@@ -1,54 +1,150 @@
 "use client";
 
-import { useRef } from "react";
 import Link from "next/link";
-import {
-  motion,
-  useMotionValue,
-  useSpring,
-  useTransform,
-  useScroll,
-  useReducedMotion,
-} from "framer-motion";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 
-const TX_LINK =
-  "https://sepolia.basescan.org/tx/0x11300427473e95d241d924891b2cc0131b0047263e461787c27a2f854c39278c";
+const TX =
+  "0x11300427473e95d241d924891b2cc0131b0047263e461787c27a2f854c39278c";
+const TX_SHORT = "0x1130…278c";
+const EXEC_ID = "g0w11wukbk1v0psyditx4";
+const BASESCAN_TX = `https://sepolia.basescan.org/tx/${TX}`;
+const MCP_URL = "https://finaltab.vercel.app/api/mcp";
+const PR_URL = "https://github.com/KeeperHub/cli/pull/95";
+const REPO_URL = "https://github.com/vaibhav4046/finaltab";
 
 const PIPELINE = [
-  ["01", "Photograph", "Groq vision reads the receipt into strict JSON. Decimal strings in, integer minor units out. Floats never touch money."],
-  ["02", "Speak", "“Vee had the daal, split the rest evenly.” The model proposes. The deterministic engine decides — every proposal re-reconciled to the cent."],
-  ["03", "Split", "Largest-remainder allocation. Shares always sum to the receipt total. Always."],
-  ["04", "Net", "The debt graph collapses to the minimum set of transfers before anyone signs."],
-  ["05", "Freeze", "The ledger becomes a keccak256 hash. Edit anything after signing and every signature dies by construction."],
-  ["06", "Sign", "Each debtor signs one gasless USDC authorization (EIP-3009). No approvals. No allowances. No debtor gas."],
-  ["07", "Settle + verify", "KeeperHub simulates first — a failed simulation is never broadcast. VERIFIED_SETTLED appears only when the chain returns a verified receipt."],
-] as const;
-
-const TICKER = [
-  "SIMULATE FIRST",
-  "NO FLOATS ON MONEY",
-  "CENT-PERFECT SPLITS",
-  "ONE ATOMIC BATCH",
-  "GASLESS FOR DEBTORS",
-  "RECEIPTS OR IT DIDN'T HAPPEN",
-  "VERIFIED_SETTLED",
+  {
+    n: "01",
+    name: "Scan",
+    detail:
+      "Photograph the receipt. Vision extracts merchant, items, tax, service — then a deterministic arithmetic check re-adds every line before anything is accepted.",
+  },
+  {
+    n: "02",
+    name: "Confirm",
+    detail:
+      "Humans confirm the extraction. AI proposes; it never silently decides. Unconfirmed items never reach the ledger.",
+  },
+  {
+    n: "03",
+    name: "Split",
+    detail:
+      "Say it in plain language — \"Vee had the daal, split service fairly.\" The model parses intent; the deterministic engine does every penny of math.",
+  },
+  {
+    n: "04",
+    name: "Net",
+    detail:
+      "The debt graph collapses. Six IOUs become two transfers. Provably conservation-safe netting — every debtor pays exactly their share.",
+  },
+  {
+    n: "05",
+    name: "Freeze",
+    detail:
+      "The ledger canonicalizes to JSON and hashes with keccak256. That hash seeds every transfer nonce — sign one ledger, and only that ledger can settle.",
+  },
+  {
+    n: "06",
+    name: "Sign",
+    detail:
+      "Each debtor signs an EIP-3009 transferWithAuthorization. Time-boxed, nonce-bound, no allowances, no custody.",
+  },
+  {
+    n: "07",
+    name: "Settle",
+    detail:
+      "KeeperHub simulates first — a failing settlement is blocked before broadcast. Then it executes the USDC batch on Base Sepolia and returns a verifiable receipt.",
+  },
 ];
 
+const RECEIPT_ITEMS = [
+  { name: "Daal Makhani", price: "9.50" },
+  { name: "Garlic Naan ×2", price: "7.00" },
+  { name: "Chicken Ruby", price: "14.00" },
+  { name: "Saag Paneer", price: "8.75" },
+  { name: "Basmati Rice", price: "4.20" },
+];
+
+function ArrowIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
+      <path
+        d="M3 8h10m0 0L9 4m4 4l-4 4"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function CheckIcon() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden>
+      <path
+        d="M3 8.5l3.5 3.5L13 5"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function Nav() {
+  return (
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-quiet/60 bg-canvas/85 backdrop-blur-md">
+      <nav className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6">
+        <Link href="/" className="flex items-center gap-2.5">
+          <span className="flex h-6 w-6 items-center justify-center rounded-md bg-signal text-ink">
+            <CheckIcon />
+          </span>
+          <span className="text-sm font-semibold tracking-wide">FINALTab</span>
+        </Link>
+        <div className="hidden items-center gap-6 text-sm text-muted md:flex">
+          <a href="#product" className="transition-colors hover:text-txt">
+            Product
+          </a>
+          <a href="#proof" className="transition-colors hover:text-txt">
+            Proof
+          </a>
+          <Link href="/developers" className="transition-colors hover:text-txt">
+            Developers
+          </Link>
+          <Link href="/open-source" className="transition-colors hover:text-txt">
+            Open source
+          </Link>
+        </div>
+        <Link
+          href="/app"
+          className="rounded-lg bg-signal px-3.5 py-1.5 text-sm font-semibold text-ink transition-transform hover:scale-[1.03] active:scale-[0.98]"
+        >
+          Open FINALTab
+        </Link>
+      </nav>
+    </header>
+  );
+}
+
 function TiltReceipt() {
-  const prefersReduced = useReducedMotion();
-  const ref = useRef<HTMLDivElement>(null);
   const mx = useMotionValue(0.5);
   const my = useMotionValue(0.5);
-  const rotateX = useSpring(useTransform(my, [0, 1], [14, -14]), { stiffness: 150, damping: 20 });
-  const rotateY = useSpring(useTransform(mx, [0, 1], [-18, 18]), { stiffness: 150, damping: 20 });
+  const rx = useSpring(useTransform(my, [0, 1], [8, -8]), {
+    stiffness: 150,
+    damping: 20,
+  });
+  const ry = useSpring(useTransform(mx, [0, 1], [-10, 10]), {
+    stiffness: 150,
+    damping: 20,
+  });
 
   return (
-    <div
-      ref={ref}
-      className="relative [perspective:1200px]"
+    <motion.div
+      style={{ rotateX: rx, rotateY: ry, transformPerspective: 900 }}
       onMouseMove={(e) => {
-        if (prefersReduced || !ref.current) return;
-        const r = ref.current.getBoundingClientRect();
+        const r = e.currentTarget.getBoundingClientRect();
         mx.set((e.clientX - r.left) / r.width);
         my.set((e.clientY - r.top) / r.height);
       }}
@@ -56,294 +152,528 @@ function TiltReceipt() {
         mx.set(0.5);
         my.set(0.5);
       }}
+      className="relative mx-auto w-full max-w-xs select-none"
     >
-      <motion.div
-        style={prefersReduced ? undefined : { rotateX, rotateY, transformStyle: "preserve-3d" }}
-        animate={prefersReduced ? undefined : { y: [0, -10, 0] }}
-        transition={{ y: { duration: 6, repeat: Infinity, ease: "easeInOut" } }}
-        className="receipt-paper relative w-[300px] rotate-2 px-5 pb-2 pt-5 font-mono text-[12px] sm:w-[330px]"
-      >
-        <div style={{ transform: "translateZ(30px)" }}>
-          <p className="text-center text-[13px] font-bold tracking-widest">DISHOOM</p>
-          <p className="text-center text-[10px] text-ink-soft">demo receipt · table 12 · 3 people</p>
-          <div className="my-2 border-t border-dashed border-ink-soft/40" />
-          {[
-            ["HOUSE BLACK DAAL", "8.90"],
-            ["CHICKEN RUBY", "12.70"],
-            ["GARLIC NAAN ×2", "9.00"],
-            ["GUNPOWDER POTATOES", "8.20"],
-            ["CHAI ×3", "9.60"],
-          ].map(([item, amt]) => (
-            <p key={item} className="flex">
-              <span>{item}</span>
-              <span className="leader" />
-              <span>{amt}</span>
-            </p>
-          ))}
-          <div className="my-2 border-t border-dashed border-ink-soft/40" />
-          <p className="flex">
-            <span>SERVICE 12.5%</span>
-            <span className="leader" />
-            <span>5.60</span>
-          </p>
-          <p className="flex text-[14px] font-bold">
-            <span>TOTAL</span>
-            <span className="leader" />
-            <span>54.00</span>
-          </p>
-          <div className="my-2 border-t border-dashed border-ink-soft/40" />
-          <p className="text-center text-[10px] text-ink-soft">keccak256(ledger) → EIP-3009 → one batch</p>
-          <motion.p
-            initial={{ opacity: 0, scale: 1.6, rotate: -14 }}
-            whileInView={{ opacity: 1, scale: 1, rotate: -8 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.6, type: "spring", stiffness: 200, damping: 14 }}
-            className="pointer-events-none mx-auto mt-3 w-fit border-[3px] border-lime-dim px-2 py-0.5 text-center text-[13px] font-black tracking-widest text-lime-dim"
-            style={{ transform: "translateZ(60px)" }}
-          >
-            VERIFIED_SETTLED
-          </motion.p>
+      <div className="receipt-paper relative px-6 pb-8 pt-6 font-mono text-[13px] text-ink">
+        <p className="text-center text-sm font-bold tracking-[0.2em]">
+          RUBY TANDOOR
+        </p>
+        <p className="mt-0.5 text-center text-[11px] text-ink-soft">
+          Table 12 · Party of 4
+        </p>
+        <div className="my-3 border-t border-dashed border-ink-soft/40" />
+        {RECEIPT_ITEMS.map((item) => (
+          <div key={item.name} className="flex items-baseline gap-2 py-0.5">
+            <span>{item.name}</span>
+            <span className="leader flex-1" />
+            <span>{item.price}</span>
+          </div>
+        ))}
+        <div className="my-3 border-t border-dashed border-ink-soft/40" />
+        <div className="flex justify-between py-0.5 text-ink-soft">
+          <span>Subtotal</span>
+          <span>43.45</span>
         </div>
-        <div className="receipt-tear absolute -bottom-[10px] left-0 w-full" />
-      </motion.div>
+        <div className="flex justify-between py-0.5 text-ink-soft">
+          <span>Service 12.5%</span>
+          <span>5.43</span>
+        </div>
+        <div className="mt-1 flex justify-between text-sm font-bold">
+          <span>TOTAL</span>
+          <span>£48.88</span>
+        </div>
+        <div className="mt-4 flex items-center justify-center gap-1.5 rounded bg-ink/5 py-1.5 text-[11px] font-semibold text-ink">
+          <CheckIcon />
+          arithmetic verified · 0 issues
+        </div>
+        <div className="receipt-tear absolute -bottom-[10px] left-0 right-0" />
+      </div>
+    </motion.div>
+  );
+}
+
+function CollapseViz() {
+  return (
+    <div className="mx-auto mt-14 flex max-w-lg flex-wrap items-center justify-center gap-3 text-xs sm:gap-4">
+      <div className="rounded-xl border border-quiet bg-surface-1 px-4 py-3">
+        <p className="font-mono text-[11px] text-faint">before netting</p>
+        <p className="mt-1 text-lg font-semibold text-muted">6 IOUs</p>
+      </div>
+      <div className="text-signal">
+        <ArrowIcon />
+      </div>
+      <div className="rounded-xl border border-signal/30 bg-surface-1 px-4 py-3">
+        <p className="font-mono text-[11px] text-faint">after netting</p>
+        <p className="mt-1 text-lg font-semibold text-signal">2 transfers</p>
+      </div>
+      <div className="text-signal">
+        <ArrowIcon />
+      </div>
+      <div className="rounded-xl border border-quiet bg-surface-1 px-4 py-3">
+        <p className="font-mono text-[11px] text-faint">after execution</p>
+        <p className="mt-1 text-lg font-semibold text-txt">0 owed</p>
+      </div>
     </div>
   );
 }
 
-export function Landing() {
-  const { scrollYProgress } = useScroll();
-  const heroFade = useTransform(scrollYProgress, [0, 0.18], [1, 0]);
-
+function Hero() {
   return (
-    <div className="relative overflow-x-clip">
-      {/* nav */}
-      <nav className="sticky top-0 z-40 border-b border-edge-soft bg-night/80 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 md:px-6">
-          <span className="font-mono text-base font-bold tracking-tight text-paper">
-            FINAL<span className="text-lime">Tab</span>
-          </span>
-          <div className="flex items-center gap-4 font-mono text-[11px] uppercase tracking-wider">
-            <a href="#pipeline" className="hidden text-fog hover:text-paper sm:inline">pipeline</a>
-            <a href="#proof" className="hidden text-fog hover:text-paper sm:inline">proof</a>
-            <a href="#mcp" className="hidden text-fog hover:text-paper sm:inline">mcp</a>
-            <Link href="/auth" className="text-fog hover:text-paper">sign in</Link>
-            <Link
-              href="/app"
-              className="rounded bg-lime px-3 py-1.5 font-bold text-ink transition hover:bg-lime-dim"
-            >
-              open the lab
-            </Link>
-          </div>
-        </div>
-      </nav>
-
-      {/* hero */}
-      <section className="relative mx-auto grid max-w-6xl grid-cols-1 items-center gap-10 px-4 pb-20 pt-16 md:grid-cols-[1.2fr_1fr] md:px-6 md:pt-24">
-        <motion.div style={{ opacity: heroFade }}>
-          <motion.p
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="font-mono text-[11px] uppercase tracking-[0.25em] text-fog"
-          >
-            Base Sepolia · USDC · KeeperHub execution
-          </motion.p>
-          <motion.h1
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.08 }}
-            className="mt-4 font-mono text-[clamp(2.4rem,6vw,4.6rem)] font-black leading-[0.95] tracking-tight text-paper"
-          >
-            SETTLE THE
-            <br />
-            TABLE.
-            <br />
-            <span className="text-lime">PROVE IT</span>
-            <br />
-            ONCHAIN.
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.16 }}
-            className="mt-6 max-w-md font-sans text-base leading-relaxed text-fog"
-          >
-            Split a real receipt in plain English. Settle it as one atomic USDC batch.
-            And never, ever see the word &ldquo;settled&rdquo; until the chain proves it landed.
-          </motion.p>
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.24 }}
-            className="mt-8 flex flex-wrap gap-3"
-          >
-            <Link
-              href="/app"
-              className="rounded bg-lime px-6 py-3 font-mono text-sm font-bold uppercase tracking-wider text-ink transition hover:bg-lime-dim"
-            >
-              split a receipt →
-            </Link>
+    <section className="atmosphere relative overflow-hidden pb-20 pt-32 sm:pt-40">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <div className="grid items-center gap-14 lg:grid-cols-[1.15fr_0.85fr]">
+          <div>
+            <p className="font-mono text-xs tracking-[0.3em] text-signal">
+              SETTLEMENT OS
+            </p>
+            <h1 className="mt-4 text-4xl font-semibold leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl">
+              The bill isn&apos;t settled until the money moves.
+            </h1>
+            <p className="mt-5 max-w-xl text-lg text-muted">
+              FINALTab turns shared receipts into one agreed, verified
+              settlement — from photo to zero IOUs. Most expense apps tell you
+              who owes whom. FINALTab actually closes the tab.
+            </p>
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              <Link
+                href="/app"
+                className="rounded-lg bg-signal px-5 py-2.5 text-sm font-semibold text-ink transition-transform hover:scale-[1.03] active:scale-[0.98]"
+              >
+                Open FINALTab
+              </Link>
+              <a
+                href="#proof"
+                className="rounded-lg border border-quiet px-5 py-2.5 text-sm font-medium text-txt transition-colors hover:border-signal/50 hover:text-signal"
+              >
+                See the proof
+              </a>
+            </div>
             <a
-              href="#proof"
-              className="rounded border border-edge px-6 py-3 font-mono text-sm uppercase tracking-wider text-fog transition hover:border-lime hover:text-lime"
+              href={BASESCAN_TX}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-6 inline-flex items-center gap-2 rounded-full border border-quiet bg-surface-1 px-3.5 py-1.5 font-mono text-xs text-muted transition-colors hover:border-signal/40 hover:text-txt"
             >
-              see the proof
+              <span className="h-1.5 w-1.5 rounded-full bg-signal" />
+              KeeperHub executed · Base Sepolia · Verified receipt {TX_SHORT}
             </a>
-          </motion.div>
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0, scale: 0.94 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.2 }}
-          className="mx-auto"
-        >
+          </div>
           <TiltReceipt />
-        </motion.div>
-      </section>
+        </div>
+        <CollapseViz />
+      </div>
+    </section>
+  );
+}
 
-      {/* ticker */}
-      <div className="overflow-hidden border-y border-edge-soft bg-panel py-3">
-        <div className="ticker flex w-max gap-8 font-mono text-[11px] uppercase tracking-[0.2em] text-fog">
-          {[...TICKER, ...TICKER].map((t, i) => (
-            <span key={`${t}-${i}`} className="flex items-center gap-8">
-              <span className={t === "VERIFIED_SETTLED" ? "text-lime" : undefined}>{t}</span>
-              <span className="text-edge">✦</span>
-            </span>
+function SectionHead({
+  kicker,
+  title,
+  sub,
+}: {
+  kicker: string;
+  title: string;
+  sub?: string;
+}) {
+  return (
+    <div className="max-w-2xl">
+      <p className="font-mono text-xs tracking-[0.25em] text-signal">
+        {kicker}
+      </p>
+      <h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">
+        {title}
+      </h2>
+      {sub ? <p className="mt-3 text-muted">{sub}</p> : null}
+    </div>
+  );
+}
+
+function ProblemSection() {
+  const gaps = [
+    {
+      title: "Apps track. People still chase.",
+      body: "Splitting tools produce a list of who owes whom, then stop. The awkward part — actually moving the money — stays manual.",
+    },
+    {
+      title: "Group debts rot.",
+      body: "Every unsettled IOU is a small open loop. They accumulate across dinners, trips, and flats until someone gives up on collecting.",
+    },
+    {
+      title: "\"Paid you back\" isn't proof.",
+      body: "A message saying it's settled is not a settlement. There's no shared, verifiable record everyone can point at.",
+    },
+  ];
+  return (
+    <section id="product" className="border-t border-quiet/60 py-20">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <SectionHead
+          kicker="THE GAP"
+          title="Splitting is a solved problem. Settling isn't."
+        />
+        <div className="mt-10 grid gap-4 md:grid-cols-3">
+          {gaps.map((g) => (
+            <div
+              key={g.title}
+              className="rounded-xl border border-quiet bg-surface-1 p-6"
+            >
+              <h3 className="font-semibold">{g.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted">
+                {g.body}
+              </p>
+            </div>
           ))}
         </div>
       </div>
-
-      {/* pipeline */}
-      <section id="pipeline" className="mx-auto max-w-6xl px-4 py-20 md:px-6">
-        <h2 className="font-mono text-[11px] uppercase tracking-[0.25em] text-fog">
-          The pipeline
-        </h2>
-        <p className="mt-2 max-w-lg font-mono text-2xl font-bold text-paper">
-          Seven steps. Zero trust in a model. Zero trust in a bare tx hash.
-        </p>
-        <div className="mt-10 grid grid-cols-1 gap-3 md:grid-cols-2">
-          {PIPELINE.map(([num, title, body], i) => (
-            <motion.div
-              key={num}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-60px" }}
-              transition={{ delay: (i % 2) * 0.08 }}
-              className={`rounded-lg border border-edge bg-panel p-5 ${i === PIPELINE.length - 1 ? "border-lime-dim md:col-span-2" : ""}`}
-            >
-              <div className="flex items-baseline gap-3">
-                <span className="font-mono text-2xl font-black text-lime">{num}</span>
-                <h3 className="font-mono text-sm font-bold uppercase tracking-wider text-paper">
-                  {title}
-                </h3>
-              </div>
-              <p className="mt-2 font-sans text-sm leading-relaxed text-fog">{body}</p>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      {/* proof */}
-      <section id="proof" className="border-y border-edge-soft bg-panel">
-        <div className="mx-auto max-w-6xl px-4 py-20 md:px-6">
-          <h2 className="font-mono text-[11px] uppercase tracking-[0.25em] text-fog">
-            Not a mockup
-          </h2>
-          <p className="mt-2 max-w-xl font-mono text-2xl font-bold text-paper">
-            A real KeeperHub execution on Base Sepolia, verified against the chain.
-          </p>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mt-8 overflow-x-auto rounded-lg border border-lime-dim/50 bg-night p-5 font-mono text-xs leading-loose text-fog"
-          >
-            <p><span className="text-fog-dim">executionId</span>  g0w11wukbk1v0psyditx4</p>
-            <p><span className="text-fog-dim">block</span>        45243955</p>
-            <p><span className="text-fog-dim">sponsored</span>    true</p>
-            <p><span className="text-fog-dim">verified</span>     <span className="text-lime">true</span></p>
-            <p><span className="text-fog-dim">receipt</span>      <span className="text-lime">success</span></p>
-            <p className="mt-2">
-              <a href={TX_LINK} target="_blank" rel="noopener noreferrer" className="text-lime underline underline-offset-4 hover:text-paper">
-                0x1130…278c on BaseScan ↗
-              </a>
-            </p>
-          </motion.div>
-          <p className="mt-4 max-w-xl font-sans text-sm text-fog">
-            The full flight report — simulate, execute, poll, receipt-verify — ships in the repo.
-            Anything unproven renders as unproven. That is the product.
-          </p>
-        </div>
-      </section>
-
-      {/* mcp */}
-      <section id="mcp" className="mx-auto max-w-6xl px-4 py-20 md:px-6">
-        <div className="grid grid-cols-1 items-center gap-10 md:grid-cols-2">
-          <div>
-            <h2 className="font-mono text-[11px] uppercase tracking-[0.25em] text-fog">
-              Agents welcome
-            </h2>
-            <p className="mt-2 font-mono text-2xl font-bold text-paper">
-              Your tab, as an MCP server.
-            </p>
-            <p className="mt-4 font-sans text-sm leading-relaxed text-fog">
-              FINALTab exposes its deterministic split engine over the Model Context Protocol.
-              Connect it to Claude and ask for a cent-perfect split from a chat window —
-              the same engine, the same rules: models propose, the engine decides.
-            </p>
-          </div>
-          <motion.pre
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="overflow-x-auto rounded-lg border border-edge bg-panel p-5 font-mono text-xs leading-relaxed text-fog"
-          >
-            <code>{`{
-  "mcpServers": {
-    "finaltab": {
-      "url": "https://finaltab.vercel.app/api/mcp"
-    }
-  }
+    </section>
+  );
 }
 
-> split £54.00 between vee, hem, ravi
-{ "shares": ["18.00", "18.00", "18.00"],
-  "sumsToTotal": true }`}</code>
-          </motion.pre>
-        </div>
-      </section>
+function PipelineSection() {
+  return (
+    <section className="border-t border-quiet/60 py-20">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <SectionHead
+          kicker="HOW IT WORKS"
+          title="Photo in. Verified onchain settlement out."
+          sub="Seven stages. The AI layer proposes, the deterministic engine decides, and nothing moves money without explicit signatures."
+        />
+        <ol className="mt-10">
+          {PIPELINE.map((stage, i) => (
+            <li
+              key={stage.n}
+              className="group relative grid gap-2 border-l border-quiet py-5 pl-8 sm:grid-cols-[110px_1fr] sm:gap-6"
+            >
+              <span
+                className={`absolute -left-[5px] top-7 h-2.5 w-2.5 rounded-full ${
+                  i === PIPELINE.length - 1 ? "bg-signal" : "bg-quiet"
+                } transition-colors group-hover:bg-signal`}
+              />
+              <span className="font-mono text-sm text-faint">
+                {stage.n} · {stage.name}
+              </span>
+              <p className="text-sm leading-relaxed text-muted">
+                {stage.detail}
+              </p>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+  );
+}
 
-      {/* cta */}
-      <section className="border-t border-edge-soft">
-        <div className="mx-auto max-w-6xl px-4 py-24 text-center md:px-6">
-          <motion.p
-            initial={{ opacity: 0, scale: 0.96 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            className="font-mono text-[clamp(1.8rem,4.5vw,3.2rem)] font-black leading-tight text-paper"
+function RoomSection() {
+  const features = [
+    {
+      title: "Natural-language splitting",
+      body: "\"Ravi had everything else, split service fairly\" becomes editable rule chips. If the model's proposal doesn't reconcile to the receipt total, the engine rejects it — all of it.",
+    },
+    {
+      title: "Reconciliation, always visible",
+      body: "Every share table carries a Σ = receipt total badge. The room never shows an allocation that doesn't add up to the penny.",
+    },
+    {
+      title: "Debt-graph collapse",
+      body: "Watch raw IOUs net down to the minimum transfer set. Real numbers from your real receipt — the animation is the math, not a decoration.",
+    },
+    {
+      title: "Freeze before signature",
+      body: "The ledger canonicalizes and hashes before anyone signs. Change a single penny afterwards and every signature is void by construction.",
+    },
+  ];
+  return (
+    <section className="border-t border-quiet/60 py-20">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <SectionHead
+          kicker="THE SETTLEMENT ROOM"
+          title="One room. One agreed ledger. Zero ambiguity."
+        />
+        <div className="mt-10 grid gap-4 sm:grid-cols-2">
+          {features.map((f) => (
+            <div
+              key={f.title}
+              className="rounded-xl border border-quiet bg-surface-1 p-6 transition-colors hover:border-signal/30"
+            >
+              <h3 className="font-semibold">{f.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted">
+                {f.body}
+              </p>
+            </div>
+          ))}
+        </div>
+        <Link
+          href="/app"
+          className="mt-8 inline-flex items-center gap-2 text-sm font-medium text-signal transition-colors hover:text-txt"
+        >
+          Enter the settlement room <ArrowIcon />
+        </Link>
+      </div>
+    </section>
+  );
+}
+
+function ProofSection() {
+  const rows = [
+    ["Execution ID", EXEC_ID],
+    ["Transaction", TX_SHORT],
+    ["Chain", "Base Sepolia · 84532"],
+    ["Block", "45,243,955"],
+    ["Gas used", "80,521"],
+    ["Receipt status", "success · verified"],
+  ];
+  return (
+    <section id="proof" className="border-t border-quiet/60 py-20">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <div className="grid items-center gap-12 lg:grid-cols-2">
+          <div>
+            <SectionHead
+              kicker="LANDED PROOF"
+              title="This isn't a mock. KeeperHub already executed for FINALTab."
+              sub="A real USDC transferWithAuthorization batch, executed through KeeperHub on Base Sepolia, verified against the chain receipt. Fail-closed: FINALTab reports success only after independent receipt verification."
+            />
+            <div className="mt-6 flex flex-wrap gap-3">
+              <a
+                href={BASESCAN_TX}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-lg border border-quiet px-4 py-2 text-sm text-txt transition-colors hover:border-signal/50 hover:text-signal"
+              >
+                View on BaseScan
+              </a>
+              <Link
+                href="/app/proof"
+                className="rounded-lg border border-quiet px-4 py-2 text-sm text-txt transition-colors hover:border-signal/50 hover:text-signal"
+              >
+                Open the Settlement Capsule
+              </Link>
+            </div>
+          </div>
+          <div className="rounded-2xl border border-signal/25 bg-surface-1 p-6">
+            <div className="flex items-center gap-2">
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-signal text-ink">
+                <CheckIcon />
+              </span>
+              <p className="text-sm font-semibold tracking-wide">
+                VERIFIED SETTLEMENT
+              </p>
+            </div>
+            <dl className="mt-5 space-y-2.5 font-mono text-xs">
+              {rows.map(([k, v]) => (
+                <div
+                  key={k}
+                  className="flex items-baseline justify-between gap-4 border-b border-quiet/50 pb-2.5"
+                >
+                  <dt className="text-faint">{k}</dt>
+                  <dd className="break-all text-right text-txt">{v}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ReliabilitySection() {
+  const scenarios = [
+    "Expired authorization window",
+    "Ledger altered after freeze",
+    "Split that doesn't reconcile",
+    "Missing participant signature",
+    "Wrong chain",
+    "Duplicate settlement replay",
+  ];
+  return (
+    <section className="border-t border-quiet/60 py-20">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <SectionHead
+          kicker="RELIABILITY LAB"
+          title="We break it in front of you."
+          sub="Inject a real failure, watch the real check block it before broadcast, repair it, and pass. No manufactured responses — every scenario exercises the actual engine code."
+        />
+        <div className="mt-8 flex flex-wrap gap-2.5">
+          {scenarios.map((s) => (
+            <span
+              key={s}
+              className="rounded-full border border-danger/30 bg-danger/5 px-3.5 py-1.5 text-xs text-danger"
+            >
+              {s}
+            </span>
+          ))}
+        </div>
+        <Link
+          href="/lab"
+          className="mt-8 inline-flex items-center gap-2 text-sm font-medium text-signal transition-colors hover:text-txt"
+        >
+          Open the Reliability Lab <ArrowIcon />
+        </Link>
+      </div>
+    </section>
+  );
+}
+
+function DevelopersSection() {
+  return (
+    <section className="border-t border-quiet/60 py-20">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <SectionHead
+          kicker="DEVELOPERS"
+          title="A settlement engine, not just an app."
+          sub="Deterministic TypeScript packages for money, splitting, netting, ledger hashing, and EIP-3009 — plus a live MCP endpoint and a receipt-verifying KeeperHub client."
+        />
+        <div className="mt-10 grid gap-4 lg:grid-cols-2">
+          <div className="overflow-x-auto rounded-xl border border-quiet bg-surface-1 p-5 font-mono text-xs leading-relaxed">
+            <p className="text-faint"># verify a KeeperHub execution receipt</p>
+            <p className="mt-1 text-txt">
+              $ kh-proof verify --execution-id {EXEC_ID}
+            </p>
+            <p className="mt-2 text-signal">✓ receipt fetched from chain</p>
+            <p className="text-signal">✓ status success · block 45243955</p>
+            <p className="text-signal">✓ verified: true</p>
+          </div>
+          <div className="overflow-x-auto rounded-xl border border-quiet bg-surface-1 p-5 font-mono text-xs leading-relaxed">
+            <p className="text-faint"># live MCP endpoint — Streamable HTTP</p>
+            <p className="mt-1 break-all text-info">{MCP_URL}</p>
+            <p className="mt-2 text-muted">
+              tools: split_equal · split_weighted · net_debts ·
+              settlement_status
+            </p>
+          </div>
+        </div>
+        <Link
+          href="/developers"
+          className="mt-8 inline-flex items-center gap-2 text-sm font-medium text-signal transition-colors hover:text-txt"
+        >
+          Developer docs <ArrowIcon />
+        </Link>
+      </div>
+    </section>
+  );
+}
+
+function OpenSourceSection() {
+  const stats: Array<[string, string]> = [
+    ["109", "passing tests across 5 packages"],
+    ["7", "deterministic engine modules"],
+    ["0", "places a model controls final math"],
+  ];
+  return (
+    <section className="border-t border-quiet/60 py-20">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <SectionHead
+          kicker="OPEN SOURCE"
+          title="Built in the open. Contributing upstream."
+          sub="The whole monorepo is public — engine, vision, KeeperHub client, contracts, and this app. We also contributed onboarding improvements to the KeeperHub CLI itself: PR #95, open and under review."
+        />
+        <div className="mt-10 grid gap-4 sm:grid-cols-3">
+          {stats.map(([n, label]) => (
+            <div
+              key={label}
+              className="rounded-xl border border-quiet bg-surface-1 p-6"
+            >
+              <p className="font-mono text-3xl font-semibold text-signal">
+                {n}
+              </p>
+              <p className="mt-1 text-sm text-muted">{label}</p>
+            </div>
+          ))}
+        </div>
+        <div className="mt-8 flex flex-wrap gap-3">
+          <a
+            href={REPO_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-lg border border-quiet px-4 py-2 text-sm text-txt transition-colors hover:border-signal/50 hover:text-signal"
           >
-            A transaction hash proves <span className="text-coral">submission</span>.
-            <br />
-            Only a receipt proves <span className="text-lime">landing</span>.
-          </motion.p>
-          <Link
-            href="/app"
-            className="mt-10 inline-block rounded bg-lime px-8 py-4 font-mono text-base font-bold uppercase tracking-wider text-ink transition hover:bg-lime-dim"
+            github.com/vaibhav4046/finaltab
+          </a>
+          <a
+            href={PR_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-lg border border-quiet px-4 py-2 text-sm text-txt transition-colors hover:border-signal/50 hover:text-signal"
           >
-            open the lab →
+            KeeperHub CLI PR #95 (open)
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function AgentSection() {
+  return (
+    <section className="border-t border-quiet/60 py-20">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <SectionHead
+          kicker="AGENT-NATIVE"
+          title="Your agent can settle the tab too."
+          sub="FINALTab ships a live MCP server. Connect Claude or any MCP client and split, net, and check settlement status conversationally — money-moving operations always require explicit human consent."
+        />
+        <div className="mt-8 max-w-xl overflow-x-auto rounded-xl border border-quiet bg-surface-1 p-5 font-mono text-xs leading-relaxed">
+          <p className="text-faint">{"// claude_desktop_config.json"}</p>
+          <pre className="mt-1 whitespace-pre text-txt">{`{
+  "mcpServers": {
+    "finaltab": { "url": "${MCP_URL}" }
+  }
+}`}</pre>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Footer() {
+  return (
+    <footer className="border-t border-quiet/60 py-10">
+      <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-4 px-4 text-sm text-faint sm:flex-row sm:items-center sm:px-6">
+        <p>
+          FINALTab — built for the KeeperHub “Agents Onchain” hackathon.
+          Testnet software; not financial advice.
+        </p>
+        <div className="flex gap-5">
+          <a
+            href={REPO_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="transition-colors hover:text-txt"
+          >
+            GitHub
+          </a>
+          <a
+            href={BASESCAN_TX}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="transition-colors hover:text-txt"
+          >
+            BaseScan
+          </a>
+          <Link href="/lab" className="transition-colors hover:text-txt">
+            Reliability Lab
           </Link>
         </div>
-      </section>
+      </div>
+    </footer>
+  );
+}
 
-      <footer className="border-t border-edge-soft py-8">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 font-mono text-[10px] uppercase tracking-wider text-fog-dim md:px-6">
-          <span>FINALTab · KeeperHub “Agents Onchain” hackathon</span>
-          <span>
-            <a href="https://github.com/vaibhav4046/finaltab" target="_blank" rel="noopener noreferrer" className="hover:text-fog">github</a>
-            {" · "}
-            <a href={TX_LINK} target="_blank" rel="noopener noreferrer" className="hover:text-fog">verified flight</a>
-          </span>
-        </div>
-      </footer>
+export default function Landing() {
+  return (
+    <div className="min-h-screen">
+      <Nav />
+      <main>
+        <Hero />
+        <ProblemSection />
+        <PipelineSection />
+        <RoomSection />
+        <ProofSection />
+        <ReliabilitySection />
+        <DevelopersSection />
+        <OpenSourceSection />
+        <AgentSection />
+      </main>
+      <Footer />
     </div>
   );
 }

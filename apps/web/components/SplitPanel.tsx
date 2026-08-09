@@ -23,6 +23,12 @@ function fiatMinorToDisplay(minor: string, currency: string): string {
   return `${currency} ${v / 100n}.${(v % 100n).toString().padStart(2, "0")}`;
 }
 
+/** "42.5" | "42.50" | "42" → minor units string. Schema guarantees ≤2 decimals. */
+function fiatStringToMinor(s: string): string {
+  const [whole, frac = ""] = s.split(".");
+  return (BigInt(whole) * 100n + BigInt(frac.padEnd(2, "0") || "0")).toString();
+}
+
 export function SplitPanel({
   people,
   receipt,
@@ -103,6 +109,12 @@ export function SplitPanel({
 
   const currency = receipt?.receipt.currency ?? "";
   const active = showNetted ? netted : (allocation?.debts ?? []);
+
+  const sharesTotalMinor = useMemo(() => {
+    if (!allocation) return null;
+    return allocation.shares.reduce((acc, s) => acc + BigInt(s.fiatMinor), 0n).toString();
+  }, [allocation]);
+  const receiptTotalMinor = receipt ? fiatStringToMinor(receipt.receipt.total) : null;
 
   return (
     <Panel title="Split & Graph" step="02 · Allocate">
@@ -189,6 +201,19 @@ export function SplitPanel({
                 ))}
               </tbody>
             </table>
+            {sharesTotalMinor !== null && receiptTotalMinor !== null && (
+              <p className="mt-2 flex items-baseline gap-2 font-mono text-[10px] text-fog-dim">
+                <span className="text-fog">
+                  Σ shares {fiatMinorToDisplay(sharesTotalMinor, currency)}
+                </span>
+                <span className="leader flex-1" aria-hidden="true" />
+                <span className={sharesTotalMinor === receiptTotalMinor ? "text-lime" : "text-coral"}>
+                  {sharesTotalMinor === receiptTotalMinor
+                    ? `= receipt ${fiatMinorToDisplay(receiptTotalMinor, currency)} · reconciled to the cent`
+                    : `≠ receipt ${fiatMinorToDisplay(receiptTotalMinor, currency)} — reconciler would have rejected this`}
+                </span>
+              </p>
+            )}
           </div>
         )}
 

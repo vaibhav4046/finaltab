@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import Link from "next/link";
 import {
   loadProfile,
   saveProfile,
@@ -51,18 +50,6 @@ export function AuthPanel() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10 md:px-6">
-      <header className="mb-8 flex items-baseline justify-between">
-        <Link href="/" className="font-mono text-lg font-bold tracking-tight text-paper">
-          FINAL<span className="text-lime">Tab</span>
-        </Link>
-        <Link
-          href="/app"
-          className="font-mono text-[11px] uppercase tracking-wider text-lime hover:underline"
-        >
-          open the lab →
-        </Link>
-      </header>
-
       {profile ? (
         <motion.section
           initial={{ opacity: 0, y: 12 }}

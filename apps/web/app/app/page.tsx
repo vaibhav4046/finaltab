@@ -1,13 +1,9 @@
-import { Lab } from "@/components/Lab";
+import { AppHome } from "@/components/AppHome";
 
 export const metadata = {
-  title: "FINALTab — Midnight Receipt Lab",
+  title: "FINALTab — home",
 };
 
 export default function AppPage() {
-  return (
-    <main className="min-h-screen">
-      <Lab />
-    </main>
-  );
+  return <AppHome />;
 }

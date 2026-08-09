@@ -2,6 +2,7 @@ export {
   GroqClient,
   GroqApiError,
   extractJsonObject,
+  isRetryableGroqError,
   DEFAULT_GROQ_MODEL,
   type GroqClientOptions,
   type GroqMessage,

@@ -1,5 +1,5 @@
 import { AllocationProposalSchema, type AllocationProposal, type ParsedReceipt } from "@finaltab/engine";
-import { GroqClient, extractJsonObject, type GroqMessage } from "./groqClient.js";
+import { GroqClient, extractJsonObject, isRetryableGroqError, type GroqMessage } from "./groqClient.js";
 import { ALLOCATION_SYSTEM } from "./prompts.js";
 
 export interface Participant {
@@ -20,7 +20,7 @@ export interface ProposeAllocationResult {
   attempts: number;
 }
 
-const MAX_ATTEMPTS = 2;
+const MAX_ATTEMPTS = 3;
 
 /**
  * Turns a natural-language splitting instruction into a structured
@@ -61,7 +61,18 @@ export async function proposeAllocation(
       });
     }
 
-    const raw = await client.completeJson(messages);
+    let raw: string;
+    try {
+      raw = await client.completeJson(messages);
+    } catch (e) {
+      // Retryable API failures (json_validate_failed, 429, 5xx) stay in the
+      // loop; auth/permanent errors surface immediately.
+      if (attempt < MAX_ATTEMPTS && isRetryableGroqError(e)) {
+        lastError = e;
+        continue;
+      }
+      throw e;
+    }
     try {
       const proposal = AllocationProposalSchema.parse(extractJsonObject(raw));
       return { proposal, rawModelOutput: raw, attempts: attempt };

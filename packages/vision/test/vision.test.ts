@@ -76,9 +76,45 @@ describe("parseReceiptImage", () => {
     expect(res.attempts).toBe(2);
   });
 
-  it("invalid twice -> throws with schema detail, never returns garbage", async () => {
+  it("invalid every attempt -> throws with schema detail, never returns garbage", async () => {
     const bad = JSON.stringify({ merchant: "x" });
-    await expect(parseReceiptImage(client([bad, bad]), PNG_1PX)).rejects.toThrow(/failed after 2 attempts/);
+    await expect(parseReceiptImage(client([bad, bad, bad]), PNG_1PX)).rejects.toThrow(/failed after 3 attempts/);
+  });
+
+  it("retryable 400 (json_validate_failed) then valid -> succeeds on attempt 2", async () => {
+    const res = await parseReceiptImage(
+      client([
+        { status: 400, body: { error: { code: "json_validate_failed", message: "output was not valid JSON" } } },
+        JSON.stringify(validReceipt),
+      ]),
+      PNG_1PX,
+    );
+    expect(res.attempts).toBe(2);
+    expect(res.receipt.merchant).toBe("Dishoom");
+  });
+
+  it("401 is never retried -> immediate GroqApiError", async () => {
+    let calls = 0;
+    const counting = (async () => {
+      calls++;
+      return new Response(JSON.stringify({ error: { message: "Invalid API Key" } }), { status: 401 });
+    }) as typeof fetch;
+    const err = await parseReceiptImage(
+      new GroqClient({ apiKey: "gsk_test", fetchImpl: counting }),
+      PNG_1PX,
+    ).catch((e) => e);
+    expect(err).toBeInstanceOf(GroqApiError);
+    expect(err.httpStatus).toBe(401);
+    expect(calls).toBe(1);
+  });
+
+  it("Groq error body detail lands in the error message", async () => {
+    const err = await parseReceiptImage(
+      client([{ status: 403, body: { error: { code: "permission_denied", message: "no access to model" } } }]),
+      PNG_1PX,
+    ).catch((e) => e);
+    expect(err).toBeInstanceOf(GroqApiError);
+    expect(String(err.message)).toMatch(/permission_denied: no access to model/);
   });
 
   it("rejects non-data-URL input before any network call", async () => {
@@ -134,10 +170,22 @@ describe("proposeAllocation", () => {
     ).rejects.toThrow(/not in participants/);
   });
 
-  it("schema-invalid twice -> throws", async () => {
+  it("schema-invalid every attempt -> throws", async () => {
     const bad = JSON.stringify({ allocations: "nope" });
     await expect(
-      proposeAllocation(client([bad, bad]), { receipt, participants, payerId: "p1", instruction: "x" }),
-    ).rejects.toThrow(/failed after 2 attempts/);
+      proposeAllocation(client([bad, bad, bad]), { receipt, participants, payerId: "p1", instruction: "x" }),
+    ).rejects.toThrow(/failed after 3 attempts/);
+  });
+
+  it("retryable 429 then valid proposal -> succeeds on attempt 2", async () => {
+    const res = await proposeAllocation(
+      client([
+        { status: 429, body: { error: { code: "rate_limit_exceeded", message: "slow down" } } },
+        JSON.stringify(validProposal),
+      ]),
+      { receipt, participants, payerId: "p1", instruction: "x" },
+    );
+    expect(res.attempts).toBe(2);
+    expect(res.proposal.payerId).toBe("p1");
   });
 });

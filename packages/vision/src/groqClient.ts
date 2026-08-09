@@ -93,7 +93,12 @@ export class GroqClient {
       body = { raw: text };
     }
     if (!res.ok) {
-      throw new GroqApiError(`Groq API error HTTP ${res.status}`, res.status, body);
+      const detail = groqErrorDetail(body);
+      throw new GroqApiError(
+        `Groq API error HTTP ${res.status}${detail ? ` — ${detail}` : ""}`,
+        res.status,
+        body,
+      );
     }
     const content = (body as { choices?: Array<{ message?: { content?: string } }> })?.choices?.[0]?.message
       ?.content;
@@ -102,6 +107,28 @@ export class GroqClient {
     }
     return content;
   }
+}
+
+/** Pulls the human-readable error code/message out of a Groq error body. */
+function groqErrorDetail(body: unknown): string | null {
+  if (typeof body !== "object" || body === null) return null;
+  const err = (body as { error?: { message?: unknown; code?: unknown } }).error;
+  if (typeof err !== "object" || err === null) return null;
+  const parts: string[] = [];
+  if (typeof err.code === "string" && err.code.length > 0) parts.push(err.code);
+  if (typeof err.message === "string" && err.message.length > 0) parts.push(err.message.slice(0, 300));
+  return parts.length > 0 ? parts.join(": ") : null;
+}
+
+/**
+ * True for Groq failures worth one more attempt: 400 json_validate_failed
+ * (model emitted invalid JSON under json_object mode), timeouts, rate limits,
+ * and transient 5xx. Auth/permission errors are never retryable.
+ */
+export function isRetryableGroqError(e: unknown): boolean {
+  if (!(e instanceof GroqApiError)) return false;
+  if (e.httpStatus === 401 || e.httpStatus === 403) return false;
+  return e.httpStatus === 400 || e.httpStatus === 408 || e.httpStatus === 429 || e.httpStatus >= 500;
 }
 
 /**

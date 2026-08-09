@@ -1,5 +1,5 @@
 import { ParsedReceiptSchema, type ParsedReceipt } from "@finaltab/engine";
-import { GroqClient, extractJsonObject, type GroqMessage } from "./groqClient.js";
+import { GroqClient, extractJsonObject, isRetryableGroqError, type GroqMessage } from "./groqClient.js";
 import { RECEIPT_EXTRACTION_SYSTEM } from "./prompts.js";
 
 export interface ParseReceiptResult {
@@ -9,7 +9,7 @@ export interface ParseReceiptResult {
   attempts: number;
 }
 
-const MAX_ATTEMPTS = 2;
+const MAX_ATTEMPTS = 3;
 
 /**
  * Sends a receipt image (data URL: data:image/png;base64,...) to the vision
@@ -43,7 +43,18 @@ export async function parseReceiptImage(client: GroqClient, imageDataUrl: string
       });
     }
 
-    const raw = await client.completeJson(messages);
+    let raw: string;
+    try {
+      raw = await client.completeJson(messages);
+    } catch (e) {
+      // Retryable API failures (json_validate_failed, 429, 5xx) stay in the
+      // loop; auth/permanent errors surface immediately.
+      if (attempt < MAX_ATTEMPTS && isRetryableGroqError(e)) {
+        lastError = e;
+        continue;
+      }
+      throw e;
+    }
     try {
       const parsed = ParsedReceiptSchema.parse(extractJsonObject(raw));
       return { receipt: parsed, rawModelOutput: raw, attempts: attempt };

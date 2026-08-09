@@ -11,3 +11,5 @@ typechain-types/
 *.tsbuildinfo
 proof-output/
 .DS_Store
+*.log
+.claude/

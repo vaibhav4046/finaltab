@@ -39,9 +39,7 @@ export function SplitPanel({
   onAllocation,
   onNetted,
 }: SplitPanelProps) {
-  const [instruction, setInstruction] = useState(
-    "Vee had the daal and one naan. Hem had the chicken ruby. Ravi had everything else. Split the service charge fairly.",
-  );
+  const [instruction, setInstruction] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [issues, setIssues] = useState<string[]>([]);
@@ -140,8 +138,8 @@ export function SplitPanel({
               </button>
             ))}
           </div>
-          <p className="mt-1.5 font-mono text-[9px] text-fog-dim">
-            Demo signers — throwaway keys generated in your browser. Tap a person to mark who paid.
+          <p className="mt-1.5 font-mono text-[9px] text-warn">
+            ⚠ Demo mode. Connect a real wallet (MetaMask) in /auth for real settlement.
           </p>
         </div>
 

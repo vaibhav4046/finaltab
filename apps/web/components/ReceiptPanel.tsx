@@ -104,7 +104,7 @@ export function ReceiptPanel({ receipt, onReceipt }: ReceiptPanelProps) {
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="receipt-paper receipt-tear mx-auto max-w-sm px-5 pb-6 pt-5 text-ink"
+          className="receipt-paper relative mx-auto max-w-sm px-5 pb-6 pt-5 text-ink"
         >
           <div className="text-center">
             <p className="font-mono text-sm font-bold uppercase tracking-widest">{parsed.merchant}</p>
@@ -156,6 +156,7 @@ export function ReceiptPanel({ receipt, onReceipt }: ReceiptPanelProps) {
               <span className="tabular-nums">{parsed.total}</span>
             </div>
           </div>
+          <div className="receipt-tear absolute -bottom-[10px] left-0 w-full" />
         </motion.div>
       )}
 

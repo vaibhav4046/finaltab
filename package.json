@@ -1,0 +1,12 @@
+{
+  "name": "finaltab",
+  "private": true,
+  "version": "0.1.0",
+  "description": "AI-assisted shared-expense settlement with KeeperHub-verified onchain execution",
+  "scripts": {
+    "test": "pnpm -r --if-present test",
+    "build": "pnpm -r --if-present build",
+    "kh:proof": "node packages/keeperhub-flight-recorder/bin/kh-proof.mjs"
+  },
+  "packageManager": "pnpm@10.33.2"
+}

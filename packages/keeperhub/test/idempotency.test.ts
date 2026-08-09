@@ -1,0 +1,71 @@
+import { describe, it, expect } from "vitest";
+import { canonicalAmount, canonicalIdempotencyString, deriveIdempotencyKey } from "../src/idempotency.js";
+
+describe("canonicalAmount", () => {
+  it("strips leading/trailing zeros", () => {
+    expect(canonicalAmount("010.500")).toBe("10.5");
+    expect(canonicalAmount("0.10")).toBe("0.1");
+    expect(canonicalAmount("100")).toBe("100");
+  });
+  it("empty -> 0, bare zero forms -> 0", () => {
+    expect(canonicalAmount("")).toBe("0");
+    expect(canonicalAmount("0")).toBe("0");
+    expect(canonicalAmount("0.0")).toBe("0");
+    expect(canonicalAmount("000")).toBe("0");
+  });
+  it("rejects exponent and garbage", () => {
+    expect(() => canonicalAmount("1e5")).toThrow();
+    expect(() => canonicalAmount("-1")).toThrow();
+    expect(() => canonicalAmount("abc")).toThrow();
+  });
+});
+
+describe("canonicalIdempotencyString", () => {
+  it("joins with U+007C, lowercases addresses, decimal chainId", () => {
+    const s = canonicalIdempotencyString({
+      taskId: "settle-1",
+      chainId: 84532,
+      recipientAddress: "0xABCDEF0000000000000000000000000000000001",
+      amount: "0.00",
+      tokenAddress: "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+    });
+    expect(s).toBe(
+      "settle-1|84532|0xabcdef0000000000000000000000000000000001|0|0x036cbd53842c5426634e7929541ec2318f3dcf7e",
+    );
+  });
+  it("escapes % then | in taskId", () => {
+    const s = canonicalIdempotencyString({
+      taskId: " a%|b ",
+      chainId: 1,
+      recipientAddress: "0xABCDEF0000000000000000000000000000000001",
+      amount: "1",
+    });
+    expect(s.startsWith("a%25%7Cb|1|")).toBe(true);
+  });
+  it("omitted optional fields = empty string", () => {
+    const s = canonicalIdempotencyString({
+      chainId: 84532,
+      recipientAddress: "0xAAAA000000000000000000000000000000000001",
+      amount: "5",
+    });
+    expect(s).toBe("|84532|0xaaaa000000000000000000000000000000000001|5|");
+  });
+});
+
+describe("deriveIdempotencyKey", () => {
+  it("is 64-char lowercase hex and stable", () => {
+    const parts = {
+      taskId: "t",
+      chainId: 84532,
+      recipientAddress: "0xAAAA000000000000000000000000000000000001",
+      amount: "1.50",
+    };
+    const k1 = deriveIdempotencyKey(parts);
+    expect(k1).toMatch(/^[0-9a-f]{64}$/);
+    expect(deriveIdempotencyKey(parts)).toBe(k1);
+    // equivalent canonical amounts hash identically
+    expect(deriveIdempotencyKey({ ...parts, amount: "01.5000" })).toBe(k1);
+    // different amount hashes differently
+    expect(deriveIdempotencyKey({ ...parts, amount: "1.51" })).not.toBe(k1);
+  });
+});

@@ -54,8 +54,8 @@ export function settleContractCall(body: SettleBody, contractAddress: string) {
   return {
     chainId: BASE_SEPOLIA_CHAIN_ID,
     contractAddress,
-    functionSignature: EXECUTE_SETTLEMENT_SIGNATURE,
-    args: settleArgs(body),
+    functionName: EXECUTE_SETTLEMENT_SIGNATURE,
+    functionArgs: JSON.stringify(settleArgs(body)),
     taskId: `finaltab-settle-${body.settlementId.slice(2, 18)}`,
   };
 }

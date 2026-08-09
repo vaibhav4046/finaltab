@@ -13,3 +13,5 @@ proof-output/
 .DS_Store
 *.log
 .claude/
+
+.vercel

@@ -62,9 +62,10 @@ export interface TransferRequest {
 export interface ContractCallRequest {
   chainId: number;
   contractAddress: string;
-  /** Function signature, e.g. "deployCreate(bytes)" */
-  functionSignature: string;
-  args: unknown[];
+  /** Full function signature, e.g. "deployCreate(bytes)". KeeperHub's field name is functionName. */
+  functionName: string;
+  /** KeeperHub requires the args array JSON-encoded as a string, not a raw array. */
+  functionArgs: string;
   value?: string;
   taskId?: string;
 }

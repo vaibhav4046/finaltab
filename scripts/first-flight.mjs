@@ -257,7 +257,7 @@ async function main() {
     console.log(`[D] initCode ${(initCode.length - 2) / 2} bytes (FinalTabBatchSettlement + USDC ${USDC}).`);
     const flightD = await fly(
       args.baseUrl, apiKey, "/api/execute/contract-call",
-      { chainId: CHAIN_ID, contractAddress: CREATEX, functionSignature: "deployCreate(bytes)", args: [initCode] },
+      { chainId: CHAIN_ID, contractAddress: CREATEX, functionName: "deployCreate(bytes)", functionArgs: JSON.stringify([initCode]) },
       "D deploy", args.timeoutMs,
     );
     report.stages.deploy = flightD;

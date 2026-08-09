@@ -38,15 +38,18 @@ Built for the KeeperHub "Agents Onchain" hackathon. KeeperHub is the exclusive e
 
 ## Honest status
 
-Proven live on this machine, through the app's own API routes:
+Live: **https://finaltab.vercel.app**
+
+Proven live, through the app's own API routes and the first-flight script:
 
 - Receipt extraction (`/api/vision/extract`) against real Groq.
 - NL allocation (`/api/vision/allocate`) against real Groq, reconciled cent-perfect by the engine (model even hallucinated a note about the service charge; the engine split it correctly anyway).
+- Real KeeperHub execution on Base Sepolia, end to end: simulate -> execute -> poll -> chain-verified receipt -> **VERIFIED_SETTLED**. Proof: [tx 0x1130...278c](https://sepolia.basescan.org/tx/0x11300427473e95d241d924891b2cc0131b0047263e461787c27a2f854c39278c) (executionId `g0w11wukbk1v0psyditx4`, block 45243955, `verified: true`, `receiptStatus: "success"`).
+- CLI contribution shipped upstream: [KeeperHub/cli PR #95](https://github.com/KeeperHub/cli/pull/95) (open, not merged).
 
 Blocked, disclosed in [docs/blockers.md](docs/blockers.md):
 
-- Live simulate/execute on Base Sepolia needs a KeeperHub ORGANIZATION key (`kh_` prefix). A user key (`wfb_`) returns 401 for direct execution; we verified that the hard way.
-- Contract is fully tested but not yet deployed (deployment goes through KeeperHub + CreateX in the first-flight script, same key blocker).
+- Contract deploy through KeeperHub + CreateX simulates clean (predicted address `0xEaf9E9d90a080Fa01E7Eb671AFB5B3f0B445F013`) but the org wallet needs 231 gwei of Base Sepolia ETH; KeeperHub sponsors transfers, not contract-call gas.
 - Supabase persistence is schema-complete but not applied (no project credentials yet).
 
 Nothing in the UI fakes any of this. Unproven states render as unproven.
@@ -65,4 +68,4 @@ Secrets are server-only. `GROQ_API_KEY`, `KEEPERHUB_API_KEY` and `SUPABASE_SECRE
 
 ## CLI contribution (Best Onboarding UX target)
 
-We also built `--require-verified` and `--timeout` for `kh execute status` in the KeeperHub CLI, so any agent can gate a pipeline on chain-verified receipts instead of a bare `completed` status. Branch + tests + PR body: [docs/keeperhub-cli-pr-draft.md](docs/keeperhub-cli-pr-draft.md).
+We also built `--require-verified` and `--timeout` for `kh execute status` in the KeeperHub CLI, so any agent can gate a pipeline on chain-verified receipts instead of a bare `completed` status. PR: https://github.com/KeeperHub/cli/pull/95 (7 new tests, back-compatible). Draft/rationale: [docs/keeperhub-cli-pr-draft.md](docs/keeperhub-cli-pr-draft.md).

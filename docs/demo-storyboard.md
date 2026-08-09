@@ -50,7 +50,8 @@ Caption/VO: "We shipped the same discipline upstream: kh execute status now can 
 ## Assets checklist
 
 - [ ] Receipt photo (DISHOOM) staged
-- [ ] .env.local filled (GROQ key at minimum)
-- [ ] Dev server on :3017
+- [x] .env.local filled (Groq + KeeperHub org key, both proven live)
+- [ ] Dev server on :3017 (or use https://finaltab.vercel.app live)
 - [ ] kh.exe built for scene 8
-- [ ] Optional: ElevenLabs voiceover (key never provided; captions are the default plan)
+- [x] ElevenLabs voiceover generated: 8 mp3s in `proof-output/voiceover/` (scene1-cold-open ... scene8-cli-close), George voice, matches the VO lines above
+- Scene 7A is now REAL for the sponsored flight (see `proof-output/first-flight-2026-08-09T06-16-38-800Z.json`); the contract-deploy + live settle variant unlocks once the org wallet has deploy gas (see blockers.md)

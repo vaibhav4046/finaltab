@@ -26,10 +26,11 @@ Group expenses die in the last mile: someone fronts the bill, an app computes sp
 
 **Numbers:** 108 passing workspace tests + 11 Hardhat tests. Zero-budget stack: Next.js on Vercel free, Supabase free, Groq free tier, KeeperHub.
 
-- Live app: [DEPLOY_URL]
-- Repo: [REPO_URL]
+- Live app: https://finaltab.vercel.app
+- Repo: https://github.com/vaibhav4046/finaltab
 - Demo: [VIDEO_URL]
-- Verified settlement: [TX_LINK]
+- Verified KeeperHub execution (chain-verified receipt, Base Sepolia): https://sepolia.basescan.org/tx/0x11300427473e95d241d924891b2cc0131b0047263e461787c27a2f854c39278c
+  (executionId `g0w11wukbk1v0psyditx4`, block 45243955, `verified: true`, `receiptStatus: "success"`; full report in `proof-output/`. The batch-settlement contract deploy tx will replace this link once the org wallet holds deploy gas; simulation already passes clean.)
 
 ## Best Onboarding UX Improvement entry
 
@@ -40,7 +41,7 @@ While building we hit the exact wall new KeeperHub agent developers hit: `comple
 - `--require-verified`: exit non-zero unless the execution completed AND every onchain receipt is chain-verified with `receiptStatus "success"`. Fails closed on `reverted`, `not_found`, `timeout`, `safe_inner_failure`, and on completed-with-no-receipts.
 - `--timeout`: `--watch` finally has a deadline, mirroring `transfer --wait`.
 - One line gates any agent pipeline on real chain proof: `kh ex st <id> --watch --require-verified && ./next-step.sh`
-- 7 new tests, back-compatible, follows the repo's own idioms. PR: [PR_URL]
+- 7 new tests, back-compatible, follows the repo's own idioms. PR: https://github.com/KeeperHub/cli/pull/95 (open, not merged)
 
 This complements upstream issue #49 (executionId status lookup for agents) and was motivated by the same onboarding friction documented in issue #47.
 

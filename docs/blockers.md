@@ -6,9 +6,9 @@ Everything below needs YOU (credentials or approval). Nothing here is faked in t
 
 - The provided key is `wfb_` (user key). Direct execution endpoints return **401** with it; proven on this machine.
 - Fix: KeeperHub dashboard, Settings > API Keys > **Organisation** tab, mint a `kh_` key, put it in `apps/web/.env.local` as `KEEPERHUB_API_KEY`.
-- Unblocks, in order:
-  1. `scripts/first-flight` probe: zero-value sponsored self-transfer, simulate -> execute -> verified receipt.
-  2. Contract deploy to Base Sepolia via KeeperHub + CreateX `deployCreate(initCode)` (CreateX at `0xba5Ed099633D3B313e4D5F7bdc1305d3c28ba5Ed`).
+- The script is WRITTEN and waiting at `scripts/first-flight.mjs` (refuses `wfb_` keys up front, simulate-first everywhere, fail-closed receipt verification, exit codes 0/1/2/3). Once the key is in place:
+  1. `node scripts/first-flight.mjs` — auth probe, chain sanity, zero-value sponsored self-transfer: simulate -> execute -> verified receipt.
+  2. `node scripts/first-flight.mjs --deploy` — same plus FinalTabBatchSettlement deploy via CreateX `deployCreate(initCode)` (CreateX at `0xba5Ed099633D3B313e4D5F7bdc1305d3c28ba5Ed`); the deployed address comes from the ContractCreation event on BaseScan, then goes into `NEXT_PUBLIC_SETTLEMENT_CONTRACT`.
   3. Real simulate/execute/status through the web app, ending in a real VERIFIED_SETTLED with a receipt.
 - This mirrors KeeperHub/cli issue #47 (kh_ vs wfb_ prefix confusion): our own onboarding pain, and part of why the CLI contribution targets verification UX.
 

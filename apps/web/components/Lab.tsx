@@ -1,10 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { ReceiptPanel } from "./ReceiptPanel";
 import { SplitPanel } from "./SplitPanel";
 import { ExecutionRail } from "./ExecutionRail";
+import { parseFiat } from "@finaltab/engine";
 import { makeDemoPeople } from "@/lib/flow";
+import { loadProfile, recordTab, type Profile } from "@/lib/identity";
 import type { Person, ReceiptState, AllocationState, ExecutionStage } from "@/lib/types";
 
 export function Lab() {
@@ -17,10 +20,29 @@ export function Lab() {
   const [netted, setNetted] = useState<Array<{ debtor: string; creditor: string; usdcMinor: string }>>([]);
   const [stage, setStage] = useState<ExecutionStage>("idle");
   const [locked, setLocked] = useState(false);
+  const [profile, setProfile] = useState<Profile | null>(null);
 
   useEffect(() => {
     setPeople(makeDemoPeople());
+    setProfile(loadProfile());
   }, []);
+
+  // Record tab history for the signed-in device profile. Same receipt id
+  // dedupes, so a DRAFT upgrades in place when the chain verdict arrives.
+  useEffect(() => {
+    if (!receipt || !allocation || !people) return;
+    const verdict =
+      stage === "verified" ? "VERIFIED_SETTLED" : stage === "failed" ? "FAILED" : "DRAFT";
+    recordTab({
+      id: `receipt-${receipt.receipt.merchant.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`,
+      merchant: receipt.receipt.merchant,
+      totalMinor: parseFiat(receipt.receipt.total).toString(),
+      currency: receipt.receipt.currency,
+      people: people.map((p) => p.name),
+      verdict,
+      at: new Date().toISOString(),
+    });
+  }, [receipt, allocation, people, stage]);
 
   if (!people) {
     return (
@@ -34,16 +56,31 @@ export function Lab() {
     <div className="mx-auto max-w-[1400px] px-4 pb-10 md:px-6">
       <header className="flex flex-wrap items-baseline justify-between gap-2 py-6">
         <div>
-          <h1 className="font-mono text-lg font-bold tracking-tight text-paper">
+          <Link href="/" className="font-mono text-lg font-bold tracking-tight text-paper">
             FINAL<span className="text-lime">Tab</span>
-          </h1>
+          </Link>
           <p className="mt-0.5 font-sans text-sm text-fog">
             Settle the table. Prove it onchain — or say honestly that you couldn&apos;t.
           </p>
         </div>
-        <p className="font-mono text-[10px] uppercase tracking-wider text-fog-dim">
-          Base Sepolia · USDC · KeeperHub execution
-        </p>
+        <div className="flex items-center gap-4">
+          <p className="font-mono text-[10px] uppercase tracking-wider text-fog-dim">
+            Base Sepolia · USDC · KeeperHub execution
+          </p>
+          <Link
+            href="/auth"
+            className="flex items-center gap-1.5 rounded border border-edge px-2.5 py-1 font-mono text-[11px] text-fog transition hover:border-lime hover:text-lime"
+          >
+            {profile ? (
+              <>
+                <span>{profile.emoji}</span>
+                <span className="text-paper">{profile.name}</span>
+              </>
+            ) : (
+              <span>sign in</span>
+            )}
+          </Link>
+        </div>
       </header>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">

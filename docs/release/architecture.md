@@ -35,7 +35,7 @@ Verify (RPC) → Proof Capsule
 - zero external deps except `viem`, `zod`
 - no side effects, pure functions
 
-**packages/vision** (25 tests + 1 live, env-gated skip)
+**packages/vision** (32 tests, + 1 skipped: the live-key test, env-gated)
 - exports: Groq receipt extraction + allocation NL
 - depends: engine, zod, groq-sdk
 - client-only; server-only key
@@ -49,6 +49,14 @@ Verify (RPC) → Proof Capsule
 - exports: `kh-proof` CLI binary
 - depends: keeperhub client, axios
 - reproducible polling, honest exit codes
+
+**apps/web** (66 tests)
+- `test/apiText.test.ts` (20) locks the error-text coercion that caused the Simulate white-screen
+- `test/demoKeys.test.ts` (46) locks demo-signer persistence and the opt-in flag behaviour
+
+The five figures above sum to 189, which is the workspace total in
+[gates.md](gates.md); 52 + 32 + 32 + 7 + 66. They are meant to reconcile, so if they ever stop
+reconciling, one of the two documents is stale.
 
 **contracts**
 - `FinalTabBatchSettlement.sol` (11 tests)
@@ -64,6 +72,7 @@ Verify (RPC) → Proof Capsule
 - routes:
   - `/` landing page (Framer Motion, animated)
   - `/auth` wallet connection (stub)
+  - `/app` in-app home hub
   - `/app/tab` settlement orchestrator (main journey)
   - `/app/proof` verified settlement capsule + technical detail
   - `/lab` reliability testing (intentional failures)
@@ -71,18 +80,25 @@ Verify (RPC) → Proof Capsule
   - `/open-source` license + contribution
 - key client components:
   - `ReceiptCapture` → `AllocationView` → `SettlementRoom` → `ProofCapsule`
-- server routes:
-  - `/api/vision/extract` (Groq receipt)
-  - `/api/vision/allocate` (Groq NL + engine netting)
-  - `/api/keeperhub/simulate` (KeeperHub simulation)
-  - `/api/keeperhub/execute` (KeeperHub broadcast)
-  - `/api/keeperhub/status` (KeeperHub polling)
+- server routes (this list is the output of `find apps/web/app/api -name route.ts`, not a
+  hand-maintained one — an earlier revision documented three `/api/keeperhub/*` endpoints that have
+  never existed under that path, which would have sent anyone reading this straight into a 404):
+  - `/api/vision/extract` (receipt extraction, Groq leg live)
+  - `/api/vision/allocate` (natural-language allocation + engine netting)
+  - `/api/settle/simulate` (KeeperHub simulation; returns HTTP 409 when the call would revert)
+  - `/api/settle/execute` (KeeperHub broadcast)
+  - `/api/settle/status/[id]` (KeeperHub polling)
+  - `/api/mcp` (MCP server endpoint, Streamable HTTP)
 
 ## Environment and Chain
 
 - **Chain**: Base Sepolia (chainId 84532)
 - **USDC**: 0x036CbD53842c5426634e7929541eC2318f3dCF7e
-- **Settlement Contract**: 0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64 (deployed? TBD, see blockers)
+- **Settlement Contract**: 0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64 — **deployed and live**.
+  `eth_getCode` against `https://sepolia.base.org` returns 2259 bytes at that address, re-queried
+  2026-08-10. An earlier revision of this line said "deployed? TBD, see blockers", which contradicted
+  gate 9; the contract being live and `executeSettlement` never having been *called* are two
+  different facts, and only the second one is still open.
 - **Verified USDC Domain Separator**: 0x71f17a3b2ff373b803d70a5a07c046c1a2bc8e89c09ef722fcb047abe94c9818
 - **Verified RECEIVE_WITH_AUTHORIZATION_TYPEHASH**: 0xe77f0b7efc35c95a7c91d5ff68f46deac34a54c1aaa90c94275b858c7c0eba4f
 

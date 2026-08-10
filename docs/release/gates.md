@@ -1,8 +1,11 @@
 # Release Gates
 
-Every row was run on **2026-08-10** against a **clean tree at commit `b258ec3`**, which is the tip of
-`main` on `origin`. A fresh clone reproduces these numbers — the four commands under
-[Reproducing](#reproducing) are the ones that produced them.
+Every row was run on **2026-08-10**. Gates 1–16 were measured against a clean tree at commit
+`b258ec3` and re-measured unchanged against the tree this commit publishes; gates 17–18 were added by
+that re-measurement. The only delta between the two trees is three static PWA assets and the manifest
+entry that names them, which is why the test, type, and bundle numbers are identical across both. A
+fresh clone reproduces them — the four commands under [Reproducing](#reproducing) are the ones that
+produced them.
 
 That was not true until this commit, and the earlier disclaimer is kept here rather than deleted,
 because the gap it described was real: these gates were first measured against `84e5397` **plus 74
@@ -36,6 +39,8 @@ it says so and names what would unblock it rather than being quietly dropped fro
 | 14 | Coverage ≥ 80% | — | **NOT MEASURED** |
 | 15 | Upstream CLI contribution live | `GET api.github.com/repos/KeeperHub/cli/pulls/95` | **PASS** — PR #95 `state: open`, `merged: false`, 1 commit, +336/−15, 7 new Go tests |
 | 16 | Secret scan (whole object database) | `git cat-file --batch-all-objects` × all 190 blobs, cross-referenced against `git rev-list --objects --all` | **PASS for anything published, FAIL locally** — 0 of 305 reachable objects hold key material; 8 **unreachable** blobs do. See below. |
+| 17 | Full journey exercised in a real browser | Playwright against the running app: upload → extract → allocate → net → freeze → sign ×2 → simulate | **PASS** — ran end to end on live providers. Transcript below. |
+| 18 | Console clean on load | `browser_console_messages` after loading `/app/tab` | **PASS** — 0 errors, 0 warnings. Was 2 errors before the manifest fix below. |
 
 Full per-suite test breakdown:
 
@@ -51,6 +56,57 @@ contracts (hardhat)                11 passing
                                   ---------------------
 TOTAL                             200 passing, 1 skipped
 ```
+
+## Gate 17 — the journey, as actually observed
+
+Every number in this section was read off the running app, not computed here and asserted. The run
+used `apps/web/public/fixtures/synthetic-receipt-usd.png` — labelled synthetic in its own filename,
+tracked in the repo so the run is repeatable — against live providers.
+
+| step | observed |
+|---|---|
+| Extraction | Groq, **first pass**, arithmetic verified. `TEST DINER`, currency USD, items 14.00 / 18.00 / 16.00 / 6.00, subtotal 54.00, tax 4.86, tip 11.14, **total 70.00** |
+| Allocation (plain English) | Vee 18.15, Hem 32.41, Ravi 19.44 — Σ **70.00**, equal to the receipt total |
+| Netting | Hem → Vee 32.41 USDC; Ravi → Vee 19.44 USDC |
+| Freeze | ledgerHash `0x97aeba845f65c9dad8d9c11e249b55bdbef306ece8751d6ef55ee1fcc1b663ca`, settlementId `0xe803bc5b36002cff46f43130fb75e05925c3890351244ef83651ecae55151ec3` |
+| Consent | two EIP-712 signatures, one per debtor, each bound to the ledgerHash, recipient = the settlement contract `0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64` |
+| Simulate | HTTP **409 Conflict**, `wouldRevert: true` |
+
+The allocation was recomputed independently rather than taken on trust, and it is cent-exact: item
+subtotals are 14.00 / 25.00 / 15.00 = 54.00, and the 16.00 of extras prorate by item share to
+4.15 / 7.41 / 4.44, which sums to exactly 16.00. Largest-remainder, no float drift, no rounding
+residue parked on one person.
+
+Simulate rendered this, verbatim:
+
+```
+WOULD REVERT — NOT BROADCAST
+
+Simulation would revert: Error(ERC20: transfer amount exceeds balance)
+{"success":false,"status":"simulated",
+ "from":"0x7ae891ec51990684682a084381e97b59d787652b",
+ "to":"0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64",
+ "value":"0","wouldRevert":true,
+ "revertReason":"Error(ERC20: transfer amount exceeds balance)"}
+```
+
+Two things about that screen matter more than the fact that it rendered.
+
+The Execute step showed **no button at all**. The app does not offer a broadcast it knows would
+revert; the control is absent rather than present-and-failing. And the revert reason is the true one —
+the demo signers hold zero Base Sepolia USDC, so a real pull genuinely could not clear. Nothing was
+replayed, substituted, or dressed up.
+
+This gate exists because the Simulate path is the one that used to white-screen. Saying it was fixed
+was not the same as watching it render, so it was watched.
+
+**Manifest fix found while doing this.** `manifest.webmanifest` declared `/icon-192.png`,
+`/icon-512.png`, and `/screenshot-mobile-540.png`, none of which existed — two console 404s on every
+page load. The entries were not deleted to silence the error; the assets were produced. Both icons
+were rasterized from the real `icon.svg`, and the screenshot is a genuine 540×720 capture of `/app`.
+Sizes were verified by parsing each PNG's IHDR header against the manifest's declared `sizes`:
+192×192, 512×512, 540×720. The previously-unreferenced `icon-maskable.svg` was wired up at the same
+time. Gate 18 is the confirmation.
 
 ## Gates that do not pass
 
@@ -87,8 +143,11 @@ So one funding action still needs a human (Base Sepolia USDC from Circle's login
 the now-stable demo addresses), and one needs a human only to hold the key (the relayer sweep).
 
 What the app does in the meantime matters more than the gate itself: Simulate renders
-**"WOULD REVERT — NOT BROADCAST"**. It does not replay the earlier verified receipt, substitute a
-fixture, or dress a mock up as a settlement. The blocked state is the honest render.
+**"WOULD REVERT — NOT BROADCAST"** and Execute offers no button. That is not an assertion about
+intended behaviour — it was exercised in a browser and transcribed in
+[gate 17](#gate-17--the-journey-as-actually-observed), down to the revert reason. It does not replay
+the earlier verified receipt, substitute a fixture, or dress a mock up as a settlement. The blocked
+state is the honest render.
 
 **13 — Basescan verification.** Not performed. The consequence is concrete rather than cosmetic: the
 settle route passes the ABI inline because it cannot rely on a published one.

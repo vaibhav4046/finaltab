@@ -1,11 +1,20 @@
 # Release Gates
 
-Every row was run on **2026-08-10** against the working tree: commit `84e5397` **plus uncommitted
-changes** (43 modified tracked files, 31 untracked at the time of the run). It is not a clean-checkout
-result, and saying otherwise would misstate what was measured — re-running these commands on a fresh
-clone of `84e5397` will produce the pre-fix numbers, not these. Nothing here is carried over from an
-earlier session or inferred from a previous result. Where a gate cannot pass, it says so and names
-what would unblock it rather than being quietly dropped from the table.
+Every row was run on **2026-08-10** against a **clean tree at commit `b258ec3`**, which is the tip of
+`main` on `origin`. A fresh clone reproduces these numbers — the four commands under
+[Reproducing](#reproducing) are the ones that produced them.
+
+That was not true until this commit, and the earlier disclaimer is kept here rather than deleted,
+because the gap it described was real: these gates were first measured against `84e5397` **plus 74
+uncommitted working-tree entries**, while `origin/main` sat seven commits back at `22e0c46`. Anyone
+cloning the published repo at that point would have hit the React crash on Simulate, found no
+evidence pack, and reproduced none of this table. The measurements were honest about the tree they
+ran against; the tree simply was not the one a judge could obtain. Publishing `b258ec3` closed that
+gap, and the numbers below were then re-measured against the committed state rather than carried
+over.
+
+Nothing here is inferred from an earlier session or from a previous result. Where a gate cannot pass,
+it says so and names what would unblock it rather than being quietly dropped from the table.
 
 ## Gate results
 
@@ -107,8 +116,20 @@ in the object database. That is exactly what happened here. Gate 16 walks every 
 
 Two conclusions, and they cut in opposite directions.
 
-The published repository is clean. Git only transfers objects reachable from the refs being sent, so
-no clone, fetch, or push of this repo can recover either credential. An earlier revision of
+The published repository is clean, and this is no longer an argument from how git works — it was
+checked directly against the published artifact. `github.com/vaibhav4046/finaltab` was cloned fresh
+at `b258ec3` and every blob the clone received was scanned:
+
+| measured on the fresh clone | result |
+|---|---|
+| blobs received | 237 |
+| service-key shapes (`gsk_`, `alcht_`, `xai-`, `nvapi-`, `sk-proj-`, `sk-ant-`) | **0** |
+| live `g.alchemy.com/v2/<key>` URLs | **0** |
+| copies of the deployer private key | **0** |
+| `git show 1f20560:SUBMISSION.md` | one 64-hex string, and it is the public Basescan tx hash |
+
+Git only transfers objects reachable from the refs being sent, which is *why* the clone is clean; the
+scan above is the evidence that it is. An earlier revision of
 `user-actions.md`, `truth-snapshot.md`, `blockers.md`, `decisions.md`, and `status.md` told judges the
 deployer key was committed at `1f20560` and could be recovered with `git show 1f20560:SUBMISSION.md`.
 That command was run. It returns no key — the only 64-hex string in that blob is the public Basescan

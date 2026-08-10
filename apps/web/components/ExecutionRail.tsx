@@ -212,16 +212,20 @@ export function ExecutionRail({
             onStage("unproven");
             return;
           }
-          setRail((r) => ({ ...r, verdict: json.verdict, lastStatus: json.status }));
-          if (json.verdict === "VERIFIED_SETTLED") {
+          // classifyExecution returns an object: { verdict: "VERIFIED_SETTLED", receipts: [...] }.
+          // Accept a bare string too so an older API shape cannot strand the rail in "pending".
+          const verdict: string | null =
+            typeof json.verdict === "string" ? json.verdict : (json.verdict?.verdict ?? null);
+          setRail((r) => ({ ...r, verdict, lastStatus: json.status }));
+          if (verdict === "VERIFIED_SETTLED") {
             onStage("verified");
             return;
           }
-          if (json.verdict === "FAILED") {
+          if (verdict === "FAILED") {
             onStage("failed");
             return;
           }
-          if (json.verdict === "UNPROVEN") {
+          if (verdict === "UNPROVEN") {
             onStage("unproven");
             return;
           }

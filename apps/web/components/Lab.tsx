@@ -15,6 +15,7 @@ export function Lab() {
   // dependent until after mount so SSR and client HTML agree.
   const [people, setPeople] = useState<Person[] | null>(null);
   const [receipt, setReceipt] = useState<ReceiptState | null>(null);
+  const [receiptNonce, setReceiptNonce] = useState<string | null>(null);
   const [payerId, setPayerId] = useState("vee");
   const [allocation, setAllocation] = useState<AllocationState | null>(null);
   const [netted, setNetted] = useState<Array<{ debtor: string; creditor: string; usdcMinor: string }>>([]);
@@ -25,14 +26,21 @@ export function Lab() {
     setPeople(makeDemoPeople());
   }, []);
 
+  // The contract burns each settlementId forever, and settlementId derives from
+  // the canonical ledger (people + receiptId + amounts). A per-extraction nonce
+  // keeps the same dinner extracted twice from colliding with a burned id.
+  const receiptId = receipt
+    ? `receipt-${receipt.receipt.merchant.toLowerCase().replace(/[^a-z0-9]+/g, "-")}${receiptNonce ? `-${receiptNonce}` : ""}`
+    : null;
+
   // Record tab history for the signed-in device profile. Same receipt id
   // dedupes, so a DRAFT upgrades in place when the chain verdict arrives.
   useEffect(() => {
-    if (!receipt || !allocation || !people) return;
+    if (!receipt || !allocation || !people || !receiptId) return;
     const verdict =
       stage === "verified" ? "VERIFIED_SETTLED" : stage === "failed" ? "FAILED" : "DRAFT";
     recordTab({
-      id: `receipt-${receipt.receipt.merchant.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`,
+      id: receiptId,
       merchant: receipt.receipt.merchant,
       totalMinor: parseFiat(receipt.receipt.total).toString(),
       currency: receipt.receipt.currency,
@@ -40,7 +48,7 @@ export function Lab() {
       verdict,
       at: new Date().toISOString(),
     });
-  }, [receipt, allocation, people, stage]);
+  }, [receipt, allocation, people, stage, receiptId]);
 
   if (!people) {
     return (
@@ -70,6 +78,11 @@ export function Lab() {
           onReceipt={(next) => {
             if (locked) return;
             setReceipt(next);
+            setReceiptNonce(
+              Array.from(crypto.getRandomValues(new Uint8Array(4)))
+                .map((b) => b.toString(16).padStart(2, "0"))
+                .join(""),
+            );
             setAllocation(null);
             setNetted([]);
             setStage("idle");
@@ -91,7 +104,7 @@ export function Lab() {
         <ExecutionRail
           people={people}
           netted={netted}
-          receiptId={receipt ? `receipt-${receipt.receipt.merchant.toLowerCase().replace(/[^a-z0-9]+/g, "-")}` : null}
+          receiptId={receiptId}
           currency={receipt?.receipt.currency ?? ""}
           stage={stage}
           onStage={setStage}

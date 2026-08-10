@@ -18,16 +18,16 @@ Built for the KeeperHub "Agents Onchain" hackathon. KeeperHub is the exclusive e
 
 | Path | What | Tests |
 |------|------|-------|
-| `packages/engine` | Integer-minor-unit money engine: validation, largest-remainder split, reconcile, netting, canonical ledger + keccak256 hash, EIP-3009 payload builder | 44 |
-| `packages/vision` | Groq receipt extraction + NL allocation proposals (strict JSON schemas, model output never trusted for arithmetic) | 14 (+1 live, env-gated) |
+| `packages/engine` | Integer-minor-unit money engine: validation, largest-remainder split, reconcile, netting, canonical ledger + keccak256 hash, EIP-3009 payload builder | 52 |
+| `packages/vision` | Groq receipt extraction + NL allocation proposals (strict JSON schemas, model output never trusted for arithmetic) | 32 (+1 live, env-gated) |
 | `packages/keeperhub` | KeeperHub API client: simulate, execute, status polling, fail-closed receipt verification | 32 |
 | `packages/keeperhub-flight-recorder` | `kh-proof` CLI: polls an executionId to a terminal verdict with honest exit codes | 7 |
 | `contracts` | `FinalTabBatchSettlement.sol` + mock EIP-3009 USDC, Hardhat | 11 |
-| `apps/web` | MIDNIGHT RECEIPT LAB: the Next.js app (App Router, Tailwind, Framer Motion) | build-verified |
+| `apps/web` | MIDNIGHT RECEIPT LAB: the Next.js app (App Router, Tailwind, Framer Motion) | 66 |
 | `supabase/migrations` | Postgres schema for tabs, ledgers, signatures, settlements | not yet applied |
 | `docs` | Submission copy, demo storyboard, honest blocker list, CLI PR draft | |
 
-189 tests pass across the workspace (`pnpm -r --if-present test`), plus the 11 Hardhat contract tests: **200 passing**. Measured 2026-08-10 — engine 52, keeperhub 32, vision 32, flight-recorder 7, web 66, contracts 11. One further vision test is skipped unless a live `GROQ_API_KEY` is present. No coverage percentage is claimed, because no coverage run has been performed.
+One command runs everything: `pnpm -r --if-present test` yields **200 passing, 1 skipped** — 189 Vitest tests across five packages plus the 11 Hardhat contract tests, since `contracts` is a workspace member too. Measured 2026-08-10 — engine 52, keeperhub 32, vision 32, flight-recorder 7, web 66, contracts 11. The one skipped test is a live-API vision test that runs only when a real `GROQ_API_KEY` is present. No coverage percentage is claimed, because no coverage run has been performed.
 
 ## Money rules (non-negotiable)
 

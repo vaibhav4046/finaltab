@@ -9,12 +9,12 @@ const PACKAGES: Array<{ name: string; what: string; tests: string }> = [
   {
     name: "packages/engine",
     what: "Deterministic money core — fiat/USDC parsing, largest-remainder splits, debt netting, canonical ledger hashing, EIP-3009 typed data.",
-    tests: "44",
+    tests: "52",
   },
   {
     name: "packages/vision",
     what: "Groq receipt extraction + natural-language allocation. Model output is always a proposal; the engine reconciles.",
-    tests: "20 (1 live-API)",
+    tests: "32 (+1 live-API, env-gated)",
   },
   {
     name: "packages/keeperhub",
@@ -25,6 +25,11 @@ const PACKAGES: Array<{ name: string; what: string; tests: string }> = [
     name: "packages/keeperhub-flight-recorder",
     what: "kh-proof CLI: replays the verification chain for any executionId — terminal state, onchain receipt, verified flag.",
     tests: "7",
+  },
+  {
+    name: "apps/web",
+    what: "The Next.js app itself. Locks the error-text coercion behind the Simulate path and the demo-signer persistence rules.",
+    tests: "66",
   },
   {
     name: "contracts",
@@ -41,7 +46,7 @@ export default function OpenSourcePage() {
       <main className="atmosphere mx-auto max-w-5xl px-4 pb-24 pt-14 sm:px-6">
         <p className="font-mono text-xs uppercase tracking-[0.3em] text-signal">Open source</p>
         <h1 className="mt-3 max-w-2xl text-3xl font-bold tracking-tight text-paper sm:text-4xl">
-          114 tests. Every claim in the product traces to one of them.
+          200 tests. Every claim in the product traces to one of them.
         </h1>
         <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted">
           FINALTab is a pnpm monorepo. The money math is deterministic and tested; the AI layer only
@@ -106,7 +111,7 @@ export default function OpenSourcePage() {
 {`git clone https://github.com/vaibhav4046/finaltab
 cd finaltab
 pnpm install
-pnpm -r test   # 114 tests across engine, vision, keeperhub, flight recorder, contracts`}
+pnpm -r --if-present test   # 200 passing, 1 skipped — 189 Vitest + 11 Hardhat`}
             </pre>
           </div>
         </section>

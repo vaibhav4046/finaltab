@@ -23,8 +23,8 @@ it says so and names what would unblock it rather than being quietly dropped fro
 
 | # | Gate | Command | Result |
 |---|------|---------|--------|
-| 1 | Workspace tests | `pnpm -r --if-present test` | **PASS** — 189 passed, 1 skipped |
-| 2 | Contract tests | `cd contracts && npx hardhat test` | **PASS** — 11 passing (841ms) |
+| 1 | Workspace tests | `pnpm -r --if-present test` | **PASS** — 200 passing, 1 skipped. `contracts` is a workspace member, so this one command runs the Hardhat suite too; the 189 below is the Vitest portion, not the whole command |
+| 2 | Contract tests | `cd contracts && npx hardhat test` | **PASS** — 11 passing (944ms). Re-run in isolation; also reachable as `pnpm --filter contracts test` |
 | 3 | Type check | `cd apps/web && npx tsc --noEmit` | **PASS** — exit 0, no diagnostics |
 | 4 | Production build | `cd apps/web && pnpm build` | **PASS** — 16 routes, static generation 16/16 |
 | 5 | Bundle budget | build output | **PASS** — shared JS 102 kB; heaviest route `/app/tab` at 195 kB first-load (up 2 kB from the funding panel) |
@@ -51,11 +51,15 @@ packages/keeperhub-flight-recorder  7 passed  (1 file)
 packages/vision                    32 passed, 1 skipped  (3 files + 1 skipped)
 apps/web                           66 passed  (2 files)
                                   ---------------------
-workspace subtotal                189 passed, 1 skipped
+Vitest subtotal                   189 passed, 1 skipped
 contracts (hardhat)                11 passing
                                   ---------------------
 TOTAL                             200 passing, 1 skipped
 ```
+
+`contracts` is listed in `pnpm-workspace.yaml`, so a single `pnpm -r --if-present test` produces
+the TOTAL line, not the subtotal. The split above is by *runner* (Vitest vs Hardhat), not by
+whether a second command is needed — an earlier revision of this file implied it was.
 
 ## Gate 17 — the journey, as actually observed
 

@@ -103,10 +103,11 @@ $proof = @{
         deployedAt = (Get-Date -AsUTC).ToString("o")
         deployer = "0x976EF25623A94F6F70924816697C7c7172210a5F"
     }
+    # This script does not run the test suites, so it does not claim their results.
+    # An earlier revision hardcoded "44/44 PASSING" here — stale and unmeasured.
     tests = @{
-        engine = "44/44 PASSING"
-        contract = "11/11 PASSING"
-        web = "TypeScript clean + Build green"
+        measuredBy = "not this script - run 'pnpm -r --if-present test' and 'pnpm --filter contracts test'"
+        lastRecordedResult = "docs/release/gates.md"
     }
 } | ConvertTo-Json -Depth 10
 

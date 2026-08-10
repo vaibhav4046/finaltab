@@ -1,52 +1,66 @@
 {
+  "_README": [
+    "This is a TEMPLATE, not evidence. It was written before anything had been measured,",
+    "and an earlier revision of it claimed 'test_coverage: 80%+' and listed Supabase",
+    "persistence as a shipped feature. Neither was true. Both are corrected below.",
+    "The real, measured evidence lives in docs/release/gates.md, docs/release/truth-snapshot.md,",
+    "and the machine-readable receipts in proof-output/. Where this file and those disagree,",
+    "those win."
+  ],
   "hackathonMetadata": {
     "title": "FINALTab: Cryptographic Bill Settlement Platform",
     "track": "Production-Grade Agentic Settlement",
-    "submission_date": "2026-08-09",
-    "status": "READY_FOR_DEPLOYMENT"
+    "measured_on": "2026-08-10",
+    "status": "DEPLOYED_AND_LIVE"
   },
   "codeQuality": {
-    "engine_tests": "44/44 PASSING ✓",
-    "contract_tests": "11/11 PASSING ✓",
-    "web_build": "CLEAN ✓",
-    "typescript_checks": "NO_ERRORS ✓",
-    "test_coverage": "80%+ ✓"
+    "workspace_tests": "189 passed, 1 skipped",
+    "contract_tests": "11 passing",
+    "total_tests": "200 passing, 1 skipped",
+    "test_breakdown": "engine 52, keeperhub 32, vision 32, flight-recorder 7, web 66, contracts 11",
+    "web_build": "clean — 16 routes, static 16/16",
+    "typescript_checks": "tsc --noEmit exit 0",
+    "test_coverage": "NOT MEASURED — no coverage run has been performed, so no percentage is claimed"
   },
   "architecture": {
     "contract": "FinalTabBatchSettlement.sol",
     "pattern": "Safe EIP-3009 ReceiveWithAuthorization",
     "nonce_derivation": "keccak256(ledgerHash, debtor, amount)",
     "atomicity": "All pulls succeed OR entire settlement reverts",
-    "zero_retained": "Contract balance before == after (verified onchain)"
+    "zero_retained": "Contract balance before == after (asserted in the Hardhat suite, never yet on a public chain)"
   },
-  "deployment_ready": {
+  "deployment": {
     "blockchain": "Base Sepolia (84532)",
     "usdc_address": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+    "settlement_contract": "0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64",
+    "contract_code_size_bytes": 2259,
+    "contract_code_verified_by": "eth_getCode against https://sepolia.base.org, re-queried 2026-08-10",
+    "source_verified_on_basescan": false,
     "deployer": "0x976EF25623A94F6F70924816697C7c7172210a5F",
-    "alchemy_rpc": "https://base-sepolia.g.alchemy.com/v2/<YOUR_ALCHEMY_KEY>",
-    "status": "AWAITING_FAUCET_FUNDING"
+    "rpc": "https://sepolia.base.org (public endpoint; no API key required)",
+    "live_app": "https://finaltab.vercel.app"
   },
   "features": [
-    "Groq → Claude → OpenAI LLM fallback routing",
-    "OCR receipt parsing with Groq Vision",
-    "Deterministic debt netting engine",
-    "Safe EIP-3009 ReceiveWithAuthorization (no nonce extraction)",
-    "KeeperHub direct execution with simulation",
-    "Supabase persistence (user sessions + settlement history)",
-    "Mobile responsive UI (Framer Motion animations)",
-    "Real Base Sepolia deployment + on-chain verification",
-    "Zero retained USDC guarantee (balance delta = 0)",
-    "Cryptographic authorization (EIP-712 typed data signing)"
+    "Groq receipt extraction — LIVE, exercised against the real API",
+    "Natural-language allocation reconciled cent-perfect by the engine — LIVE",
+    "Deterministic debt netting engine (integer minor units, no floats)",
+    "Safe EIP-3009 ReceiveWithAuthorization (msg.sender == to enforced by USDC)",
+    "Ledger-hash-bound nonces: any edit after freeze invalidates every signature",
+    "KeeperHub simulate-first execution — LIVE, two chain-verified receipts",
+    "Fail-closed verification: VERIFIED_SETTLED requires verified === true AND receiptStatus === success",
+    "Claude and OpenAI fallback legs — TEST-COVERED ONLY, never contacted their real APIs",
+    "Supabase persistence — SCHEMA ONLY, migrations NOT applied, nothing is persisted",
+    "Atomic batch settlement via executeSettlement — NEVER EXECUTED ON A PUBLIC CHAIN"
   ],
   "settlement_flow": [
     "1. Upload receipt image (browser)",
     "2. Parse with Groq Vision (extract items/amounts)",
-    "3. Allocate to participants (UI drag-drop)",
+    "3. Allocate to participants (natural language + engine reconciliation)",
     "4. Freeze ledger (compute canonical hash, lock edits)",
     "5. Sign transfers (EIP-712 ReceiveWithAuthorization per debtor)",
     "6. Simulate settlement (KeeperHub dry-run, check would-revert)",
-    "7. Execute on-chain (broadcast to Base Sepolia)",
-    "8. Verify settlement (check events, balance deltas, zero retained)"
+    "7. Execute on-chain (broadcast via KeeperHub)",
+    "8. Verify settlement (terminal state + onchain receipt + verified flag)"
   ],
   "files": {
     "contract": "contracts/contracts/FinalTabBatchSettlement.sol",
@@ -56,29 +70,22 @@
     "engine": "packages/engine/src/eip3009.ts",
     "web_app": "apps/web/",
     "settlement_rail": "apps/web/components/ExecutionRail.tsx",
-    "signing": "apps/web/lib/flow.ts"
+    "signing": "apps/web/lib/flow.ts",
+    "measured_evidence": "docs/release/gates.md",
+    "honest_blocker_list": "docs/release/truth-snapshot.md",
+    "machine_readable_receipts": "proof-output/"
   },
-  "next_steps": [
-    "1. Fund wallet: 0x976EF25623A94F6F70924816697C7c7172210a5F (0.1+ ETH on Base Sepolia)",
-    "2. Enable Alchemy Base Sepolia: https://dashboard.alchemy.com/apps/0ywa7ovevv84upnw/networks (DONE ✓)",
-    "3. Run CLI: node scripts/finaltab-cli.js",
-    "4. Deploy contract → contract address saved to .env.local",
-    "5. Start dev server: pnpm dev",
-    "6. Execute settlement: http://localhost:3000/app/tab",
-    "7. Collect proof: copy tx hash + events from Etherscan",
-    "8. Demo video: ALREADY RECORDED at proof-output/finaltab-demo.mp4 (1:33). Shows the honest blocked settle state, not a live chain execution.",
-    "9. Submit: proof.json + proof-output/finaltab-demo.mp4"
-  ],
   "submission_checklist": {
     "code_complete": true,
     "tests_passing": true,
-    "contract_safe": true,
-    "alchemy_enabled": true,
-    "wallet_funded": false,
-    "contract_deployed": false,
-    "settlement_executed": false,
-    "proof_collected": false,
-    "demo_recorded": false,
+    "contract_deployed": true,
+    "keeperhub_execution_chain_verified": true,
+    "demo_recorded": true,
+    "proof_collected": true,
+    "relayer_funded_with_native_eth": false,
+    "demo_signers_hold_usdc": false,
+    "batch_settlement_executed_onchain": false,
+    "contract_source_verified_on_basescan": false,
     "submitted": false
   }
 }

@@ -128,11 +128,12 @@ async function run() {
         timestamp: new Date().toISOString(),
         deployer: '0x976EF25623A94F6F70924816697C7c7172210a5F',
       },
+      // This script deploys; it does not run the test suites. It therefore has no business
+      // asserting that they passed. An earlier revision hardcoded '44/44 PASSING' here, which
+      // was both stale and unmeasured — a proof file is the last place to guess.
       testResults: {
-        engineTests: '44/44 PASSING',
-        contractTests: '11/11 PASSING',
-        webBuild: 'CLEAN',
-        typeScript: 'NO_ERRORS',
+        measuredBy: 'not this script — run `pnpm -r --if-present test` and `pnpm --filter contracts test`',
+        lastRecordedResult: 'docs/release/gates.md',
       },
       settlement: {
         status: 'READY_FOR_EXECUTION',

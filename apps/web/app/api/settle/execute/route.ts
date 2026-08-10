@@ -12,7 +12,10 @@ export async function POST(req: Request): Promise<Response> {
 
   const contractAddress = settlementContractAddress();
   if (!contractAddress) {
-    return jsonError("NEXT_PUBLIC_SETTLEMENT_CONTRACT is not configured — the settlement contract has not been deployed yet.", 501);
+    return jsonError(
+      "NEXT_PUBLIC_SETTLEMENT_CONTRACT is not set on this deployment, so the server does not know which contract to call. The contract itself is deployed on Base Sepolia at 0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64 — this is a configuration gap, not a missing deployment.",
+      501,
+    );
   }
 
   let body;

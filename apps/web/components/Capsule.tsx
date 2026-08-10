@@ -2,32 +2,48 @@
 
 import { useState } from "react";
 
-const TX = "0x11300427473e95d241d924891b2cc0131b0047263e461787c27a2f854c39278c";
+const TX = "0x314189b472033de62f8aea7603111c141315be390bc834e283e718382261c5eb";
 const EXPLORER = `https://sepolia.basescan.org/tx/${TX}`;
 
 const PROOF = {
   record: "finaltab.flight.v1",
   network: { chain: "Base Sepolia", chainId: 84532 },
+  trigger: {
+    surface: "MCP · settle_tab · confirm: true",
+    note: "Prepared, signed, and settled end-to-end by an AI agent over JSON-RPC. No UI involved.",
+  },
   execution: {
     provider: "KeeperHub",
-    executionId: "g0w11wukbk1v0psyditx4",
+    executionId: "69zzrj7z676u89ce1x76j",
     status: "success",
   },
   transaction: {
     hash: TX,
-    blockNumber: 45243955,
-    gasUsed: 80521,
+    blockNumber: 45315909,
+    gasUsed: 205748,
     receiptStatus: "success",
+  },
+  settlement: {
+    settlementId: "0xa3d79513657a1a6f8b01c7bcb3c5026cd47e2ead9fc8b27a9239bcc1d6e55bb6",
+    ledgerHash: "0xcdc4a9f0b9e141cfce2ba149d90f3852adf07154184443a4b1d8d4ae92c3bc54",
+    receiptRef: "mcp-live-proof-4",
+    transfers: [
+      { from: "hem", to: "vee", usdc: "1.20" },
+      { from: "ravi", to: "vee", usdc: "0.80" },
+    ],
+    payout: { creditor: "vee", usdc: "2.00" },
+    contractRetained: "0.00",
   },
   verification: {
     verified: true,
     method: "independent RPC receipt fetch, fail-closed",
     checks: [
+      "Both debtors signed EIP-3009 receiveWithAuthorization over the frozen ledger hash",
       "KeeperHub execution status polled to a terminal state (success)",
       "Transaction hash taken from the KeeperHub execution record",
       "Receipt fetched independently from a Base Sepolia RPC — not from KeeperHub",
       "receipt.status === success asserted (fail-closed: anything else = not verified)",
-      "Block number and gas usage recorded from the onchain receipt",
+      "Balances re-read after settlement: vee +2.00, hem −1.20, ravi −0.80, contract retains 0.00",
     ],
   },
   explorer: EXPLORER,
@@ -93,7 +109,7 @@ export function Capsule() {
             </span>
             <div>
               <h1 className="text-lg font-semibold tracking-tight text-txt">VERIFIED SETTLEMENT</h1>
-              <p className="text-sm text-muted">KeeperHub executed · Base Sepolia · receipt verified against RPC</p>
+              <p className="text-sm text-muted">AI agent via MCP · KeeperHub executed · Base Sepolia · receipt verified against RPC</p>
             </div>
           </div>
           <span className="rounded-full border border-signal/40 bg-signal/10 px-3 py-1 font-mono text-[11px] uppercase tracking-wider text-signal">
@@ -104,7 +120,9 @@ export function Capsule() {
           <Row label="Execution ID" value={PROOF.execution.executionId} />
           <Row label="Block" value={PROOF.transaction.blockNumber.toLocaleString("en-GB")} />
           <Row label="Chain" value={`${PROOF.network.chain} · ${PROOF.network.chainId}`} />
-          <Row label="Gas used" value={PROOF.transaction.gasUsed.toLocaleString("en-GB")} />
+          <Row label="Gas used" value={`${PROOF.transaction.gasUsed.toLocaleString("en-GB")} · sponsored`} />
+          <Row label="Triggered by" value="AI agent · MCP settle_tab" mono={false} />
+          <Row label="Moved" value={`${PROOF.settlement.payout.usdc} USDC → ${PROOF.settlement.payout.creditor}`} />
         </div>
         <p className="mt-3 break-all font-mono text-xs text-faint">{TX}</p>
       </div>
@@ -155,10 +173,14 @@ export function Capsule() {
         {tab === "summary" ? (
           <div className="space-y-4">
             <p className="text-txt">
-              This capsule is the proof record of a real KeeperHub execution on Base Sepolia.
-              The transaction landed in block {PROOF.transaction.blockNumber.toLocaleString("en-GB")},
-              and FINALTab&apos;s flight recorder verified the receipt independently against the RPC —
-              it never takes KeeperHub&apos;s word for it.
+              This capsule is the proof record of a real settlement on Base Sepolia — driven
+              end-to-end by an AI agent over MCP. The agent called{" "}
+              <span className="font-mono text-sm">prepare_settlement</span>, then{" "}
+              <span className="font-mono text-sm">settle_tab</span> with an explicit confirm; two
+              debtors&apos; EIP-3009 signatures were pulled atomically by the FINALTab contract, and
+              the transaction landed in block {PROOF.transaction.blockNumber.toLocaleString("en-GB")}.
+              FINALTab&apos;s flight recorder verified the receipt independently against the RPC — it
+              never takes KeeperHub&apos;s word for it.
             </p>
             <p className="text-sm text-muted">
               Every FINALTab settlement produces one of these. If verification cannot complete, the
@@ -177,10 +199,11 @@ export function Capsule() {
               Nobody&apos;s money moves without their own signature over the exact final numbers.
             </p>
             <p className="text-sm text-muted">
-              Honest note: this particular flight is an infrastructure proof — it demonstrates the
-              KeeperHub execute-and-verify pipeline end to end. Contract-routed batch settlement with
-              per-debtor EIP-3009 consent is built and tested (11 Hardhat tests) but awaits contract
-              deployment gas on the org wallet.
+              This flight is the full consent path, live: hem signed for 1.20 USDC and ravi signed
+              for 0.80 USDC over ledger hash{" "}
+              <span className="break-all font-mono text-xs">{PROOF.settlement.ledgerHash}</span>, and
+              the deployed FINALTab contract pulled both authorizations and paid vee 2.00 USDC in one
+              atomic transaction. The contract path carries 11 Hardhat tests.
             </p>
           </div>
         ) : null}
@@ -235,7 +258,8 @@ export function Capsule() {
       </div>
 
       <p className="mt-6 text-center font-mono text-[11px] text-faint">
-        Anyone can re-verify: <span className="text-muted">npx kh-proof verify {PROOF.execution.executionId}</span>
+        Anyone with the repo can re-verify:{" "}
+        <span className="text-muted">kh-proof --execution {PROOF.execution.executionId}</span>
       </p>
     </div>
   );

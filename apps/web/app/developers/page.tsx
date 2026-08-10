@@ -10,6 +10,9 @@ const MCP_TOOLS: Array<{ name: string; what: string }> = [
   { name: "split_equal", what: "Deterministic largest-remainder equal split of a fiat total." },
   { name: "split_weighted", what: "Weighted split — same remainder discipline, weights you pass in." },
   { name: "net_debts", what: "Debt netting: collapses who-owes-whom into the minimal transfer set." },
+  { name: "get_balances", what: "Live USDC + ETH balances for the demo signers and relayer, read from Base Sepolia." },
+  { name: "prepare_settlement", what: "Dry-run: canonicalizes the ledger, nets debts, returns settlementId + payouts. No broadcast." },
+  { name: "settle_tab", what: "Signs EIP-3009 authorizations and broadcasts a real Base Sepolia settlement through KeeperHub. Requires confirm: true; without it, returns the dry-run." },
   { name: "settlement_status", what: "Reads a KeeperHub execution status and returns the honest verdict." },
 ];
 
@@ -64,8 +67,10 @@ export default function DevelopersPage() {
               ))}
             </div>
             <p className="mt-4 font-mono text-[11px] leading-relaxed text-faint">
-              Four tools, because four tools exist. Money-moving operations stay behind explicit
-              user consent in the app — the MCP surface is read-and-compute.
+              Seven tools, because seven tools exist. settle_tab moves real testnet money: it is
+              gated behind an explicit confirm flag, simulates before broadcasting, and fails closed
+              — success is reported only after independent onchain receipt verification. The other
+              six are read-and-compute.
             </p>
           </div>
 
@@ -117,9 +122,9 @@ export default function DevelopersPage() {
               .
             </p>
             <div className="mt-4 rounded-md border border-quiet-soft bg-canvas p-4">
-              <p className="font-mono text-[11px] uppercase tracking-wider text-faint">Live reference proof</p>
+              <p className="font-mono text-[11px] uppercase tracking-wider text-faint">Live reference proof — agent-driven, via MCP</p>
               <p className="mt-2 break-all font-mono text-xs text-paper-dim">
-                executionId g0w11wukbk1v0psyditx4 · Base Sepolia block 45243955 · verified: true
+                executionId 69zzrj7z676u89ce1x76j · Base Sepolia block 45315909 · VERIFIED_SETTLED
               </p>
             </div>
           </div>

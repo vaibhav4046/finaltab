@@ -4,10 +4,13 @@ import Link from "next/link";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 
 const TX =
-  "0x11300427473e95d241d924891b2cc0131b0047263e461787c27a2f854c39278c";
-const TX_SHORT = "0x1130…278c";
-const EXEC_ID = "g0w11wukbk1v0psyditx4";
+  "0x314189b472033de62f8aea7603111c141315be390bc834e283e718382261c5eb";
+const TX_SHORT = "0x3141…c5eb";
+const EXEC_ID = "69zzrj7z676u89ce1x76j";
 const BASESCAN_TX = `https://sepolia.basescan.org/tx/${TX}`;
+const CONTRACT = "0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64";
+const CONTRACT_SHORT = "0xCcf6…7e64";
+const BASESCAN_CONTRACT = `https://sepolia.basescan.org/address/${CONTRACT}`;
 const MCP_URL = "https://finaltab.vercel.app/api/mcp";
 const PR_URL = "https://github.com/KeeperHub/cli/pull/95";
 const REPO_URL = "https://github.com/vaibhav4046/finaltab";
@@ -417,8 +420,9 @@ function ProofSection() {
     ["Execution ID", EXEC_ID],
     ["Transaction", TX_SHORT],
     ["Chain", "Base Sepolia · 84532"],
-    ["Block", "45,243,955"],
-    ["Gas used", "80,521"],
+    ["Block", "45,315,909"],
+    ["Gas used", "205,748 · sponsored"],
+    ["Triggered by", "AI agent · MCP settle_tab"],
     ["Receipt status", "success · verified"],
   ];
   return (
@@ -429,7 +433,7 @@ function ProofSection() {
             <SectionHead
               kicker="LANDED PROOF"
               title="This isn't a mock. KeeperHub already executed for FINALTab."
-              sub="A real USDC transferWithAuthorization batch, executed through KeeperHub on Base Sepolia, verified against the chain receipt. Fail-closed: FINALTab reports success only after independent receipt verification."
+              sub="Four live settlements have landed on Base Sepolia through KeeperHub. The latest was driven end-to-end by an AI agent over MCP — prepare, sign, settle, verify — no UI involved. Fail-closed: FINALTab reports success only after independent receipt verification."
             />
             <div className="mt-6 flex flex-wrap gap-3">
               <a
@@ -439,6 +443,14 @@ function ProofSection() {
                 className="rounded-lg border border-quiet px-4 py-2 text-sm text-txt transition-colors hover:border-signal/50 hover:text-signal"
               >
                 View on BaseScan
+              </a>
+              <a
+                href={BASESCAN_CONTRACT}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-lg border border-quiet px-4 py-2 text-sm text-txt transition-colors hover:border-signal/50 hover:text-signal"
+              >
+                Contract {CONTRACT_SHORT}
               </a>
               <Link
                 href="/app/proof"
@@ -529,15 +541,17 @@ function DevelopersSection() {
               $ kh-proof verify --execution-id {EXEC_ID}
             </p>
             <p className="mt-2 text-signal">✓ receipt fetched from chain</p>
-            <p className="text-signal">✓ status success · block 45243955</p>
-            <p className="text-signal">✓ verified: true</p>
+            <p className="text-signal">✓ status success · block 45315909</p>
+            <p className="text-signal">
+              ✓ VERIFIED_SETTLED — every receipt chain-verified
+            </p>
           </div>
           <div className="overflow-x-auto rounded-xl border border-quiet bg-surface-1 p-5 font-mono text-xs leading-relaxed">
             <p className="text-faint"># live MCP endpoint — Streamable HTTP</p>
             <p className="mt-1 break-all text-info">{MCP_URL}</p>
             <p className="mt-2 text-muted">
-              tools: split_equal · split_weighted · net_debts ·
-              settlement_status
+              tools: split_equal · split_weighted · net_debts · get_balances ·
+              prepare_settlement · settle_tab · settlement_status
             </p>
           </div>
         </div>
@@ -554,8 +568,8 @@ function DevelopersSection() {
 
 function OpenSourceSection() {
   const stats: Array<[string, string]> = [
-    ["109", "passing tests across 5 packages"],
-    ["7", "deterministic engine modules"],
+    ["212", "passing tests across 6 packages"],
+    ["7", "MCP tools, including live settlement"],
     ["0", "places a model controls final math"],
   ];
   return (
@@ -608,16 +622,39 @@ function AgentSection() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <SectionHead
           kicker="AGENT-NATIVE"
-          title="Your agent can settle the tab too."
-          sub="FINALTab ships a live MCP server. Connect Claude or any MCP client and split, net, and check settlement status conversationally — money-moving operations always require explicit human consent."
+          title="An agent already settled a tab. Yours can too."
+          sub="FINALTab ships a live MCP server with seven tools. Splitting, netting, and balance reads are free to call; settle_tab broadcasts a real Base Sepolia settlement behind an explicit confirm gate — simulation-first, fail-closed, receipt-verified."
         />
-        <div className="mt-8 max-w-xl overflow-x-auto rounded-xl border border-quiet bg-surface-1 p-5 font-mono text-xs leading-relaxed">
-          <p className="text-faint">{"// claude_desktop_config.json"}</p>
-          <pre className="mt-1 whitespace-pre text-txt">{`{
+        <div className="mt-8 grid gap-4 lg:grid-cols-2">
+          <div className="overflow-x-auto rounded-xl border border-quiet bg-surface-1 p-5 font-mono text-xs leading-relaxed">
+            <p className="text-faint">{"// claude_desktop_config.json"}</p>
+            <pre className="mt-1 whitespace-pre text-txt">{`{
   "mcpServers": {
-    "finaltab": { "url": "${MCP_URL}" }
+    "finaltab": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote",
+        "${MCP_URL}"]
+    }
   }
 }`}</pre>
+          </div>
+          <div className="rounded-xl border border-signal/25 bg-surface-1 p-5 font-mono text-xs leading-relaxed">
+            <p className="text-faint"># live proof — agent-driven settlement</p>
+            <p className="mt-1 text-muted">
+              get_balances → prepare_settlement → settle_tab → VERIFIED_SETTLED
+            </p>
+            <p className="mt-2 text-txt">
+              2.00 USDC moved on Base Sepolia by an AI agent over this endpoint.
+            </p>
+            <a
+              href={BASESCAN_TX}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-2 inline-block break-all text-signal underline-offset-2 hover:underline"
+            >
+              tx {TX_SHORT} · block 45,315,909
+            </a>
+          </div>
         </div>
       </div>
     </section>

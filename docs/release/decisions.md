@@ -148,6 +148,12 @@ is cheaper than an inflated total.
 
 ## 13. Blocked states stay in the demo video
 
+> **Superseded 2026-08-10.** The blocker this decision worked around (no deployed contract, no
+> funded signers) was closed the same day, so the master was re-recorded with the real thing: the
+> 101.6s cut shows a LIVE KeeperHub settlement executing on camera through to VERIFIED SETTLED
+> (tx `0xac6d32e5…7c8710`, block 45312815). The principle stands — nothing was edited around or
+> faked; the honest state simply changed from "blocked" to "working". Decision kept for history.
+
 **Chosen:** the 92.7s master was recorded in one continuous session against the real app, with the
 blocked settle state left in.
 

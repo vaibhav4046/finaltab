@@ -14,7 +14,7 @@ operational summary.
 | Settlement contract | `0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64` on Base Sepolia — 2259 bytes confirmed via `eth_getCode`. Source **not** verified on Basescan. |
 | KeeperHub execution — live batch settlement | tx `0x7bf655f3...45c12d`, executionId `dthckv3julum6m5ktmdik`, block 45310631, `verified: true`, `receiptStatus: "success"` — 4.20 + 3.80 USDC pulled via EIP-3009, 8.00 USDC paid out atomically (2026-08-10). Earlier zero-value rail proof: tx `0x1130...278c`, executionId `g0w11wukbk1v0psyditx4`, block 45243955 |
 | Receipt extraction + NL allocation | Live against Groq through the app's own API routes |
-| Demo video | `proof-output/finaltab-demo.mp4` — 92.7s, 1080p, recorded in one continuous session against the real app, honest blocked states left in |
+| Demo video | `proof-output/finaltab-demo.mp4` — 101.6s, 1080p, one continuous session against the real app, including a live KeeperHub settlement verified on camera (tx `0xac6d32e5…7c8710`) |
 
 ## Safe EIP-3009 pattern
 

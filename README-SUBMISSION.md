@@ -2,7 +2,7 @@
 ## KeeperHub Agents Onchain Hackathon Submission
 
 **Status (measured 2026-08-10): code complete, contract deployed, KeeperHub execution live-proven,
-batch settlement never executed onchain.** Per-surface evidence labels are in
+batch settlement executed onchain three times — once ON CAMERA in the demo video.** Per-surface evidence labels are in
 [docs/release/truth-snapshot.md](docs/release/truth-snapshot.md); this file summarises them.
 
 ---
@@ -166,7 +166,7 @@ After settlement executes on-chain:
 ## Submission Files
 
 1. **proof.json** — On-chain execution evidence
-2. **proof-output/finaltab-demo.mp4** — 1:33 flow demonstration (live Groq extraction and allocation; settle leg shows the honest blocked state, not a live chain execution)
+2. **proof-output/finaltab-demo.mp4** — 1:42 flow demonstration recorded live against the running app: Groq extraction, plain-English allocation, freeze, EIP-3009 signing, simulation, and a REAL KeeperHub settlement executing on camera through to the VERIFIED SETTLED banner with the raw status JSON (tx `0xac6d32e5…7c8710`, block 45312815) on screen
 3. **SUBMISSION.md** — Technical summary
 4. **Repository** — vaibhav4046/finaltab (all source code)
 
@@ -225,8 +225,10 @@ Contract is **deployed** at `0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64` — 225
 ## What Makes This Production-Grade?
 
 1. **Cryptographic Safety** — EIP-712 typed data, nonce binding, atomic settlement
-2. **Real Chain Execution** — a real KeeperHub execution landed a chain-verified receipt on Base
-   Sepolia (tx `0x1130...278c`). The batch settlement call itself has not run onchain; see below.
+2. **Real Chain Execution** — `executeSettlement` has moved real USDC on Base Sepolia three times
+   through KeeperHub with chain-verified receipts (tx `0x7bf655f3…45c12d` block 45310631, tx
+   `0x770ada77…f120fc2` block 45311736, tx `0xac6d32e5…7c8710` block 45312815 — the last one live
+   on camera in the demo video). Earlier zero-value rail proof: tx `0x1130...278c`.
 3. **Resilience** — Groq→Claude→OpenAI fallback routing, cascade covered by 12 tests. Groq is the
    only leg proven against a live API.
 4. **User Experience** — Mobile responsive, real-time feedback, animation
@@ -246,7 +248,8 @@ Contract is **deployed** at `0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64` — 225
       contacted their real APIs
 - [x] Contract deployed to Base Sepolia (`0xCcf6b4De…`, code confirmed on chain)
 - [x] Proof collected — live settlement tx `0x7bf655f3…45c12d`, executionId `dthckv3julum6m5ktmdik`, `verified: true`; earlier rail proof tx `0x1130...278c` (`g0w11wukbk1v0psyditx4`)
-- [x] Demo video recorded (`proof-output/finaltab-demo.mp4`, 92.7s, as-recorded against the live app)
+- [x] Demo video recorded (`proof-output/finaltab-demo.mp4`, 101.6s, re-recorded 2026-08-10 with a
+      LIVE settlement on camera — tx `0xac6d32e5…7c8710`, block 45312815)
 - [ ] Contract source verified on Basescan
 - [x] `executeSettlement` executed onchain — 2026-08-10: 8.00 USDC moved atomically on Base Sepolia
       (tx `0x7bf655f3…45c12d`, block 45310631, chain-verified, exact balance deltas). The earlier
@@ -292,5 +295,5 @@ All source code open. Inspect:
 ---
 
 **Deployed and live. What remains is submission, video upload, and PR publication — all of which
-are the author's actions, not the code's.** The one unproven capability, `executeSettlement` moving
-USDC onchain, is disclosed above rather than papered over with a replayed receipt.
+are the author's actions, not the code's.** Every settlement claim above is backed by a
+chain-verified receipt; nothing is papered over with a replayed or fabricated one.

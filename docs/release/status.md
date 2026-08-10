@@ -15,7 +15,7 @@ atomically on Base Sepolia through the production API and KeeperHub — tx
 
 | Flag | State | Basis |
 |---|---|---|
-| `MAIN_READY` | **YES** | Deployed app, 200 passing / 1 skipped, contract live on Base Sepolia, three chain-verified KeeperHub receipts including a real batch settlement (gate 12 closed 2026-08-10), 1:33 master video. |
+| `MAIN_READY` | **YES** | Deployed app, 200 passing / 1 skipped, contract live on Base Sepolia, five chain-verified KeeperHub receipts including three real batch settlements (gate 12 closed 2026-08-10), 1:42 master video with a live settlement ON CAMERA (tx `0xac6d32e5…7c8710`, block 45312815). |
 | `BOUNTY_READY` | **YES** | KeeperHub/cli PR [#95](https://github.com/KeeperHub/cli/pull/95) is open upstream — verified against the GitHub API on 2026-08-10. Tick the Best Onboarding UX box. |
 
 Neither flag is a prediction about placing. They mean the required artifacts exist and every claim
@@ -31,8 +31,8 @@ attached to them has been measured.
 | Blur / unusable-photo rejection | Fixed metric verified in-browser (pristine fixture: 62.7 under the old broken metric vs 4149.8 canonical) |
 | Ledger freeze → canonical hash | 52 engine tests; hash locks edits by construction |
 | EIP-3009 signing (demo keys) | Exercised in a real browser session; produces valid signatures |
-| KeeperHub execution end to end | Three independent `VERIFIED_SETTLED` receipts, chain-confirmed, not merely status-field-confirmed |
-| **Live batch settlement (`executeSettlement`)** | 4.20 + 3.80 USDC pulled via EIP-3009, 8.00 USDC paid out atomically — tx `0x7bf655f3…45c12d`, block 45310631, exact balance deltas, contract retained zero. Committed report: [evidence/](evidence/) |
+| KeeperHub execution end to end | Five independent `VERIFIED_SETTLED` receipts, chain-confirmed, not merely status-field-confirmed |
+| **Live batch settlement (`executeSettlement`)** | Three real settlements: tx `0x7bf655f3…45c12d` (block 45310631, 4.20 + 3.80 USDC pulled, 8.00 paid out), tx `0x770ada77…f120fc2` (block 45311736), tx `0xac6d32e5…7c8710` (block 45312815, 9.00 + 5.06 USDC pulled, 14.06 paid out — executed ON CAMERA in the demo video). Exact balance deltas, contract retained zero. Reports: [evidence/](evidence/) + `proof-output/evidence-execution-*.json` |
 | Settlement contract on Base Sepolia | 2259 bytes at `0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64`, re-queried today |
 | Honest failure rendering | The Simulate white-screen crash is fixed; 11 call sites routed through `apps/web/lib/apiText.ts`, locked by 20 tests |
 | Build, types, tests | 200 passing / 1 skipped; `tsc` clean; 16-route production build clean |

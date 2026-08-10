@@ -55,9 +55,10 @@ After settlement executes on-chain:
 # - PullExecuted events (one per debtor)
 # - PayoutExecuted events (one per creditor)
 
-# Demo video — ALREADY RECORDED: proof-output/finaltab-demo.mp4 (1:33, 1080p, h264/aac)
+# Demo video — RE-RECORDED LIVE: proof-output/finaltab-demo.mp4 (1:42, 1080p, h264/aac)
 # - Live Groq extraction + allocation on screen
-# - Honest "WOULD REVERT - NOT BROADCAST" state (recorded before the live settle; gate 12 closed 2026-08-10 — tx 0x7bf655f3...45c12d, see docs/release/gates.md)
+# - LIVE KeeperHub execution on camera: VERIFIED SETTLED banner + raw status JSON
+#   (tx 0xac6d32e5...7c8710, block 45312815, 2026-08-10)
 ```
 
 ## Submission
@@ -65,7 +66,7 @@ After settlement executes on-chain:
 ```bash
 # Files ready for hackathon:
 # - proof.json (on-chain evidence)
-# - proof-output/finaltab-demo.mp4 (user flow; recorded before the live settle — chain proof is tx 0x7bf655f3...45c12d)
+# - proof-output/finaltab-demo.mp4 (full user flow INCLUDING a live on-camera settle — tx 0xac6d32e5...7c8710)
 # - SUBMISSION.md (technical summary)
 ```
 

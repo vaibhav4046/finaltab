@@ -1,13 +1,16 @@
 # Demo storyboard (~2.5 min)
 
-## As recorded (2026-08-09)
+## As recorded (2026-08-10 master — supersedes the 2026-08-09 cut)
 
-Final video: `proof-output/finaltab-demo.mp4` — 92.7s, 1920x1080, ElevenLabs voiceover (George). One continuous Playwright capture of the real app on :3017; every state on screen is a live result (real Groq extraction, real Groq allocation reconciled by the engine, real EIP-712 freeze + EIP-3009 signing). Deviations from the plan below, all honest:
+Final video: `proof-output/finaltab-demo.mp4` — 101.6s (1:42), 1920x1080 h264/aac, ElevenLabs voiceover (George). One continuous Playwright capture of the real app on :3017; every state on screen is a live result — and this cut includes a REAL settlement executing on camera:
 
-- **Scene 3**: instruction used was "Vee had the black daal and one naan. Hem had the chicken ruby. Ravi had everything else. Split the service charge fairly." Live shares came out 15.07 / 15.64 / 23.29 = 54.00, cent-perfect.
-- **Scene 6**: SIMULATE shows the honest blocked note (settlement contract not yet deployed — org wallet has no deploy gas), not a green pass. That blocked state IS the product's honesty on screen.
-- **Scene 7**: shows the landing page's verified-flight proof section (real executionId, block, verified:true, BaseScan link) instead of BaseScan itself — BaseScan serves headless browsers a Cloudflare challenge, which we do not complete. The section links out to the real tx.
+- **Scene 2**: funded demo signer identities confirmed on screen before recording proceeds (addresses only; keys never render anywhere).
+- **Scene 3**: instruction used was "Hem had the gunpowder potatoes. Ravi had the garlic naan. Vee had everything else. Split the service charge fairly." Live shares came out 39.94 / 9.00 / 5.06 = 54.00, cent-perfect, reconciled to the cent on screen.
+- **Scene 6**: SIMULATE goes green for real — contract deployed at `0xccf6…f07e64`, signers funded.
+- **Scene 7**: EXECUTE runs live through KeeperHub (sponsored). The VERIFIED SETTLED banner — which only renders on chain-verified verdict VERIFIED_SETTLED — appears on camera, then the raw KeeperHub status JSON is opened showing executionId `dbukwam812iep68uehkhy`, tx `0xac6d32e5…7c8710`, block 45312815, `verified: true`, `receiptStatus: "success"`. (BaseScan itself Cloudflare-challenges headless browsers, so the raw status JSON is the on-camera tx evidence; it contains the BaseScan link.)
 - **Scene 8**: shows the open KeeperHub/cli PR #95 page (open, not merged).
+
+The 2026-08-09 notes below this block describe the earlier blocked-state cut and the original scene plan; kept for history.
 
 Works silent (captions) or with voiceover. Record at 1440p, app in dark room aesthetic. No fake states on screen: if the org key is still missing at record time, stop at scene 6 and show the flight-recorder test run instead of a live settle (scene 7B).
 

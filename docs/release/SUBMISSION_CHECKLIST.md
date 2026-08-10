@@ -27,10 +27,12 @@
    - Verify: Page loads, proof capsule visible
 
 4. **Demo Video**
-   - File: `proof-output/finaltab-demo.mp4` — measured 92.7s (1:33), 1080p, H.264/AAC/MP4, 6,256,484 bytes
+   - File: `proof-output/finaltab-demo.mp4` — measured 101.6s (1:42), 1080p, H.264/AAC/MP4, 7,472,357 bytes
    - Type: File upload or YouTube link
    - Verify: Plays end-to-end, no corruption, sound/captions legible
-   - Note: an earlier revision of this checklist specified 2:20–2:40. The recorded master is 1:33. If
+   - Content: includes a LIVE KeeperHub settlement executing on camera — tx `0xac6d32e5…7c8710`,
+     block 45312815, VERIFIED SETTLED banner + raw status JSON on screen (re-recorded 2026-08-10)
+   - Note: an earlier revision of this checklist specified 2:20–2:40. The recorded master is 1:42. If
      the form enforces a minimum length, re-record rather than pad.
 
 5. **Settlement Transaction Hash** (KeeperHub Proof)
@@ -114,7 +116,7 @@ Run these checks before filling the form:
 
 ### Video
 - [ ] `proof-output/finaltab-demo.mp4` exists and plays end-to-end
-- [ ] Duration: 1:33 (92.7s, measured by ffprobe)
+- [ ] Duration: 1:42 (101.6s, measured by ffprobe)
 - [ ] Audio/captions legible and audible at normal volume
 - [ ] Proof capsule visible in final scene (show executionId and tx)
 - [ ] File size: <500MB recommended (check for encoding bloat)

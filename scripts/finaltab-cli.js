@@ -153,7 +153,7 @@ async function run() {
         'Open http://localhost:3000/app/tab',
         'Follow settlement flow in UI',
         'Copy tx hash to proof.json',
-        'Demo video already recorded: proof-output/finaltab-demo.mp4 (1:33)',
+        'Demo video already recorded: proof-output/finaltab-demo.mp4 (1:42)',
         'Submit proof + video to hackathon',
       ],
     };

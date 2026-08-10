@@ -2,12 +2,11 @@
 
 > **SUPERSEDED — this is the original plan, not a description of the delivered video.**
 >
-> The master that exists is `proof-output/finaltab-demo.mp4`: **92.7s (1:33)**, 1920×1080, h264/aac,
-> 6,256,484 bytes (ffprobe, 2026-08-10). It is shorter than the 2:20–2:40 target below and its
-> content differs in one important way: the **"Real execution"** scene planned at 1:25–2:10 was
-> never recorded, because `executeSettlement` has never broadcast on a public chain (the relayer
-> holds no native BASE — see [gates.md](gates.md) gate 12). The master shows the honest
-> **"WOULD REVERT — NOT BROADCAST"** state instead.
+> The master that exists is `proof-output/finaltab-demo.mp4`: **101.6s (1:42)**, 1920×1080,
+> h264/aac, 7,472,357 bytes (ffprobe, 2026-08-10, re-recorded). Unlike the earlier 92.7s cut, the
+> "Real execution" scene DID get recorded live: a KeeperHub-sponsored `executeSettlement` runs on
+> camera through to the VERIFIED SETTLED banner, with the raw status JSON open on screen — tx
+> `0xac6d32e5…7c8710`, block 45312815, executionId `dbukwam812iep68uehkhy`, `verified: true`.
 >
 > The timings in the table below are the original storyboard's cue points. They do not map onto the
 > delivered file. Keep this document as the recording script it was; do not read it as evidence.

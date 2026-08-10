@@ -132,7 +132,8 @@ Measured 2026-08-10 (see [docs/release/gates.md](docs/release/gates.md)):
 - [ ] Web app builds successfully
 - [x] Live settlement executed on Base Sepolia — tx `0x7bf655f3…45c12d`, block 45310631, 8.00 USDC moved atomically (2026-08-10)
 - [x] Proof collected — chain-verified run report in `docs/release/evidence/`
-- [x] Demo video recorded — `proof-output/finaltab-demo.mp4` (1:33). Shows the blocked settle state, not a live chain execution.
+- [x] Demo video recorded — `proof-output/finaltab-demo.mp4` (1:42). Shows a LIVE chain execution end-to-end: receipt → allocation → freeze → EIP-3009 sign → simulate → KeeperHub execute → VERIFIED SETTLED banner + raw KeeperHub status (tx `0xac6d32e5…7c8710`, block 45312815) on camera.
+- [x] Second + third live settlements executed through the full UI flow (2026-08-10) — tx `0x770ada77…f120fc2` (block 45311736) and tx `0xac6d32e5…7c8710` (block 45312815, on camera). Status JSON evidence in `proof-output/evidence-execution-*.json`.
 - [ ] README updated with deployment steps
 - [ ] GitHub repo visibility set (if needed)
 - [ ] Vercel deploy ready (or deployment link captured)

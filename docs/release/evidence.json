@@ -174,14 +174,14 @@
       "measuredAt": "2026-08-10",
       "value": {
         "path": "proof-output/finaltab-demo.mp4",
-        "durationSeconds": 92.68,
+        "durationSeconds": 101.64,
         "resolution": "1920x1080",
         "videoCodec": "h264",
         "audioCodec": "aac",
-        "bytes": 6256484
+        "bytes": 7472357
       },
       "method": "ffprobe",
-      "caveat": "Recorded in one continuous session against the running app with blocked states left in rather than edited out. NOT uploaded - upload is outside autonomous scope. Earlier docs specified a 2:20-2:40 target; the actual master is 1:33 and the docs now say so."
+      "caveat": "Re-recorded 2026-08-10 in one continuous session against the running app. Includes a LIVE KeeperHub settlement executing on camera through to the VERIFIED SETTLED banner with the raw status JSON on screen (tx 0xac6d32e513ca3840b57d5211e40ff1be6ba8ecea2270bebb0b6ccd6a2e7c8710, block 45312815, executionId dbukwam812iep68uehkhy). NOT uploaded - upload is outside autonomous scope. Earlier docs specified a 2:20-2:40 target; the actual master is 1:42 and the docs now say so."
     },
     {
       "id": "screenshots",

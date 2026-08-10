@@ -57,7 +57,7 @@ After settlement executes on-chain:
 
 # Demo video — ALREADY RECORDED: proof-output/finaltab-demo.mp4 (1:33, 1080p, h264/aac)
 # - Live Groq extraction + allocation on screen
-# - Honest "WOULD REVERT - NOT BROADCAST" state (no live chain execution; see docs/release/gates.md gate 12)
+# - Honest "WOULD REVERT - NOT BROADCAST" state (recorded before the live settle; gate 12 closed 2026-08-10 — tx 0x7bf655f3...45c12d, see docs/release/gates.md)
 ```
 
 ## Submission
@@ -65,7 +65,7 @@ After settlement executes on-chain:
 ```bash
 # Files ready for hackathon:
 # - proof.json (on-chain evidence)
-# - proof-output/finaltab-demo.mp4 (user flow; blocked settle state left in)
+# - proof-output/finaltab-demo.mp4 (user flow; recorded before the live settle — chain proof is tx 0x7bf655f3...45c12d)
 # - SUBMISSION.md (technical summary)
 ```
 

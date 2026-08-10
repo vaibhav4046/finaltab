@@ -12,7 +12,7 @@ operational summary.
 |---------|-------|
 | App | https://finaltab.vercel.app |
 | Settlement contract | `0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64` on Base Sepolia — 2259 bytes confirmed via `eth_getCode`. Source **not** verified on Basescan. |
-| KeeperHub execution | tx `0x1130...278c`, executionId `g0w11wukbk1v0psyditx4`, block 45243955, `verified: true`, `receiptStatus: "success"` |
+| KeeperHub execution — live batch settlement | tx `0x7bf655f3...45c12d`, executionId `dthckv3julum6m5ktmdik`, block 45310631, `verified: true`, `receiptStatus: "success"` — 4.20 + 3.80 USDC pulled via EIP-3009, 8.00 USDC paid out atomically (2026-08-10). Earlier zero-value rail proof: tx `0x1130...278c`, executionId `g0w11wukbk1v0psyditx4`, block 45243955 |
 | Receipt extraction + NL allocation | Live against Groq through the app's own API routes |
 | Demo video | `proof-output/finaltab-demo.mp4` — 92.7s, 1080p, recorded in one continuous session against the real app, honest blocked states left in |
 
@@ -40,13 +40,20 @@ contracts         11 passing   (cd contracts && npx hardhat test)
 
 No coverage percentage is claimed, because no coverage run has been performed.
 
+## Proven onchain (2026-08-10)
+
+- **`executeSettlement` moved real USDC on Base Sepolia.** Through the production API →
+  KeeperHub → contract: 4.20 + 3.80 USDC pulled from two debtors via signed EIP-3009
+  authorizations, 8.00 USDC paid to the creditor, one atomic transaction. tx
+  `0x7bf655f3f72774839908021039e640b5ac8acaf5462b1376200cbb490045c12d` (block 45310631,
+  `verified: true`, `receiptStatus: "success"`), executionId `dthckv3julum6m5ktmdik`.
+  Balance deltas exact (+8.00 / −4.20 / −3.80); contract retained zero. Fail-closed run
+  report committed at [docs/release/evidence/](docs/release/evidence/). An earlier revision
+  of this file said this had never happened — true when written, closed since; the closure
+  is documented in [docs/blockers.md](docs/blockers.md).
+
 ## Not proven
 
-- **`executeSettlement` has never moved USDC on a public chain.** Every demo account holds zero
-  USDC and the relayer holds zero native ETH, so Simulate honestly returns "WOULD REVERT — NOT
-  BROADCAST" rather than replaying an old receipt. The exact relayer error from the deploy attempt:
-  `Insufficient BASE balance. Have: 0.0, Need: 0.000000231.` KeeperHub sponsors transfers, not
-  contract-call gas.
 - **Supabase is not applied.** Schema is written; there are no credentials and nothing is
   persisted. The app is stateless per session.
 - **The Claude and OpenAI fallback legs have never contacted their real APIs.** The cascade is
@@ -74,7 +81,8 @@ Secrets are server-only and read exclusively in route handlers. `.env*` is git-i
 1. Submit the DoraHacks entry.
 2. Upload the video, fill the `[VIDEO_URL]` marker in `docs/submission.md`.
 3. Publish the KeeperHub CLI PR from the prepared branch.
-4. Rotate the Alchemy key; decide on the testnet deployer key still present in commit `1f20560`.
-   Both reasoned through in [docs/release/user-actions.md](docs/release/user-actions.md).
+4. Rotate the Alchemy key; decide on the testnet deployer key still present in **unreachable**
+   local git objects (zero reachable objects contain it, so it does not travel on a clone or
+   push). Both reasoned through in [docs/release/user-actions.md](docs/release/user-actions.md).
 
 **Author:** Vaibhav Lalwani · vaibhavlalwani26969@gmail.com

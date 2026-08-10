@@ -1,0 +1,159 @@
+{
+  "startedAt": "2026-08-10T19:19:04.531Z",
+  "baseUrl": "https://finaltab.vercel.app",
+  "settlementId": "0x2a75abdc2ff24a2d468f1fdc994d0a1fd965c0c78b0510a6dccf2920cb79f64f",
+  "ledgerHash": "0x81bf317e125df2a36c5218a87ce020fc379c640c25d904b52eb8d9c473150e00",
+  "verdict": "VERIFIED_SETTLED",
+  "steps": [
+    {
+      "name": "build",
+      "at": "2026-08-10T19:19:04.563Z",
+      "settlementId": "0x2a75abdc2ff24a2d468f1fdc994d0a1fd965c0c78b0510a6dccf2920cb79f64f",
+      "ledgerHash": "0x81bf317e125df2a36c5218a87ce020fc379c640c25d904b52eb8d9c473150e00",
+      "transferCount": 2,
+      "totalPulledUSDC": "8.000000",
+      "payouts": [
+        {
+          "creditor": "0x8edd1eb1e3522a1e9d6db7ce82ad5f2adb59192c",
+          "value": "8000000"
+        }
+      ]
+    },
+    {
+      "name": "balances-before",
+      "at": "2026-08-10T19:19:04.994Z",
+      "vee": "0.000000",
+      "hem": "20.000000",
+      "ravi": "20.000000"
+    },
+    {
+      "name": "simulate",
+      "at": "2026-08-10T19:19:05.816Z",
+      "http": 200,
+      "ok": true
+    },
+    {
+      "name": "execute",
+      "at": "2026-08-10T19:19:10.563Z",
+      "http": 200,
+      "ok": true
+    },
+    {
+      "name": "accepted",
+      "at": "2026-08-10T19:19:10.564Z",
+      "executionId": "dthckv3julum6m5ktmdik"
+    },
+    {
+      "name": "poll",
+      "at": "2026-08-10T19:19:11.211Z",
+      "state": "completed",
+      "verdict": {
+        "verdict": "VERIFIED_SETTLED",
+        "receipts": [
+          {
+            "hash": "0x7bf655f3f72774839908021039e640b5ac8acaf5462b1376200cbb490045c12d",
+            "chainId": 84532,
+            "gasUsed": "222832",
+            "verified": true,
+            "verifiedAt": "2026-08-10T19:19:10.913Z",
+            "blockNumber": 45310631,
+            "receiptStatus": "success"
+          }
+        ]
+      }
+    },
+    {
+      "name": "receipt",
+      "at": "2026-08-10T19:19:11.369Z",
+      "block": 45310631,
+      "usdcTransferLogs": 3,
+      "settlementExecutedLogs": 1
+    },
+    {
+      "name": "balances-after",
+      "at": "2026-08-10T19:19:11.687Z",
+      "vee": "8.000000",
+      "hem": "15.800000",
+      "ravi": "16.200000"
+    },
+    {
+      "name": "VERIFIED_SETTLED",
+      "at": "2026-08-10T19:19:11.688Z",
+      "txHash": "0x7bf655f3f72774839908021039e640b5ac8acaf5462b1376200cbb490045c12d",
+      "executionId": "dthckv3julum6m5ktmdik",
+      "explorer": "https://sepolia.basescan.org/tx/0x7bf655f3f72774839908021039e640b5ac8acaf5462b1376200cbb490045c12d"
+    }
+  ],
+  "executionId": "dthckv3julum6m5ktmdik",
+  "finalStatus": {
+    "status": {
+      "executionId": "dthckv3julum6m5ktmdik",
+      "status": "completed",
+      "type": "contract-call",
+      "transactionHash": "0x7bf655f3f72774839908021039e640b5ac8acaf5462b1376200cbb490045c12d",
+      "transactionLink": "https://sepolia.basescan.org/tx/0x7bf655f3f72774839908021039e640b5ac8acaf5462b1376200cbb490045c12d",
+      "sponsored": true,
+      "receipts": [
+        {
+          "hash": "0x7bf655f3f72774839908021039e640b5ac8acaf5462b1376200cbb490045c12d",
+          "chainId": 84532,
+          "gasUsed": "222832",
+          "verified": true,
+          "verifiedAt": "2026-08-10T19:19:10.913Z",
+          "blockNumber": 45310631,
+          "receiptStatus": "success"
+        }
+      ],
+      "result": {
+        "chainId": 84532,
+        "gasUsed": "222832",
+        "success": true,
+        "sponsored": true,
+        "executedCall": {
+          "args": {
+            "pulls": "[[\"0x07918AB993d701e286cD2f3AF65ab7502B25550B\",\"0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64\",\"4200000\",\"0\",\"1786393144\",\"0x33bd4ef8ebff50f88b7512852eb83648d26a5485c618407fe7a0d64cd7249874\",\"28\",\"0x042ff00c318b36ea59ef8f4484cf4eea0c33218fb8545c93a7ec908e006d7e6b\",\"0x0f20b1f30f81558a5d2aedac5abf237e4b18ecb5d60b35100e9b39e15c08f6f3\"],[\"0x8db7a6bb7146450CA03C5F6Bb3511fF66c5Ef172\",\"0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64\",\"3800000\",\"0\",\"1786393144\",\"0x7729c679e256e073b6a90e2c3dbf8e2330413c0ddd498129a2e6f0b5853e5577\",\"28\",\"0x4465731d60cac86c29a1481348e9f2ed06c1e5fdf0595283e7a89eb4cff84651\",\"0x3ea718acb9553c0bcfe2c4c8f5eb6fd5ab7198861472b57e35ee4fa6bdf4cfc5\"]]",
+            "payouts": "[[\"0x8edD1eB1e3522a1e9D6db7ce82Ad5F2ADB59192c\",\"8000000\"]]",
+            "ledgerHash": "0x81bf317e125df2a36c5218a87ce020fc379c640c25d904b52eb8d9c473150e00",
+            "settlementId": "0x2a75abdc2ff24a2d468f1fdc994d0a1fd965c0c78b0510a6dccf2920cb79f64f"
+          },
+          "reverted": false,
+          "sponsored": true,
+          "topLevelTo": "0x5af5194b4b0909eb978e3cf1e25333852277f07d",
+          "functionName": "executeSettlement",
+          "contractAddress": "0xccf6b4def9a70b52f5fb78aa38cd274a05ab7e64",
+          "functionSignature": "executeSettlement(bytes32,bytes32,(address,address,uint256,uint256,uint256,bytes32,uint8,bytes32,bytes32)[],(address,uint256)[])"
+        },
+        "gasUsedUnits": "222832",
+        "transactionHash": "0x7bf655f3f72774839908021039e640b5ac8acaf5462b1376200cbb490045c12d",
+        "transactionLink": "https://sepolia.basescan.org/tx/0x7bf655f3f72774839908021039e640b5ac8acaf5462b1376200cbb490045c12d",
+        "effectiveGasPrice": "6000000"
+      },
+      "error": null,
+      "gasUsedWei": "222832",
+      "gasPriceWei": "6000000",
+      "estimatedCostUsd": null,
+      "retryCount": 0,
+      "network": "84532",
+      "createdAt": "2026-08-10T19:19:06.814Z",
+      "completedAt": "2026-08-10T19:19:11.026Z"
+    },
+    "verdict": {
+      "verdict": "VERIFIED_SETTLED",
+      "receipts": [
+        {
+          "hash": "0x7bf655f3f72774839908021039e640b5ac8acaf5462b1376200cbb490045c12d",
+          "chainId": 84532,
+          "gasUsed": "222832",
+          "verified": true,
+          "verifiedAt": "2026-08-10T19:19:10.913Z",
+          "blockNumber": 45310631,
+          "receiptStatus": "success"
+        }
+      ]
+    },
+    "pollHintMs": 0
+  },
+  "txHash": "0x7bf655f3f72774839908021039e640b5ac8acaf5462b1376200cbb490045c12d",
+  "explorer": "https://sepolia.basescan.org/tx/0x7bf655f3f72774839908021039e640b5ac8acaf5462b1376200cbb490045c12d",
+  "finishedAt": "2026-08-10T19:19:11.688Z"
+}

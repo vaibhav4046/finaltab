@@ -34,14 +34,18 @@
      the form enforces a minimum length, re-record rather than pad.
 
 5. **Settlement Transaction Hash** (KeeperHub Proof)
-   - Value: Copy from proof capsule
-   - Example: `0x11300427473e95d241d924891b2cc0131b0047263e461787c27a2f854c39278c`
-   - Verify: Link resolves on Base Sepolia block explorer
+   - Value: `0x7bf655f3f72774839908021039e640b5ac8acaf5462b1376200cbb490045c12d`
+   - This is the REAL batch settlement (block 45310631, 2026-08-10): 4.20 + 3.80 USDC
+     pulled from two debtors, 8.00 USDC paid out, `verified: true`,
+     `receiptStatus: "success"`, `SettlementExecuted` event bound to the ledgerHash.
+   - Verify: https://sepolia.basescan.org/tx/0x7bf655f3f72774839908021039e640b5ac8acaf5462b1376200cbb490045c12d
+   - Do NOT use `0x11300427…` — that was a zero-value rail-proof flight, not a settlement.
 
 6. **KeeperHub Execution ID**
-   - Value: Copy from proof capsule
-   - Example: `g0w11wukbk1v0psyditx4`
-   - Verify: Matches the transaction hash's settlement
+   - Value: `dthckv3julum6m5ktmdik`
+   - Verify: matches the settlement tx above; full fail-closed report in
+     `proof-output/live-settle-2026-08-10T19-19-04-531Z.json`
+   - Do NOT use `g0w11wukbk1v0psyditx4` — that is the zero-value flight's executionId.
 
 7. **Project Description** (if free-form)
    - Template:
@@ -54,7 +58,9 @@
      - Receipt extraction via Groq vision
      - Deterministic allocation + netting (engine, 52 tests)
      - EIP-3009 safe authorization pattern (contract, 11 tests)
-     - KeeperHub end-to-end integration (verified real tx)
+     - LIVE batch settlement on Base Sepolia: 8.00 USDC moved atomically
+       (2 pulls + 1 payout) via KeeperHub, chain-verified
+       tx 0x7bf655f3f72774839908021039e640b5ac8acaf5462b1376200cbb490045c12d
      - Proof: https://finaltab.vercel.app/app/proof?proof=[ID]
      
      Code: https://github.com/vaibhav4046/finaltab
@@ -97,12 +103,14 @@ Run these checks before filling the form:
 - [ ] GitHub repo is public and accessible logged-out
 
 ### Settlement & Proof
-- [ ] One fresh E2E settlement completed
-- [ ] Proof capsule shows: "0 owed", names, amounts, VERIFIED_SETTLED
-- [ ] KeeperHub executionId: Copy from proof page
-- [ ] Transaction hash: Copy from proof page or Base Sepolia explorer
-- [ ] Verify tx hash resolves at https://sepolia.basescan.org/tx/[HASH]
-- [ ] Check receipt shows: `verified: true` and `receiptStatus: "success"`
+- [x] One fresh E2E settlement completed — 2026-08-10, VERIFIED_SETTLED through
+      production API → KeeperHub → contract (report:
+      `proof-output/live-settle-2026-08-10T19-19-04-531Z.json`)
+- [x] KeeperHub executionId: `dthckv3julum6m5ktmdik`
+- [x] Transaction hash: `0x7bf655f3f72774839908021039e640b5ac8acaf5462b1376200cbb490045c12d`
+- [x] Tx resolves: https://sepolia.basescan.org/tx/0x7bf655f3f72774839908021039e640b5ac8acaf5462b1376200cbb490045c12d
+- [x] Receipt shows `verified: true` and `receiptStatus: "success"` (in the report JSON)
+- [ ] Re-check the explorer link resolves on submission day
 
 ### Video
 - [ ] `proof-output/finaltab-demo.mp4` exists and plays end-to-end
@@ -127,9 +135,9 @@ Run these checks before filling the form:
 ```
 GITHUB_URL: https://github.com/vaibhav4046/finaltab
 LIVE_URL: https://finaltab.vercel.app
-EXECUTOR_ID: g0w11wukbk1v0psyditx4
-TRANSACTION_HASH: 0x11300427473e95d241d924891b2cc0131b0047263e461787c27a2f854c39278c
-EXPLORER_LINK: https://sepolia.basescan.org/tx/0x11300427473e95d241d924891b2cc0131b0047263e461787c27a2f854c39278c
+EXECUTOR_ID: dthckv3julum6m5ktmdik
+TRANSACTION_HASH: 0x7bf655f3f72774839908021039e640b5ac8acaf5462b1376200cbb490045c12d
+EXPLORER_LINK: https://sepolia.basescan.org/tx/0x7bf655f3f72774839908021039e640b5ac8acaf5462b1376200cbb490045c12d
 VIDEO_FILE: proof-output/finaltab-demo.mp4 (or YouTube link if uploaded)
 ONBOARDING_PR: https://github.com/KeeperHub/cli/pull/95 (open, not merged)
 DESCRIPTION: [See template above]

@@ -69,13 +69,28 @@ export function settlementContractAddress(): string | null {
   return addr;
 }
 
-/** Args in KeeperHub contract-call shape: tuples as arrays, uints as decimal strings. */
+/**
+ * Args in KeeperHub contract-call shape: tuples as OBJECTS keyed by the ABI
+ * component names, uints as decimal strings. KeeperHub's execute pipeline
+ * rejects positional tuple arrays with "expected object for tuple" (observed
+ * live 2026-08-10; simulation tolerated arrays, execution did not).
+ */
 export function settleArgs(body: SettleBody): unknown[] {
   return [
     body.settlementId,
     body.ledgerHash,
-    body.transfers.map((t) => [t.from, t.to, t.value, t.validAfter, t.validBefore, t.nonce, t.v, t.r, t.s]),
-    body.payouts.map((p) => [p.creditor, p.value]),
+    body.transfers.map((t) => ({
+      from: t.from,
+      to: t.to,
+      value: t.value,
+      validAfter: t.validAfter,
+      validBefore: t.validBefore,
+      nonce: t.nonce,
+      v: t.v,
+      r: t.r,
+      s: t.s,
+    })),
+    body.payouts.map((p) => ({ creditor: p.creditor, value: p.value })),
   ];
 }
 

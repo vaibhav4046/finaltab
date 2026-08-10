@@ -7,13 +7,15 @@ aspiration. Machine-readable twin:
 
 ## One-line verdict
 
-FINALTab is **submission-ready with one disclosed hole**: everything from receipt photo to signed,
-frozen, simulated settlement works live, and the final broadcast of `executeSettlement` has never
-happened on a public chain because nobody funded the relayer or the demo accounts.
+FINALTab is **submission-ready, end to end**: everything from receipt photo to the final broadcast
+of `executeSettlement` is live-proven. On 2026-08-10 a real batch settlement moved 8.00 USDC
+atomically on Base Sepolia through the production API and KeeperHub — tx
+`0x7bf655f3f72774839908021039e640b5ac8acaf5462b1376200cbb490045c12d`, block 45310631,
+`verified: true`. Gate 12, formerly the one disclosed hole, now passes.
 
 | Flag | State | Basis |
 |---|---|---|
-| `MAIN_READY` | **YES** | Deployed app, 200 passing / 1 skipped, contract live on Base Sepolia, two chain-verified KeeperHub receipts, 1:33 master video. The one gap (gate 12) is disclosed in the product UI, not hidden. |
+| `MAIN_READY` | **YES** | Deployed app, 200 passing / 1 skipped, contract live on Base Sepolia, three chain-verified KeeperHub receipts including a real batch settlement (gate 12 closed 2026-08-10), 1:33 master video. |
 | `BOUNTY_READY` | **YES** | KeeperHub/cli PR [#95](https://github.com/KeeperHub/cli/pull/95) is open upstream — verified against the GitHub API on 2026-08-10. Tick the Best Onboarding UX box. |
 
 Neither flag is a prediction about placing. They mean the required artifacts exist and every claim
@@ -29,7 +31,8 @@ attached to them has been measured.
 | Blur / unusable-photo rejection | Fixed metric verified in-browser (pristine fixture: 62.7 under the old broken metric vs 4149.8 canonical) |
 | Ledger freeze → canonical hash | 52 engine tests; hash locks edits by construction |
 | EIP-3009 signing (demo keys) | Exercised in a real browser session; produces valid signatures |
-| KeeperHub execution end to end | Two independent `VERIFIED_SETTLED` receipts, chain-confirmed, not merely status-field-confirmed |
+| KeeperHub execution end to end | Three independent `VERIFIED_SETTLED` receipts, chain-confirmed, not merely status-field-confirmed |
+| **Live batch settlement (`executeSettlement`)** | 4.20 + 3.80 USDC pulled via EIP-3009, 8.00 USDC paid out atomically — tx `0x7bf655f3…45c12d`, block 45310631, exact balance deltas, contract retained zero. Committed report: [evidence/](evidence/) |
 | Settlement contract on Base Sepolia | 2259 bytes at `0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64`, re-queried today |
 | Honest failure rendering | The Simulate white-screen crash is fixed; 11 call sites routed through `apps/web/lib/apiText.ts`, locked by 20 tests |
 | Build, types, tests | 200 passing / 1 skipped; `tsc` clean; 16-route production build clean |
@@ -38,7 +41,6 @@ attached to them has been measured.
 
 | Gap | Why it is not hidden |
 |---|---|
-| `executeSettlement` has never moved USDC onchain | Relayer holds zero native BASE, demo accounts hold zero USDC. Simulate renders **WOULD REVERT — NOT BROADCAST** instead of replaying the old receipt. The full correction — including the defect that made the demo addresses unfundable in the first place — is in [gates.md](gates.md#gates-that-do-not-pass). |
 | Contract source unverified on Basescan | Concrete consequence: the settle route passes the ABI inline. |
 | Supabase persistence | Schema written, never applied, no credentials. The app is stateless per session. Docs previously called this a working feature — that was wrong and is corrected. |
 | Claude and OpenAI fallback legs | 12 cascade tests with each SDK mocked at the module boundary. Neither has contacted its real API. Only Groq is live. |
@@ -99,15 +101,8 @@ None of it is code. All four items are outside autonomous scope:
 4. Rotate the Alchemy key, and run `git gc --prune=now` to drop the dangling blobs that still hold
    both credentials locally. Neither is reachable from a commit, so neither reaches the public repo.
 
-Optional, and its absence is disclosed rather than hidden: close gate 12. Two actions, neither of
-which a faucet alone covers:
-
-- Claim Base Sepolia USDC into the demo debtor addresses. These are now stable across reloads —
-  set `NEXT_PUBLIC_FINALTAB_PERSIST_DEMO_KEYS=1` and read the addresses off the funding panel. Before
-  the 2026-08-10 fix they were reminted on every page load, so funding them was impossible, not
-  merely unfinished.
-- Run `contracts/scripts/fund-relayer.js` to sweep native ETH to the relayer. No faucet needed: the
-  deployer already holds roughly 418× the required amount. It needs the deployer key, which is why it
-  was not run here.
-
-Then run the journey through to Execute.
+Gate 12 is closed. Both funding legs happened on 2026-08-10 — 20 testnet USDC per debtor from the
+Circle faucet into the persistent demo signers, and 0.00005 ETH sent to the relayer directly
+(tx `0xce5ec0bf…`, block 45310097; the deployer-key sweep was deliberately not used) — and the
+journey then ran through Execute to **VERIFIED_SETTLED** on the production stack. Evidence in
+[gates.md](gates.md) and [evidence/](evidence/).

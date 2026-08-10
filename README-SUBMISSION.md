@@ -245,12 +245,13 @@ Contract is **deployed** at `0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64` — 225
 - [x] LLM fallback cascade covered by 12 tests — Groq leg live, Claude and OpenAI legs never
       contacted their real APIs
 - [x] Contract deployed to Base Sepolia (`0xCcf6b4De…`, code confirmed on chain)
-- [x] Proof collected — tx `0x1130...278c`, executionId `g0w11wukbk1v0psyditx4`, `verified: true`
+- [x] Proof collected — live settlement tx `0x7bf655f3…45c12d`, executionId `dthckv3julum6m5ktmdik`, `verified: true`; earlier rail proof tx `0x1130...278c` (`g0w11wukbk1v0psyditx4`)
 - [x] Demo video recorded (`proof-output/finaltab-demo.mp4`, 92.7s, as-recorded against the live app)
 - [ ] Contract source verified on Basescan
-- [ ] `executeSettlement` executed onchain — **blocked**: demo accounts hold zero USDC and the
-      relayer holds zero native ETH (`Insufficient BASE balance. Have: 0.0, Need: 0.000000231.`).
-      KeeperHub sponsors transfers, not contract-call gas.
+- [x] `executeSettlement` executed onchain — 2026-08-10: 8.00 USDC moved atomically on Base Sepolia
+      (tx `0x7bf655f3…45c12d`, block 45310631, chain-verified, exact balance deltas). The earlier
+      blocker (zero USDC in demo accounts, zero native ETH in the relayer) was closed the same day
+      via the Circle faucet and a direct relayer top-up. Report in `docs/release/evidence/`.
 - [ ] Supabase schema applied (no credentials; app is stateless)
 - [ ] KeeperHub CLI PR published
 - [ ] Video uploaded

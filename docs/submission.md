@@ -29,11 +29,13 @@ Group expenses die in the last mile: someone fronts the bill, an app computes sp
 - Live app: https://finaltab.vercel.app
 - Repo: https://github.com/vaibhav4046/finaltab
 - Demo: [VIDEO_URL] (produced: `proof-output/finaltab-demo.mp4`, 92.7s, 1080p, 8 scenes with voiceover, recorded in one continuous session against the real app — upload it and fill the URL before submitting)
-- Verified KeeperHub execution (chain-verified receipt, Base Sepolia): https://sepolia.basescan.org/tx/0x11300427473e95d241d924891b2cc0131b0047263e461787c27a2f854c39278c
-  (executionId `g0w11wukbk1v0psyditx4`, block 45243955, `verified: true`, `receiptStatus: "success"`; full report in `proof-output/`.)
+- **Live batch settlement** (chain-verified receipt, Base Sepolia): https://sepolia.basescan.org/tx/0x7bf655f3f72774839908021039e640b5ac8acaf5462b1376200cbb490045c12d
+  (executionId `dthckv3julum6m5ktmdik`, block 45310631, `verified: true`, `receiptStatus: "success"` — 4.20 + 3.80 USDC pulled via EIP-3009, 8.00 USDC paid out atomically; fail-closed run report committed at `docs/release/evidence/`.)
+- Earlier zero-value KeeperHub rail proof: https://sepolia.basescan.org/tx/0x11300427473e95d241d924891b2cc0131b0047263e461787c27a2f854c39278c
+  (executionId `g0w11wukbk1v0psyditx4`, block 45243955, `verified: true`, `receiptStatus: "success"`.)
 - Settlement contract, deployed and code-confirmed on Base Sepolia: [`0xCcf6b4De…`](https://sepolia.basescan.org/address/0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64) — source not yet verified on Basescan.
 
-**What is not proven:** `executeSettlement` has never moved USDC on a public chain. Every demo account holds zero USDC and the relayer holds zero native ETH, so the settle leg renders as blocked rather than replaying a receipt. The measurement is in [docs/release/truth-snapshot.md](release/truth-snapshot.md); it is stated here because a submission that buries this is not honest about it.
+**What is proven and what is not:** the settle leg is live-proven — `executeSettlement` moved 8.00 USDC atomically on Base Sepolia on 2026-08-10 (tx above), through the production API and KeeperHub, with exact balance deltas and a chain-verified receipt. Still not proven, stated because a submission that buries it is not honest: Supabase persistence is not applied (the app is stateless per session), the Claude/OpenAI fallback legs have never contacted their real APIs (only Groq is live), and the MetaMask signing path is stubbed (demo keys sign for real). Full per-surface labels in [docs/release/truth-snapshot.md](release/truth-snapshot.md).
 
 ## Best Onboarding UX Improvement entry
 
@@ -52,7 +54,7 @@ This complements upstream issue #49 (executionId status lookup for agents) and w
 
 | Category | Evidence |
 |----------|----------|
-| Onchain execution via KeeperHub | Exclusive execution layer; simulate-first; fail-closed receipt verification; flight-recorder CLI with honest exit codes |
+| Onchain execution via KeeperHub | Live batch settlement tx `0x7bf655f3…` (8.00 USDC, chain-verified); exclusive execution layer; simulate-first; fail-closed receipt verification; flight-recorder CLI with honest exit codes |
 | Technical quality | 189 + 11 = 200 tests; integer-only money; largest-remainder splits; ledger-hash-bound EIP-3009 nonces; atomic batch contract |
 | Real-world usefulness | The last-mile settlement problem every split app punts on |
 | UX | Photo -> English sentence -> one signature each -> verified receipt; onboarding contribution shipped upstream to the CLI |

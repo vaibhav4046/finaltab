@@ -130,8 +130,8 @@ Measured 2026-08-10 (see [docs/release/gates.md](docs/release/gates.md)):
 - [ ] Deployer: 0x976EF25623A94F6F70924816697C7c7172210a5F funded with 0.1+ ETH
 - [ ] Contract deployed → settlement address in .env.local
 - [ ] Web app builds successfully
-- [ ] Live settlement executed on Base Sepolia
-- [ ] proof.json collected (tx hash + events + balances)
+- [x] Live settlement executed on Base Sepolia — tx `0x7bf655f3…45c12d`, block 45310631, 8.00 USDC moved atomically (2026-08-10)
+- [x] Proof collected — chain-verified run report in `docs/release/evidence/`
 - [x] Demo video recorded — `proof-output/finaltab-demo.mp4` (1:33). Shows the blocked settle state, not a live chain execution.
 - [ ] README updated with deployment steps
 - [ ] GitHub repo visibility set (if needed)

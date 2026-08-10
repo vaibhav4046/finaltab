@@ -105,10 +105,14 @@ inspect the dangling blobs yourself before they go.
 
 ---
 
-## 2. Persistent funded signer on Base Sepolia
+## 2. Persistent funded signer on Base Sepolia — RESOLVED 2026-08-10
 
-This is the only thing standing between the app and a live end-to-end settlement.
-It is **not** a faucet top-up. Measured on 2026-08-10:
+**Closed.** Persistent demo signers were added (env-keyed, stored in gitignored
+`proof-output/demo-signers.local.json`), both debtors were funded 20 USDC each from the
+Circle faucet, the relayer was funded 0.00005 ETH directly, and the settle leg ran live
+to VERIFIED_SETTLED (tx `0x7bf655f3…45c12d`, block 45310631, 8.00 USDC moved atomically).
+Evidence in `docs/release/evidence/`. The measurement below is preserved as the state
+that made this a blocker — measured earlier on 2026-08-10:
 
 ```
 debtor A (demo, session-generated)     USDC 0.000000   ETH 0.000000
@@ -128,12 +132,12 @@ Three independent problems, all measured rather than assumed:
    watching entirely new addresses appear. **Any address you fund today is dead
    on the next page load.**
 
-Because of (3), funding alone cannot close this. It needs a persistent signer
-strategy first — either a fixed dev keypair loaded from env, or an injected
-browser wallet — and that is a product decision, not a transfer.
+Because of (3), funding alone could not close this — it needed the persistent
+signer strategy first, which is exactly what was built (fixed dev keypairs behind
+the `NEXT_PUBLIC_FINALTAB_PERSIST_DEMO_KEYS` opt-in flag, locked by 46 tests).
 
-Until it is closed, the app refuses to fake it: the settle path renders as
-blocked and the proof capsule stays unproven rather than showing a replayed or
+While it was open, the app refused to fake it: the settle path rendered as
+blocked and the proof capsule stayed unproven rather than showing a replayed or
 mocked receipt.
 
 ---

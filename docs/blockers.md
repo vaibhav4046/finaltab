@@ -24,40 +24,40 @@ Nothing here is faked in the app: blocked paths render as blocked, unproven stat
 
 - Key provided; 8 scene mp3s generated to `proof-output/voiceover/` (gitignored). Storyboard in [demo-storyboard.md](demo-storyboard.md).
 
+### Live executeSettlement — RESOLVED 2026-08-10 (VERIFIED_SETTLED)
+
+The full settlement path ran end-to-end through **production** (finaltab.vercel.app
+API → KeeperHub → `FinalTabBatchSettlement` → Base Sepolia) and the chain proved it:
+
+- tx `0x7bf655f3f72774839908021039e640b5ac8acaf5462b1376200cbb490045c12d`
+  (block 45310631, `receiptStatus: "success"`, `verified: true`)
+- executionId `dthckv3julum6m5ktmdik`, verdict **VERIFIED_SETTLED**
+- 3 USDC `Transfer` logs (2 debtor pulls in + 1 creditor payout out) and exactly
+  1 `SettlementExecuted` event whose indexed settlementId matches
+  `keccak256(abi.encode(ledgerHash))`
+- Balance deltas exact: creditor +8.000000 USDC, debtors −4.200000 / −3.800000;
+  contract retained 0
+- Full fail-closed report: `proof-output/live-settle-2026-08-10T19-19-04-531Z.json`,
+  driver script `apps/web/scripts/live-settle.mjs`
+
+How the blockers closed:
+
+1. **USDC**: two persistent demo debtor signers (keys in gitignored
+   `proof-output/demo-signers.local.json`) funded 20 USDC each from the Circle
+   faucet, verified on-chain before the run.
+2. **Relayer gas**: KeeperHub relayer `0x7AE891Ec51990684682a084381e97b59d787652B`
+   funded 0.00005 ETH (tx `0xce5ec0bf…`, block 45310097) since KeeperHub sponsors
+   transfers but not contract-call gas.
+3. **Encoding bug found live**: KeeperHub's execute pipeline rejects positional
+   tuple arrays in `functionArgs` with `Invalid function arguments: pulls[0]:
+   expected object for tuple` — while its *simulation* endpoint tolerates arrays,
+   so the simulate-first gate passed and the execution failed (first attempt,
+   executionId `0hs63ep2vjtjtj63rsak6`, failed harmlessly at argument parsing —
+   nothing broadcast). `settleArgs` now emits tuples as objects keyed by ABI
+   component names. This supersedes the "tuples as arrays" wording of the earlier
+   API-shape note above.
+
 ## STILL BLOCKED
-
-### 1. No funded signers on Base Sepolia (blocks the live settle leg only)
-
-**The deploy is no longer blocked — it happened.** An earlier revision of this file
-claimed the contract was gas-blocked and named predicted address
-`0xEaf9E9d90a080Fa01E7Eb671AFB5B3f0B445F013`. That was stale and the address is
-wrong. Verified against Base Sepolia on 2026-08-10 via `eth_getCode`:
-
-| address | code size | state |
-|---|---|---|
-| `0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64` | 2259 bytes | **deployed** — this is the live contract, and it is what `NEXT_PUBLIC_SETTLEMENT_CONTRACT` points at |
-| `0xEaf9E9d90a080Fa01E7Eb671AFB5B3f0B445F013` | 0 bytes | never deployed; the old predicted address, now meaningless |
-
-What is genuinely still blocked is executing a settlement, for two independent
-reasons. Both were measured, not assumed:
-
-1. **Every account holds zero USDC.** Both demo debtors and the KeeperHub relayer
-   `0x7AE891Ec51990684682a084381e97b59d787652B` read 0.000000 USDC. A settle
-   attempt reverts with `Error(ERC20: transfer amount exceeds balance)`.
-2. **The relayer holds zero native ETH** (`eth_getBalance` → 0 wei). KeeperHub
-   sponsors transfers but not contract-call gas, so even a funded debtor set
-   would not get the call mined.
-
-**A faucet top-up alone does not fix this.** `apps/web/lib/flow.ts:30` calls
-`generatePrivateKey()` per session, so the demo debtor addresses are regenerated
-on every page load — confirmed by reloading and watching entirely new addresses
-appear. Any address funded now is dead on the next reload. Closing this needs a
-persistent signer strategy (a fixed dev keypair loaded from env, or an injected
-browser wallet), not a one-off transfer. That is a product decision plus a funded
-key, so it sits in the USER ACTION table rather than being done autonomously.
-
-Until then the app refuses to fake it: the settle path renders as blocked and the
-proof capsule stays unproven rather than showing a replayed or mocked receipt.
 
 ### 1b. Contract is not verified on Basescan
 

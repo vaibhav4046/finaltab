@@ -1,0 +1,86 @@
+{
+  "startedAt": "2026-08-10T19:16:46.249Z",
+  "baseUrl": "https://finaltab.vercel.app",
+  "settlementId": "0xf0e7dbbdf1202ab23aa674f9b52104b1cd76ac44aa9fa02cfa904b4c717b4d04",
+  "ledgerHash": "0x481ce877b1a444677be5bbd28ea8f159659c25ee95ff6ff2f858593134dc39da",
+  "verdict": "UNPROVEN",
+  "steps": [
+    {
+      "name": "build",
+      "at": "2026-08-10T19:16:46.285Z",
+      "settlementId": "0xf0e7dbbdf1202ab23aa674f9b52104b1cd76ac44aa9fa02cfa904b4c717b4d04",
+      "ledgerHash": "0x481ce877b1a444677be5bbd28ea8f159659c25ee95ff6ff2f858593134dc39da",
+      "transferCount": 2,
+      "totalPulledUSDC": "8.000000",
+      "payouts": [
+        {
+          "creditor": "0x8edd1eb1e3522a1e9d6db7ce82ad5f2adb59192c",
+          "value": "8000000"
+        }
+      ]
+    },
+    {
+      "name": "balances-before",
+      "at": "2026-08-10T19:16:46.708Z",
+      "vee": "0.000000",
+      "hem": "20.000000",
+      "ravi": "20.000000"
+    },
+    {
+      "name": "simulate",
+      "at": "2026-08-10T19:16:48.060Z",
+      "http": 200,
+      "ok": true
+    },
+    {
+      "name": "execute",
+      "at": "2026-08-10T19:16:48.748Z",
+      "http": 200,
+      "ok": true
+    },
+    {
+      "name": "accepted",
+      "at": "2026-08-10T19:16:48.748Z",
+      "executionId": "0hs63ep2vjtjtj63rsak6"
+    },
+    {
+      "name": "poll",
+      "at": "2026-08-10T19:16:49.926Z",
+      "state": "failed",
+      "verdict": {
+        "verdict": "FAILED",
+        "reason": "status failed: Invalid function arguments: pulls[0]: expected object for tuple",
+        "receipts": []
+      }
+    }
+  ],
+  "executionId": "0hs63ep2vjtjtj63rsak6",
+  "finalStatus": {
+    "status": {
+      "executionId": "0hs63ep2vjtjtj63rsak6",
+      "status": "failed",
+      "type": "contract-call",
+      "transactionHash": null,
+      "transactionLink": null,
+      "sponsored": false,
+      "receipts": [],
+      "result": null,
+      "error": "Invalid function arguments: pulls[0]: expected object for tuple",
+      "gasUsedWei": null,
+      "gasPriceWei": null,
+      "estimatedCostUsd": null,
+      "retryCount": 0,
+      "network": "84532",
+      "createdAt": "2026-08-10T19:16:49.081Z",
+      "completedAt": "2026-08-10T19:16:49.173Z"
+    },
+    "verdict": {
+      "verdict": "FAILED",
+      "reason": "status failed: Invalid function arguments: pulls[0]: expected object for tuple",
+      "receipts": []
+    },
+    "pollHintMs": 0
+  },
+  "error": "terminal state failed, verdict [object Object]",
+  "finishedAt": "2026-08-10T19:16:49.927Z"
+}

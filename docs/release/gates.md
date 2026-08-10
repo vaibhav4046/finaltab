@@ -34,7 +34,7 @@ it says so and names what would unblock it rather than being quietly dropped fro
 | 9 | Contract live on chain | `eth_getCode` vs `https://sepolia.base.org` | **PASS** — 2259 bytes at `0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64`, re-queried 2026-08-10 |
 | 10 | Demo video integrity | `ffprobe proof-output/finaltab-demo.mp4` | **PASS** — 92.68s, 1920×1080, h264 + aac, 6,256,484 bytes |
 | 11 | KeeperHub live execution | `proof-output/first-flight-*.json` | **PASS** — two independent `VERIFIED_SETTLED` receipts, both chain-confirmed |
-| 12 | `executeSettlement` onchain | manual run to Execute | **BLOCKED** — see below |
+| 12 | `executeSettlement` onchain | `apps/web/scripts/live-settle.mjs` against production | **PASS** — VERIFIED_SETTLED, tx `0x7bf655f3…45c12d`, block 45310631, 8.00 USDC moved atomically. See below |
 | 13 | Contract source verified on Basescan | Basescan verify | **NOT DONE** |
 | 14 | Coverage ≥ 80% | — | **NOT MEASURED** |
 | 15 | Upstream CLI contribution live | `GET api.github.com/repos/KeeperHub/cli/pulls/95` | **PASS** — PR #95 `state: open`, `merged: false`, 1 commit, +336/−15, 7 new Go tests |
@@ -112,46 +112,43 @@ Sizes were verified by parsing each PNG's IHDR header against the manifest's dec
 192×192, 512×512, 540×720. The previously-unreferenced `icon-maskable.svg` was wired up at the same
 time. Gate 18 is the confirmation.
 
+## Gate 12 — closed 2026-08-10
+
+Formerly the one capability the project could not demonstrate live. It has now run on the
+production stack and the chain confirmed it:
+
+- tx `0x7bf655f3f72774839908021039e640b5ac8acaf5462b1376200cbb490045c12d` (block 45310631,
+  `verified: true`, `receiptStatus: "success"`), executionId `dthckv3julum6m5ktmdik`, verdict
+  **VERIFIED_SETTLED**. 4.20 + 3.80 USDC pulled from the two persistent demo debtors via
+  EIP-3009, 8.00 USDC paid to the creditor, one atomic call; 3 USDC `Transfer` logs plus exactly
+  1 `SettlementExecuted` event bound to the ledgerHash; balance deltas exact
+  (+8.00 / −4.20 / −3.80); the contract retained zero. Committed fail-closed report:
+  [evidence/live-settle-2026-08-10T19-19-04-531Z.json](evidence/live-settle-2026-08-10T19-19-04-531Z.json).
+
+What unblocked it, in the order the earlier BLOCKED revision of this section predicted:
+
+- The persistent demo signers (behind `NEXT_PUBLIC_FINALTAB_PERSIST_DEMO_KEYS=1`) were funded
+  20 Base Sepolia USDC each from the Circle faucet — possible only because the 2026-08-10
+  stability fix made the addresses survive a reload.
+- The relayer was funded 0.00005 ETH directly (tx `0xce5ec0bf…`, block 45310097) rather than via
+  the deployer sweep, keeping the deployer key untouched. The relayer error that defined the
+  blocked state was, verbatim: `Insufficient BASE balance. Have: 0.0, Need: 0.000000231.` —
+  KeeperHub sponsors **transfers** but not **contract-call** gas.
+- A real encoding bug surfaced only at execute time: KeeperHub's execute pipeline rejects
+  positional tuple arrays (`Invalid function arguments: pulls[0]: expected object for tuple`)
+  while its simulate endpoint tolerates them, so the first attempt (executionId
+  `0hs63ep2vjtjtj63rsak6`) failed harmlessly at argument parsing — nothing broadcast.
+  `settleArgs` now emits tuples as objects keyed by ABI component names; the second run settled.
+  The committed failure report sits next to the success report in [evidence/](evidence/).
+
+What the app did while blocked still matters: Simulate rendered **WOULD REVERT — NOT BROADCAST**
+and Execute offered no button — exercised in a browser and transcribed in
+[gate 17](#gate-17--the-journey-as-actually-observed), down to the revert reason. It never
+replayed the earlier verified receipt or dressed a mock up as a settlement. The full blocked-era
+write-up (the unfundable-address defect and its fix, the deployer-sweep alternative deliberately
+not used) is preserved in [blockers.md](../blockers.md).
+
 ## Gates that do not pass
-
-**12 — `executeSettlement` onchain.** The one capability the project cannot demonstrate live.
-
-```
-Insufficient BASE balance. Have: 0.0, Need: 0.000000231.
-Fund 0x7ae891ec51990684682a084381e97b59d787652b with at least 0.000000231 BASE on this chain and retry.
-```
-
-KeeperHub sponsors **transfers** (`sponsored: true`) but not **contract-calls** (`sponsored: false`),
-so the relayer must hold native BASE for this call and holds none. The demo accounts separately hold
-zero Base Sepolia USDC.
-
-An earlier revision of this document said the gate was blocked on funding alone. That was wrong, and
-the correction matters because it changes what unblocking actually requires:
-
-- **The demo debtor addresses were not fundable at all.** `makeDemoPeople()` called
-  `generatePrivateKey()` on every invocation, so all three signers were reminted on every page load.
-  A faucet transfer would have landed on an address that ceased to exist at the next refresh. Fixed
-  2026-08-10: `apps/web/lib/demoKeys.ts` pins the signers to `localStorage` behind
-  `NEXT_PUBLIC_FINALTAB_PERSIST_DEMO_KEYS=1`, and `apps/web/components/FundingPanel.tsx` exposes the
-  full addresses with live onchain balances. Ephemeral generation remains the default; the flag is
-  opt-in, labelled in the UI, and testnet-only. Verified in-browser: with the flag set, the three
-  addresses are byte-identical across a reload; with it unset, they rotate every load and nothing is
-  written to storage.
-- **The relayer leg does not need a faucet.** Measured against `https://sepolia.base.org` on
-  2026-08-10, the deployer `0x976EF25623A94F6F70924816697C7c7172210a5F` holds `0x57e986e93ba4`
-  (0.0000966605 ETH) — roughly 418× the 0.000000231 the relayer requires.
-  `contracts/scripts/fund-relayer.js` sweeps the dust across. It has not been run: it needs the
-  deployer key, and using a wallet key is outside autonomous scope.
-
-So one funding action still needs a human (Base Sepolia USDC from Circle's login-gated faucet, into
-the now-stable demo addresses), and one needs a human only to hold the key (the relayer sweep).
-
-What the app does in the meantime matters more than the gate itself: Simulate renders
-**"WOULD REVERT — NOT BROADCAST"** and Execute offers no button. That is not an assertion about
-intended behaviour — it was exercised in a browser and transcribed in
-[gate 17](#gate-17--the-journey-as-actually-observed), down to the revert reason. It does not replay
-the earlier verified receipt, substitute a fixture, or dress a mock up as a settlement. The blocked
-state is the honest render.
 
 **13 — Basescan verification.** Not performed. The consequence is concrete rather than cosmetic: the
 settle route passes the ABI inline because it cannot rely on a published one.

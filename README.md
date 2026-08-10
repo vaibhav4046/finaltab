@@ -44,16 +44,17 @@ Proven live, through the app's own API routes and the first-flight script:
 
 - Receipt extraction (`/api/vision/extract`) against real Groq.
 - NL allocation (`/api/vision/allocate`) against real Groq, reconciled cent-perfect by the engine (model even hallucinated a note about the service charge; the engine split it correctly anyway).
-- Real KeeperHub execution on Base Sepolia, end to end: simulate -> execute -> poll -> chain-verified receipt -> **VERIFIED_SETTLED**. Proof: [tx 0x1130...278c](https://sepolia.basescan.org/tx/0x11300427473e95d241d924891b2cc0131b0047263e461787c27a2f854c39278c) (executionId `g0w11wukbk1v0psyditx4`, block 45243955, `verified: true`, `receiptStatus: "success"`).
+- **A real batch settlement on Base Sepolia** (2026-08-10): production API -> KeeperHub -> `executeSettlement` pulled 4.20 + 3.80 USDC from two debtors via signed EIP-3009 authorizations and paid 8.00 USDC to the creditor in one atomic transaction, with exact balance deltas and a chain-verified receipt. Proof: [tx 0x7bf655f3…45c12d](https://sepolia.basescan.org/tx/0x7bf655f3f72774839908021039e640b5ac8acaf5462b1376200cbb490045c12d) (executionId `dthckv3julum6m5ktmdik`, block 45310631, `verified: true`, `receiptStatus: "success"`); fail-closed run report in [docs/release/evidence/](docs/release/evidence/).
+- KeeperHub rail proven separately by two earlier zero-value flights: [tx 0x1130...278c](https://sepolia.basescan.org/tx/0x11300427473e95d241d924891b2cc0131b0047263e461787c27a2f854c39278c) (executionId `g0w11wukbk1v0psyditx4`, block 45243955).
 - CLI contribution shipped upstream: [KeeperHub/cli PR #95](https://github.com/KeeperHub/cli/pull/95) (open, not merged).
 - 92.7s demo video recorded in one continuous session against the real app (live Groq extraction and allocation on screen, honest blocked states left in); as-recorded notes in [docs/demo-storyboard.md](docs/demo-storyboard.md).
 
 Blocked, disclosed in [docs/blockers.md](docs/blockers.md):
 
 - The contract **is** deployed at [`0xCcf6b4De…`](https://sepolia.basescan.org/address/0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64) (2259 bytes of code, confirmed by `eth_getCode`) — an earlier revision of this README claimed otherwise and named a predicted address that was never used. Its source is **not yet verified on Basescan**, which is why the settle route must pass the ABI inline.
-- The KeeperHub deploy attempt that failed did so because the relayer holds no native ETH: `Insufficient BASE balance. Have: 0.0, Need: 0.000000231.` KeeperHub sponsors transfers, not contract-call gas.
+- The KeeperHub deploy attempt that failed did so because the relayer held no native ETH at the time: `Insufficient BASE balance. Have: 0.0, Need: 0.000000231.` KeeperHub sponsors transfers, not contract-call gas. Resolved 2026-08-10 — the relayer was funded 0.00005 ETH directly ([tx 0xce5ec0bf…](https://sepolia.basescan.org/address/0x7AE891Ec51990684682a084381e97b59d787652B), block 45310097).
 - Supabase persistence is schema-complete but **not applied** (no project credentials yet). The app is stateless per session; nothing is persisted.
-- Batch settlement itself (`executeSettlement`) has **never moved USDC on a public chain**. Every account in the demo holds zero USDC and the relayer holds zero native ETH, so Simulate honestly returns "WOULD REVERT — NOT BROADCAST". Full measurement in [docs/release/truth-snapshot.md](docs/release/truth-snapshot.md).
+- Batch settlement (`executeSettlement`) was blocked until 2026-08-10 for the same funding reason — while it was, Simulate honestly rendered "WOULD REVERT — NOT BROADCAST". Both funding legs then landed and the settle leg ran live (see the proof above). Full measurement in [docs/release/truth-snapshot.md](docs/release/truth-snapshot.md).
 - The Claude and OpenAI legs of the LLM fallback cascade are covered by tests but have never contacted their real APIs; only the Groq leg is live-proven.
 
 Nothing in the UI fakes any of this. Unproven states render as unproven.

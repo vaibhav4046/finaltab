@@ -202,7 +202,7 @@ Code and proof on GitHub."
 ## Fallback Options
 
 **If live execution fails during recording:**
-- Use the prior session's proven execution (executionId `g0w11wukbk1v0psyditx4`, tx `0x1130...278c`, verified: true)
+- Use the proven live settlement (executionId `dthckv3julum6m5ktmdik`, tx `0x7bf655f3…45c12d`, block 45310631, 8.00 USDC moved atomically 2026-08-10, verified: true); older zero-value rail proof: `g0w11wukbk1v0psyditx4`, tx `0x1130...278c`
 - Label clearly: "Previously recorded proven execution"
 - Show the exact same settlement flow logic (same app, same code)
 

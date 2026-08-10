@@ -97,8 +97,9 @@ reconciling, one of the two documents is stale.
 - **Settlement Contract**: 0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64 — **deployed and live**.
   `eth_getCode` against `https://sepolia.base.org` returns 2259 bytes at that address, re-queried
   2026-08-10. An earlier revision of this line said "deployed? TBD, see blockers", which contradicted
-  gate 9; the contract being live and `executeSettlement` never having been *called* are two
-  different facts, and only the second one is still open.
+  gate 9; the contract being live and `executeSettlement` never having been *called* were two
+  different facts, and as of 2026-08-10 both are closed — the settle leg ran live
+  (tx `0x7bf655f3…45c12d`, block 45310631, chain-verified).
 - **Verified USDC Domain Separator**: 0x71f17a3b2ff373b803d70a5a07c046c1a2bc8e89c09ef722fcb047abe94c9818
 - **Verified RECEIVE_WITH_AUTHORIZATION_TYPEHASH**: 0xe77f0b7efc35c95a7c91d5ff68f46deac34a54c1aaa90c94275b858c7c0eba4f
 
@@ -111,7 +112,8 @@ reconciling, one of the two documents is stale.
 | Ledger hash stability | keccak256, canonical JSON in engine tests | ✓ Tested |
 | EIP-712 domain match | Hardhat test vs on-chain; domain separator verified | ✓ Tested |
 | Settlement contract safe pattern | ReceiveWithAuthorization signature binding, atomicity, nonce derivation | ✓ 11 contract tests |
-| KeeperHub integration | Real tx 0x1130...278c, executionId `g0w11wukbk1v0psyditx4`, verified: true | ✓ Proven live |
+| KeeperHub integration | Live settlement tx 0x7bf655f3…45c12d, executionId `dthckv3julum6m5ktmdik`, verified: true; earlier rail proof tx 0x1130...278c (`g0w11wukbk1v0psyditx4`) | ✓ Proven live |
+| Batch settlement onchain | 8.00 USDC moved atomically 2026-08-10 (2 EIP-3009 pulls + 1 payout), exact balance deltas, chain-verified receipt; report in [evidence/](evidence/) | ✓ Proven live |
 | CLI contribution | PR KeeperHub/cli#95 (open, not merged) | ⚠️ Pending review |
 | All tests passing | pnpm test + hardhat test | ✓ 189 + 11 = 200 tests, 1 skipped (measured 2026-08-10) |
 | LLM fallback cascade | 12 tests driving the real router with each SDK mocked at the module boundary | ⚠️ Cascade FIXTURE_PROVEN; only the Groq leg has ever contacted a real API |
@@ -120,7 +122,7 @@ reconciling, one of the two documents is stale.
 
 1. **Supabase Persistence**: Schema in `supabase/migrations/` but **not applied** — no project credentials. There is no server-side audit trail, no idempotency, and nothing is durable. The app is stateless per session; device-local state plus the KeeperHub transaction are the only sources of truth.
 2. **Contract Deployment Gas**: Superseded. The contract **is** deployed at `0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64` (2259 bytes of code, confirmed by `eth_getCode`). The KeeperHub deploy attempt that failed did so because the relayer holds no native ETH: `Insufficient BASE balance. Have: 0.0, Need: 0.000000231.` KeeperHub sponsors transfers, not contract-call gas. Source is **not yet verified on Basescan**, which is why the settle route passes the ABI inline.
-3. **Batch settlement never executed onchain**: `executeSettlement` has never moved USDC on a public chain. Every demo account holds zero USDC, so Simulate honestly returns "WOULD REVERT — NOT BROADCAST". Full measurement in [truth-snapshot.md](truth-snapshot.md).
+3. **Batch settlement onchain**: **resolved 2026-08-10** — `executeSettlement` moved 8.00 USDC atomically on Base Sepolia (tx `0x7bf655f3…45c12d`, block 45310631, chain-verified). While it was blocked, Simulate honestly rendered "WOULD REVERT — NOT BROADCAST" rather than replaying a receipt. Closure details in [../blockers.md](../blockers.md); measurement in [truth-snapshot.md](truth-snapshot.md).
 4. **Wallet Integration**: Real MetaMask connection is stubbed. Demo keys work; real `eth_signTypedData_v4` not tested end-to-end yet.
 5. **Fallback providers unproven live**: the Claude and OpenAI legs of the extraction cascade are test-covered but have never contacted their real APIs. No keys are configured for them.
 

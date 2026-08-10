@@ -17,15 +17,19 @@ plausibility.
 
 ## The one-paragraph honest version
 
-The **KeeperHub execution rail is live-proven**: two independent flights were
-submitted, polled to terminal state, and chain-verified on Base Sepolia. The
-**batch settlement itself is not proven live** — `executeSettlement` has never
-moved USDC on a public chain, because no account in the demo holds USDC and the
-relayer holds no native ETH for contract-call gas. The contract is deployed and
-its logic is proven by 11 Hardhat tests against a mock USDC. Everything upstream
-of the settle leg — vision extraction, allocation, reconciliation, netting,
-freezing, signing, calldata encoding, simulation — is proven, most of it live.
-The app renders the blocked leg as blocked and never substitutes a replay.
+The **entire pipeline is live-proven end to end, including the settle leg**. On
+2026-08-10 a real batch settlement executed through the production web API →
+KeeperHub → `FinalTabBatchSettlement` on Base Sepolia: two debtors' signed
+EIP-3009 authorizations pulled 4.20 + 3.80 USDC in one atomic transaction and
+paid 8.00 USDC to the creditor, with exact balance deltas, a chain-verified
+receipt, and one `SettlementExecuted` event bound to the ledger hash
+(tx [`0x7bf655f3…`](https://sepolia.basescan.org/tx/0x7bf655f3f72774839908021039e640b5ac8acaf5462b1376200cbb490045c12d),
+block 45310631). An earlier revision of this paragraph said the settle leg was
+blocked on funding and ephemeral keys; both were closed (Circle faucet funding of
+persistent demo signers + 0.00005 ETH relayer gas) and the claim upgraded only
+after the transaction verified. Everything upstream — vision extraction,
+allocation, reconciliation, netting, freezing, signing, calldata encoding,
+simulation — was already proven, most of it live.
 
 ---
 
@@ -38,7 +42,7 @@ The app renders the blocked leg as blocked and never substitutes a replay.
 | Fail-closed verdict logic | `LIVE_PROVEN` | The same harness returned `FAILED` for the deploy attempt with the real upstream reason, rather than reporting success |
 | Contract deployed on Base Sepolia | `LIVE_PROVEN` | `eth_getCode` on `0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64` → 2259 bytes |
 | Contract source verified on Basescan | `NOT_STARTED` | No published source; this is why the settle route must pass `abi` inline |
-| `executeSettlement` batch settlement onchain | `BLOCKED` | See "The settle leg" below. Never executed on a public chain |
+| `executeSettlement` batch settlement onchain | `LIVE_PROVEN` | tx [`0x7bf655f3…`](https://sepolia.basescan.org/tx/0x7bf655f3f72774839908021039e640b5ac8acaf5462b1376200cbb490045c12d) block 45310631, executionId `dthckv3julum6m5ktmdik`, `verified: true`, `receiptStatus: "success"`, 3 USDC `Transfer` logs + 1 `SettlementExecuted` bound to the ledgerHash, exact balance deltas (+8.00 / −4.20 / −3.80), zero USDC retained. Report: `proof-output/live-settle-2026-08-10T19-19-04-531Z.json`. See "The settle leg" below |
 | Contract logic (atomicity, replay, nonce binding, expiry) | `FIXTURE_PROVEN` | 11 Hardhat tests against `MockUSDC3009` |
 | Calldata encoding for KeeperHub | `LIVE_PROVEN` | Decoded live request: selector `ab894f37`, both pulls carry `to = 0xCcf6b4De…`, values 19,440,000 + 11,670,000 = 31,110,000 = payout exactly |
 | Receipt extraction (vision) | `LIVE_PROVEN` | Real Groq API, strict JSON schema, decimal-string amounts |
@@ -54,29 +58,45 @@ The app renders the blocked leg as blocked and never substitutes a replay.
 
 ---
 
-## The settle leg — why it is BLOCKED, measured
+## The settle leg — was BLOCKED, now LIVE_PROVEN, with the closure measured
 
-Three independent reasons. Each was measured on 2026-08-10, not assumed. Any one
-of them alone is sufficient to block.
+Earlier on 2026-08-10 this section listed three measured blockers: zero USDC
+everywhere, zero relayer ETH, and ephemeral per-session debtor keys. All three
+closed the same day, each with evidence:
 
-1. **Every account holds zero USDC.** Both demo debtors and the KeeperHub relayer
-   `0x7AE891Ec…` read `0.000000` USDC. A settle attempt reverts with
-   `Error(ERC20: transfer amount exceeds balance)`.
-2. **The relayer holds zero native ETH.** KeeperHub's own error is exact:
-   `Insufficient BASE balance. Have: 0.0, Need: 0.000000231.` KeeperHub sponsors
-   *transfers* but not *contract-call* gas — which is precisely why the two
-   zero-value transfer flights succeeded while the contract-call deploy failed.
-3. **The demo debtor keys are ephemeral.** `apps/web/lib/flow.ts:30` calls
-   `generatePrivateKey()` per session; reloading the page produces entirely new
-   addresses. **Any address funded today is dead on the next page load.**
+1. **USDC funded.** Two persistent demo signers (generated fresh for this demo,
+   keys held only in gitignored `proof-output/demo-signers.local.json`) received
+   20 USDC each from the Circle faucet; balances verified on-chain before the run.
+2. **Relayer gassed.** `0x7AE891Ec…` funded 0.00005 ETH (block 45310097).
+   KeeperHub sponsors *transfers* but not *contract-call* gas — the settle tx
+   consumed 222,832 gas from this balance.
+3. **Keys made persistent.** The live run signs with the fixed demo signers, not
+   the per-session `generatePrivateKey()` path; the web UI honours
+   `NEXT_PUBLIC_FINALTAB_PERSIST_DEMO_KEYS=1` for the same purpose.
 
-Because of (3), a faucet top-up cannot close this. It needs a persistent signer
-strategy first. That is a product decision plus a funded key, so it is recorded
-in [user-actions.md](user-actions.md) rather than done autonomously.
+The run itself surfaced a real bug the simulate gate could not catch: KeeperHub's
+execute pipeline rejects positional tuple arrays in `functionArgs`
+(`Invalid function arguments: pulls[0]: expected object for tuple`) while its
+simulation endpoint tolerates them. First attempt (executionId
+`0hs63ep2vjtjtj63rsak6`) failed terminal at argument parsing with nothing
+broadcast — the failed report is retained in
+`proof-output/live-settle-2026-08-10T19-16-46-249Z.json` as evidence. The fix
+(tuples as objects keyed by ABI component names, `settleArgs` in
+`apps/web/lib/server/settlement.ts`) was deployed to production, a fresh
+receiptId produced a fresh settlementId, and the rerun reached
+**VERIFIED_SETTLED** with fail-closed on-chain verification: receipt status
+success, ≥3 `Transfer` logs, exactly one `SettlementExecuted` with the expected
+indexed settlementId, and exact balance deltas on all three parties.
 
-**What the app does about it:** the settle path renders as blocked and the proof
-capsule stays unproven. There is no code path that renders a mocked, replayed, or
-screenshotted receipt as if it were live.
+Both run reports (the failure and the success) are committed at
+`docs/release/evidence/live-settle-2026-08-10T19-16-46-249Z.json` and
+`docs/release/evidence/live-settle-2026-08-10T19-19-04-531Z.json` — local
+originals live in gitignored `proof-output/`. They contain only public data:
+addresses, amounts, and signatures that are already visible in the on-chain
+transaction calldata.
+
+**The app's honesty invariant is unchanged:** there is still no code path that
+renders a mocked, replayed, or screenshotted receipt as if it were live.
 
 ---
 
@@ -188,7 +208,10 @@ the repo, and this table replaces it.
 An earlier revision also labelled the settlement flow `LIVE_PROVEN` on the
 strength of tx `0x11300427…`. That transaction is `"type": "transfer"` — a
 sponsored zero-value flight that proves the *rail*, not a settlement. The label
-was wrong and is corrected above.
+was wrong and was downgraded to `BLOCKED`. It is `LIVE_PROVEN` again now, but on
+the strength of a different, real settlement transaction (`0x7bf655f3…`) that
+actually moved USDC through `executeSettlement` — the upgrade happened only
+after that transaction chain-verified, not before.
 
 ---
 

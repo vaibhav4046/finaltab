@@ -100,11 +100,12 @@ const SCENARIOS: Scenario[] = [
     blurb: "Someone edits an amount after everyone signed. Do the signatures survive?",
     run: async () => {
       const people = makeDemoPeople();
-      const frozen = freezeLedger(people, DEMO_DEBTS, "receipt-lab-tamper");
+      const frozen = freezeLedger(people, DEMO_DEBTS, "receipt-lab-tamper", "USD");
       const tampered = freezeLedger(
         people,
         [{ ...DEMO_DEBTS[0]!, usdcMinor: "99000000" }, DEMO_DEBTS[1]!],
         "receipt-lab-tamper",
+        "USD",
       );
       const steps: Step[] = [
         { status: "info", label: "Inject", detail: `Ledger frozen and hashed (${frozen.ledgerHash.slice(0, 10)}…). Then one amount was edited from 12.00 to 99.00 USDC.` },
@@ -113,7 +114,7 @@ const SCENARIOS: Scenario[] = [
         steps.push({ status: "blocked", label: "Preflight blocked", detail: `Recomputed hash ${tampered.ledgerHash.slice(0, 10)}… ≠ signed hash ${frozen.ledgerHash.slice(0, 10)}…. Every signature nonce derives from the ledger hash, so all consent is void. Refused.` });
       }
       steps.push({ status: "repair", label: "Repair", detail: "Reverted to the exact ledger everyone signed." });
-      const recheck = freezeLedger(people, DEMO_DEBTS, "receipt-lab-tamper");
+      const recheck = freezeLedger(people, DEMO_DEBTS, "receipt-lab-tamper", "USD");
       steps.push(
         recheck.ledgerHash === frozen.ledgerHash
           ? { status: "pass", label: "Preflight passed", detail: "Hash matches the signed ledger byte-for-byte. Consent intact." }
@@ -153,7 +154,7 @@ const SCENARIOS: Scenario[] = [
     blurb: "Two people owe money but only one signed. Can it settle anyway?",
     run: async () => {
       const people = makeDemoPeople();
-      const frozen = freezeLedger(people, DEMO_DEBTS, "receipt-lab-missing-sig");
+      const frozen = freezeLedger(people, DEMO_DEBTS, "receipt-lab-missing-sig", "USD");
       const validBefore = BigInt(Math.floor(Date.now() / 1000)) + 3600n;
       const nonce0 = generatePrivateKey();
       await signFrozenTransfer(people, frozen.transfers[0]!, nonce0, validBefore);
@@ -220,7 +221,7 @@ const SCENARIOS: Scenario[] = [
     blurb: "The same settlement is submitted twice. Does anyone pay twice?",
     run: async () => {
       const people = makeDemoPeople();
-      const frozen = freezeLedger(people, DEMO_DEBTS, "receipt-lab-dup");
+      const frozen = freezeLedger(people, DEMO_DEBTS, "receipt-lab-dup", "USD");
       const executed = new Set<string>([frozen.settlementId]);
       const steps: Step[] = [
         { status: "info", label: "Inject", detail: `Settlement ${frozen.settlementId.slice(0, 10)}… already executed once; the exact same ledger is submitted again.` },
@@ -228,7 +229,7 @@ const SCENARIOS: Scenario[] = [
       if (executed.has(frozen.settlementId)) {
         steps.push({ status: "blocked", label: "Preflight blocked", detail: "settlementId (derived from the ledger hash) already recorded as executed. Idempotency guard refuses the replay — nobody pays twice." });
       }
-      const fresh = freezeLedger(people, DEMO_DEBTS, "receipt-lab-dup-2");
+      const fresh = freezeLedger(people, DEMO_DEBTS, "receipt-lab-dup-2", "USD");
       steps.push({ status: "repair", label: "Repair", detail: "A genuinely new tab produces a new receipt id → new ledger hash → new settlementId." });
       steps.push(
         !executed.has(fresh.settlementId)

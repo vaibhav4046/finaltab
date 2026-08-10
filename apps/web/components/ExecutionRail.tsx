@@ -3,13 +3,16 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Panel, Badge, Button, ErrorNote, Spinner, BlockedNote } from "./ui";
-import { freezeLedger, signAllTransfers, shortHex, formatUsdcMinor } from "@/lib/flow";
+import { freezeLedger, signAllTransfers, derivePayouts, shortHex, formatUsdcMinor } from "@/lib/flow";
+import { apiErrorText, revertText } from "@/lib/apiText";
 import type { Person, ExecutionStage, FrozenLedgerState, SignedTransfer } from "@/lib/types";
 
 interface ExecutionRailProps {
   people: Person[];
   netted: Array<{ debtor: string; creditor: string; usdcMinor: string }>;
   receiptId: string | null;
+  /** Source ledger currency. Freeze refuses anything but USD — USDC is USD-denominated. */
+  currency: string;
   stage: ExecutionStage;
   onStage: (s: ExecutionStage) => void;
   onLocked: (locked: boolean) => void;
@@ -55,7 +58,15 @@ function stageIndex(stage: ExecutionStage): number {
   }
 }
 
-export function ExecutionRail({ people, netted, receiptId, stage, onStage, onLocked }: ExecutionRailProps) {
+export function ExecutionRail({
+  people,
+  netted,
+  receiptId,
+  currency,
+  stage,
+  onStage,
+  onLocked,
+}: ExecutionRailProps) {
   const [rail, setRail] = useState<RailState>({
     frozen: null,
     signed: null,
@@ -91,7 +102,7 @@ export function ExecutionRail({ people, netted, receiptId, stage, onStage, onLoc
     setBlocked(null);
     try {
       if (netted.length === 0) throw new Error("Net the debts first — nothing to freeze.");
-      const frozen = freezeLedger(people, netted, receiptId ?? "receipt-1");
+      const frozen = freezeLedger(people, netted, receiptId ?? "receipt-1", currency);
       setRail((r) => ({ ...r, frozen, signed: null, executionId: null, verdict: null, simDetail: null }));
       onStage("frozen");
       onLocked(true);
@@ -147,6 +158,9 @@ export function ExecutionRail({ people, netted, receiptId, stage, onStage, onLoc
     settlementId: rail.frozen!.settlementId,
     ledgerHash: rail.frozen!.ledgerHash,
     transfers: rail.signed!,
+    // From the frozen transfers, not the signed ones — signing overwrites the
+    // recipient with the settlement contract.
+    payouts: derivePayouts(rail.frozen!.transfers),
   });
 
   const doSimulate = async () => {
@@ -163,17 +177,17 @@ export function ExecutionRail({ people, netted, receiptId, stage, onStage, onLoc
       });
       const json = await res.json();
       if (res.status === 501) {
-        setBlocked(json.error ?? "KeeperHub is not configured.");
+        setBlocked(apiErrorText(json, "KeeperHub is not configured."));
         onStage("signed");
         return;
       }
       if (res.status === 409) {
-        setRail((r) => ({ ...r, simDetail: json.detail ?? json.message ?? "would revert" }));
+        setRail((r) => ({ ...r, simDetail: revertText(json) }));
         onStage("sim_failed");
         return;
       }
       if (!res.ok) {
-        setError(json.error ?? `Simulation failed (HTTP ${res.status})`);
+        setError(apiErrorText(json, `Simulation failed (HTTP ${res.status})`));
         onStage("signed");
         return;
       }
@@ -194,7 +208,7 @@ export function ExecutionRail({ people, netted, receiptId, stage, onStage, onLoc
           const res = await fetch(`/api/settle/status/${executionId}`);
           const json = await res.json();
           if (!res.ok) {
-            setError(json.error ?? `Status check failed (HTTP ${res.status})`);
+            setError(apiErrorText(json, `Status check failed (HTTP ${res.status})`));
             onStage("unproven");
             return;
           }
@@ -237,17 +251,17 @@ export function ExecutionRail({ people, netted, receiptId, stage, onStage, onLoc
       });
       const json = await res.json();
       if (res.status === 501) {
-        setBlocked(json.error ?? "KeeperHub is not configured.");
+        setBlocked(apiErrorText(json, "KeeperHub is not configured."));
         onStage("simulating");
         return;
       }
       if (res.status === 409) {
-        setRail((r) => ({ ...r, simDetail: json.detail ?? json.message ?? "would revert" }));
+        setRail((r) => ({ ...r, simDetail: revertText(json) }));
         onStage("sim_failed");
         return;
       }
       if (!res.ok) {
-        setError(json.error ?? `Execute failed (HTTP ${res.status})`);
+        setError(apiErrorText(json, `Execute failed (HTTP ${res.status})`));
         onStage("simulating");
         return;
       }

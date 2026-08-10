@@ -1,0 +1,189 @@
+{
+  "$comment": [
+    "Every KeeperHub surface this project touches, with the evidence that backs it.",
+    "Labels are deliberately narrow. LIVE_PROVEN means a real request hit app.keeperhub.com in this",
+    "project and the response is recorded in proof-output/. FIXTURE_PROVEN means the code path is",
+    "exercised only against packages/keeperhub/test/fakeServer.ts. A surface can be LIVE_PROVEN and",
+    "still have failed - see execute.contract-call, which really ran and really returned an error.",
+    "Nothing here is inferred from documentation."
+  ],
+  "generatedAt": "2026-08-10",
+  "commit": "84e5397",
+  "baseUrl": "https://app.keeperhub.com",
+  "chain": {
+    "name": "Base Sepolia",
+    "chainId": 84532,
+    "sponsorship": "KeeperHub sponsors gas for transfers (sponsored: true). It does NOT sponsor contract-calls (sponsored: false). This asymmetry is the single reason the contract deploy through KeeperHub failed and why executeSettlement has never run onchain."
+  },
+  "clientSource": "packages/keeperhub/src/client.ts",
+  "surfaces": [
+    {
+      "id": "auth.probe",
+      "method": "GET",
+      "path": "/api/keys",
+      "clientMethod": "probeAuth()",
+      "evidence": "LIVE_PROVEN",
+      "observed": {
+        "httpStatus": 200,
+        "source": "proof-output/first-flight-2026-08-09T06-18-32-529Z.json -> auth.httpStatus"
+      },
+      "notes": "Used only to confirm the key is accepted before anything is spent. Response body is never logged."
+    },
+    {
+      "id": "chains.list",
+      "method": "GET",
+      "path": "/api/chains",
+      "clientMethod": "listChains()",
+      "evidence": "LIVE_PROVEN",
+      "observed": {
+        "chainId": 84532,
+        "found": true,
+        "enabled": true,
+        "source": "proof-output/first-flight-2026-08-09T06-18-32-529Z.json -> chain"
+      },
+      "notes": "Gate before execution. If the chain is absent or disabled the flight aborts rather than guessing."
+    },
+    {
+      "id": "simulate.transfer",
+      "method": "POST",
+      "path": "/api/execute/transfer",
+      "body": { "simulate": true },
+      "clientMethod": "simulateTransfer(req)",
+      "evidence": "LIVE_PROVEN",
+      "observed": {
+        "outcome": "passed",
+        "source": "scripts/first-flight.mjs:171 runs simulate() inside the shared leg runner before every execute; the transfer leg at :243 proceeded to execution, which the runner only does when simulate returns HTTP < 400 AND success === true"
+      },
+      "notes": "Simulation is the same POST with simulate:true in the body, not a separate endpoint. A non-throwing simulate is a hard precondition for execute."
+    },
+    {
+      "id": "execute.transfer",
+      "method": "POST",
+      "path": "/api/execute/transfer",
+      "headers": ["Idempotency-Key"],
+      "clientMethod": "executeTransfer(req, key)",
+      "evidence": "LIVE_PROVEN",
+      "observed": [
+        {
+          "executionId": "g0w11wukbk1v0psyditx4",
+          "txHash": "0x11300427473e95d241d924891b2cc0131b0047263e461787c27a2f854c39278c",
+          "blockNumber": 45243955,
+          "status": "VERIFIED_SETTLED",
+          "verified": true,
+          "receiptStatus": "success",
+          "sponsored": true,
+          "source": "proof-output/first-flight-2026-08-09T06-16-38-800Z.json"
+        },
+        {
+          "executionId": "41j3clx0b5xkv8vfv97hl",
+          "txHash": "0x98920aeb63caf322488ef4a61f344d5ff799c0b8f69b4255030f919a5be35f0e",
+          "blockNumber": 45244012,
+          "status": "VERIFIED_SETTLED",
+          "verified": true,
+          "receiptStatus": "success",
+          "sponsored": true,
+          "gasUsed": 40921,
+          "effectiveGasPrice": 6000000,
+          "source": "proof-output/first-flight-2026-08-09T06-18-32-529Z.json"
+        }
+      ],
+      "notes": "Two separate zero-value flights on two separate runs, not one receipt cited twice. Both were chain-verified independently of KeeperHub's own status field."
+    },
+    {
+      "id": "simulate.contract-call",
+      "method": "POST",
+      "path": "/api/execute/contract-call",
+      "body": { "simulate": true },
+      "clientMethod": "simulateContractCall(req)",
+      "evidence": "LIVE_PROVEN",
+      "observed": {
+        "outcome": "passed",
+        "source": "scripts/first-flight.mjs:171 via the deploy leg at :259. The leg reached execution and produced executionId egx3sar8ahsaz741j8nr4, which is only reachable after simulate() returns success === true"
+      },
+      "notes": "Worth stating plainly: simulation passed and execution still failed. Simulation does not model the relayer's own native-token balance."
+    },
+    {
+      "id": "execute.contract-call",
+      "method": "POST",
+      "path": "/api/execute/contract-call",
+      "headers": ["Idempotency-Key"],
+      "clientMethod": "executeContractCall(req, key)",
+      "evidence": "LIVE_EXERCISED_FAILED",
+      "observed": {
+        "executionId": "egx3sar8ahsaz741j8nr4",
+        "terminalStatus": "failed",
+        "sponsored": false,
+        "receipts": [],
+        "errorVerbatim": "Insufficient BASE balance. Have: 0.0, Need: 0.000000231. Fund 0x7ae891ec51990684682a084381e97b59d787652b with at least 0.000000231 BASE on this chain and retry.",
+        "relayerAddress": "0x7ae891ec51990684682a084381e97b59d787652b",
+        "source": "proof-output/first-flight-2026-08-09T06-18-32-529Z.json -> deploy"
+      },
+      "notes": "The request surface itself is proven - KeeperHub accepted the call and returned a real executionId that polled to a real terminal state. What is unproven is a SUCCESSFUL contract-call. The contract was subsequently deployed by other means; see docs/release/truth-snapshot.md."
+    },
+    {
+      "id": "status.poll",
+      "method": "GET",
+      "path": "/api/execute/{executionId}/status",
+      "clientMethod": "getStatus(id) / pollUntilTerminal(id)",
+      "evidence": "LIVE_PROVEN",
+      "observed": {
+        "outcome": "polled to terminal for all three executions above (two completed, one failed)",
+        "source": "proof-output/first-flight-*.json"
+      },
+      "notes": "Terminal detection uses both the status field and the X-Poll-Interval-Hint === 0 signal."
+    }
+  ],
+  "protocolBehaviours": [
+    {
+      "id": "idempotency.in_progress",
+      "trigger": "409 { code: 'idempotency_in_progress' }",
+      "behaviour": "sleep 1000ms, retry, bounded at 5 attempts, then throw",
+      "evidence": "FIXTURE_PROVEN",
+      "test": "packages/keeperhub/test/client.test.ts:119",
+      "liveObserved": false
+    },
+    {
+      "id": "idempotency.conflict.replay",
+      "trigger": "409 { code: 'idempotency_conflict', originalExecutionId: '<id>' }",
+      "behaviour": "treat the original id as the answer and poll it, rather than re-submitting",
+      "evidence": "FIXTURE_PROVEN",
+      "test": "packages/keeperhub/test/client.test.ts:101",
+      "liveObserved": false
+    },
+    {
+      "id": "idempotency.conflict.null",
+      "trigger": "409 { code: 'idempotency_conflict', originalExecutionId: null }",
+      "behaviour": "throw with canonicalization guidance - the same key was reused with a different body, so silently retrying would be wrong",
+      "evidence": "FIXTURE_PROVEN",
+      "test": "packages/keeperhub/test/client.test.ts:110",
+      "liveObserved": false
+    },
+    {
+      "id": "poll.interval-hint",
+      "trigger": "X-Poll-Interval-Hint header on a status response",
+      "behaviour": "wait exactly that many seconds before the next poll; 0 means terminal, stop polling",
+      "evidence": "FIXTURE_PROVEN",
+      "test": "packages/keeperhub/test/client.test.ts:139",
+      "liveObserved": "hint was honoured during the live flights, but the per-poll header values were not captured in the proof JSON, so this is labelled fixture-proven rather than claimed as measured"
+    },
+    {
+      "id": "ratelimit.retry-after",
+      "trigger": "429 with Retry-After",
+      "behaviour": "pause exactly the advertised duration, then resume polling; never spin faster than the server asks",
+      "evidence": "FIXTURE_PROVEN",
+      "test": "packages/keeperhub/test/client.test.ts:159",
+      "liveObserved": false,
+      "notes": "No live 429 was ever triggered. That is a good outcome, not a gap in the client."
+    }
+  ],
+  "notExercised": [
+    {
+      "surface": "any mainnet chain",
+      "reason": "Out of autonomous scope. No value-bearing mainnet transaction was broadcast at any point."
+    },
+    {
+      "surface": "a successful /api/execute/contract-call",
+      "reason": "Relayer 0x7ae891ec51990684682a084381e97b59d787652b holds zero native BASE and KeeperHub does not sponsor contract-call gas."
+    }
+  ]
+}

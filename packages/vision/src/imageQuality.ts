@@ -1,29 +1,40 @@
 /**
- * Image quality assessment: lightweight heuristic check.
- * Server-side check is optional/graceful; client-side Canvas check is primary.
- * Returns recommendation: PASS | WARN_BLURRY | WARN_UNDEREXPOSED
+ * Server-side image quality check.
+ *
+ * NOT IMPLEMENTED. This is a deliberate no-op that always returns PASS.
+ *
+ * The only real sharpness measurement in this codebase is client-side, in
+ * apps/web/lib/imageOptimization.ts, which runs a Laplacian-variance check on a
+ * canvas before upload. Nothing here decodes the buffer, so nothing here can
+ * measure anything — `sharpnessScore` is null rather than a number, so a caller
+ * cannot mistake an unmeasured image for a sharp one.
+ *
+ * If server-side detection is ever wanted, it needs a decoder (sharp/jimp) and
+ * this stub replaced wholesale — do not add a heuristic on buffer length and
+ * call it sharpness.
  */
 
 export interface ImageQualityResult {
   isBlurry: boolean;
-  sharpnessScore: number; // 0-100, where 100 is perfectly sharp
+  /** 0-100, higher is sharper. `null` means no measurement was taken. */
+  sharpnessScore: number | null;
   recommendation: "PASS" | "WARN_BLURRY" | "WARN_UNDEREXPOSED";
 }
 
 /**
- * Analyze image quality: lightweight heuristic (file size, data URL length).
- * Server-side check is optional; if it fails, we continue anyway.
- * Client-side Canvas Laplacian is the primary quality signal.
+ * Always returns PASS without inspecting the image.
+ *
+ * Kept as a seam so the vision route has one place to call once real
+ * server-side analysis exists. Callers must treat PASS as "not checked", not
+ * as "checked and fine".
  */
 export async function analyzeImageQuality(
   _imageBuffer: Buffer,
   _mimeType: string
 ): Promise<ImageQualityResult> {
-  // Graceful degradation: server-side check is optional, client-side Canvas is primary
-  // Default to PASS; let client-side Laplacian catch blurry images
   return {
     isBlurry: false,
-    sharpnessScore: 100,
+    sharpnessScore: null,
     recommendation: "PASS",
   };
 }

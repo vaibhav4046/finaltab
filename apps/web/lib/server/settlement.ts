@@ -1,6 +1,11 @@
 import "server-only";
 import { z } from "zod";
-import { BASE_SEPOLIA_CHAIN_ID, BASE_SEPOLIA_USDC } from "@finaltab/engine";
+import {
+  BASE_SEPOLIA_CHAIN_ID,
+  BASE_SEPOLIA_USDC,
+  EXECUTE_SETTLEMENT_ABI,
+  EXECUTE_SETTLEMENT_SIGNATURE,
+} from "@finaltab/engine";
 
 /**
  * The web app only ever asks KeeperHub to call executeSettlement on the
@@ -24,11 +29,37 @@ export const SignedTransferSchema = z.object({
   s: Bytes32,
 });
 
-export const SettleBodySchema = z.object({
-  settlementId: Bytes32,
-  ledgerHash: Bytes32,
-  transfers: z.array(SignedTransferSchema).min(1).max(50),
+/**
+ * Where the pulled USDC goes. The signed authorizations all name the settlement
+ * contract as recipient, so the real creditors survive only in this array.
+ */
+export const PayoutSchema = z.object({
+  creditor: Address,
+  value: z.string().regex(/^[1-9][0-9]*$/, "positive integer USDC minor units"),
 });
+
+export const SettleBodySchema = z
+  .object({
+    settlementId: Bytes32,
+    ledgerHash: Bytes32,
+    transfers: z.array(SignedTransferSchema).min(1).max(50),
+    payouts: z.array(PayoutSchema).min(1).max(50),
+  })
+  .superRefine((body, ctx) => {
+    // The contract reverts with PullPayoutMismatch if these differ, and refuses
+    // to retain a single cent. Checking here turns a wasted onchain revert into
+    // a 400, and enforces the sum(net positions) == 0 invariant server-side
+    // rather than trusting the client to have netted correctly.
+    const pulled = body.transfers.reduce((a, t) => a + BigInt(t.value), 0n);
+    const paid = body.payouts.reduce((a, p) => a + BigInt(p.value), 0n);
+    if (pulled !== paid) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["payouts"],
+        message: `payouts must sum to pulls: pulled ${pulled}, payouts ${paid}`,
+      });
+    }
+  });
 
 export type SettleBody = z.infer<typeof SettleBodySchema>;
 
@@ -38,27 +69,35 @@ export function settlementContractAddress(): string | null {
   return addr;
 }
 
-export const EXECUTE_SETTLEMENT_SIGNATURE =
-  "executeSettlement(bytes32,bytes32,(address,address,uint256,uint256,uint256,bytes32,uint8,bytes32,bytes32)[])";
-
 /** Args in KeeperHub contract-call shape: tuples as arrays, uints as decimal strings. */
 export function settleArgs(body: SettleBody): unknown[] {
   return [
     body.settlementId,
     body.ledgerHash,
     body.transfers.map((t) => [t.from, t.to, t.value, t.validAfter, t.validBefore, t.nonce, t.v, t.r, t.s]),
+    body.payouts.map((p) => [p.creditor, p.value]),
   ];
 }
 
 export function settleContractCall(body: SettleBody, contractAddress: string) {
+  // Every authorization must name the settlement contract as recipient. USDC's
+  // receiveWithAuthorization requires msg.sender == to, so anything else is
+  // either a misbuilt payload or an attempt to redirect a signed pull.
+  const wrong = body.transfers.find((t) => t.to.toLowerCase() !== contractAddress.toLowerCase());
+  if (wrong) {
+    throw new Error(`Authorization recipient must be the settlement contract, got ${wrong.to}`);
+  }
+
   return {
     chainId: BASE_SEPOLIA_CHAIN_ID,
     contractAddress,
-    functionName: EXECUTE_SETTLEMENT_SIGNATURE,
+    // Bare name, not the signature: KeeperHub resolves against the supplied ABI.
+    functionName: "executeSettlement",
     functionArgs: JSON.stringify(settleArgs(body)),
+    abi: JSON.stringify(EXECUTE_SETTLEMENT_ABI),
     taskId: `finaltab-settle-${body.settlementId.slice(2, 18)}`,
   };
 }
 
-export { BASE_SEPOLIA_CHAIN_ID, BASE_SEPOLIA_USDC };
+export { BASE_SEPOLIA_CHAIN_ID, BASE_SEPOLIA_USDC, EXECUTE_SETTLEMENT_SIGNATURE };
 export type { z };

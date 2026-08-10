@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { ReceiptPanel } from "./ReceiptPanel";
 import { SplitPanel } from "./SplitPanel";
 import { ExecutionRail } from "./ExecutionRail";
+import { FundingPanel } from "./FundingPanel";
 import { parseFiat } from "@finaltab/engine";
 import { makeDemoPeople } from "@/lib/flow";
 import { recordTab } from "@/lib/identity";
@@ -91,10 +92,15 @@ export function Lab() {
           people={people}
           netted={netted}
           receiptId={receipt ? `receipt-${receipt.receipt.merchant.toLowerCase().replace(/[^a-z0-9]+/g, "-")}` : null}
+          currency={receipt?.receipt.currency ?? ""}
           stage={stage}
           onStage={setStage}
           onLocked={setLocked}
         />
+      </div>
+
+      <div className="mt-4">
+        <FundingPanel people={people} />
       </div>
     </div>
   );

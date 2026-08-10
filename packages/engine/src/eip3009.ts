@@ -1,12 +1,16 @@
 import { keccak256, toHex, encodeAbiParameters } from "viem";
 
 /**
- * EIP-3009 transferWithAuthorization typed data for Base Sepolia USDC.
- * Domain params verified ON-CHAIN this project (2026-08-09):
+ * EIP-3009 typed data for Base Sepolia USDC.
+ * Domain params verified ON-CHAIN (2026-08-09):
  *   name()   = "USDC"
  *   version()= "2"
  *   DOMAIN_SEPARATOR = 0x71f17a3b2ff373b803d70a5a07c046c1a2bc8e89c09ef722fcb047abe94c9818
  *   TRANSFER_WITH_AUTHORIZATION_TYPEHASH = 0x7c7c6cdb67a18743f49ec6fa9b35f50d52ed05cbed4cc592e13b44501c1a2267
+ *   RECEIVE_WITH_AUTHORIZATION_TYPEHASH = 0xe77f0b7efc35c95a7c91d5ff68f46deac34a54c1aaa90c94275b858c7c0eba4f
+ *
+ * TRANSFER_WITH_AUTHORIZATION: unsafe (can be front-run), legacy.
+ * RECEIVE_WITH_AUTHORIZATION: safe (nonce bound to contract recipient).
  */
 
 export const BASE_SEPOLIA_CHAIN_ID = 84532;
@@ -16,6 +20,8 @@ export const EXPECTED_DOMAIN_SEPARATOR =
   "0x71f17a3b2ff373b803d70a5a07c046c1a2bc8e89c09ef722fcb047abe94c9818" as const;
 export const EXPECTED_TRANSFER_TYPEHASH =
   "0x7c7c6cdb67a18743f49ec6fa9b35f50d52ed05cbed4cc592e13b44501c1a2267" as const;
+export const EXPECTED_RECEIVE_TYPEHASH =
+  "0xe77f0b7efc35c95a7c91d5ff68f46deac34a54c1aaa90c94275b858c7c0eba4f" as const;
 
 export const USDC_DOMAIN = {
   name: "USDC",
@@ -44,12 +50,35 @@ export interface TransferAuthorization {
   nonce: `0x${string}`;
 }
 
+export const RECEIVE_WITH_AUTHORIZATION_TYPES = {
+  ReceiveWithAuthorization: [
+    { name: "from", type: "address" },
+    { name: "to", type: "address" },
+    { name: "value", type: "uint256" },
+    { name: "validAfter", type: "uint256" },
+    { name: "validBefore", type: "uint256" },
+    { name: "nonce", type: "bytes32" },
+  ],
+} as const;
+
+export interface ReceiveAuthorization extends TransferAuthorization {}
+
 /** Full typed-data payload for wallet signTypedData / viem signTypedData. */
 export function buildTransferAuthorizationTypedData(auth: TransferAuthorization) {
   return {
     domain: USDC_DOMAIN,
     types: TRANSFER_WITH_AUTHORIZATION_TYPES,
     primaryType: "TransferWithAuthorization" as const,
+    message: auth,
+  };
+}
+
+/** Full typed-data payload for safe ReceiveWithAuthorization (nonce bound to recipient contract). */
+export function buildReceiveAuthorizationTypedData(auth: ReceiveAuthorization) {
+  return {
+    domain: USDC_DOMAIN,
+    types: RECEIVE_WITH_AUTHORIZATION_TYPES,
+    primaryType: "ReceiveWithAuthorization" as const,
     message: auth,
   };
 }
@@ -78,6 +107,15 @@ export function computeTransferTypehash(): `0x${string}` {
   return keccak256(
     toHex(
       "TransferWithAuthorization(address from,address to,uint256 value,uint256 validAfter,uint256 validBefore,bytes32 nonce)",
+    ),
+  );
+}
+
+/** Recompute the ReceiveWithAuthorization struct typehash — test asserts equality with on-chain value. */
+export function computeReceiveTypehash(): `0x${string}` {
+  return keccak256(
+    toHex(
+      "ReceiveWithAuthorization(address from,address to,uint256 value,uint256 validAfter,uint256 validBefore,bytes32 nonce)",
     ),
   );
 }

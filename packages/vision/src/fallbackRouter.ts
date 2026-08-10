@@ -208,7 +208,10 @@ async function extractViaOpenAI(
     let raw: string;
     try {
       const response = await client.chat.completions.create({
-        model: "gpt-4-vision",
+        // "gpt-4-vision" was never a served model id. This leg has never run
+        // against the live OpenAI API (no key is configured), so the id below is
+        // reasoned, not measured — see docs/release/truth-snapshot.md.
+        model: process.env.OPENAI_VISION_MODEL || "gpt-4o",
         max_tokens: 1024,
         messages: [
           {

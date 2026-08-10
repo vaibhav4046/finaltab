@@ -15,7 +15,7 @@ Verify (RPC) → Proof Capsule
 | Concern | Current Owner | Path | Authority | Failure Mode | Status |
 |---------|---------------|------|-----------|--------------|--------|
 | **Receipt Input** | Groq + User | `apps/web/app/app/tab` + `/api/vision/extract` | Model boundary; engine re-validates | Invalid JSON, hallucination | ✓ |
-| **Receipt Reconciliation** | Engine (deterministic) | `packages/engine/src/reconcile.ts` | Largest-remainder split, property-tested | Mismatch to receipt total | ✓ 44 tests |
+| **Receipt Reconciliation** | Engine (deterministic) | `packages/engine/src/reconcile.ts` | Largest-remainder split, property-tested | Mismatch to receipt total | ✓ 52 tests |
 | **Debt Netting** | Engine (deterministic) | `packages/engine/src/netting.ts` | Deterministic greedy reduction | Suboptimal reduction (acceptable) | ✓ Tested |
 | **Canonical Ledger** | Engine (deterministic) | `packages/engine/src/ledger.ts` | Canonical JSON + keccak256 hash | Hash instability | ✓ Tested |
 | **Settlement Plan** | Engine (deterministic) | Flow orchestrator | Frozen ledger + plan hash bind consent | Modified after freeze | ⚠️ Logging added |
@@ -30,12 +30,12 @@ Verify (RPC) → Proof Capsule
 
 ## Module Dependencies
 
-**packages/engine** (44 tests)
+**packages/engine** (52 tests)
 - exports: `money`, `reconcile`, `netting`, `ledger`, `validation`, `split`, `eip3009`
 - zero external deps except `viem`, `zod`
 - no side effects, pure functions
 
-**packages/vision** (14 tests + 1 live)
+**packages/vision** (25 tests + 1 live, env-gated skip)
 - exports: Groq receipt extraction + allocation NL
 - depends: engine, zod, groq-sdk
 - client-only; server-only key
@@ -91,20 +91,24 @@ Verify (RPC) → Proof Capsule
 | Proof | Source | Status |
 |-------|--------|--------|
 | Receipt extraction | Groq /api/vision/extract real request | ✓ Live |
-| Allocation reconciliation | Engine tests (44 pass) + real allocation proof | ✓ Live + Tested |
+| Allocation reconciliation | Engine tests (52 pass) + real allocation proof | ✓ Live + Tested |
 | Ledger hash stability | keccak256, canonical JSON in engine tests | ✓ Tested |
 | EIP-712 domain match | Hardhat test vs on-chain; domain separator verified | ✓ Tested |
 | Settlement contract safe pattern | ReceiveWithAuthorization signature binding, atomicity, nonce derivation | ✓ 11 contract tests |
 | KeeperHub integration | Real tx 0x1130...278c, executionId `g0w11wukbk1v0psyditx4`, verified: true | ✓ Proven live |
 | CLI contribution | PR KeeperHub/cli#95 (open, not merged) | ⚠️ Pending review |
-| All tests passing | pnpm test + hardhat test | ✓ 108 + 11 tests |
+| All tests passing | pnpm test + hardhat test | ✓ 189 + 11 = 200 tests, 1 skipped (measured 2026-08-10) |
+| LLM fallback cascade | 12 tests driving the real router with each SDK mocked at the module boundary | ⚠️ Cascade FIXTURE_PROVEN; only the Groq leg has ever contacted a real API |
 
-## Known Blockers (from prior session)
+## Known Blockers (measured, not assumed)
 
-1. **Supabase Persistence**: Schema in `supabase/migrations/` but not applied. No project credentials → no server-side audit trail, idempotency, or durability. Workaround: device-local state + KeeperHub transaction as source of truth.
-2. **Contract Deployment Gas**: Predicted address compiles; broadcasting via KeeperHub requires organization wallet with 231+ gwei Base Sepolia ETH. Status: Awaiting wallet funding or deployment.
-3. **Sign Button Logging**: Added comprehensive logs + 10s timeout detection (commit 4543444) to diagnose silent failure. Waiting for user test execution to reveal root cause.
+1. **Supabase Persistence**: Schema in `supabase/migrations/` but **not applied** — no project credentials. There is no server-side audit trail, no idempotency, and nothing is durable. The app is stateless per session; device-local state plus the KeeperHub transaction are the only sources of truth.
+2. **Contract Deployment Gas**: Superseded. The contract **is** deployed at `0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64` (2259 bytes of code, confirmed by `eth_getCode`). The KeeperHub deploy attempt that failed did so because the relayer holds no native ETH: `Insufficient BASE balance. Have: 0.0, Need: 0.000000231.` KeeperHub sponsors transfers, not contract-call gas. Source is **not yet verified on Basescan**, which is why the settle route passes the ABI inline.
+3. **Batch settlement never executed onchain**: `executeSettlement` has never moved USDC on a public chain. Every demo account holds zero USDC, so Simulate honestly returns "WOULD REVERT — NOT BROADCAST". Full measurement in [truth-snapshot.md](truth-snapshot.md).
 4. **Wallet Integration**: Real MetaMask connection is stubbed. Demo keys work; real `eth_signTypedData_v4` not tested end-to-end yet.
+5. **Fallback providers unproven live**: the Claude and OpenAI legs of the extraction cascade are test-covered but have never contacted their real APIs. No keys are configured for them.
+
+The "Sign Button Silent Failure" listed here in a prior revision was **disproven** by live browser testing — the button works. The real defect in that area was a React crash on the Simulate path (untyped `res.json()` flowing into `string` state), now fixed and locked by 20 tests in `apps/web/test/apiText.test.ts`.
 
 ## Deployment Readiness
 

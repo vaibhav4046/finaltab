@@ -1,6 +1,6 @@
 "use client";
 
-import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
+import { privateKeyToAccount } from "viem/accounts";
 import { parseSignature, keccak256, encodeAbiParameters } from "viem";
 import {
   BASE_SEPOLIA_CHAIN_ID,
@@ -10,23 +10,33 @@ import {
   ledgerToCanonicalJson,
   ledgerHash as computeLedgerHash,
   settlementId as computeSettlementId,
+  assertSettlementCurrency,
   type CanonicalLedger,
 } from "@finaltab/engine";
 import type { Person, FrozenLedgerState, SignedTransfer } from "./types";
+import { resolveDemoKeys } from "./demoKeys";
+
+/** The three demo signers, in the order the UI renders them. */
+export const DEMO_SEED: ReadonlyArray<readonly [string, string]> = [
+  ["vee", "Vee"],
+  ["hem", "Hem"],
+  ["ravi", "Ravi"],
+];
 
 /**
  * Demo signers: real secp256k1 keys generated in the browser, real EIP-712
  * signatures — just throwaway identities with no funds. Clearly labelled in
  * the UI. Swappable for injected wallets without touching the flow.
+ *
+ * Keys are regenerated on every call by default, so the addresses change on
+ * each reload. Set `NEXT_PUBLIC_FINALTAB_PERSIST_DEMO_KEYS=1` to pin them to
+ * localStorage instead — the only way to fund a demo debtor and still have that
+ * address exist after a refresh. See `lib/demoKeys.ts` for the caveats.
  */
 export function makeDemoPeople(): Person[] {
-  const seed: Array<[string, string]> = [
-    ["vee", "Vee"],
-    ["hem", "Hem"],
-    ["ravi", "Ravi"],
-  ];
-  return seed.map(([id, name]) => {
-    const pk = generatePrivateKey();
+  const keys = resolveDemoKeys({ ids: DEMO_SEED.map(([id]) => id) });
+  return DEMO_SEED.map(([id, name]) => {
+    const pk = keys[id]!;
     const account = privateKeyToAccount(pk);
     return { id, name, address: account.address, demoPrivateKey: pk };
   });
@@ -35,11 +45,18 @@ export function makeDemoPeople(): Person[] {
 /** One hour of signature validity from freeze time. */
 const AUTH_VALIDITY_SECONDS = 3600n;
 
+/**
+ * Freeze is the last point before money becomes signable, so the currency
+ * check lives here as well as on the server. A non-USD ledger must never
+ * acquire a ledgerHash — once it has one, it is signable and executable.
+ */
 export function freezeLedger(
   people: Person[],
   debts: Array<{ debtor: string; creditor: string; usdcMinor: string }>,
   receiptId: string,
+  currency: string,
 ): FrozenLedgerState {
+  assertSettlementCurrency(currency);
   const byId = new Map(people.map((p) => [p.id, p]));
   const transfers = debts.map((d) => {
     const from = byId.get(d.debtor);
@@ -131,6 +148,29 @@ export async function signAllTransfers(people: Person[], frozen: FrozenLedgerSta
   }
   console.log("[signAllTransfers] Completed successfully with", out.length, "signatures");
   return out;
+}
+
+/**
+ * Who gets paid, and how much.
+ *
+ * Signing rewrites every authorization's recipient to the settlement contract,
+ * so the actual creditors survive only on the frozen ledger. The contract pulls
+ * into itself and then pays this list out, reverting unless the two sides match
+ * to the cent — so this must be derived from the same transfers that were
+ * signed, never from anything the user can edit afterwards.
+ *
+ * Sorted by address so the payload is deterministic for a given frozen ledger.
+ */
+export function derivePayouts(
+  transfers: ReadonlyArray<{ to: string; value: string }>,
+): Array<{ creditor: string; value: string }> {
+  const byCreditor = new Map<string, bigint>();
+  for (const t of transfers) {
+    byCreditor.set(t.to, (byCreditor.get(t.to) ?? 0n) + BigInt(t.value));
+  }
+  return [...byCreditor.entries()]
+    .sort(([a], [b]) => (a.toLowerCase() < b.toLowerCase() ? -1 : 1))
+    .map(([creditor, value]) => ({ creditor, value: value.toString() }));
 }
 
 export function shortHex(hex: string, chars = 6): string {

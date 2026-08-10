@@ -1,4 +1,4 @@
-import { keeperHubClient, jsonError } from "@/lib/server/clients";
+import { keeperHubClient, jsonError, keeperHubDetail } from "@/lib/server/clients";
 import { SettleBodySchema, settleContractCall, settlementContractAddress } from "@/lib/server/settlement";
 import { SimulationRevertError, KeeperHubError } from "@finaltab/keeperhub";
 
@@ -31,7 +31,7 @@ export async function POST(req: Request): Promise<Response> {
       return Response.json({ ok: false, wouldRevert: true, detail: e.detail, message: e.message }, { status: 409 });
     }
     if (e instanceof KeeperHubError) {
-      return jsonError(`KeeperHub ${e.httpStatus}: ${e.message}`, 502);
+      return jsonError(`KeeperHub ${e.httpStatus}: ${keeperHubDetail(e)}`, 502);
     }
     return jsonError(e instanceof Error ? e.message : "simulation failed", 502);
   }

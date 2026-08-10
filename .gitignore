@@ -15,3 +15,9 @@ proof-output/
 .claude/
 
 .vercel
+
+# Harness/authoring artifacts — not part of the product, never published
+CLAUDE-EXTENSION-SETUP.md
+CLAUDE-PROMPT.md
+CLAUDE_EXTENSION.md
+.planning/

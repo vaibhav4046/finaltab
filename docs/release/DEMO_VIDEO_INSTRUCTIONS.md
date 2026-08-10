@@ -1,6 +1,19 @@
 # Demo Video Recording — Winner Frame-by-Frame
 
-**Target**: 2:20–2:40 (one continuous, truthful, representative take)  
+> **SUPERSEDED — this is the original plan, not a description of the delivered video.**
+>
+> The master that exists is `proof-output/finaltab-demo.mp4`: **92.7s (1:33)**, 1920×1080, h264/aac,
+> 6,256,484 bytes (ffprobe, 2026-08-10). It is shorter than the 2:20–2:40 target below and its
+> content differs in one important way: the **"Real execution"** scene planned at 1:25–2:10 was
+> never recorded, because `executeSettlement` has never broadcast on a public chain (the relayer
+> holds no native BASE — see [gates.md](gates.md) gate 12). The master shows the honest
+> **"WOULD REVERT — NOT BROADCAST"** state instead.
+>
+> The timings in the table below are the original storyboard's cue points. They do not map onto the
+> delivered file. Keep this document as the recording script it was; do not read it as evidence.
+> For what the master actually contains, see [../demo-storyboard.md](../demo-storyboard.md).
+
+**Original target**: 2:20–2:40 (one continuous, truthful, representative take)  
 **Quality**: 1920×1080, 30fps minimum  
 **Audio**: Narration or captions (legible, audible)  
 **Evidence**: Real Base Sepolia settlement end-to-end with verified receipt

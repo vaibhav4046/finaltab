@@ -27,9 +27,11 @@
    - Verify: Page loads, proof capsule visible
 
 4. **Demo Video**
-   - File: demo-video.mp4 (2:20–2:40, H.264/AAC/MP4)
+   - File: `proof-output/finaltab-demo.mp4` — measured 92.7s (1:33), 1080p, H.264/AAC/MP4, 6,256,484 bytes
    - Type: File upload or YouTube link
    - Verify: Plays end-to-end, no corruption, sound/captions legible
+   - Note: an earlier revision of this checklist specified 2:20–2:40. The recorded master is 1:33. If
+     the form enforces a minimum length, re-record rather than pad.
 
 5. **Settlement Transaction Hash** (KeeperHub Proof)
    - Value: Copy from proof capsule
@@ -50,7 +52,7 @@
      deterministic netting, verified onchain execution.
      
      - Receipt extraction via Groq vision
-     - Deterministic allocation + netting (engine, 44 tests)
+     - Deterministic allocation + netting (engine, 52 tests)
      - EIP-3009 safe authorization pattern (contract, 11 tests)
      - KeeperHub end-to-end integration (verified real tx)
      - Proof: https://finaltab.vercel.app/app/proof?proof=[ID]
@@ -68,8 +70,13 @@
 
 1. **Onboarding Contribution URL**
    - Value: https://github.com/KeeperHub/cli/pull/95
-   - Status: Open, not merged
-   - Type: Link to PR or doc
+   - Type: Link to PR
+   - Status: **open, not merged.** Re-verified against the GitHub API on 2026-08-10: opened
+     2026-08-09 by `vaibhav4046`, `state: open`, `merged: false`, `draft: false`, 1 commit,
+     +336/−15 across 2 files, base `KeeperHub:main`, head
+     `vaibhav4046:feat/execute-status-require-verified`.
+   - Describe it as **open and under review**. Do not describe it as merged unless GitHub shows
+     `merged: true`.
 
 2. **Bounty Selection**
    - Check this box in the form (if available)
@@ -86,7 +93,7 @@ Run these checks before filling the form:
 - [ ] `git status` is clean on main branch
 - [ ] Latest commit is a43ada3 (Gate 0 docs) or later
 - [ ] No secrets in git log or visible files
-- [ ] `pnpm test` passes all 119 tests
+- [ ] `pnpm -r --if-present test` passes all 189 workspace tests (+11 hardhat = 200 passing, 1 skipped)
 - [ ] GitHub repo is public and accessible logged-out
 
 ### Settlement & Proof
@@ -98,8 +105,8 @@ Run these checks before filling the form:
 - [ ] Check receipt shows: `verified: true` and `receiptStatus: "success"`
 
 ### Video
-- [ ] demo-video.mp4 exists and plays end-to-end
-- [ ] Duration: 2:20–2:40
+- [ ] `proof-output/finaltab-demo.mp4` exists and plays end-to-end
+- [ ] Duration: 1:33 (92.7s, measured by ffprobe)
 - [ ] Audio/captions legible and audible at normal volume
 - [ ] Proof capsule visible in final scene (show executionId and tx)
 - [ ] File size: <500MB recommended (check for encoding bloat)
@@ -123,7 +130,8 @@ LIVE_URL: https://finaltab.vercel.app
 EXECUTOR_ID: g0w11wukbk1v0psyditx4
 TRANSACTION_HASH: 0x11300427473e95d241d924891b2cc0131b0047263e461787c27a2f854c39278c
 EXPLORER_LINK: https://sepolia.basescan.org/tx/0x11300427473e95d241d924891b2cc0131b0047263e461787c27a2f854c39278c
-VIDEO_FILE: demo-video.mp4 (or YouTube link if uploaded)
+VIDEO_FILE: proof-output/finaltab-demo.mp4 (or YouTube link if uploaded)
+ONBOARDING_PR: https://github.com/KeeperHub/cli/pull/95 (open, not merged)
 DESCRIPTION: [See template above]
 TEAM_MEMBER: [Your name] <vaibhavlalwani26969@gmail.com>
 ```

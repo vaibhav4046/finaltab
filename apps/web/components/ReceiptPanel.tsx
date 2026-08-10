@@ -3,6 +3,7 @@
 import { useCallback, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Panel, Badge, Button, ErrorNote, Spinner, BlockedNote } from "./ui";
+import { apiErrorText } from "@/lib/apiText";
 import { checkLocalImageQuality } from "@/lib/imageOptimization";
 import type { ReceiptState } from "@/lib/types";
 
@@ -54,11 +55,11 @@ export function ReceiptPanel({ receipt, onReceipt }: ReceiptPanelProps) {
         });
         const json = await res.json();
         if (res.status === 501) {
-          setBlocked(json.error ?? "Vision extraction is not configured.");
+          setBlocked(apiErrorText(json, "Vision extraction is not configured."));
           return;
         }
         if (!res.ok) {
-          setError(json.error ?? `Extraction failed (HTTP ${res.status})`);
+          setError(apiErrorText(json, `Extraction failed (HTTP ${res.status})`));
           return;
         }
         onReceipt({

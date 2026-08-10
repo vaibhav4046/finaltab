@@ -20,17 +20,20 @@ Group expenses die in the last mile: someone fronts the bill, an app computes sp
 - **English, not spreadsheets.** "Vee had the daal, split the rest evenly." The LLM only PROPOSES an allocation. A deterministic engine re-reconciles every proposal against the receipt with integer minor units and largest-remainder splitting; shares always sum to the total, to the cent. In our live test the model hallucinated a note claiming the service charge was absent; the engine split it correctly anyway. That is the design working, not luck.
 - **Netting.** The debt graph collapses to the minimum transfer set before anyone signs.
 - **Frozen ledger.** The canonical ledger is keccak256-hashed. EIP-3009 nonces derive from that hash, so editing the ledger after signing invalidates every signature by construction.
-- **Gasless for debtors.** Each debtor signs USDC `transferWithAuthorization` (EIP-3009). No approvals, no allowances, no debtor gas.
+- **Gasless for debtors.** Each debtor signs USDC `receiveWithAuthorization` (EIP-3009), naming the settlement contract as `to`. Deliberately not `transferWithAuthorization`: USDC enforces `msg.sender == to` on the receive variant, so a leaked signature is redeemable only by the settlement contract. No approvals, no allowances, no debtor gas.
 - **Atomic batch.** `FinalTabBatchSettlement.executeSettlement` moves everyone's USDC in one transaction on Base Sepolia. One bad signature reverts the whole batch. Replay is blocked by settlementId derived from the ledger hash. 11 Hardhat tests cover atomicity, replay, nonce binding, and expiry.
 - **KeeperHub is the only execution layer.** Simulate first; a failed simulation is never broadcast. Then execute, then poll status honoring `X-Poll-Interval-Hint` and `Retry-After`. The app shows VERIFIED_SETTLED only when the execution is terminal-successful AND a receipt exists AND `verified === true` AND `receiptStatus === "success"`. A transaction hash proves submission; only a verified receipt proves landing. There is no code path that fakes a transaction state.
 
-**Numbers:** 108 passing workspace tests + 11 Hardhat tests. Zero-budget stack: Next.js on Vercel free, Supabase free, Groq free tier, KeeperHub.
+**Numbers:** 189 passing workspace tests + 11 Hardhat tests = 200 (measured 2026-08-10, no coverage percentage claimed). Zero-budget stack: Next.js on Vercel free, Supabase free, Groq free tier, KeeperHub.
 
 - Live app: https://finaltab.vercel.app
 - Repo: https://github.com/vaibhav4046/finaltab
 - Demo: [VIDEO_URL] (produced: `proof-output/finaltab-demo.mp4`, 92.7s, 1080p, 8 scenes with voiceover, recorded in one continuous session against the real app — upload it and fill the URL before submitting)
 - Verified KeeperHub execution (chain-verified receipt, Base Sepolia): https://sepolia.basescan.org/tx/0x11300427473e95d241d924891b2cc0131b0047263e461787c27a2f854c39278c
-  (executionId `g0w11wukbk1v0psyditx4`, block 45243955, `verified: true`, `receiptStatus: "success"`; full report in `proof-output/`. The batch-settlement contract deploy tx will replace this link once the org wallet holds deploy gas; simulation already passes clean.)
+  (executionId `g0w11wukbk1v0psyditx4`, block 45243955, `verified: true`, `receiptStatus: "success"`; full report in `proof-output/`.)
+- Settlement contract, deployed and code-confirmed on Base Sepolia: [`0xCcf6b4De…`](https://sepolia.basescan.org/address/0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64) — source not yet verified on Basescan.
+
+**What is not proven:** `executeSettlement` has never moved USDC on a public chain. Every demo account holds zero USDC and the relayer holds zero native ETH, so the settle leg renders as blocked rather than replaying a receipt. The measurement is in [docs/release/truth-snapshot.md](release/truth-snapshot.md); it is stated here because a submission that buries this is not honest about it.
 
 ## Best Onboarding UX Improvement entry
 
@@ -50,7 +53,7 @@ This complements upstream issue #49 (executionId status lookup for agents) and w
 | Category | Evidence |
 |----------|----------|
 | Onchain execution via KeeperHub | Exclusive execution layer; simulate-first; fail-closed receipt verification; flight-recorder CLI with honest exit codes |
-| Technical quality | 108 + 11 tests; integer-only money; largest-remainder splits; ledger-hash-bound EIP-3009 nonces; atomic batch contract |
+| Technical quality | 189 + 11 = 200 tests; integer-only money; largest-remainder splits; ledger-hash-bound EIP-3009 nonces; atomic batch contract |
 | Real-world usefulness | The last-mile settlement problem every split app punts on |
 | UX | Photo -> English sentence -> one signature each -> verified receipt; onboarding contribution shipped upstream to the CLI |
 | Honesty | Unproven states render as unproven; blockers documented in the repo, not hidden |

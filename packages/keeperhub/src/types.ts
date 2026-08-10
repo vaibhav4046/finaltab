@@ -62,10 +62,22 @@ export interface TransferRequest {
 export interface ContractCallRequest {
   chainId: number;
   contractAddress: string;
-  /** Full function signature, e.g. "deployCreate(bytes)". KeeperHub's field name is functionName. */
+  /**
+   * Function to call. When `abi` is omitted KeeperHub auto-fetches the ABI from
+   * the block explorer and accepts a full signature ("deployCreate(bytes)").
+   * When `abi` IS supplied it looks the function up by name, so this must be the
+   * bare name ("executeSettlement") — a full signature 400s with
+   * "Function '...' not found in ABI".
+   */
   functionName: string;
   /** KeeperHub requires the args array JSON-encoded as a string, not a raw array. */
   functionArgs: string;
+  /**
+   * ABI as a JSON-encoded string, same convention as functionArgs — a raw array
+   * is rejected with "ABI is required". Required when the contract is not
+   * verified on the explorer, since auto-fetch has nothing to read.
+   */
+  abi?: string;
   value?: string;
   taskId?: string;
 }

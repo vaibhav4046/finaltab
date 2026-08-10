@@ -1,6 +1,12 @@
 import { z } from "zod";
 import { proposeAllocation } from "@finaltab/vision";
-import { ParsedReceiptSchema, reconcileAllocation, sharesToDebts } from "@finaltab/engine";
+import {
+  ParsedReceiptSchema,
+  reconcileAllocation,
+  sharesToDebts,
+  isSettlementCurrency,
+  SETTLEMENT_CURRENCY,
+} from "@finaltab/engine";
 import { groqClient, jsonError } from "@/lib/server/clients";
 
 export const runtime = "nodejs";
@@ -37,13 +43,39 @@ export async function POST(req: Request): Promise<Response> {
         { status: 422 },
       );
     }
+    const shares = [...result.shares.entries()].map(([id, v]) => ({ id, fiatMinor: v.toString() }));
+
+    // The split is currency-agnostic and always returned. Onchain settlement is
+    // not: USDC is USD-denominated, so emitting usdcMinor for a GBP or EUR
+    // receipt would bake in an unquoted 1:1 exchange rate. Non-USD ledgers get
+    // the arithmetic and no settleable debts.
+    const currency = body.receipt.currency;
+    if (!isSettlementCurrency(currency)) {
+      return Response.json({
+        proposal,
+        ok: true,
+        issues: [],
+        shares,
+        debts: [],
+        settlement: {
+          eligible: false,
+          currency,
+          reason:
+            `This receipt is in ${currency}. FINALTab settles in USDC, which is USD-denominated, ` +
+            `and it will not invent a ${currency}→USD rate. The split above is exact; ` +
+            `onchain settlement is available for ${SETTLEMENT_CURRENCY} receipts only.`,
+        },
+      });
+    }
+
     const debts = sharesToDebts(result.shares, proposal.payerId);
     return Response.json({
       proposal,
       ok: true,
       issues: [],
-      shares: [...result.shares.entries()].map(([id, v]) => ({ id, fiatMinor: v.toString() })),
+      shares,
       debts: debts.map((d) => ({ debtor: d.debtor, creditor: d.creditor, usdcMinor: d.amount.toString() })),
+      settlement: { eligible: true, currency },
     });
   } catch (e) {
     return jsonError(e instanceof Error ? e.message : "allocation failed", 502);

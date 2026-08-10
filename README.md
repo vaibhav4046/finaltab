@@ -10,7 +10,7 @@ Built for the KeeperHub "Agents Onchain" hackathon. KeeperHub is the exclusive e
 2. **Say who owes what in plain English.** "Vee had the black daal and half the naan, split the rest evenly." Groq proposes an allocation; the deterministic engine is the only thing that decides. Cent-perfect largest-remainder splitting. If the model's numbers do not reconcile against the receipt, the engine's numbers win.
 3. **Netting.** The debt graph collapses to the minimum set of transfers.
 4. **Freeze the ledger.** The canonical ledger is hashed (keccak256). Any edit after freezing invalidates every signature, because EIP-3009 nonces derive from the ledger hash.
-5. **Sign.** Each debtor signs a USDC `transferWithAuthorization` (EIP-3009). No approvals, no allowances, no debtor gas.
+5. **Sign.** Each debtor signs a USDC `receiveWithAuthorization` (EIP-3009), naming the settlement contract as `to`. Not `transferWithAuthorization` — that variant lets anyone who observes the signature submit it, whereas `receiveWithAuthorization` is enforced by USDC to require `msg.sender == to`, so only the settlement contract can ever redeem it. No approvals, no allowances, no debtor gas.
 6. **Settle.** One `executeSettlement` call moves everyone's USDC atomically on Base Sepolia. One bad signature reverts the whole batch.
 7. **Verify.** KeeperHub simulates first; a failed simulation is never broadcast. After execution, the flight recorder polls the status endpoint (honoring `X-Poll-Interval-Hint` and `Retry-After`) and marks VERIFIED_SETTLED only when the execution is terminal-successful AND a receipt exists AND `verified === true` AND `receiptStatus === "success"`. A transaction hash alone proves submission, not landing.
 
@@ -27,12 +27,12 @@ Built for the KeeperHub "Agents Onchain" hackathon. KeeperHub is the exclusive e
 | `supabase/migrations` | Postgres schema for tabs, ledgers, signatures, settlements | not yet applied |
 | `docs` | Submission copy, demo storyboard, honest blocker list, CLI PR draft | |
 
-108 tests pass across the workspace (`pnpm test`), plus the 11 Hardhat contract tests.
+189 tests pass across the workspace (`pnpm -r --if-present test`), plus the 11 Hardhat contract tests: **200 passing**. Measured 2026-08-10 — engine 52, keeperhub 32, vision 32, flight-recorder 7, web 66, contracts 11. One further vision test is skipped unless a live `GROQ_API_KEY` is present. No coverage percentage is claimed, because no coverage run has been performed.
 
 ## Money rules (non-negotiable)
 
 - All arithmetic in integer minor units. Floats never touch money.
-- Fiat 2dp minor units map to USDC 6dp minor units at face value (x10^4).
+- **USD** 2dp minor units map to USDC 6dp minor units at face value (x10^4). Any other currency is refused for settlement rather than converted: a GBP ledger splits correctly and renders "SPLIT ONLY — NOT SETTLEABLE ONCHAIN". There is no code path that invents an FX rate.
 - Splits are largest-remainder: the sum of shares always equals the total, to the cent.
 - The LLM proposes; the engine decides. Every proposal is re-reconciled deterministically before it becomes a ledger.
 
@@ -50,8 +50,11 @@ Proven live, through the app's own API routes and the first-flight script:
 
 Blocked, disclosed in [docs/blockers.md](docs/blockers.md):
 
-- Contract deploy through KeeperHub + CreateX simulates clean (predicted address `0xEaf9E9d90a080Fa01E7Eb671AFB5B3f0B445F013`) but the org wallet needs 231 gwei of Base Sepolia ETH; KeeperHub sponsors transfers, not contract-call gas.
-- Supabase persistence is schema-complete but not applied (no project credentials yet).
+- The contract **is** deployed at [`0xCcf6b4De…`](https://sepolia.basescan.org/address/0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64) (2259 bytes of code, confirmed by `eth_getCode`) — an earlier revision of this README claimed otherwise and named a predicted address that was never used. Its source is **not yet verified on Basescan**, which is why the settle route must pass the ABI inline.
+- The KeeperHub deploy attempt that failed did so because the relayer holds no native ETH: `Insufficient BASE balance. Have: 0.0, Need: 0.000000231.` KeeperHub sponsors transfers, not contract-call gas.
+- Supabase persistence is schema-complete but **not applied** (no project credentials yet). The app is stateless per session; nothing is persisted.
+- Batch settlement itself (`executeSettlement`) has **never moved USDC on a public chain**. Every account in the demo holds zero USDC and the relayer holds zero native ETH, so Simulate honestly returns "WOULD REVERT — NOT BROADCAST". Full measurement in [docs/release/truth-snapshot.md](docs/release/truth-snapshot.md).
+- The Claude and OpenAI legs of the LLM fallback cascade are covered by tests but have never contacted their real APIs; only the Groq leg is live-proven.
 
 Nothing in the UI fakes any of this. Unproven states render as unproven.
 

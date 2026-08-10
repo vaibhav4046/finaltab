@@ -1,100 +1,47 @@
-# Gate 0 Complete → Immediate Next Steps
+# Next Steps
 
-**Generated**: 2026-08-10 23:15 UTC  
-**Deadline**: August 13 11:00 BST (1d 11h 45m)  
-**Cost**: Critical — session $52.12 over budget  
-**Scope**: 142 files modified (federated). Focus on Sign button blocker.
+**Updated**: 2026-08-10
+**Deadline**: August 13, 11:00 BST
 
-## ONE Critical Blocker (P0)
+This file previously declared "Sign Button Silent Failure" a P0 blocker and asked you to paste
+console output. That blocker was **disproven** by live browser testing — the Sign button works. The
+real defect nearby was a React crash on the Simulate path: an untyped `await res.json()` flowed into
+`string`-typed state and React threw "Objects are not valid as a React child", white-screening the
+app instead of rendering an honest failure. Fixed; 11 call sites now go through
+`apps/web/lib/apiText.ts`, locked by 20 tests.
 
-**Sign Button Silent Failure → Blocking Gate 4 Live Proof**
+Nothing is blocked on more code.
 
-Symptom: User clicks Sign → no error, no success state, UI unresponsive  
-Fix added: Commit 4543444 adds 10s timeout + comprehensive [doSign] and [signAllTransfers] console logs  
-Status: **Awaiting user console feedback**
+## Evidence state
 
-### Your Action (5 minutes)
+| Component | State | Basis |
+|-----------|-------|-------|
+| Engine + money | LIVE_PROVEN | 52 tests; real allocations reconciled cent-perfect against a live Groq proposal |
+| Contract safety | FIXTURE_PROVEN | 11 Hardhat tests: atomicity, replay, nonce binding, expiry, 4 selector tests |
+| Contract deployment | LIVE_PROVEN | `0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64`, 2259 bytes via `eth_getCode`. Source not verified on Basescan. |
+| KeeperHub integration | LIVE_PROVEN | executionId `g0w11wukbk1v0psyditx4`, tx `0x1130...278c`, `verified: true`, `receiptStatus: "success"` |
+| Receipt extraction (Groq) | LIVE_PROVEN | Real requests through `/api/vision/extract` |
+| Sign button | LIVE_PROVEN (demo keys) | Exercised in the browser; produces valid EIP-3009 signatures |
+| `executeSettlement` onchain | **BLOCKED** | Never moved USDC on a public chain. Zero USDC in demo accounts, zero native ETH in the relayer. |
+| Real wallet connection | UNPROVEN | MetaMask path stubbed; `eth_signTypedData_v4` not tested end-to-end |
+| Supabase persistence | **NOT APPLIED** | Schema written, no credentials, nothing persisted. The app is stateless per session. |
+| Claude / OpenAI fallback legs | FIXTURE_PROVEN | 12 cascade tests with each SDK mocked at the module boundary; neither has contacted its real API |
 
-1. Open browser to http://localhost:3017/app/tab
-2. Upload any receipt (synthetic or real)
-3. Complete allocation → Freeze
-4. **Open DevTools console** (F12 or Ctrl+Shift+J)
-5. Click **Sign** button
-6. Report what appears in console:
-   - `[doSign] Entering...` logs?
-   - `[signAllTransfers]...` logs?
-   - `[doSign] TIMEOUT` error after 10s?
-   - JavaScript error stack?
-   - Nothing at all?
+Per-surface detail: [docs/release/truth-snapshot.md](docs/release/truth-snapshot.md).
 
-**This single log output determines the fix.**
+## Remaining work, all human-only
 
----
+1. Submit the DoraHacks entry — copy drafted in [docs/submission.md](docs/submission.md).
+2. Upload `proof-output/finaltab-demo.mp4` and fill the `[VIDEO_URL]` marker.
+3. Publish the KeeperHub CLI PR from the prepared branch.
+4. Rotate the Alchemy key, then `git gc --prune=now` to drop the dangling blobs that still hold both
+   credentials on this machine. Neither key is in any commit — the earlier claim that they sat in
+   `1f20560` was measured and found false. Reasoned through in
+   [docs/release/user-actions.md](docs/release/user-actions.md).
 
-## Three Secondary Blockers (P1, non-critical for demo)
+## Optional: prove the settle leg live
 
-1. **Supabase Persistence**: Schema ready, no credentials. Workaround: KeeperHub tx is source of truth.
-2. **Contract Deploy Gas**: Wallet needs 231 gwei Base Sepolia ETH. Workaround: Already deployed on-chain.
-3. **Real Wallet**: MetaMask stub works; real `eth_signTypedData_v4` untested. Workaround: Demo keys work for submission.
-
----
-
-## Evidence State
-
-| Component | State | Confidence |
-|-----------|-------|------------|
-| Engine + money | LIVE_PROVEN | 44 tests, real allocations |
-| Contract safety | LIVE_PROVEN | 11 tests, real tx 0x1130...278c verified |
-| KeeperHub integration | LIVE_PROVEN | executionId g0w11wukbk1v0psyditx4, verified: true ✓ |
-| Sign button | FIXTURE_PROVEN (demo keys) | Logging added; blocked on user console test |
-| Real wallet connection | UNPROVEN | Not tested end-to-end |
-| Supabase persistence | FIXTURE_PROVEN (ready, not applied) | Schema designed; no credentials yet |
-
----
-
-## After You Report Sign Logs
-
-**If logs show success**: State was updated but UI didn't re-render → React state issue.  
-**If logs timeout**: Promise hung → signTypedData or account creation hung.  
-**If logs show error**: Caught and logged → fix the specific error message.  
-**If no logs**: Function never entered → event handler or early return.
-
-**Then**: I'll fix root cause in <5 minutes and you test again.
-
----
-
-## Video and Submission Readiness
-
-- **Demo video**: Existing 92.7s recording from prior session (honest, as-recorded)
-- **Proof link**: Real tx 0x1130...278c (Base Sepolia, verified)
-- **GitHub**: All code + tests committed
-- **Deadline**: August 13 11:00 BST = **1d 11h 45m**
-
-If Sign fix is quick (likely), full E2E re-record after your console test.
-
----
-
-## Session Cost Optimization
-
-This session is over-budget ($52.12). To proceed:
-
-1. **User action first** (Sign console test) — frees $0 but unblocks fix
-2. **Minimal fix** (targeted to specific log output) — ~30 min context
-3. **One re-test** (run flow again with fixed code) — confirm success
-4. **Final commit + ready** — no scope creep
-
-Skipping multi-provider router expansion, 3D enhancements, and Supabase setup for now. Video, submission, proof are all ready.
-
----
-
-## When Ready to Submit
-
-After Sign works:
-
-1. One fresh end-to-end settlement (upload → sign → execute → proof)
-2. Screenshot proof capsule
-3. Copy GitHub link, tx hash, executionId
-4. Re-verify DoraHacks form deadline/fields
-5. Submit (user action only — I cannot access your account)
-
-**Current status**: CONDITIONALLY_READY (blocked on Sign console test result)
+Not required, and its absence is disclosed rather than hidden. Fund the relayer with Base Sepolia
+ETH (KeeperHub sponsors transfers, not contract-call gas), fund two demo accounts with Base Sepolia
+USDC, then run the journey to Execute. Until then the UI shows the blocked state, which is correct
+behaviour rather than a bug.

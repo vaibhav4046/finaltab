@@ -6,6 +6,9 @@ import {
   formatFiat,
   parseUsdc,
   fiatMinorToUsdcMinor,
+  isSettlementCurrency,
+  assertSettlementCurrency,
+  SETTLEMENT_CURRENCY,
   sum,
 } from "../src/money.js";
 
@@ -50,6 +53,36 @@ describe("fiatMinorToUsdcMinor", () => {
   it("scales 2dp to 6dp exactly", () => {
     expect(fiatMinorToUsdcMinor(1234n)).toBe(12340000n); // 12.34 -> 12.340000
     expect(fiatMinorToUsdcMinor(1n)).toBe(10000n); // 0.01 -> 0.010000
+  });
+});
+
+describe("settlement currency guard", () => {
+  it("accepts USD in any casing or padding", () => {
+    expect(SETTLEMENT_CURRENCY).toBe("USD");
+    expect(isSettlementCurrency("USD")).toBe(true);
+    expect(isSettlementCurrency("usd")).toBe(true);
+    expect(isSettlementCurrency(" USD ")).toBe(true);
+    expect(() => assertSettlementCurrency("USD")).not.toThrow();
+  });
+
+  // USDC is USD-denominated. Rescaling GBP 12.50 into 12_500_000 USDC minor
+  // units is arithmetically clean and financially wrong — it applies an
+  // unquoted FX rate of 1.0 and moves the wrong amount of real value.
+  it("refuses every non-USD ledger currency", () => {
+    for (const c of ["GBP", "EUR", "INR", "JPY", "CAD", "AUD", "USDT", ""]) {
+      expect(isSettlementCurrency(c)).toBe(false);
+      expect(() => assertSettlementCurrency(c)).toThrow(/exchange rate/);
+    }
+  });
+
+  it("names the offending currency in the error so the UI can quote it", () => {
+    expect(() => assertSettlementCurrency("GBP")).toThrow(/GBP/);
+  });
+
+  it("the rescale itself is currency-blind — the guard is the only defence", () => {
+    // fiatMinorToUsdcMinor takes no currency and cannot self-protect. This test
+    // pins that fact so nobody later assumes the conversion is safe on its own.
+    expect(fiatMinorToUsdcMinor(1250n)).toBe(12500000n);
   });
 });
 

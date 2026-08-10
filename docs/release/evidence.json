@@ -1,0 +1,240 @@
+{
+  "$comment": [
+    "Machine-readable roll-up of every load-bearing claim FINALTab makes, each tied to how it was",
+    "measured. If a claim is not in this file, it is not backed. If a claim is in this file with",
+    "state UNPROVEN or BLOCKED, the project says so publicly rather than implying otherwise.",
+    "Prose counterpart: docs/release/truth-snapshot.md."
+  ],
+  "generatedAt": "2026-08-10",
+  "commit": "84e5397+dirty",
+  "commitNote": "Measured against commit 84e5397 PLUS an uncommitted working tree (43 modified tracked files, 31 untracked at the time of the run). Not a clean-checkout result: re-running these commands on a fresh clone of 84e5397 produces the pre-fix numbers, not these.",
+  "verificationHost": "local (win32), Node + pnpm workspace",
+  "labels": {
+    "LIVE_PROVEN": "A real external system was contacted and the response is recorded.",
+    "FIXTURE_PROVEN": "Exercised only against local fixtures or mocked module boundaries.",
+    "LIVE_EXERCISED_FAILED": "A real external call was made and returned a real failure. The surface is proven; the success is not.",
+    "BLOCKED": "Cannot be proven without an action outside autonomous scope.",
+    "UNPROVEN": "Code exists, no evidence either way.",
+    "NOT_APPLIED": "Written but never installed or run anywhere."
+  },
+  "claims": [
+    {
+      "id": "tests.total",
+      "claim": "200 tests pass and 1 is skipped",
+      "state": "LIVE_PROVEN",
+      "measuredAt": "2026-08-10",
+      "value": {
+        "engine": 52,
+        "keeperhub": 32,
+        "vision": "32 passed, 1 skipped",
+        "flight-recorder": 7,
+        "web": 66,
+        "workspaceSubtotal": 189,
+        "contracts": 11,
+        "total": "200 passing, 1 skipped"
+      },
+      "method": "pnpm vitest per package; cd contracts && npx hardhat test",
+      "caveat": "The single skip needs a live GROQ_API_KEY. No coverage percentage is claimed anywhere, because no coverage run has been performed."
+    },
+    {
+      "id": "contract.deployed",
+      "claim": "The settlement contract is deployed on Base Sepolia",
+      "state": "LIVE_PROVEN",
+      "measuredAt": "2026-08-10",
+      "value": {
+        "address": "0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64",
+        "chainId": 84532,
+        "bytecodeBytes": 2259
+      },
+      "method": "eth_getCode against https://sepolia.base.org, re-run 2026-08-10, returned 4520 hex chars = 2259 bytes",
+      "caveat": "Source is NOT verified on Basescan. This is why the settle route passes the ABI inline instead of relying on a published one."
+    },
+    {
+      "id": "contract.safety",
+      "claim": "Atomicity, replay protection, nonce binding, expiry, and selector correctness hold",
+      "state": "FIXTURE_PROVEN",
+      "value": "11 Hardhat tests including 4 selector tests added after a latent signature mismatch was found",
+      "method": "cd contracts && npx hardhat test",
+      "caveat": "Proven on a local Hardhat chain against a mock USDC. Never exercised against real USDC on a public chain."
+    },
+    {
+      "id": "keeperhub.execution",
+      "claim": "A real KeeperHub execution landed a chain-verified receipt",
+      "state": "LIVE_PROVEN",
+      "value": {
+        "executionId": "g0w11wukbk1v0psyditx4",
+        "txHash": "0x11300427473e95d241d924891b2cc0131b0047263e461787c27a2f854c39278c",
+        "blockNumber": 45243955,
+        "verified": true,
+        "receiptStatus": "success"
+      },
+      "method": "scripts/first-flight.mjs, receipt independently confirmed on chain rather than trusting the status field",
+      "corroboration": "A second independent execution, 41j3clx0b5xkv8vfv97hl / 0x98920aeb..., also reached VERIFIED_SETTLED. Per-surface detail in keeperhub-surfaces.json."
+    },
+    {
+      "id": "settle.onchain",
+      "claim": "executeSettlement moves USDC on a public chain",
+      "state": "BLOCKED",
+      "value": null,
+      "blocker": "Demo accounts hold zero Base Sepolia USDC and the KeeperHub relayer 0x7ae891ec51990684682a084381e97b59d787652b holds zero native BASE. KeeperHub sponsors transfers, not contract-call gas.",
+      "errorVerbatim": "Insufficient BASE balance. Have: 0.0, Need: 0.000000231. Fund 0x7ae891ec51990684682a084381e97b59d787652b with at least 0.000000231 BASE on this chain and retry.",
+      "behaviourWhenBlocked": "Simulate renders 'WOULD REVERT - NOT BROADCAST'. No cached receipt is replayed and no success is implied.",
+      "correction": "An earlier revision of this file said the gate was blocked on funding alone. It was also blocked on a defect: makeDemoPeople() reminted every demo signer on each page load, so no demo address was fundable - a faucet transfer would land on an address that ceased to exist at the next refresh. Fixed 2026-08-10 in apps/web/lib/demoKeys.ts (localStorage-pinned signers behind NEXT_PUBLIC_FINALTAB_PERSIST_DEMO_KEYS=1, ephemeral by default) and surfaced in apps/web/components/FundingPanel.tsx. Both branches verified in-browser: flag set gives byte-identical addresses across a reload, flag unset rotates them and writes nothing to storage.",
+      "relayerFunding": "Does not need a faucet. Measured against https://sepolia.base.org on 2026-08-10, the deployer 0x976EF25623A94F6F70924816697C7c7172210a5F holds 0x57e986e93ba4 (0.0000966605 ETH), roughly 418x what the relayer needs. contracts/scripts/fund-relayer.js sweeps it across but has not been run: it requires the deployer key, and using a wallet key is outside autonomous scope.",
+      "unblockedBy": "Two human actions: claim Base Sepolia USDC from Circle's login-gated faucet into the now-stable demo addresses, and run contracts/scripts/fund-relayer.js with the deployer key. Both outside autonomous scope."
+    },
+    {
+      "id": "vision.groq",
+      "claim": "Receipt extraction and natural-language allocation work against a live model",
+      "state": "LIVE_PROVEN",
+      "value": "Real requests through the app's own /api/vision/extract and allocation routes",
+      "method": "Live browser testing against the running app",
+      "caveat": "Groq only."
+    },
+    {
+      "id": "vision.fallback",
+      "claim": "The model cascade falls Groq -> Claude -> OpenAI",
+      "state": "FIXTURE_PROVEN",
+      "value": "12 cascade tests driving the real router with each SDK mocked at the module boundary",
+      "caveat": "Only the Groq leg has ever contacted a real API. No Claude or OpenAI key is configured, so those two legs are tested, not proven. The OpenAI leg previously requested 'gpt-4-vision', which is not a served model id; it now requests 'gpt-4o' via OPENAI_VISION_MODEL. That correction is reasoned, not measured, because the leg still has no key."
+    },
+    {
+      "id": "vision.imageQuality",
+      "claim": "Blurry or unusable receipt photos are rejected before they waste a model call",
+      "state": "LIVE_PROVEN",
+      "measuredAt": "2026-08-10",
+      "value": "A pristine fixture scored 62.7 against a threshold of 100 under the old metric - a false positive that rejected good images. The canonical metric scores the same fixture 4149.8.",
+      "method": "Fixed, then re-verified live in the browser"
+    },
+    {
+      "id": "signing.demoKeys",
+      "claim": "Debtors produce valid EIP-3009 receiveWithAuthorization signatures",
+      "state": "LIVE_PROVEN",
+      "value": "Sign button exercised in a real browser session against the running app; produces valid signatures",
+      "caveat": "Demo keys only. A prior revision of the docs called this a silent-failure blocker; live testing disproved that."
+    },
+    {
+      "id": "demo.keyPersistence",
+      "claim": "Demo debtor addresses can be made stable across reloads so a funded testnet address survives",
+      "state": "LIVE_PROVEN",
+      "measuredAt": "2026-08-10",
+      "value": "With NEXT_PUBLIC_FINALTAB_PERSIST_DEMO_KEYS=1 the three demo addresses are byte-identical across a browser reload; with the flag unset they rotate on every load and nothing is written to localStorage. Both branches exercised in a real browser session against the running dev server.",
+      "implementation": "apps/web/lib/demoKeys.ts (localStorage key finaltab.demo-signers.v1), surfaced by apps/web/components/FundingPanel.tsx",
+      "tests": "46 unit tests in apps/web/test/demoKeys.test.ts, including a source-level regression guard that the flag is read as the literal process.env.NEXT_PUBLIC_FINALTAB_PERSIST_DEMO_KEYS member expression, because Next.js substitutes public env vars by matching that exact text and a unit test cannot observe bundler output.",
+      "caveat": "Persistence writes throwaway private keys to localStorage in plaintext. Off by default, opt-in, labelled in the UI, and only ever acceptable for disposable Base Sepolia identities. It does not itself unblock settle.onchain - it only makes the addresses fundable."
+    },
+    {
+      "id": "signing.realWallet",
+      "claim": "A real wallet can sign the settlement",
+      "state": "UNPROVEN",
+      "value": null,
+      "caveat": "The MetaMask eth_signTypedData_v4 path is stubbed and has never been exercised end to end."
+    },
+    {
+      "id": "consent.signatureCount",
+      "claim": "Settlement requires two explicit typed signatures per debtor",
+      "state": "FIXTURE_PROVEN",
+      "value": "FINALTab plan consent plus the USDC receiveWithAuthorization signature. The UI does not claim single-signature settlement.",
+      "caveat": "Verified in the demo-key flow, not against a real wallet."
+    },
+    {
+      "id": "money.integerSafety",
+      "claim": "All money is integer minor units; sum(shares) == total and sum(net) == 0",
+      "state": "FIXTURE_PROVEN",
+      "value": "52 engine tests; live Groq proposals reconciled cent-perfect",
+      "caveat": "USD -> USDC scaling is x10^4 and applies to USD ledgers only. Non-USD ledgers render 'SPLIT ONLY - NOT SETTLEABLE ONCHAIN' rather than being mapped 1:1 to USDC."
+    },
+    {
+      "id": "money.instructionFidelity",
+      "claim": "A stated split rule is followed exactly",
+      "state": "UNPROVEN",
+      "value": null,
+      "gap": "Extras are always prorated proportionally regardless of the rule the user states. This is disclosed in the UI. It is a real capability gap, not a rendering issue.",
+      "caveat": "Listed here rather than omitted because omitting it would make the allocation claim broader than its evidence."
+    },
+    {
+      "id": "app.errorRendering",
+      "claim": "A failed API call renders an honest error instead of crashing",
+      "state": "LIVE_PROVEN",
+      "measuredAt": "2026-08-10",
+      "value": "An untyped await res.json() flowed into string-typed state and React threw 'Objects are not valid as a React child', white-screening the app on the Simulate path. 11 call sites now route through apps/web/lib/apiText.ts, locked by 20 tests.",
+      "method": "Reproduced in the browser, fixed, re-verified in the browser"
+    },
+    {
+      "id": "persistence.supabase",
+      "claim": "Sessions and history persist",
+      "state": "NOT_APPLIED",
+      "value": null,
+      "caveat": "Schema is written. No credentials exist, the schema has never been applied, and nothing is persisted. The app is stateless per session. Docs previously listed this as a working feature; that was wrong and has been corrected."
+    },
+    {
+      "id": "video.master",
+      "claim": "A demo video exists, recorded against the real app",
+      "state": "LIVE_PROVEN",
+      "measuredAt": "2026-08-10",
+      "value": {
+        "path": "proof-output/finaltab-demo.mp4",
+        "durationSeconds": 92.68,
+        "resolution": "1920x1080",
+        "videoCodec": "h264",
+        "audioCodec": "aac",
+        "bytes": 6256484
+      },
+      "method": "ffprobe",
+      "caveat": "Recorded in one continuous session against the running app with blocked states left in rather than edited out. NOT uploaded - upload is outside autonomous scope. Earlier docs specified a 2:20-2:40 target; the actual master is 1:33 and the docs now say so."
+    },
+    {
+      "id": "screenshots",
+      "claim": "Visual proof stills exist",
+      "state": "BLOCKED",
+      "value": null,
+      "blocker": "The browser screenshot capability failed for this whole session: 'Screenshot timed out after 5s: the Browser pane is not displayed'. No still was ever captured, and none is claimed."
+    },
+    {
+      "id": "cli.contribution",
+      "claim": "A KeeperHub CLI onboarding contribution was submitted upstream",
+      "state": "LIVE_PROVEN",
+      "measuredAt": "2026-08-10",
+      "value": {
+        "url": "https://github.com/KeeperHub/cli/pull/95",
+        "number": 95,
+        "title": "feat(execute): add --require-verified and --timeout to execute status",
+        "author": "vaibhav4046",
+        "state": "open",
+        "merged": false,
+        "draft": false,
+        "createdAt": "2026-08-09T06:21:00Z",
+        "commits": 1,
+        "additions": 336,
+        "deletions": 15,
+        "changedFiles": 2,
+        "base": "KeeperHub:main",
+        "head": "vaibhav4046:feat/execute-status-require-verified",
+        "newTests": 7
+      },
+      "method": "GET https://api.github.com/repos/KeeperHub/cli/pulls/95 and /files, queried 2026-08-10. The 7-test figure is a count of top-level Go Test funcs added in cmd/execute/status_verified_test.go (+246/-0), not an estimate.",
+      "caveat": "Open and under review. NOT merged, and it is not described as merged anywhere in this repo. Merge is the upstream maintainers' decision and is outside this project's control.",
+      "correction": "An earlier pass of this file marked this claim BLOCKED and asserted the PR URL 'was never real'. That assertion was itself wrong - it was written without querying GitHub. The PR exists and has existed since 2026-08-09. The original citation was accurate and is restored."
+    },
+    {
+      "id": "secrets.hygiene",
+      "claim": "No secrets are live in the working tree",
+      "state": "LIVE_PROVEN",
+      "measuredAt": "2026-08-10",
+      "value": "A deployer private key was committed across six judge-facing docs and an Alchemy API key across four files. Both are redacted in the working tree; hardhat.config.js is now env-driven via BASE_SEPOLIA_RPC_URL with a public fallback.",
+      "residualRisk": "Local only, and narrower than this file previously stated. Corrected 2026-08-10: an earlier revision said both keys 'remain in git history at commit 1f20560'. That was measured and found false - git show 1f20560:SUBMISSION.md returns no key, and its only 64-hex token is the public Basescan tx hash. Both credentials do survive on this machine, but exclusively in unreachable objects.",
+      "historyScan": "Walked the entire object database rather than the commit graph: 190 blobs total (git cat-file --batch-all-objects), 305 objects reachable from all refs (git rev-list --objects --all), 38 unreachable (git fsck --unreachable --dangling). The deployer key appears in 8 blobs, every one unreachable. The Alchemy key appears only in unreachable blobs, inside base-sepolia.g.alchemy.com/v2/<key> URLs. Reachable objects containing either key: 0. Service-key shapes (gsk_, alcht_, xai-, nvapi-, sk-proj-, sk-ant-) across all 190 blobs: 0 matches.",
+      "exposure": "Git transfers only objects reachable from the refs being sent, so no clone, fetch, or push of github.com/vaibhav4046/finaltab can recover either credential. The deployer key is genuine - a local one-way key-to-address derivation (no signing, no broadcast) resolves it to 0x976EF25623A94F6F70924816697C7c7172210a5F, matching the documented deployer - and its blast radius is testnet dust with zero authority over the deployed contract.",
+      "remediation": "git reflog expire --expire-unreachable=now --all && git gc --prune=now. This touches no commit and changes no hash, so filter-repo is both unnecessary and the wrong tool. Rotating the Alchemy key remains worthwhile and is a user action. Neither was performed here.",
+      "caveat": "No secret value, prefix, or length is printed anywhere in this repo's documentation."
+    }
+  ],
+  "outOfScope": [
+    "Submitting the hackathon entry",
+    "Uploading the video",
+    "Publishing the CLI pull request",
+    "Rotating credentials or rewriting git history",
+    "Broadcasting any value-bearing mainnet transaction",
+    "Funding any account"
+  ]
+}

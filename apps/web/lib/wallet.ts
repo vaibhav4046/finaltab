@@ -53,7 +53,8 @@ export async function signEIP712(
   account: string,
   domain: Record<string, unknown>,
   types: Record<string, unknown>,
-  value: Record<string, unknown>
+  value: Record<string, unknown>,
+  primaryType: string = "ReceiveWithAuthorization",
 ): Promise<string | null> {
   if (typeof window === "undefined" || !window.ethereum) return null;
 
@@ -64,7 +65,7 @@ export async function signEIP712(
         account,
         JSON.stringify({
           types,
-          primaryType: "TransferWithAuthorization",
+          primaryType,
           domain,
           message: value,
         }),

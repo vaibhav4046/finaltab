@@ -36,7 +36,36 @@ export const formatFiat = (m: bigint) => formatAmount(m, FIAT_DECIMALS);
 export const parseUsdc = (s: string) => parseAmount(s, USDC_DECIMALS);
 export const formatUsdc = (m: bigint) => formatAmount(m, USDC_DECIMALS);
 
-/** Fiat minor units (2dp) -> USDC minor units (6dp). Exact: multiply by 10^4. */
+/**
+ * USDC is a USD-denominated token, so the only ledger currency that can be
+ * settled onchain without inventing an exchange rate is USD itself.
+ */
+export const SETTLEMENT_CURRENCY = "USD";
+
+export function isSettlementCurrency(currency: string): boolean {
+  return currency.trim().toUpperCase() === SETTLEMENT_CURRENCY;
+}
+
+/**
+ * Refuse any ledger whose source currency is not USD. The rescale below is
+ * exact in *units*, but treating GBP 12.50 as 12.50 USDC silently applies an
+ * unquoted FX rate of 1.0 and moves the wrong amount of real value.
+ */
+export function assertSettlementCurrency(currency: string): void {
+  if (!isSettlementCurrency(currency)) {
+    throw new Error(
+      `Cannot settle a ${currency} ledger in USDC — that would apply an unquoted 1:1 exchange rate. ` +
+        `Only ${SETTLEMENT_CURRENCY} receipts are settleable.`,
+    );
+  }
+}
+
+/**
+ * Fiat minor units (2dp) -> USDC minor units (6dp). Exact: multiply by 10^4.
+ * Rescale only. Callers MUST have passed the ledger currency through
+ * assertSettlementCurrency() first — this function cannot see the currency
+ * and will happily rescale GBP into USDC minor units.
+ */
 export function fiatMinorToUsdcMinor(fiatMinor: bigint): bigint {
   return fiatMinor * 10n ** BigInt(USDC_DECIMALS - FIAT_DECIMALS);
 }

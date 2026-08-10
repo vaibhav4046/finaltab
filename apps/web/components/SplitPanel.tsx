@@ -1,9 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { nettedTransfers, type Debt } from "@finaltab/engine";
 import { Panel, Badge, Button, ErrorNote, Spinner, BlockedNote, Mono } from "./ui";
+import { apiErrorText, toDisplayText } from "@/lib/apiText";
 import { formatUsdcMinor, shortHex } from "@/lib/flow";
 import type { Person, ReceiptState, AllocationState } from "@/lib/types";
 
@@ -65,6 +66,14 @@ export function SplitPanel({
     }));
   }, [allocation]);
 
+  // The execution rail freezes exactly what this panel is showing. Publishing
+  // the netted transfers only from the button's click handler let the two
+  // drift: toggling back to the raw graph left a stale array armed for freeze,
+  // and so did re-allocating without touching the toggle.
+  useEffect(() => {
+    onNetted(showNetted ? netted : []);
+  }, [showNetted, netted, onNetted]);
+
   const allocate = async () => {
     if (!receipt) return;
     setBusy(true);
@@ -85,19 +94,29 @@ export function SplitPanel({
       });
       const json = await res.json();
       if (res.status === 501) {
-        setBlocked(json.error ?? "Allocation is not configured.");
+        setBlocked(apiErrorText(json, "Allocation is not configured."));
         return;
       }
       if (res.status === 422) {
-        setIssues(json.issues ?? ["Allocation could not be reconciled."]);
+        const raw: unknown = json.issues;
+        setIssues(
+          Array.isArray(raw) && raw.length > 0
+            ? raw.map((iss) => toDisplayText(iss, "unspecified reconciliation issue"))
+            : ["Allocation could not be reconciled."],
+        );
         onAllocation(null);
         return;
       }
       if (!res.ok) {
-        setError(json.error ?? `Allocation failed (HTTP ${res.status})`);
+        setError(apiErrorText(json, `Allocation failed (HTTP ${res.status})`));
         return;
       }
-      onAllocation({ proposal: json.proposal, shares: json.shares, debts: json.debts });
+      onAllocation({
+        proposal: json.proposal,
+        shares: json.shares,
+        debts: json.debts,
+        settlement: json.settlement,
+      });
     } catch (e) {
       setError(e instanceof Error ? e.message : "Allocation failed");
     } finally {
@@ -113,6 +132,17 @@ export function SplitPanel({
     return allocation.shares.reduce((acc, s) => acc + BigInt(s.fiatMinor), 0n).toString();
   }, [allocation]);
   const receiptTotalMinor = receipt ? fiatStringToMinor(receipt.receipt.total) : null;
+
+  // Everything on the receipt that is not a line item: tax, tip, service. The
+  // instruction cannot reach these — the model only allocates item indices, and
+  // the reconciler always prorates the remainder by item share. Surfaced so the
+  // rule is visible next to the numbers it produced.
+  const extrasMinor = useMemo(() => {
+    if (!receipt || receiptTotalMinor === null) return null;
+    const lines = receipt.receipt.items.reduce((acc, i) => acc + BigInt(fiatStringToMinor(i.lineTotal)), 0n);
+    const extras = BigInt(receiptTotalMinor) - lines;
+    return extras > 0n ? extras.toString() : null;
+  }, [receipt, receiptTotalMinor]);
 
   return (
     <Panel title="Split & Graph" step="02 · Allocate">
@@ -151,8 +181,12 @@ export function SplitPanel({
             disabled={locked || busy}
             rows={3}
             className="w-full resize-none rounded-md border border-edge bg-panel-2 p-3 font-sans text-sm text-paper placeholder:text-fog-dim focus:border-lime/50 focus:outline-none disabled:opacity-60"
-            placeholder="e.g. Vee had the daal, Hem and Ravi shared the lamb, split service evenly"
+            placeholder="e.g. Vee had the daal, Hem and Ravi shared the lamb, Ravi had two of the naan"
           />
+          <p className="mt-1.5 font-mono text-[10px] leading-relaxed text-fog-dim">
+            Instructions allocate <span className="text-fog">line items only</span>. Tax, service and tip are always
+            spread in proportion to each person&apos;s item share — the engine does not take an instruction on extras.
+          </p>
           <div className="mt-2 flex items-center gap-3">
             <Button onClick={() => void allocate()} disabled={!receipt || busy || locked}>
               {busy ? "Reconciling…" : allocation ? "Re-allocate" : "Allocate"}
@@ -212,6 +246,23 @@ export function SplitPanel({
                 </span>
               </p>
             )}
+            {extrasMinor !== null && (
+              <p className="mt-1 font-mono text-[10px] text-fog-dim">
+                includes {fiatMinorToDisplay(extrasMinor, currency)} tax/service/tip, prorated by item share
+              </p>
+            )}
+          </div>
+        )}
+
+        {allocation && !allocation.settlement.eligible && (
+          <div className="rounded-md border border-warn/30 bg-warn/5 p-3">
+            <p className="font-mono text-[10px] uppercase tracking-wider text-warn">
+              Split only — not settleable onchain
+            </p>
+            <p className="mt-1.5 font-mono text-[11px] leading-relaxed text-fog">
+              {allocation.settlement.reason ??
+                `Receipt currency is ${allocation.settlement.currency}. USDC is USD-denominated, so settling this ledger would apply an unquoted 1:1 exchange rate.`}
+            </p>
           </div>
         )}
 
@@ -225,15 +276,7 @@ export function SplitPanel({
                 <Badge tone="fog">
                   {showNetted ? `${netted.length} transfer${netted.length === 1 ? "" : "s"}` : `${allocation.debts.length} debt${allocation.debts.length === 1 ? "" : "s"}`}
                 </Badge>
-                <Button
-                  variant="ghost"
-                  disabled={locked}
-                  onClick={() => {
-                    const next = !showNetted;
-                    setShowNetted(next);
-                    if (next) onNetted(netted);
-                  }}
-                >
+                <Button variant="ghost" disabled={locked} onClick={() => setShowNetted((v) => !v)}>
                   {showNetted ? "Show raw" : "Net it"}
                 </Button>
               </div>
@@ -262,7 +305,8 @@ export function SplitPanel({
             </AnimatePresence>
             {!showNetted && (
               <p className="mt-1.5 font-mono text-[9px] text-fog-dim">
-                Fiat shares convert to USDC at 1:1 face value (test USDC on Base Sepolia). Net it to minimize transfers, then freeze.
+                USD shares carry across at face value into test USDC on Base Sepolia — same number, no exchange
+                rate applied. Net it to minimize transfers, then freeze.
               </p>
             )}
             {showNetted && (

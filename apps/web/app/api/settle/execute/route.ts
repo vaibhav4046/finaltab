@@ -1,4 +1,4 @@
-import { keeperHubClient, jsonError } from "@/lib/server/clients";
+import { keeperHubClient, jsonError, keeperHubDetail } from "@/lib/server/clients";
 import { SettleBodySchema, settleContractCall, settlementContractAddress } from "@/lib/server/settlement";
 import { SimulationRevertError, KeeperHubError, deriveIdempotencyKey } from "@finaltab/keeperhub";
 import { BASE_SEPOLIA_CHAIN_ID } from "@finaltab/engine";
@@ -32,7 +32,7 @@ export async function POST(req: Request): Promise<Response> {
       return Response.json({ ok: false, wouldRevert: true, detail: e.detail, message: e.message }, { status: 409 });
     }
     if (e instanceof KeeperHubError) {
-      return jsonError(`KeeperHub simulation ${e.httpStatus}: ${e.message}`, 502);
+      return jsonError(`KeeperHub simulation ${e.httpStatus}: ${keeperHubDetail(e)}`, 502);
     }
     return jsonError(e instanceof Error ? e.message : "pre-execute simulation failed", 502);
   }
@@ -52,7 +52,7 @@ export async function POST(req: Request): Promise<Response> {
     return Response.json({ ok: true, accepted });
   } catch (e) {
     if (e instanceof KeeperHubError) {
-      return jsonError(`KeeperHub execute ${e.httpStatus}: ${e.message}`, 502);
+      return jsonError(`KeeperHub execute ${e.httpStatus}: ${keeperHubDetail(e)}`, 502);
     }
     return jsonError(e instanceof Error ? e.message : "execute failed", 502);
   }

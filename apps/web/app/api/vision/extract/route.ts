@@ -18,7 +18,10 @@ export async function POST(req: Request): Promise<Response> {
     return jsonError(e instanceof Error ? e.message : "invalid request body", 400);
   }
 
-  // Check image quality before vision API call
+  // analyzeImageQuality is an unimplemented no-op that always returns PASS, so
+  // qualityWarning is always null today and the branches below are unreachable.
+  // Kept as the wiring point for real server-side analysis; the sharpness check
+  // that actually runs is client-side, before upload, in lib/imageOptimization.ts.
   let qualityWarning: string | null = null;
   try {
     const base64 = body.imageDataUrl.replace(/^data:image\/\w+;base64,/, "");

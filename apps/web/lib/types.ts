@@ -16,12 +16,23 @@ export interface ReceiptState {
   imageDataUrl: string;
 }
 
+/**
+ * Server verdict on whether this ledger can legally reach the chain. Non-USD
+ * receipts split fine but never settle — see the allocate route.
+ */
+export interface SettlementEligibility {
+  eligible: boolean;
+  currency: string;
+  reason?: string;
+}
+
 export interface AllocationState {
   proposal: AllocationProposal;
   /** fiat minor units consumed per participant (payer included), sums to receipt total */
   shares: Array<{ id: string; fiatMinor: string }>;
-  /** debts toward the payer in USDC minor units */
+  /** debts toward the payer in USDC minor units — empty when settlement is ineligible */
   debts: Array<{ debtor: string; creditor: string; usdcMinor: string }>;
+  settlement: SettlementEligibility;
 }
 
 export type ExecutionStage =

@@ -1,142 +1,80 @@
-# Morning Briefing — FINALTab Ready for Final Push
+# Morning Briefing — FINALTab
 
-**Date**: 2026-08-10 23:30 UTC  
-**Status**: Code complete, all 119 tests passing, manual testing + submission required  
-**Deadline**: August 13 11:00 BST (1d 10h remaining)  
-**Handoff**: You approve and test; I fix any blockers in <30min once you report.
+**Date**: 2026-08-10
+**Deadline**: August 13, 11:00 BST
+**Status**: Code complete and swept for false claims. Three things remain, and all three are yours, not mine.
 
----
-
-## What Happened Overnight
-
-✓ Gate 0 complete: architecture mapped, truth verified, docs committed  
-✓ All 119 tests passing (44 engine + 11 contract + 32 KeeperHub + 7 flight-recorder + 25 vision)  
-✓ Sign button instrumented with comprehensive logging (10s timeout + detailed console logs)  
-✓ All source code clean, no secrets exposed  
-✓ Submission package staged (ready for form, video, tx link)
+An earlier version of this file said the Sign button was silently failing and blocking everything.
+That was wrong. Live browser testing showed the button works. The real defect in that area was a
+React crash on the Simulate path, now fixed. The briefing below replaces that one entirely.
 
 ---
 
-## ONE Critical Manual Test (5 minutes)
+## Measured state
 
-**Test Sign Button + Report Console Output**
+| Thing | Reality |
+|-------|---------|
+| Tests | **200 passing, 1 skipped** — engine 52, keeperhub 32, vision 32, flight-recorder 7, web 66, contracts 11. Measured 2026-08-10. No coverage percentage is claimed; no coverage run has been done. |
+| Live app | https://finaltab.vercel.app |
+| Groq extraction + allocation | Live-proven through the app's own API routes |
+| KeeperHub execution | Live-proven on Base Sepolia — tx `0x1130...278c`, executionId `g0w11wukbk1v0psyditx4`, `verified: true`, `receiptStatus: "success"` |
+| Settlement contract | **Deployed** at `0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64`, 2259 bytes confirmed via `eth_getCode`. Source not yet verified on Basescan. |
+| `executeSettlement` | **Never moved USDC on a public chain.** Demo accounts hold zero USDC; the relayer holds zero native ETH. Simulate returns "WOULD REVERT — NOT BROADCAST", which is the honest render. |
+| Supabase | Schema written, **not applied**. The app is stateless per session. |
+| Claude / OpenAI fallback legs | Test-covered, never contacted their real APIs. Only Groq is live-proven. |
+| Video | `proof-output/finaltab-demo.mp4` — 92.7s, 1080p, 8 scenes, recorded in one continuous session against the real app |
+| CLI contribution | Branch ready; PR **not published** |
 
-This is the single blocker between code-complete and fresh end-to-end proof.
-
-**Your Actions:**
-1. Open browser → http://localhost:3017/app/tab
-2. Upload receipt (synthetic or real)
-3. Allocate amounts → Freeze ledger
-4. **Open DevTools** (F12 or Ctrl+Shift+J)
-5. Click **Sign** button
-6. Watch console for logs starting with `[doSign]` and `[signAllTransfers]`
-
-**Report ONE of these:**
-- "I see logs all the way to [doSign] Complete → state updated"
-- "I see [doSign] TIMEOUT error after 10 seconds"
-- "I see [signAllTransfers] error with message: [specific error]"
-- "Nothing appears in console at all"
-
-**Time needed**: Your report → I fix in <5 min → you test again (2 more minutes).
+Full evidence table with LIVE_PROVEN / FIXTURE_PROVEN / BLOCKED labels per surface:
+[docs/release/truth-snapshot.md](docs/release/truth-snapshot.md).
 
 ---
 
-## If Sign Works (Likely)
+## What is left, and who does it
 
-Proceed immediately to fresh E2E settlement:
+Everything remaining is outside autonomous scope. Nothing is blocked on more code.
 
-1. Upload receipt (your own or sample)
-2. Allocate → Freeze → Sign (now working)
-3. Simulate (KeeperHub preflight)
-4. Execute (real Base Sepolia broadcast)
-5. Wait for verdict (verified or failed)
+1. **Submit the DoraHacks entry.** Copy is drafted in [docs/submission.md](docs/submission.md) with
+   the placeholder markers already listed. I do not submit forms.
+2. **Upload the video** and paste the URL into the `[VIDEO_URL]` marker.
+3. **Publish the KeeperHub CLI PR** from the prepared branch.
 
-**Expect**: Complete journey 30–60 seconds.  
-**Collect**: KeeperHub executionId, tx hash, proof capsule  
-**Verify**: Check `verified: true` and `receiptStatus: "success"` on proof page
+Two credential actions are also yours, both documented with reasoning in
+[docs/release/user-actions.md](docs/release/user-actions.md):
 
----
-
-## Submission Readiness Checklist
-
-**Code & Tests** ✓
-- [ ] Run `pnpm test` → all 119 pass
-- [ ] No console errors in critical journey
-
-**Settlement Execution** (requires your wallet/manual sign)
-- [ ] Sign button works (console test above)
-- [ ] One fresh E2E run completes to verified settlement
-- [ ] Note the executionId and tx hash
-
-**Video & Assets** (ready to record)
-- [ ] Fresh settlement from above is your truth (not old proof)
-- [ ] Recording instructions at docs/release/DEMO_VIDEO_INSTRUCTIONS.md
-- [ ] Storyboard: 2:20–2:40 (receipt → sign → execute → verified)
-
-**GitHub & Form** (ready to fill)
-- [ ] Repo: https://github.com/vaibhav4046/finaltab (verify link works logged-out)
-- [ ] Source branch: `main` (current, pushed)
-- [ ] Re-verify DoraHacks form deadline/fields (browser logged-in only)
-- [ ] Required fields: GitHub URL, video link, tx hash, executionId
-
-**Rollback Point**  
-If anything breaks: last good commit is `a43ada3`. Prior session proves real KeeperHub execution (executionId `g0w11wukbk1v0psyditx4`, tx `0x1130...278c`).
+- Rotate the Alchemy API key (free, non-destructive, worth doing — it was written to disk in
+  plaintext).
+- Run `git gc --prune=now`. Both keys survive in dangling git objects on this machine and in **no
+  commit at all** — the earlier claim that the deployer key sat in `1f20560` was checked and is
+  false, so there is no history to rewrite and nothing exposed by the public repo. Blast radius of
+  the deployer key is testnet dust with zero contract authority.
 
 ---
 
-## Manual-Only Actions (Safety Boundary)
+## Optional, if you want the settle leg proven live
 
-These require your explicit approval. I cannot do them autonomously:
+Not required for submission, and its absence is disclosed rather than hidden:
 
-1. **Browser Testing**: Open app, interact with UI, click buttons
-2. **Contract Deployment**: Broadcasting to Base Sepolia (if needed; already on-chain)
-3. **Form Submission**: Entering credentials in DoraHacks/GitHub
-4. **Video Upload**: Uploading to YouTube/Vercel/wherever
+1. Fund the relayer with Base Sepolia ETH (KeeperHub sponsors transfers, not contract-call gas).
+2. Fund two demo accounts with Base Sepolia USDC.
+3. Run the journey to Execute and capture the receipt.
 
-**For each**: I'll prepare, you approve and execute.
-
----
-
-## If Sign Fails
-
-Report the error → I fix in <10 min:
-- Timeout? → Fix the hanging promise
-- Error message? → Fix the specific error
-- No logs? → Fix the button click handler
-
-Then re-test (2 min).
+Without that, the UI shows the blocked state, which is the correct behaviour, not a bug.
 
 ---
 
-## Next 2 Hours
+## Autonomy boundary
 
-**If you test Sign now:**
+**Done autonomously** (per FINALTab prompt §0.2): repo inspection and edits, local builds, tests,
+linters, static analysis, local browser tests against the dev server, contract tests, secret scans,
+labeled synthetic fixtures, docs, demo assets.
 
-8:00 — Your console log report  
-8:05 — I fix or confirm (already working)  
-8:10 — Fresh E2E test, collect proof  
-8:15 — Record winning video (instructions ready)  
-8:30 — Submission package complete  
-8:45 — Ready for form (you copy/paste links only)
-
-**Deadline cushion**: 10h 15m until August 13 11:00 BST ← Safe.
+**Human-only**: form submission, PR publication, video upload, credential rotation, contract
+deployment with a new key, any mainnet value transfer.
 
 ---
 
-## Files Staged
+## Rollback
 
-- `docs/release/DEMO_VIDEO_INSTRUCTIONS.md` — exact recording steps + storyboard
-- `docs/release/SUBMISSION_CHECKLIST.md` — form fields + what to copy/paste
-- `docs/release/architecture.md` — full technical context (for judges)
-- `docs/release/truth-snapshot.md` — verified facts + evidence state
-- `GATE0_NEXT_STEPS.md` — this handoff (reference)
-
----
-
-## TL;DR
-
-**Code**: Done. Tests: All pass. Safety: No secrets. Manual: Test Sign button (5 min), record video (10 min), submit form (5 min).
-
-Wake up → test Sign → I fix if needed → fresh E2E → video → submit.
-
-**Contact**: Console logs in next message.
+Last known-good commit before this session's sweep: `a43ada3`. The KeeperHub proof from the prior
+session stands independently of anything changed since (executionId `g0w11wukbk1v0psyditx4`).

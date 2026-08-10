@@ -1,0 +1,55 @@
+{
+  "proof": "live-proof-4-mcp",
+  "truthLabel": "LIVE_PROVEN",
+  "capturedAt": "2026-08-10T22:15:30Z",
+  "surface": "Production MCP endpoint — every step below was a JSON-RPC tools/call against https://finaltab.vercel.app/api/mcp; no UI involved.",
+  "chain": {
+    "name": "base-sepolia",
+    "chainId": 84532,
+    "usdcToken": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+    "settlementContract": "0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64"
+  },
+  "loop": [
+    { "step": 1, "tool": "get_balances", "result": "vee 36.12 / hem 1.74 / ravi 2.14 USDC; relayer 0.249004073427353117 ETH" },
+    { "step": 2, "tool": "prepare_settlement", "args": { "debts": [ { "debtor": "hem", "creditor": "vee", "amountUsd": "1.20" }, { "debtor": "ravi", "creditor": "vee", "amountUsd": "0.80" } ], "receiptRef": "mcp-live-proof-4" }, "result": "dryRun true; settlementId + ledgerHash below; payout vee 2.00" },
+    { "step": 3, "tool": "settle_tab", "args": "same debts + receiptRef, confirm: true", "result": "broadcast true; executionId 69zzrj7z676u89ce1x76j; KeeperHub accepted status completed" },
+    { "step": 4, "tool": "settlement_status", "result": "VERIFIED_SETTLED on first poll" },
+    { "step": 5, "tool": "get_balances", "result": "vee 38.12 / hem 0.54 / ravi 1.34 USDC; contract retained 0.00; relayer 0.249002809931206642 ETH" }
+  ],
+  "settlement": {
+    "settlementId": "0xa3d79513657a1a6f8b01c7bcb3c5026cd47e2ead9fc8b27a9239bcc1d6e55bb6",
+    "ledgerHash": "0xcdc4a9f0b9e141cfce2ba149d90f3852adf07154184443a4b1d8d4ae92c3bc54",
+    "receiptRef": "mcp-live-proof-4",
+    "nettedTransfers": [
+      { "from": "hem", "to": "vee", "usdcMinor": "1200000" },
+      { "from": "ravi", "to": "vee", "usdcMinor": "800000" }
+    ],
+    "payouts": [ { "creditor": "0x8edD1eB1e3522a1e9D6db7ce82Ad5F2ADB59192c", "usdcMinor": "2000000" } ]
+  },
+  "execution": {
+    "executionId": "69zzrj7z676u89ce1x76j",
+    "transactionHash": "0x314189b472033de62f8aea7603111c141315be390bc834e283e718382261c5eb",
+    "transactionLink": "https://sepolia.basescan.org/tx/0x314189b472033de62f8aea7603111c141315be390bc834e283e718382261c5eb",
+    "blockNumber": 45315909,
+    "receiptStatus": "success",
+    "gasUsed": "205748",
+    "effectiveGasPriceWei": "6000000",
+    "sponsored": true,
+    "functionSignature": "executeSettlement(bytes32,bytes32,(address,address,uint256,uint256,uint256,bytes32,uint8,bytes32,bytes32)[],(address,uint256)[])",
+    "createdAt": "2026-08-10T22:15:04.038Z",
+    "completedAt": "2026-08-10T22:15:06.881Z",
+    "verifiedAt": "2026-08-10T22:15:06.799Z"
+  },
+  "keeperHubExecutionPath": {
+    "gasPayerEoa": "0xdcf4bac4bd805948168ff63483bc493894a29613",
+    "topLevelTo": "0x5af5194b4b0909eb978e3cf1e25333852277f07d",
+    "note": "KeeperHub's EOA executor (gasPayerEoa) sends the tx to its forwarder contract (topLevelTo), which calls executeSettlement on the FINALTab contract. Gas is sponsored by KeeperHub — none of our wallets pay for execution."
+  },
+  "balanceDelta": {
+    "vee": { "before": "36.12", "after": "38.12", "delta": "+2.00" },
+    "hem": { "before": "1.74", "after": "0.54", "delta": "-1.20" },
+    "ravi": { "before": "2.14", "after": "1.34", "delta": "-0.80" },
+    "contractRetained": "0.00",
+    "conservation": "sum of deltas = 0; contract retains nothing"
+  }
+}

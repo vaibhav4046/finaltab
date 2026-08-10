@@ -127,6 +127,11 @@ Three independent problems, all measured rather than assumed:
 1. **Every account holds zero USDC.** Nothing can be pulled.
 2. **The relayer holds zero native ETH.** KeeperHub sponsors transfers but not
    contract-call gas, so even funded debtors would not get the call mined.
+   *(Post-fix annotation, 2026-08-10: this diagnosis was preserved as written,
+   but the sponsorship half proved wrong — once the settle leg ran, every
+   recorded execution reported `sponsored: true` with gas paid by KeeperHub's
+   gas-payer EOA, measured via `eth_getTransactionByHash`. The relayer funding
+   still happened and unblocked the deploy attempt path.)*
 3. **The demo debtor keys are ephemeral.** `apps/web/lib/flow.ts:30` calls
    `generatePrivateKey()` per session — confirmed by reloading the page and
    watching entirely new addresses appear. **Any address you fund today is dead

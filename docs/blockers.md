@@ -46,8 +46,13 @@ How the blockers closed:
    `proof-output/demo-signers.local.json`) funded 20 USDC each from the Circle
    faucet, verified on-chain before the run.
 2. **Relayer gas**: KeeperHub relayer `0x7AE891Ec51990684682a084381e97b59d787652B`
-   funded 0.00005 ETH (tx `0xce5ec0bf…`, block 45310097) since KeeperHub sponsors
-   transfers but not contract-call gas.
+   funded 0.00005 ETH (tx `0xce5ec0bf…`, block 45310097). The working theory at the
+   time was "KeeperHub sponsors transfers but not contract-call gas"; that theory
+   was later disproven — every recorded `executeSettlement` run reports
+   `sponsored: true` with gas paid by KeeperHub's own gas-payer EOA (measured via
+   `eth_getTransactionByHash`: `from` on the settle txs is `0xdcf4bac4…`, not the
+   relayer). The funding is kept on record because it happened and unblocked the
+   deploy-attempt path.
 3. **Encoding bug found live**: KeeperHub's execute pipeline rejects positional
    tuple arrays in `functionArgs` with `Invalid function arguments: pulls[0]:
    expected object for tuple` — while its *simulation* endpoint tolerates arrays,
@@ -56,6 +61,15 @@ How the blockers closed:
    nothing broadcast). `settleArgs` now emits tuples as objects keyed by ABI
    component names. This supersedes the "tuples as arrays" wording of the earlier
    API-shape note above.
+
+Three more settlements followed the same day: `ks6wxg5vnmc833nd2yyk4` /
+tx `0x770ada77…f120fc2` (block 45311736) and `dbukwam812iep68uehkhy` /
+tx `0xac6d32e5…7c8710` (block 45312815, executed on camera in the demo video),
+both 9.00 + 5.06 → 14.06 USDC — and the headline: an **AI agent settled a tab
+end-to-end over MCP** with no UI, five JSON-RPC calls against production
+`/api/mcp`, 1.20 + 0.80 → 2.00 USDC in under 3 seconds
+(`69zzrj7z676u89ce1x76j` / tx `0x314189b4…c5eb`, block 45315909; step record
+`docs/release/evidence/live-proof-4-mcp.json`).
 
 ## STILL BLOCKED
 

@@ -41,8 +41,10 @@ Per-surface detail: [docs/release/truth-snapshot.md](docs/release/truth-snapshot
 
 ## Settle leg — proven live 2026-08-10
 
-Done. The relayer was funded 0.00005 Base Sepolia ETH (KeeperHub sponsors transfers, not
-contract-call gas), two persistent demo debtors were funded 20 USDC each from the Circle faucet,
+Done. The relayer was funded 0.00005 Base Sepolia ETH (the settle transactions themselves turned
+out to be KeeperHub-sponsored — `sponsored: true`, gas-payer EOA — so the earlier "sponsors
+transfers, not contract-call gas" reading was wrong), two persistent demo debtors were funded 20
+USDC each from the Circle faucet,
 and the journey ran through Execute to **VERIFIED_SETTLED** on the production stack
 (tx `0x7bf655f3…45c12d`, block 45310631). Evidence:
 [docs/release/evidence/](docs/release/evidence/) and [docs/blockers.md](docs/blockers.md).

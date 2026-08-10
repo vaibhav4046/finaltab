@@ -101,7 +101,7 @@ Run these checks before filling the form:
 - [ ] `git status` is clean on main branch
 - [ ] Latest commit is a43ada3 (Gate 0 docs) or later
 - [ ] No secrets in git log or visible files
-- [ ] `pnpm -r --if-present test` passes — 200 passing, 1 skipped (189 Vitest + 11 Hardhat; `contracts` is a workspace member, so the one command covers both)
+- [ ] `pnpm -r --if-present test` passes — 212 passing, 1 skipped (201 Vitest + 11 Hardhat; `contracts` is a workspace member, so the one command covers both)
 - [ ] GitHub repo is public and accessible logged-out
 
 ### Settlement & Proof

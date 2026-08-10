@@ -6,8 +6,8 @@
     "Prose counterpart: docs/release/truth-snapshot.md."
   ],
   "generatedAt": "2026-08-10",
-  "commit": "84e5397+dirty",
-  "commitNote": "Measured against commit 84e5397 PLUS an uncommitted working tree (43 modified tracked files, 31 untracked at the time of the run). Not a clean-checkout result: re-running these commands on a fresh clone of 84e5397 produces the pre-fix numbers, not these.",
+  "commit": "d4dfb7e+dirty",
+  "commitNote": "Measured against commit d4dfb7e PLUS an uncommitted working tree (7 modified tracked files, 3 untracked at the time of the run: the MCP agent-settlement path and this docs pass). Not a clean-checkout result: re-running these commands on a fresh clone of d4dfb7e produces the pre-MCP numbers, not these.",
   "verificationHost": "local (win32), Node + pnpm workspace",
   "labels": {
     "LIVE_PROVEN": "A real external system was contacted and the response is recorded.",
@@ -20,7 +20,7 @@
   "claims": [
     {
       "id": "tests.total",
-      "claim": "200 tests pass and 1 is skipped",
+      "claim": "212 tests pass and 1 is skipped",
       "state": "LIVE_PROVEN",
       "measuredAt": "2026-08-10",
       "value": {
@@ -28,12 +28,12 @@
         "keeperhub": 32,
         "vision": "32 passed, 1 skipped",
         "flight-recorder": 7,
-        "web": 66,
-        "workspaceSubtotal": 189,
+        "web": 78,
+        "workspaceSubtotal": 201,
         "contracts": 11,
-        "total": "200 passing, 1 skipped"
+        "total": "212 passing, 1 skipped"
       },
-      "method": "pnpm vitest per package; cd contracts && npx hardhat test",
+      "method": "pnpm -r test from repo root (vitest per package; contracts run hardhat test)",
       "caveat": "The single skip needs a live GROQ_API_KEY. No coverage percentage is claimed anywhere, because no coverage run has been performed."
     },
     {
@@ -55,33 +55,60 @@
       "state": "FIXTURE_PROVEN",
       "value": "11 Hardhat tests including 4 selector tests added after a latent signature mismatch was found",
       "method": "cd contracts && npx hardhat test",
-      "caveat": "Proven on a local Hardhat chain against a mock USDC. Never exercised against real USDC on a public chain."
+      "caveat": "The adversarial properties (replay, expiry, wrong selector) are proven on a local Hardhat chain against a mock USDC only. The happy path has since been exercised live: the deployed contract executed four real settlements against Circle's USDC on Base Sepolia (see settle.onchain)."
     },
     {
       "id": "keeperhub.execution",
-      "claim": "A real KeeperHub execution landed a chain-verified receipt",
+      "claim": "Real KeeperHub executions land chain-verified receipts",
       "state": "LIVE_PROVEN",
+      "measuredAt": "2026-08-10",
       "value": {
-        "executionId": "g0w11wukbk1v0psyditx4",
-        "txHash": "0x11300427473e95d241d924891b2cc0131b0047263e461787c27a2f854c39278c",
-        "blockNumber": 45243955,
+        "latestExecutionId": "69zzrj7z676u89ce1x76j",
+        "latestTxHash": "0x314189b472033de62f8aea7603111c141315be390bc834e283e718382261c5eb",
+        "latestBlockNumber": 45315909,
         "verified": true,
-        "receiptStatus": "success"
+        "receiptStatus": "success",
+        "totalVerifiedExecutions": 6
       },
-      "method": "scripts/first-flight.mjs, receipt independently confirmed on chain rather than trusting the status field",
-      "corroboration": "A second independent execution, 41j3clx0b5xkv8vfv97hl / 0x98920aeb..., also reached VERIFIED_SETTLED. Per-surface detail in keeperhub-surfaces.json."
+      "method": "kh-proof --execution 69zzrj7z676u89ce1x76j re-ran the full verification chain independently: KeeperHub terminal state, receipt fetched from a Base Sepolia RPC, status asserted. Output: VERIFIED_SETTLED. Full record in proof-output/proof-69zzrj7z676u89ce1x76j.json.",
+      "corroboration": "Earlier verified executions: g0w11wukbk1v0psyditx4 / 0x11300427... and 41j3clx0b5xkv8vfv97hl / 0x98920aeb... (zero-value rail flights), dthckv3julum6m5ktmdik / 0x7bf655f3... (8.00 USDC settlement, block 45310631), ks6wxg5vnmc833nd2yyk4 / 0x770ada77... (9.00+5.06 -> 14.06 USDC, block 45311736, record in proof-output/evidence-execution-ks6wxg5vnmc833nd2yyk4.json), dbukwam812iep68uehkhy / 0xac6d32e5... (a second 9.00+5.06 -> 14.06 USDC run, block 45312815, the on-camera settle). Per-surface detail in keeperhub-surfaces.json."
     },
     {
       "id": "settle.onchain",
       "claim": "executeSettlement moves USDC on a public chain",
-      "state": "BLOCKED",
-      "value": null,
-      "blocker": "Demo accounts hold zero Base Sepolia USDC and the KeeperHub relayer 0x7ae891ec51990684682a084381e97b59d787652b holds zero native BASE. KeeperHub sponsors transfers, not contract-call gas.",
-      "errorVerbatim": "Insufficient BASE balance. Have: 0.0, Need: 0.000000231. Fund 0x7ae891ec51990684682a084381e97b59d787652b with at least 0.000000231 BASE on this chain and retry.",
-      "behaviourWhenBlocked": "Simulate renders 'WOULD REVERT - NOT BROADCAST'. No cached receipt is replayed and no success is implied.",
-      "correction": "An earlier revision of this file said the gate was blocked on funding alone. It was also blocked on a defect: makeDemoPeople() reminted every demo signer on each page load, so no demo address was fundable - a faucet transfer would land on an address that ceased to exist at the next refresh. Fixed 2026-08-10 in apps/web/lib/demoKeys.ts (localStorage-pinned signers behind NEXT_PUBLIC_FINALTAB_PERSIST_DEMO_KEYS=1, ephemeral by default) and surfaced in apps/web/components/FundingPanel.tsx. Both branches verified in-browser: flag set gives byte-identical addresses across a reload, flag unset rotates them and writes nothing to storage.",
-      "relayerFunding": "Does not need a faucet. Measured against https://sepolia.base.org on 2026-08-10, the deployer 0x976EF25623A94F6F70924816697C7c7172210a5F holds 0x57e986e93ba4 (0.0000966605 ETH), roughly 418x what the relayer needs. contracts/scripts/fund-relayer.js sweeps it across but has not been run: it requires the deployer key, and using a wallet key is outside autonomous scope.",
-      "unblockedBy": "Two human actions: claim Base Sepolia USDC from Circle's login-gated faucet into the now-stable demo addresses, and run contracts/scripts/fund-relayer.js with the deployer key. Both outside autonomous scope."
+      "state": "LIVE_PROVEN",
+      "measuredAt": "2026-08-10",
+      "value": {
+        "settlements": 4,
+        "latest": {
+          "settlementId": "0xa3d79513657a1a6f8b01c7bcb3c5026cd47e2ead9fc8b27a9239bcc1d6e55bb6",
+          "ledgerHash": "0xcdc4a9f0b9e141cfce2ba149d90f3852adf07154184443a4b1d8d4ae92c3bc54",
+          "txHash": "0x314189b472033de62f8aea7603111c141315be390bc834e283e718382261c5eb",
+          "blockNumber": 45315909,
+          "payout": "2.00 USDC to vee",
+          "balanceDelta": "vee +2.00, hem -1.20, ravi -0.80, contract retained 0.00, sum of deltas = 0",
+          "triggeredBy": "AI agent over the production MCP endpoint (prepare_settlement -> settle_tab confirm:true -> settlement_status VERIFIED_SETTLED)"
+        }
+      },
+      "method": "Demo-signer balances read from Base Sepolia before and after each settlement; receipt fetched independently from https://sepolia.base.org rather than trusted from KeeperHub; conservation asserted. Full records in proof-output/live-proof-*.json.",
+      "correction": "Earlier revisions marked this claim BLOCKED pending a contracts/scripts/fund-relayer.js deployer sweep into the relayer 0x7ae891ec51990684682a084381e97b59d787652b. What actually happened: the sweep was deliberately never run; instead the relayer was funded 0.00005 ETH directly (tx 0xce5ec0bf..., block 45310097) after KeeperHub reported 'Insufficient BASE balance. Have: 0.0, Need: 0.000000231.' Separately, every recorded executeSettlement execution reports sponsored: true with gas paid from KeeperHub's own gas-payer EOA 0xdcf4bac4bd805948168ff63483bc493894a29613 through its forwarder 0x5af5194b4b0909eb978e3cf1e25333852277f07d - so the measured records show KeeperHub-sponsored gas on the settlements themselves. After the user explicitly authorized testnet funding of the demo signer addresses, four settlements executed executeSettlement on the deployed contract against real Base Sepolia USDC. The defect also recorded in the earlier entry (demo signers reminted per page load) was real, was fixed in apps/web/lib/demoKeys.ts before any funding landed, and that fix plus its in-browser verification stand.",
+      "behaviourWhenBlocked": "Unchanged and still enforced: if simulation fails, the app renders 'WOULD REVERT - NOT BROADCAST', no cached receipt is replayed, and no success is implied."
+    },
+    {
+      "id": "mcp.agentSettlement",
+      "claim": "An AI agent settled a tab end-to-end over MCP against production, no UI involved",
+      "state": "LIVE_PROVEN",
+      "measuredAt": "2026-08-10",
+      "value": {
+        "endpoint": "https://finaltab.vercel.app/api/mcp",
+        "tools": 7,
+        "loop": "get_balances -> prepare_settlement -> settle_tab (confirm: true) -> settlement_status (VERIFIED_SETTLED on first poll) -> get_balances",
+        "executionId": "69zzrj7z676u89ce1x76j",
+        "txHash": "0x314189b472033de62f8aea7603111c141315be390bc834e283e718382261c5eb",
+        "elapsed": "settle_tab acceptance to on-chain success in under 3 seconds (createdAt 22:15:04.038Z, completedAt 22:15:06.881Z)"
+      },
+      "method": "JSON-RPC tools/call requests against the production endpoint, every step and both balance reads recorded in docs/release/evidence/live-proof-4-mcp.json",
+      "caveat": "settle_tab is gated behind an explicit confirm flag; without confirm: true it returns the dry-run only. The 12 unit tests in apps/web/test/agentSettlement.test.ts cover determinism, netting, EIP-712 signature recovery, and env-key resolution with PRESENT/MISSING/MALFORMED statuses."
     },
     {
       "id": "vision.groq",
@@ -135,7 +162,7 @@
       "claim": "Settlement requires two explicit typed signatures per debtor",
       "state": "FIXTURE_PROVEN",
       "value": "FINALTab plan consent plus the USDC receiveWithAuthorization signature. The UI does not claim single-signature settlement.",
-      "caveat": "Verified in the demo-key flow, not against a real wallet."
+      "caveat": "Verified in the demo-key flow, not against a real wallet. The receiveWithAuthorization leg has since been exercised live: four Base Sepolia settlements executed with per-debtor signatures the deployed contract validated on-chain."
     },
     {
       "id": "money.integerSafety",
@@ -235,6 +262,6 @@
     "Publishing the CLI pull request",
     "Rotating credentials or rewriting git history",
     "Broadcasting any value-bearing mainnet transaction",
-    "Funding any account"
+    "Funding any mainnet account (testnet demo-signer funding was explicitly user-authorized)"
   ]
 }

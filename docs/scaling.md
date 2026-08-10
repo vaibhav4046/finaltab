@@ -23,13 +23,21 @@ agent framework — can call:
 | `split_equal` | Equal split, largest-remainder, shares always sum to total |
 | `split_weighted` | Weighted split, same invariant |
 | `net_debts` | Collapse a debt graph to ≤ n−1 transfers, conservation-checked |
+| `get_balances` | Live USDC + ETH balances for the demo signers |
+| `prepare_settlement` | Build + sign a settlement from a debt list (EIP-3009, ledger-hash nonces) |
+| `settle_tab` | Execute onchain via KeeperHub — refuses without explicit `confirm: true` |
 | `settlement_status` | Fail-closed KeeperHub verdict for an execution id |
 
 Verified with real JSON-RPC calls (initialize → tools/list → tools/call):
 `split_equal {"total":"54.00","people":["vee","hem","ravi"]}` returned three
 `"18.00"` shares with `sumsToTotal: true`, and `settlement_status` on execution
 `g0w11wukbk1v0psyditx4` returned `VERIFIED_SETTLED` with the real Base Sepolia
-receipt (tx `0x1130…278c`, block 45243955).
+receipt (tx `0x1130…278c`, block 45243955). Then the whole loop was proven, not
+just the read half: on 2026-08-10 an AI agent drove a real settlement end to end
+over this endpoint — `get_balances` → `prepare_settlement` → `settle_tab`
+(`confirm: true`) → `settlement_status` → `get_balances`, moving 2.00 USDC
+atomically in under 3 seconds (tx `0x314189b4…c5eb`, block 45315909,
+executionId `69zzrj7z676u89ce1x76j`).
 
 Why this matters for scale: the marginal cost of a new "client" is zero. Instead
 of building N frontends, one MCP endpoint makes FINALTab the money-math and

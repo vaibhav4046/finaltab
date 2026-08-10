@@ -1,21 +1,24 @@
 # Status
 
-**As of 2026-08-10, commit `84e5397` plus an uncommitted working tree** (43 modified tracked files —
-the demo-key persistence fix and this documentation pass are not committed yet). One page, no
+**As of 2026-08-10, commit `d4dfb7e` plus an uncommitted working tree** (7 modified tracked files —
+the MCP agent-settlement path and this documentation pass are not committed yet). One page, no
 aspiration. Machine-readable twin:
 [evidence.json](evidence.json). Gate runs: [gates.md](gates.md).
 
 ## One-line verdict
 
 FINALTab is **submission-ready, end to end**: everything from receipt photo to the final broadcast
-of `executeSettlement` is live-proven. On 2026-08-10 a real batch settlement moved 8.00 USDC
-atomically on Base Sepolia through the production API and KeeperHub — tx
-`0x7bf655f3f72774839908021039e640b5ac8acaf5462b1376200cbb490045c12d`, block 45310631,
-`verified: true`. Gate 12, formerly the one disclosed hole, now passes.
+of `executeSettlement` is live-proven. On 2026-08-10 an AI agent settled a tab over the production
+MCP endpoint, no UI involved — five JSON-RPC calls, 2.00 USDC moved atomically, under 3 seconds from
+acceptance to on-chain success (tx
+`0x314189b472033de62f8aea7603111c141315be390bc834e283e718382261c5eb`, block 45315909,
+`verified: true`, executionId `69zzrj7z676u89ce1x76j`). Three more real batch settlements landed the
+same day, e.g. 8.00 USDC via tx `0x7bf655f3…45c12d`, block 45310631. Gate 12, formerly the one
+disclosed hole, now passes.
 
 | Flag | State | Basis |
 |---|---|---|
-| `MAIN_READY` | **YES** | Deployed app, 200 passing / 1 skipped, contract live on Base Sepolia, five chain-verified KeeperHub receipts including three real batch settlements (gate 12 closed 2026-08-10), 1:42 master video with a live settlement ON CAMERA (tx `0xac6d32e5…7c8710`, block 45312815). |
+| `MAIN_READY` | **YES** | Deployed app, 212 passing / 1 skipped, contract live on Base Sepolia, six chain-verified KeeperHub receipts including four real batch settlements — one driven end-to-end by an AI agent over MCP (gate 12 closed 2026-08-10), 1:42 master video with a live settlement ON CAMERA (tx `0xac6d32e5…7c8710`, block 45312815). |
 | `BOUNTY_READY` | **YES** | KeeperHub/cli PR [#95](https://github.com/KeeperHub/cli/pull/95) is open upstream — verified against the GitHub API on 2026-08-10. Tick the Best Onboarding UX box. |
 
 Neither flag is a prediction about placing. They mean the required artifacts exist and every claim
@@ -31,11 +34,12 @@ attached to them has been measured.
 | Blur / unusable-photo rejection | Fixed metric verified in-browser (pristine fixture: 62.7 under the old broken metric vs 4149.8 canonical) |
 | Ledger freeze → canonical hash | 52 engine tests; hash locks edits by construction |
 | EIP-3009 signing (demo keys) | Exercised in a real browser session; produces valid signatures |
-| KeeperHub execution end to end | Five independent `VERIFIED_SETTLED` receipts, chain-confirmed, not merely status-field-confirmed |
-| **Live batch settlement (`executeSettlement`)** | Three real settlements: tx `0x7bf655f3…45c12d` (block 45310631, 4.20 + 3.80 USDC pulled, 8.00 paid out), tx `0x770ada77…f120fc2` (block 45311736), tx `0xac6d32e5…7c8710` (block 45312815, 9.00 + 5.06 USDC pulled, 14.06 paid out — executed ON CAMERA in the demo video). Exact balance deltas, contract retained zero. Reports: [evidence/](evidence/) + `proof-output/evidence-execution-*.json` |
+| KeeperHub execution end to end | Six independent `VERIFIED_SETTLED` receipts, chain-confirmed, not merely status-field-confirmed |
+| **AI agent settlement over MCP** | An agent drove the full loop against production `https://finaltab.vercel.app/api/mcp`: `get_balances` → `prepare_settlement` → `settle_tab` (`confirm: true`) → `settlement_status` (`VERIFIED_SETTLED` first poll) → `get_balances`. 1.20 + 0.80 USDC pulled, 2.00 paid out, under 3s. tx `0x314189b4…c5eb` (block 45315909, executionId `69zzrj7z676u89ce1x76j`). Record: `docs/release/evidence/live-proof-4-mcp.json` |
+| **Live batch settlement (`executeSettlement`)** | Three more real settlements: tx `0x7bf655f3…45c12d` (block 45310631, 4.20 + 3.80 USDC pulled, 8.00 paid out), tx `0x770ada77…f120fc2` (block 45311736, executionId `ks6wxg5vnmc833nd2yyk4`, 9.00 + 5.06 pulled, 14.06 paid out), tx `0xac6d32e5…7c8710` (block 45312815, a second 9.00 + 5.06 → 14.06 run — executed ON CAMERA in the demo video). Exact balance deltas, contract retained zero. Reports: [evidence/](evidence/) + `proof-output/evidence-execution-*.json` |
 | Settlement contract on Base Sepolia | 2259 bytes at `0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64`, re-queried today |
 | Honest failure rendering | The Simulate white-screen crash is fixed; 11 call sites routed through `apps/web/lib/apiText.ts`, locked by 20 tests |
-| Build, types, tests | 200 passing / 1 skipped; `tsc` clean; 16-route production build clean |
+| Build, types, tests | 212 passing / 1 skipped (web grew 66 → 78 with the MCP agent-settlement tests); `tsc` clean; 16-route production build clean |
 
 ## What does not work, stated plainly
 
@@ -66,8 +70,9 @@ edited:
    The original citation was correct and is restored. Recorded here rather than quietly reverted,
    because a false retraction is as much a documentation error as a false claim.
 
-Every test count in the repo was also wrong (116, 119, 127 in various files). All now read the
-measured 200 / 1 skipped.
+Every test count in the repo was also wrong (116, 119, 127 in various files). All were corrected
+to the then-measured 200 / 1 skipped, and again to the freshly measured 212 / 1 skipped after the
+MCP agent-settlement tests landed.
 
 ## Security posture
 

@@ -129,7 +129,9 @@ loudly instead of guessing.
 
 ## 11. Test counts are reported; coverage percentage is not
 
-**Chosen:** report 200 passing / 1 skipped, measured.
+**Chosen:** report 200 passing / 1 skipped, measured. *(The then-measured value; a later fresh
+run the same day measured 212 / 1 after the MCP agent-settlement tests landed. The decision
+itself stands: report measured counts only.)*
 
 **Rejected:** asserting the 80% coverage standard without running coverage.
 

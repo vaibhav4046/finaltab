@@ -23,19 +23,22 @@ Group expenses die in the last mile: someone fronts the bill, an app computes sp
 - **Gasless for debtors.** Each debtor signs USDC `receiveWithAuthorization` (EIP-3009), naming the settlement contract as `to`. Deliberately not `transferWithAuthorization`: USDC enforces `msg.sender == to` on the receive variant, so a leaked signature is redeemable only by the settlement contract. No approvals, no allowances, no debtor gas.
 - **Atomic batch.** `FinalTabBatchSettlement.executeSettlement` moves everyone's USDC in one transaction on Base Sepolia. One bad signature reverts the whole batch. Replay is blocked by settlementId derived from the ledger hash. 11 Hardhat tests cover atomicity, replay, nonce binding, and expiry.
 - **KeeperHub is the only execution layer.** Simulate first; a failed simulation is never broadcast. Then execute, then poll status honoring `X-Poll-Interval-Hint` and `Retry-After`. The app shows VERIFIED_SETTLED only when the execution is terminal-successful AND a receipt exists AND `verified === true` AND `receiptStatus === "success"`. A transaction hash proves submission; only a verified receipt proves landing. There is no code path that fakes a transaction state.
+- **Agents settle, not just humans.** A production MCP server at `https://finaltab.vercel.app/api/mcp` exposes 7 tools (split, net, balances, prepare, settle, status). On 2026-08-10 an AI agent drove a settlement end to end in five JSON-RPC calls — `get_balances` → `prepare_settlement` → `settle_tab` with an explicit `confirm: true` gate → `settlement_status` (`VERIFIED_SETTLED` on the first poll) → `get_balances` — moving 2.00 USDC atomically on Base Sepolia in under 3 seconds from acceptance to on-chain success. This is the "Agents Onchain" loop literally: no UI, no human click, chain-verified receipt.
 
-**Numbers:** 189 passing workspace tests + 11 Hardhat tests = 200 (measured 2026-08-10, no coverage percentage claimed). Zero-budget stack: Next.js on Vercel free, Supabase free, Groq free tier, KeeperHub.
+**Numbers:** 201 passing workspace tests + 11 Hardhat tests = 212 (measured 2026-08-10, no coverage percentage claimed). Zero-budget stack: Next.js on Vercel free, Supabase free, Groq free tier, KeeperHub.
 
 - Live app: https://finaltab.vercel.app
 - Repo: https://github.com/vaibhav4046/finaltab
 - Demo: [VIDEO_URL] (produced: `proof-output/finaltab-demo.mp4`, 92.7s, 1080p, 8 scenes with voiceover, recorded in one continuous session against the real app — upload it and fill the URL before submitting)
+- **AI agent settlement over MCP** (chain-verified, Base Sepolia): https://sepolia.basescan.org/tx/0x314189b472033de62f8aea7603111c141315be390bc834e283e718382261c5eb
+  (executionId `69zzrj7z676u89ce1x76j`, block 45315909, `verified: true` — five JSON-RPC calls against the production MCP endpoint, 1.20 + 0.80 USDC pulled via EIP-3009, 2.00 USDC paid out atomically, under 3s; step record at `docs/release/evidence/live-proof-4-mcp.json`.)
 - **Live batch settlement** (chain-verified receipt, Base Sepolia): https://sepolia.basescan.org/tx/0x7bf655f3f72774839908021039e640b5ac8acaf5462b1376200cbb490045c12d
-  (executionId `dthckv3julum6m5ktmdik`, block 45310631, `verified: true`, `receiptStatus: "success"` — 4.20 + 3.80 USDC pulled via EIP-3009, 8.00 USDC paid out atomically; fail-closed run report committed at `docs/release/evidence/`.)
+  (executionId `dthckv3julum6m5ktmdik`, block 45310631, `verified: true`, `receiptStatus: "success"` — 4.20 + 3.80 USDC pulled via EIP-3009, 8.00 USDC paid out atomically; fail-closed run report committed at `docs/release/evidence/`. Two more settlements followed the same day, including the one executed on camera in the demo video.)
 - Earlier zero-value KeeperHub rail proof: https://sepolia.basescan.org/tx/0x11300427473e95d241d924891b2cc0131b0047263e461787c27a2f854c39278c
   (executionId `g0w11wukbk1v0psyditx4`, block 45243955, `verified: true`, `receiptStatus: "success"`.)
 - Settlement contract, deployed and code-confirmed on Base Sepolia: [`0xCcf6b4De…`](https://sepolia.basescan.org/address/0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64) — source not yet verified on Basescan.
 
-**What is proven and what is not:** the settle leg is live-proven — `executeSettlement` moved 8.00 USDC atomically on Base Sepolia on 2026-08-10 (tx above), through the production API and KeeperHub, with exact balance deltas and a chain-verified receipt. Still not proven, stated because a submission that buries it is not honest: Supabase persistence is not applied (the app is stateless per session), the Claude/OpenAI fallback legs have never contacted their real APIs (only Groq is live), and the MetaMask signing path is stubbed (demo keys sign for real). Full per-surface labels in [docs/release/truth-snapshot.md](release/truth-snapshot.md).
+**What is proven and what is not:** the settle leg is live-proven four times over — `executeSettlement` moved real USDC atomically on Base Sepolia on 2026-08-10 (txs above), through the production API and KeeperHub, with exact balance deltas and chain-verified receipts; one of those settlements was driven end to end by an AI agent over MCP with no UI involved. Still not proven, stated because a submission that buries it is not honest: Supabase persistence is not applied (the app is stateless per session), the Claude/OpenAI fallback legs have never contacted their real APIs (only Groq is live), and the MetaMask signing path is stubbed (demo keys sign for real). Full per-surface labels in [docs/release/truth-snapshot.md](release/truth-snapshot.md).
 
 ## Best Onboarding UX Improvement entry
 
@@ -54,8 +57,8 @@ This complements upstream issue #49 (executionId status lookup for agents) and w
 
 | Category | Evidence |
 |----------|----------|
-| Onchain execution via KeeperHub | Live batch settlement tx `0x7bf655f3…` (8.00 USDC, chain-verified); exclusive execution layer; simulate-first; fail-closed receipt verification; flight-recorder CLI with honest exit codes |
-| Technical quality | 189 + 11 = 200 tests; integer-only money; largest-remainder splits; ledger-hash-bound EIP-3009 nonces; atomic batch contract |
+| Onchain execution via KeeperHub | Four live batch settlements on 2026-08-10, all chain-verified — incl. an AI agent settling over MCP in 5 JSON-RPC calls (tx `0x314189b4…`, <3s) and tx `0x7bf655f3…` (8.00 USDC); exclusive execution layer; simulate-first; fail-closed receipt verification; flight-recorder CLI with honest exit codes |
+| Technical quality | 201 + 11 = 212 tests; integer-only money; largest-remainder splits; ledger-hash-bound EIP-3009 nonces; atomic batch contract; MCP `settle_tab` gated behind explicit `confirm: true` |
 | Real-world usefulness | The last-mile settlement problem every split app punts on |
 | UX | Photo -> English sentence -> one signature each -> verified receipt; onboarding contribution shipped upstream to the CLI |
 | Honesty | Unproven states render as unproven; blockers documented in the repo, not hidden |

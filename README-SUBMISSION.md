@@ -209,10 +209,10 @@ engine            52 passed
 keeperhub         32 passed
 vision            32 passed, 1 skipped (needs a live GROQ_API_KEY)
 flight-recorder    7 passed
-web               66 passed
+web               78 passed
 contracts         11 passing   (npx hardhat test)
 ------------------------------------------
-                 200 passing, 1 skipped
+                 212 passing, 1 skipped
 ```
 
 No coverage percentage is claimed, because no coverage run has been performed.
@@ -225,14 +225,15 @@ Contract is **deployed** at `0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64` — 225
 ## What Makes This Production-Grade?
 
 1. **Cryptographic Safety** — EIP-712 typed data, nonce binding, atomic settlement
-2. **Real Chain Execution** — `executeSettlement` has moved real USDC on Base Sepolia three times
+2. **Real Chain Execution** — `executeSettlement` has moved real USDC on Base Sepolia four times
    through KeeperHub with chain-verified receipts (tx `0x7bf655f3…45c12d` block 45310631, tx
-   `0x770ada77…f120fc2` block 45311736, tx `0xac6d32e5…7c8710` block 45312815 — the last one live
-   on camera in the demo video). Earlier zero-value rail proof: tx `0x1130...278c`.
+   `0x770ada77…f120fc2` block 45311736, tx `0xac6d32e5…7c8710` block 45312815 — live on camera in
+   the demo video — and tx `0x314189b4…c5eb` block 45315909, driven end-to-end by an AI agent over
+   MCP in five JSON-RPC calls, <3s). Earlier zero-value rail proof: tx `0x1130...278c`.
 3. **Resilience** — Groq→Claude→OpenAI fallback routing, cascade covered by 12 tests. Groq is the
    only leg proven against a live API.
 4. **User Experience** — Mobile responsive, real-time feedback, animation
-5. **Code Quality** — 200 passing tests, 1 skipped (189 workspace + 11 contract)
+5. **Code Quality** — 212 passing tests, 1 skipped (201 workspace + 11 contract)
 6. **Zero Trust Architecture** — No centralized backend (KeeperHub direct execution)
 7. **Honest Defaults** — No fake data, no simulated users, real on-chain proof
 

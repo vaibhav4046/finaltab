@@ -118,9 +118,9 @@ Measured 2026-08-10 (see [docs/release/gates.md](docs/release/gates.md)):
 - KeeperHub: 32 passing ✅
 - Vision: 32 passing, 1 skipped (needs live `GROQ_API_KEY`) ✅
 - Flight recorder: 7 passing ✅
-- Web: 66 passing ✅
+- Web: 78 passing ✅
 - Contract: 11 passing ✅
-- **Total: 200 passing, 1 skipped**
+- **Total: 212 passing, 1 skipped**
 - Web build: Clean (16 routes) ✅
 - TypeScript: No errors ✅
 
@@ -134,6 +134,7 @@ Measured 2026-08-10 (see [docs/release/gates.md](docs/release/gates.md)):
 - [x] Proof collected — chain-verified run report in `docs/release/evidence/`
 - [x] Demo video recorded — `proof-output/finaltab-demo.mp4` (1:42). Shows a LIVE chain execution end-to-end: receipt → allocation → freeze → EIP-3009 sign → simulate → KeeperHub execute → VERIFIED SETTLED banner + raw KeeperHub status (tx `0xac6d32e5…7c8710`, block 45312815) on camera.
 - [x] Second + third live settlements executed through the full UI flow (2026-08-10) — tx `0x770ada77…f120fc2` (block 45311736) and tx `0xac6d32e5…7c8710` (block 45312815, on camera). Status JSON evidence in `proof-output/evidence-execution-*.json`.
+- [x] Fourth live settlement driven end-to-end by an AI agent over MCP (2026-08-10) — five JSON-RPC calls against production `/api/mcp`, 2.00 USDC, <3s: tx `0x314189b4…c5eb` (block 45315909, executionId `69zzrj7z676u89ce1x76j`). Step record: `docs/release/evidence/live-proof-4-mcp.json`.
 - [ ] README updated with deployment steps
 - [ ] GitHub repo visibility set (if needed)
 - [ ] Vercel deploy ready (or deployment link captured)

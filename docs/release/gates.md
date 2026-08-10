@@ -61,6 +61,15 @@ TOTAL                             200 passing, 1 skipped
 the TOTAL line, not the subtotal. The split above is by *runner* (Vitest vs Hardhat), not by
 whether a second command is needed — an earlier revision of this file implied it was.
 
+**Post-run annotation (2026-08-10, later the same day).** The numbers above are what that gate
+run measured and are preserved unchanged. Since then the working tree gained the MCP
+agent-settlement path: `apps/web` grew 66 → 78 tests (`test/agentSettlement.test.ts`, 12 tests)
+and a fresh full `pnpm -r --if-present test` run measured **212 passing, 1 skipped** (201 Vitest
++ 11 Hardhat, exit 0). Gate 12 was also joined by three more live settlements the same day,
+including one driven end to end by an AI agent over MCP (tx `0x314189b4…c5eb`, block 45315909,
+executionId `69zzrj7z676u89ce1x76j`, 2.00 USDC, <3s). Gate 10's ffprobe line reflects the video
+cut current at run time; the master has since been re-recorded.
+
 ## Gate 17 — the journey, as actually observed
 
 Every number in this section was read off the running app, not computed here and asserted. The run

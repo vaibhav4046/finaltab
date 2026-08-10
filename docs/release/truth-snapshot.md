@@ -17,12 +17,20 @@ plausibility.
 
 ## The one-paragraph honest version
 
-The **entire pipeline is live-proven end to end, including the settle leg**. On
-2026-08-10 a real batch settlement executed through the production web API →
-KeeperHub → `FinalTabBatchSettlement` on Base Sepolia: two debtors' signed
-EIP-3009 authorizations pulled 4.20 + 3.80 USDC in one atomic transaction and
-paid 8.00 USDC to the creditor, with exact balance deltas, a chain-verified
-receipt, and one `SettlementExecuted` event bound to the ledger hash
+The **entire pipeline is live-proven end to end, including the settle leg — and
+an AI agent has driven it with no UI involved**. On 2026-08-10 four real batch
+settlements executed through KeeperHub → `FinalTabBatchSettlement` on Base
+Sepolia. The headline: an agent settled a tab over the production MCP endpoint
+in five JSON-RPC calls (`get_balances` → `prepare_settlement` → `settle_tab`
+with `confirm: true` → `settlement_status`, `VERIFIED_SETTLED` on the first
+poll → `get_balances`), pulling 1.20 + 0.80 USDC via the debtors' EIP-3009
+signatures and paying 2.00 USDC to the creditor atomically, under 3 seconds
+from acceptance to on-chain success
+(tx [`0x314189b4…`](https://sepolia.basescan.org/tx/0x314189b472033de62f8aea7603111c141315be390bc834e283e718382261c5eb),
+block 45315909, executionId `69zzrj7z676u89ce1x76j`). The first settlement of
+the day went through the production web API: 4.20 + 3.80 USDC pulled, 8.00 paid
+out, exact balance deltas, a chain-verified receipt, and one
+`SettlementExecuted` event bound to the ledger hash
 (tx [`0x7bf655f3…`](https://sepolia.basescan.org/tx/0x7bf655f3f72774839908021039e640b5ac8acaf5462b1376200cbb490045c12d),
 block 45310631). An earlier revision of this paragraph said the settle leg was
 blocked on funding and ephemeral keys; both were closed (Circle faucet funding of
@@ -42,7 +50,8 @@ simulation — was already proven, most of it live.
 | Fail-closed verdict logic | `LIVE_PROVEN` | The same harness returned `FAILED` for the deploy attempt with the real upstream reason, rather than reporting success |
 | Contract deployed on Base Sepolia | `LIVE_PROVEN` | `eth_getCode` on `0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64` → 2259 bytes |
 | Contract source verified on Basescan | `NOT_STARTED` | No published source; this is why the settle route must pass `abi` inline |
-| `executeSettlement` batch settlement onchain | `LIVE_PROVEN` | tx [`0x7bf655f3…`](https://sepolia.basescan.org/tx/0x7bf655f3f72774839908021039e640b5ac8acaf5462b1376200cbb490045c12d) block 45310631, executionId `dthckv3julum6m5ktmdik`, `verified: true`, `receiptStatus: "success"`, 3 USDC `Transfer` logs + 1 `SettlementExecuted` bound to the ledgerHash, exact balance deltas (+8.00 / −4.20 / −3.80), zero USDC retained. Report: `proof-output/live-settle-2026-08-10T19-19-04-531Z.json`. See "The settle leg" below |
+| `executeSettlement` batch settlement onchain | `LIVE_PROVEN` | Four settlements on 2026-08-10. First: tx [`0x7bf655f3…`](https://sepolia.basescan.org/tx/0x7bf655f3f72774839908021039e640b5ac8acaf5462b1376200cbb490045c12d) block 45310631, executionId `dthckv3julum6m5ktmdik`, `verified: true`, `receiptStatus: "success"`, 3 USDC `Transfer` logs + 1 `SettlementExecuted` bound to the ledgerHash, exact balance deltas (+8.00 / −4.20 / −3.80), zero USDC retained. Report: `proof-output/live-settle-2026-08-10T19-19-04-531Z.json`. Then `ks6wxg5vnmc833nd2yyk4` / `0x770ada77…` (block 45311736) and `dbukwam812iep68uehkhy` / `0xac6d32e5…` (block 45312815, on camera), both 9.00 + 5.06 → 14.06 USDC. See "The settle leg" below |
+| **AI agent settlement over MCP** | `LIVE_PROVEN` | tx [`0x314189b4…`](https://sepolia.basescan.org/tx/0x314189b472033de62f8aea7603111c141315be390bc834e283e718382261c5eb) block 45315909, executionId `69zzrj7z676u89ce1x76j`, `verified: true`. Five JSON-RPC `tools/call` requests against production `https://finaltab.vercel.app/api/mcp`; 1.20 + 0.80 → 2.00 USDC; acceptance to on-chain success under 3 s. `settle_tab` is gated behind explicit `confirm: true`; 12 unit tests in `apps/web/test/agentSettlement.test.ts`. Step record: `docs/release/evidence/live-proof-4-mcp.json` |
 | Contract logic (atomicity, replay, nonce binding, expiry) | `FIXTURE_PROVEN` | 11 Hardhat tests against `MockUSDC3009` |
 | Calldata encoding for KeeperHub | `LIVE_PROVEN` | Decoded live request: selector `ab894f37`, both pulls carry `to = 0xCcf6b4De…`, values 19,440,000 + 11,670,000 = 31,110,000 = payout exactly |
 | Receipt extraction (vision) | `LIVE_PROVEN` | Real Groq API, strict JSON schema, decimal-string amounts |
@@ -67,9 +76,16 @@ closed the same day, each with evidence:
 1. **USDC funded.** Two persistent demo signers (generated fresh for this demo,
    keys held only in gitignored `proof-output/demo-signers.local.json`) received
    20 USDC each from the Circle faucet; balances verified on-chain before the run.
-2. **Relayer gassed.** `0x7AE891Ec…` funded 0.00005 ETH (block 45310097).
-   KeeperHub sponsors *transfers* but not *contract-call* gas — the settle tx
-   consumed 222,832 gas from this balance.
+2. **Relayer gassed.** `0x7AE891Ec…` funded 0.00005 ETH (block 45310097),
+   after KeeperHub reported `Insufficient BASE balance. Have: 0.0, Need:
+   0.000000231.` on the deploy attempt. **Correction (2026-08-10, measured):**
+   an earlier revision of this line said the settle tx "consumed 222,832 gas
+   from this balance". `eth_getTransactionByHash` on `0x7bf655f3…` shows
+   `from: 0xdcf4bac4…` — KeeperHub's own gas-payer EOA, via its forwarder
+   `0x5af5194b…` — and every recorded settlement execution reports
+   `sponsored: true`. The 222,832 gas was real; the payer attribution was
+   wrong. The relayer funding happened and is recorded, but the settlement gas
+   was KeeperHub-sponsored.
 3. **Keys made persistent.** The live run signs with the fixed demo signers, not
    the per-session `generatePrivateKey()` path; the web UI honours
    `NEXT_PUBLIC_FINALTAB_PERSIST_DEMO_KEYS=1` for the same purpose.
@@ -110,10 +126,10 @@ Run: `pnpm -r --if-present test` plus `npx hardhat test`. Exit 0.
 | keeperhub | 32 |
 | vision | 32 (+1 skipped without a live `GROQ_API_KEY`) |
 | keeperhub-flight-recorder | 7 |
-| web (`apps/web`) | 66 |
-| **workspace subtotal** | **189** |
+| web (`apps/web`) | 78 |
+| **workspace subtotal** | **201** |
 | contracts (Hardhat) | 11 |
-| **Total** | **200 passing, 1 skipped** |
+| **Total** | **212 passing, 1 skipped** |
 
 No coverage percentage is claimed anywhere, because no coverage run has been
 performed. `apps/web` previously had typecheck only and no test runner; a vitest
@@ -236,9 +252,10 @@ No secret is prefixed `NEXT_PUBLIC_`. `.env.example` carries blank keys only.
 
 ## Repository state
 
-- Branch `main`, 15 commits.
-- Uncommitted working-tree changes across app, contracts, engine, and docs — all
-  of them the fixes listed above.
+- 25 commits, HEAD `d4dfb7e` at the time of this pass.
+- Uncommitted working-tree changes: 10 modified tracked files plus 3 untracked
+  (the MCP agent-settlement path — `apps/web/lib/server/agentSettlement.ts`,
+  its tests — and this documentation pass).
 - Two credentials survive in the local object database, both in **unreachable**
   blobs only: a deployer private key (8 dangling blobs) and an Alchemy API key
   (defect 10). Of the 305 objects reachable from any ref, **zero** contain

@@ -12,7 +12,9 @@ operational summary.
 |---------|-------|
 | App | https://finaltab.vercel.app |
 | Settlement contract | `0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64` on Base Sepolia — 2259 bytes confirmed via `eth_getCode`. Source **not** verified on Basescan. |
-| KeeperHub execution — live batch settlement | tx `0x7bf655f3...45c12d`, executionId `dthckv3julum6m5ktmdik`, block 45310631, `verified: true`, `receiptStatus: "success"` — 4.20 + 3.80 USDC pulled via EIP-3009, 8.00 USDC paid out atomically (2026-08-10). Earlier zero-value rail proof: tx `0x1130...278c`, executionId `g0w11wukbk1v0psyditx4`, block 45243955 |
+| **MCP agent settlement** | An AI agent settled a tab over the production MCP endpoint, no UI: tx `0x314189b4...c5eb`, executionId `69zzrj7z676u89ce1x76j`, block 45315909, `verified: true` — 1.20 + 0.80 USDC pulled via EIP-3009, 2.00 USDC paid out atomically, under 3s from acceptance to on-chain success (2026-08-10). Full step record: `docs/release/evidence/live-proof-4-mcp.json` |
+| KeeperHub execution — live batch settlements | Three more real settlements, e.g. tx `0x7bf655f3...45c12d`, executionId `dthckv3julum6m5ktmdik`, block 45310631, `verified: true`, `receiptStatus: "success"` — 4.20 + 3.80 USDC pulled via EIP-3009, 8.00 USDC paid out atomically (2026-08-10). Earlier zero-value rail proof: tx `0x1130...278c`, executionId `g0w11wukbk1v0psyditx4`, block 45243955 |
+| MCP server | `https://finaltab.vercel.app/api/mcp` — 7 tools; `settle_tab` gated behind explicit `confirm: true` |
 | Receipt extraction + NL allocation | Live against Groq through the app's own API routes |
 | Demo video | `proof-output/finaltab-demo.mp4` — 101.6s, 1080p, one continuous session against the real app, including a live KeeperHub settlement verified on camera (tx `0xac6d32e5…7c8710`) |
 
@@ -32,16 +34,23 @@ engine            52 passed
 keeperhub         32 passed
 vision            32 passed, 1 skipped (needs a live GROQ_API_KEY)
 flight-recorder    7 passed
-web               66 passed
+web               78 passed
 contracts         11 passing   (cd contracts && npx hardhat test)
 ------------------------------------------
-                 200 passing, 1 skipped
+                 212 passing, 1 skipped
 ```
 
 No coverage percentage is claimed, because no coverage run has been performed.
 
 ## Proven onchain (2026-08-10)
 
+- **An AI agent settled a tab end-to-end over MCP.** Five JSON-RPC `tools/call` requests against
+  `https://finaltab.vercel.app/api/mcp`: `get_balances` → `prepare_settlement` → `settle_tab`
+  (`confirm: true`) → `settlement_status` (`VERIFIED_SETTLED` on the first poll) → `get_balances`.
+  1.20 + 0.80 USDC pulled via the debtors' EIP-3009 signatures, 2.00 USDC paid to the creditor
+  atomically, under 3 seconds from acceptance to on-chain success. tx
+  `0x314189b472033de62f8aea7603111c141315be390bc834e283e718382261c5eb` (block 45315909),
+  executionId `69zzrj7z676u89ce1x76j`. Step record: `docs/release/evidence/live-proof-4-mcp.json`.
 - **`executeSettlement` moved real USDC on Base Sepolia.** Through the production API →
   KeeperHub → contract: 4.20 + 3.80 USDC pulled from two debtors via signed EIP-3009
   authorizations, 8.00 USDC paid to the creditor, one atomic transaction. tx

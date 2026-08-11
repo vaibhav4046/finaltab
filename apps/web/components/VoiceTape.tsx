@@ -22,6 +22,14 @@ const STATUS_LABEL: Record<VoiceStatus, string> = {
   error: "Needs attention",
 };
 
+export function resolveVoiceReadbackText(
+  readbackText: string | null | undefined,
+  finalTranscript: string,
+  instruction: string,
+): string {
+  return readbackText?.trim() || finalTranscript.trim() || instruction.trim();
+}
+
 export function VoiceTape({ disabled = false, instruction, readbackText, onUseTranscript }: VoiceTapeProps) {
   const [muted, setMuted] = useState(false);
   const [appliedTranscript, setAppliedTranscript] = useState("");
@@ -59,8 +67,8 @@ export function VoiceTape({ disabled = false, instruction, readbackText, onUseTr
   const usableTranscript = voice.finalTranscript.trim();
   const transcriptWasApplied = usableTranscript.length > 0 && appliedTranscript === usableTranscript && instruction.trim() === usableTranscript;
   const spokenText = useMemo(
-    () => readbackText?.trim() || usableTranscript,
-    [readbackText, usableTranscript],
+    () => resolveVoiceReadbackText(readbackText, usableTranscript, instruction),
+    [instruction, readbackText, usableTranscript],
   );
 
   useEffect(() => {
@@ -149,6 +157,17 @@ export function VoiceTape({ disabled = false, instruction, readbackText, onUseTr
               {readback.status === "loading" ? "Preparing clip…" : readback.status === "playing" ? "Reading…" : "Read back"}
             </button>
 
+            {readback.downloadUrl ? (
+              <a
+                href={readback.downloadUrl}
+                download="finaltab-readback.mp3"
+                aria-label="Download prepared voice readback clip"
+                className={`${styles.control} inline-flex items-center rounded-md border border-ink-soft/40 bg-transparent px-3 font-mono text-xs font-bold uppercase tracking-wider text-ink transition-colors hover:bg-ink/5`}
+              >
+                Download clip
+              </a>
+            ) : null}
+
             <button
               type="button"
               onClick={toggleMute}
@@ -184,8 +203,8 @@ export function VoiceTape({ disabled = false, instruction, readbackText, onUseTr
           {voice.error ? <p className="mt-2 font-mono text-xs leading-5 text-[#9e2725]" role="alert">{voice.error}</p> : null}
           {readback.error ? <p className="mt-2 font-mono text-xs leading-5 text-[#9e2725]" role="alert">{readback.error}</p> : null}
           <p className="mt-2 font-mono text-xs leading-5 text-ink-soft">
-            Readback generates a short ElevenLabs clip before playback. The transcript stays editable; nothing is
-            allocated or signed until you use it and continue.
+            Readback generates a short ElevenLabs clip for playback or download. The transcript stays editable;
+            nothing is allocated or signed until you use it and continue.
           </p>
         </div>
       </div>

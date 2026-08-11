@@ -644,7 +644,7 @@ export function useVoiceAllocation({ onLevel }: UseVoiceAllocationOptions = {}) 
   };
 }
 
-function releaseReadback(
+export function releaseReadback(
   audioRef: MutableRefObject<HTMLAudioElement | null>,
   urlRef: MutableRefObject<string | null>,
   revokeUrl: boolean,
@@ -663,6 +663,7 @@ function releaseReadback(
 export function useVoiceReadback(muted: boolean) {
   const [status, setStatus] = useState<ReadbackStatus>("idle");
   const [error, setError] = useState<string | null>(null);
+  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const mountedRef = useRef(true);
   const abortRef = useRef<AbortController | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -674,7 +675,10 @@ export function useVoiceReadback(muted: boolean) {
     abortRef.current = null;
     releaseReadback(audioRef, urlRef, revokeUrl);
     if (revokeUrl) preparedTextRef.current = "";
-    if (mountedRef.current) setStatus("idle");
+    if (mountedRef.current) {
+      setStatus("idle");
+      if (revokeUrl) setDownloadUrl(null);
+    }
   }, []);
 
   useEffect(() => {
@@ -733,11 +737,12 @@ export function useVoiceReadback(muted: boolean) {
       if (controller.signal.aborted) return;
 
       const url = URL.createObjectURL(blob);
+      urlRef.current = url;
       const audio = new Audio(url);
       audio.preload = "auto";
-      urlRef.current = url;
       audioRef.current = audio;
       preparedTextRef.current = text;
+      if (mountedRef.current) setDownloadUrl(url);
       audio.onended = () => {
         if (mountedRef.current) setStatus("ready");
       };
@@ -750,6 +755,9 @@ export function useVoiceReadback(muted: boolean) {
       await playPrepared();
     } catch (caught) {
       if (controller.signal.aborted || !mountedRef.current) return;
+      releaseReadback(audioRef, urlRef, true);
+      preparedTextRef.current = "";
+      setDownloadUrl(null);
       setStatus("error");
       setError(caught instanceof Error ? caught.message : "Voice readback failed.");
     } finally {
@@ -757,5 +765,5 @@ export function useVoiceReadback(muted: boolean) {
     }
   }, [muted, playPrepared, stop]);
 
-  return { status, error, speak, stop };
+  return { status, error, downloadUrl, speak, stop };
 }

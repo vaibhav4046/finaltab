@@ -24,6 +24,7 @@ import { settlementObservationTarget } from "@/lib/server/settlementSubmission";
 import {
   StartSettlementAgentRunSchema,
   getSettlementAgentPersistenceContext,
+  walletBackedParticipantSnapshot,
 } from "@/lib/server/agentControl";
 import {
   SettleBodySchema,
@@ -488,11 +489,13 @@ async function deriveReviewedFreeze(
   if (!exactEqual(receiptResult.data.raw_extraction, reviewed.receipt)) throw new Error("REVIEWED_RECEIPT_CHANGED");
   if (allocationResult.data.instruction !== reviewed.instruction) throw new Error("REVIEWED_ALLOCATION_CHANGED");
 
-  const currentParticipants = (participantsResult.data ?? []).map((participant) => ({
-    id: participant.id as string,
-    name: participant.display_name as string,
-    walletAddress: typeof participant.wallet_address === "string" ? participant.wallet_address.toLowerCase() : null,
-  }));
+  const currentParticipants = walletBackedParticipantSnapshot(
+    (participantsResult.data ?? []).map((participant) => ({
+      id: participant.id as string,
+      display_name: participant.display_name as string,
+      wallet_address: typeof participant.wallet_address === "string" ? participant.wallet_address : null,
+    })),
+  );
   if (!exactEqual(currentParticipants, reviewed.participants)) throw new Error("REVIEWED_PARTICIPANTS_CHANGED");
   const addressSet = new Set(reviewed.participants.map((participant) => participant.walletAddress));
   if (addressSet.size !== reviewed.participants.length) throw new Error("DUPLICATE_PARTICIPANT_WALLET");

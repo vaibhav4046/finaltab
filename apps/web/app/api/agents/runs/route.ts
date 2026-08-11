@@ -25,7 +25,12 @@ function agentError(error: unknown): Response {
   if (message === "TAB_NOT_FOUND_OR_NOT_SHARED") {
     return privateJson({ ok: false, error: "TAB_NOT_FOUND", message: "The tab was not found or is not shared with this account." }, { status: 404 });
   }
-  if (message.startsWith("PAYER_NOT_IN_TAB") || message.startsWith("PARTICIPANT_COUNT_OUT_OF_BOUNDS")) {
+  if (
+    message.startsWith("PAYER_NOT_IN_TAB") ||
+    message.startsWith("PARTICIPANT_COUNT_OUT_OF_BOUNDS") ||
+    message.startsWith("WALLET_PARTICIPANT_COUNT_OUT_OF_BOUNDS") ||
+    message.startsWith("PAYER_WALLET_NOT_ATTACHED")
+  ) {
     return privateJson({ ok: false, error: "INVALID_TAB_STATE", message }, { status: 422 });
   }
   return privateJson(

@@ -59,6 +59,37 @@ afterEach(() => {
 });
 
 describe("settlement-agent server provenance", () => {
+  it("excludes walletless collaborators from the executable review snapshot", () => {
+    expect(agentControlInternals.walletBackedParticipantSnapshot([
+      {
+        id: "participant-a",
+        display_name: "Wallet A",
+        wallet_address: "0x1111111111111111111111111111111111111111",
+      },
+      {
+        id: "collaborator-without-wallet",
+        display_name: "Reviewer",
+        wallet_address: null,
+      },
+      {
+        id: "participant-b",
+        display_name: "Wallet B",
+        wallet_address: "0xABCDEFabcdefABCDEFabcdefABCDEFabcdefABCD",
+      },
+    ])).toEqual([
+      {
+        id: "participant-a",
+        name: "Wallet A",
+        walletAddress: "0x1111111111111111111111111111111111111111",
+      },
+      {
+        id: "participant-b",
+        name: "Wallet B",
+        walletAddress: "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd",
+      },
+    ]);
+  });
+
   it("bounds advisory allocation fan-out before orchestration", () => {
     const proposal = {
       payerId: "participant-a",
@@ -346,6 +377,8 @@ describe("settlement-agent database and route boundary", () => {
     expect(route.match(/requireCloudUser\(\)/g)?.length).toBeGreaterThanOrEqual(2);
     expect(route).toContain("createAdminSupabaseClient");
     expect(route).toContain("SETTLEMENT_PERSISTENCE_NOT_CONFIGURED");
+    expect(route).toContain('message.startsWith("WALLET_PARTICIPANT_COUNT_OUT_OF_BOUNDS")');
+    expect(route).toContain('message.startsWith("PAYER_WALLET_NOT_ATTACHED")');
     expect(route).toContain("runUrl: `/app/agents/${encodeURIComponent(result.run.id)}`");
   });
 });

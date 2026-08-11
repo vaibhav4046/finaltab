@@ -94,6 +94,18 @@ interface ParticipantRow {
   wallet_address: string | null;
 }
 
+export function walletBackedParticipantSnapshot(
+  participants: ReadonlyArray<Pick<ParticipantRow, "id" | "display_name" | "wallet_address">>,
+): Array<{ id: string; name: string; walletAddress: `0x${string}` }> {
+  return participants.flatMap((participant) => ADDRESS_RE.test(participant.wallet_address ?? "")
+    ? [{
+        id: participant.id,
+        name: participant.display_name,
+        walletAddress: participant.wallet_address!.toLowerCase() as `0x${string}`,
+      }]
+    : []);
+}
+
 interface RunRow {
   id: string;
   owner_id: string;
@@ -902,11 +914,13 @@ export async function runSettlementAgents(options: {
     throw new Error("PAYER_NOT_IN_TAB");
   }
 
-  const participantSnapshot = participants.map((participant) => ({
-    id: participant.id,
-    name: participant.display_name,
-    walletAddress: participant.wallet_address?.toLowerCase() ?? null,
-  }));
+  const participantSnapshot = walletBackedParticipantSnapshot(participants);
+  if (participantSnapshot.length < 2 || participantSnapshot.length > 32) {
+    throw new Error("WALLET_PARTICIPANT_COUNT_OUT_OF_BOUNDS: attach 2 to 32 participant wallets before review");
+  }
+  if (!participantSnapshot.some((participant) => participant.id === input.payerParticipantId)) {
+    throw new Error("PAYER_WALLET_NOT_ATTACHED");
+  }
   const inputSnapshot = {
     version: 1,
     tabId: input.tabId,
@@ -1254,7 +1268,7 @@ export async function runSettlementAgents(options: {
     merchant: input.receipt.merchant,
     currency: input.receipt.currency,
     totalMinor: parseFiat(input.receipt.total).toString(),
-    participantCount: participants.length,
+    participantCount: participantSnapshot.length,
     payerParticipantId: input.payerParticipantId,
     chainAdapter: "base-sepolia",
     maxStages: 4,
@@ -1328,4 +1342,5 @@ export const agentControlInternals = {
   signAttestation,
   terminalMemorySummary,
   terminalRunAttestationPayload,
+  walletBackedParticipantSnapshot,
 };

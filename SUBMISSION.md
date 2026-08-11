@@ -7,12 +7,11 @@ Final gate: [docs/release/SUBMISSION_CHECKLIST.md](docs/release/SUBMISSION_CHECK
 ## Current verdict
 
 **Not ready to submit.** V2 deployment, exact source matching, one value-moving
-V2 settlement, and the additive Supabase schema are proven: baseline plus
-`52236`, `60000`, `64822`, `73000`, and `74000`, with 29/29 public tables under
-RLS and server-only authority on sensitive mutation RPCs. The post-promotion
-`74500` cutover, unified nine-tool MCP trace, post-deploy
-application/provider probe, final video, public video URL, and DoraHacks
-confirmation are pending.
+V2 settlement, the 29-table Supabase schema, financial-truth cutover, canonical
+GitHub OAuth, authenticated tab creation, and exactly-nine-tool non-value MCP
+probe are proven. The real production microphone/readback lifecycle, final
+video, public video URL, and DoraHacks confirmation are pending. The retained
+settlement was not an MCP human-broadcast-challenge trace.
 
 Submission categories: **Blockchain, Web3, DeFi, AI Agents, Onchain, MCP,
 Autonomous Agents, Infrastructure**. The autonomy claim is deliberately
@@ -26,16 +25,16 @@ and a transaction link.
 
 | Surface | State |
 |---|---|
-| Live app | <https://finaltab.vercel.app> — protected release probe passed 13/13 at main commit `b084497` |
-| Authenticated MCP | Current source contains exactly nine production tools; its superseded `b084497` deployment baseline passed auth, calculation, arbitrary-participant planning, and proof-binding probes, but the new nine-tool deployment still needs a live recheck |
+| Live app | <https://finaltab.vercel.app> — `ready`; deployment `dpl_EYEXUVqto8UDcUqoqWKcE1Ui1kPa` at commit `2d808c7a589385e2f8494189978da64d982fb0cc`; exact-SHA CI green; canonical Playwright 14/14 |
+| Authenticated MCP | **LIVE-PROVEN NON-VALUE SURFACE — exactly nine tools listed; authenticated calculation and arbitrary-participant V2 preparation passed; no submission called** |
 | V2 contract | [`0x7b58791c…cCDB`](https://sepolia.basescan.org/address/0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB) |
 | V2 deployment | execution `xasakw5nfxkh2s0fh4stn`; [tx `0x904ec881…e8f`](https://sepolia.basescan.org/tx/0x904ec881ef7c2ec7375c20887b4181cf58224b44162d837743fa869b0a598e8f); block `45321107` |
 | Source verification | Sourcify exact match `43497805` |
-| Hybrid voice candidate | **CONFIGURED, NOT LIVE-PROBED — Supabase minute quotas and spend reservations are applied and sensitive provider variables are configured; final local suite is 387 passed + 1 provider-gated skip and the build generated 33/33 pages; provider lifecycle probe pending** |
+| Hybrid voice candidate | **DEPLOYED/CONFIGURED, NOT LIVE-PROVEN — Supabase spend reservations are applied and sensitive provider variables are configured; real microphone/readback lifecycle pending** |
 | V2 settlement | **LIVE PROVEN — KeeperHub `3hmlqi36zweiwg6fc5o2u`; [tx `0x7a6fb760…a789`](https://sepolia.basescan.org/tx/0x7a6fb760f691954a41c71d5d508629c58aa09207bba0de4eaf164f097c59a789); block `45327128`; exactly 1 atomic USDC conserved** |
 | V2 video | **PENDING — no rendered file or public URL** |
-| Supabase infrastructure | **ADDITIVE SCHEMA VERIFIED — `finaltab-production` (`yoavihmldqbkuxinrsih`), London `eu-west-2`, free plan; four baseline plus five ordered additive migrations applied; 29/29 public tables with RLS; sensitive mutation RPCs deny browser roles and allow `service_role`; no advisor errors; unindexed-FK warning cleared; post-promotion `74500` and application deploy/probe pending** |
-| Auth and identity | **CORE CODE COMPLETE — Supabase login/create-account/callback and branded return page implemented; Supabase Auth/RLS is canonical. The optional Privy custom-auth bridge is truthfully disabled because enabling it requires a paid tier; branded inbound email still needs verified-domain SMTP or a Send Email Hook.** |
+| Supabase infrastructure | **LIVE SCHEMA/CUTOVER — `finaltab-production` (`yoavihmldqbkuxinrsih`), London `eu-west-2`, free plan; baseline/additive/cutover/owner-select migrations applied; 29/29 public tables with RLS; sensitive mutation RPCs and legacy direct writes deny browser roles; zero error-level advisor findings, with reviewed warnings including leaked-password protection remaining** |
+| Auth and identity | **GITHUB LIVE-PROVEN — canonical OAuth round trip, branded return, `/app`, reload, and authenticated RLS-backed tab create/read passed. Privy remains optional/disabled; email fallback UI remains disabled and delivery unproven.** |
 | KeeperHub CLI bounty | [PR #95](https://github.com/KeeperHub/cli/pull/95); recheck state before submission |
 
 The old V1 address, seven-tool MCP run, `confirm: true` approval convention,

@@ -14,27 +14,27 @@
 > moved one atomic unit of USDC through KeeperHub execution
 > `3hmlqi36zweiwg6fc5o2u`, tx `0x7a6fb760…a789`, block `45327128`, with verified
 > dual signatures, exact event binding, and conserved balances. The V2 video is
-> still pending. Main commit `b084497` is the last deployed clean
-> release baseline: 284 passing + 1 env-gated skip, two green GitHub CI jobs, a
-> 24-page production build, Playwright 8/8, and a 13/13 protected probe against
-> both the immutable Vercel deployment and public alias. Supabase project
+> still pending. Canonical deployment `dpl_EYEXUVqto8UDcUqoqWKcE1Ui1kPa`
+> serves commit `2d808c7a589385e2f8494189978da64d982fb0cc`: health is `ready`,
+> exact-SHA GitHub Actions is green, and canonical Playwright passed 14/14.
+> Supabase project
 > `yoavihmldqbkuxinrsih` is provisioned in London on the free plan. Its four
 > baseline migrations plus additive `52236`, `60000`, `64822`, `73000`, and
-> `74000` are applied: all 29 public tables have RLS, sensitive new mutation RPCs
-> deny `PUBLIC`/`anon`/`authenticated` and allow `service_role`, database advisors
-> report no errors, and the remaining unindexed-FK warning is cleared. The
-> authenticated-only durable voice quota, spend reservations, and sensitive
-> provider configuration are ready. The current local candidate has
-> exactly nine production MCP tools, external-wallet signing, and a mandatory
-> attested four-stage first-party review before Freeze. Its final suite is 387
-> passing with one provider-gated vision skip and a 33/33-page production build.
+> `74000`, financial-truth cutover, and owner-select repair are applied: all 29
+> public tables have RLS, sensitive mutation RPCs and legacy writes deny browser
+> roles, and the remaining unindexed-FK warning is cleared. Advisors have zero
+> error-level findings, with reviewed RLS/function warnings and the
+> leaked-password-protection warning remaining. A real GitHub OAuth/reload,
+> authenticated owner tab create/read, exactly-nine-tool list, and non-value MCP
+> calculation/preparation probe passed. The deployed voice path, spend
+> reservations, and sensitive provider configuration are ready but a real
+> microphone/readback lifecycle is not proven.
 > UI, REST, and MCP value submissions share one durable journal in source: an
 > accepted retry skips simulation and execution, while prepared recovery reuses
 > the stored successful simulation and deterministic idempotency key under a
-> bounded approval expiry. Post-promotion cutover `74500` is not applied; the
-> additive schema does not prove live application/provider behavior;
-> The paid Privy bridge is optional and deliberately disabled; final
-> application/provider probes, real captures, and the 4K/60 render remain open.
+> bounded approval expiry. The paid Privy bridge is optional and deliberately
+> disabled; email fallback is disabled/unproven; two-user durability probes,
+> final voice lifecycle, real captures, and the 4K/60 render remain open.
 > Every “end-to-end” or `confirm: true` statement below describes
 > the historical V1 system only.
 

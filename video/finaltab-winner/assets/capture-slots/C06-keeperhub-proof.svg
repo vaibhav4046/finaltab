@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="3200" height="1520" viewBox="0 0 1600 760">
   <rect width="1600" height="760" rx="26" fill="#0F1519" stroke="#91A0A8" stroke-width="2" stroke-dasharray="10 12"/>
   <text x="90" y="326" fill="#F4EEE2" font-family="monospace" font-size="54" font-weight="700">CAPTURE SLOT C06</text>
-  <text x="90" y="386" fill="#FF936A" font-family="monospace" font-size="25">SAME-RUN KEEPERHUB + RPC CAPTURE REQUIRED</text>
+  <text x="90" y="386" fill="#FF936A" font-family="monospace" font-size="25">RETAINED KEEPERHUB RECEIPT + PUBLIC CHAIN PROOF REQUIRED</text>
   <text x="90" y="444" fill="#91A0A8" font-family="monospace" font-size="23">The composition's proof overlay is real; this slot is for the recorded product/explorer chronology.</text>
   <text x="90" y="630" fill="#91A0A8" font-family="monospace" font-size="20">PLACEHOLDER — NOT PRODUCT FOOTAGE</text>
 </svg>

@@ -40,14 +40,17 @@ commits and local demo builds are not maintained security releases.
   signatures, and a wallet-signed short-lived broadcast challenge. Exactly nine
   production tools are present; retired fixed-wallet money tools are absent.
 - The London Supabase project is provisioned and its schema security is
-  verified; persistence and cross-device identity behavior still must be
-  verified against the final deployed application.
+  verified. Canonical GitHub login plus an authenticated RLS-backed tab
+  create/read are live-proven; two-identity tenant isolation and cross-device
+  collaboration remain separate production probes.
 - Supabase Auth is the canonical account and RLS subject. GitHub is the primary
   public login through cookie-backed SSR PKCE. Each callback exchanges one code
   against its validated per-flow verifier, never reflects provider errors, and
   permits only same-site `safeNextPath` continuations. Its server feature flag
-  is configuration intent, not operational proof. Email UI remains separately
-  gated and hidden by default; that UI flag is not an address allowlist. Privy is an optional
+  is configuration intent, while the current canonical round trip and session
+  reload are operationally proven. The Production email-fallback flag is false,
+  so its UI is hidden and delivery remains unproven; that UI flag is not an
+  address allowlist. Privy is an optional
   custom-JWT wallet bridge: its access and identity tokens are verified as a
   pair and must link to the current Supabase UUID. Privy tokens never become
   settlement/MCP principals, and local development has no implicit all-scope
@@ -82,16 +85,17 @@ commits and local demo builds are not maintained security releases.
   prior review stale. `FINALTAB_AGENT_ATTESTATION_SECRET` is server-only and
   authenticates run, event, and bounded audit-memory envelopes; the memory cannot
   change code, prompts, policy, or authorization rules.
-- The hosted Supabase project now has the four baseline migrations plus ordered
-  additive migrations `20260811052236`, `20260811060000`, `20260811064822`,
-  `20260811073000`, and `20260811074000`. All 29 public tables have RLS. Every
+- The hosted Supabase project now has the baseline, ordered additive migrations
+  `20260811052236`, `20260811060000`, `20260811064822`, `20260811073000`, and
+  `20260811074000`, the financial-truth cutover, and the
+  `tab_owner_select_returning` repair. All 29 public tables have RLS. Every
   sensitive new mutation RPC denies `PUBLIC`, `anon`, and `authenticated` and
-  allows `service_role`; database advisors report no errors, and `60000` clears
-  the remaining unindexed agent-event composite-FK warning.
-- `20260811074500` remains unapplied and intentionally reserved for after a
-  successful candidate promotion. The applied schema does not prove the
-  application/provider flows; tenant-isolation, crash-recovery, and live flow
-  probes remain required before production behavior is claimed.
+  allows `service_role`; authenticated direct financial writes and the legacy
+  quota RPC are revoked. Database advisors report zero error-level findings,
+  but reviewed RLS/function warnings and the leaked-password-protection warning
+  remain. The owner-select repair permits the creator to read `INSERT ...
+  RETURNING` while the separate insert policy still pins `owner_id` to
+  `auth.uid()`.
 - Groq and KeeperHub credentials belong only in server-side environment
   variables. `.env*`, proof captures, traces, and videos must be scanned before
   publication.

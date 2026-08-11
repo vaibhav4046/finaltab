@@ -15,46 +15,35 @@
   "currentRelease": {
     "protocol": "V2",
     "measuredAt": "2026-08-11",
-    "deployedBaselineCommit": "b084497bf883dbf4f1d7123203e9866679d99b67",
-    "candidateCommit": null,
+    "deployedBaselineCommit": "2d808c7a589385e2f8494189978da64d982fb0cc",
+    "candidateCommit": "2d808c7a589385e2f8494189978da64d982fb0cc",
     "releaseBaseline": {
       "state": "LIVE_PROVEN",
       "githubCiJobs": "2/2 green",
-      "tests": "284 passing, 1 env-gated live-provider check skipped",
-      "productionBuildPages": 24,
-      "playwright": "8/8 passing",
+      "tests": "Exact-SHA GitHub Actions quality and browser jobs green; volatile local aggregate intentionally omitted pending the final post-video rerun",
+      "playwright": "14/14 passing against the canonical production alias",
+      "health": "ready",
       "protectedProbe": {
-        "result": "13/13 passing",
-        "immutableDeploymentId": "dpl_Dh6dTpAMPgRkFsTeNE2qKBK9nAgL",
-        "immutableUrl": "https://finaltab-gn3eies20-vaibhav4046s-projects.vercel.app",
+        "result": "Canonical public, auth, MCP, and collaboration probes passed within their disclosed boundaries",
+        "immutableDeploymentId": "dpl_EYEXUVqto8UDcUqoqWKcE1Ui1kPa",
+        "immutableUrl": "https://finaltab-4p632zd2n-vaibhav4046s-projects.vercel.app",
         "publicAlias": "https://finaltab.vercel.app"
       },
-      "caveat": "This is the last proven baseline. A newer submission commit or deployment must rerun every gate."
+      "caveat": "The production microphone/readback provider lifecycle, two-identity isolation, cross-channel recovery, final video, and submission remain unproven."
     },
     "localCandidate": {
-      "state": "LOCAL_PROVEN",
-      "tests": {
-        "contracts": 27,
-        "engine": 60,
-        "keeperhub": 35,
-        "flightRecorder": 7,
-        "vision": "34 passing, 1 provider-gated skip",
-        "web": 224,
-        "total": "387 passing, 1 provider-gated skip"
-      },
-      "productionBuildPages": "33/33",
-      "playwright": "14/14 passing across desktop and Pixel 7",
+      "state": "POST_DEPLOY_WORKTREE_CHANGED",
+      "tests": "Final aggregate pending clean post-video rerun",
+      "productionBuildPages": "Pending final clean post-video rerun",
+      "playwright": "14/14 canonical production journeys passed before post-deploy test/migration/video edits",
       "voice": {
         "productMode": "AssemblyAI live STT plus buffered ElevenLabs readback",
-        "productFilmNarration": "ElevenLabs only; current clips and alignment are provisional",
-        "narrationClipsDecoded": 9,
-        "captionCues": 29,
-        "captionTrackEndSeconds": 94.53,
-        "durableQuota": "Supabase authenticated-only; 8 transcription sessions and 20 readbacks per user per minute",
+        "productFilmNarration": "ElevenLabs only; final render still pending",
+        "durableQuota": "Supabase service-role reservation path; 8 transcription sessions and 20 readbacks per user per minute",
         "providerSecrets": "Stored as sensitive Vercel Production variables; values not recorded",
-        "deploymentState": "CONFIGURED_PENDING_FINAL_DEPLOY_AND_LIVE_PROVIDER_PROBE"
+        "deploymentState": "DEPLOYED_CONFIGURED_PENDING_LIVE_PROVIDER_PROBE"
       },
-      "caveat": "Local working-tree evidence only. The public b084497 deployment does not contain or prove this candidate; final CI, provider, and deployment probes are pending."
+      "caveat": "Do not publish a final aggregate test count or media metadata until the post-video worktree is cleanly rerun and measured."
     },
     "deployment": {
       "state": "LIVE_PROVEN",
@@ -73,7 +62,7 @@
       "manifest": "docs/release/evidence/v2-deployment-2026-08-11T01-08-17-421Z.json"
     },
     "mcp": {
-      "state": "SOURCE_AND_TEST_PROVEN_LIVE_RECHECK_PENDING",
+      "state": "LIVE_PROVEN_NON_VALUE_PROBES",
       "authentication": "scoped bearer token",
       "walletModel": "external debtor wallets plus a wallet-signed short-lived broadcast approval",
       "productionTools": 9,
@@ -85,9 +74,15 @@
         "preparedRecovery": "reuses the stored successful simulation and deterministic idempotency key under a bounded persisted approval expiry",
         "freshFirstPartyFinalGates": ["current database approvals", "wallet-signed approval"]
       },
-      "deployedBaselineProbe": "The superseded b084497 deployment passed unauthenticated rejection, MCP 2.0.0, arbitrary-participant planning, cent-perfect calculation, and proof binding. It does not prove the current nine-tool deployment.",
+      "deployedBaselineProbe": "The canonical 2d808c7 deployment authenticated, initialized, listed exactly nine tools, and passed cent-perfect split_equal plus arbitrary-participant V2 preparation. No value submission was called.",
+      "liveNonValueCalls": {
+        "split_equal": "54.01 -> 18.01, 18.00, 18.00",
+        "prepare_receipt_settlement": "chain 84532; exact V2 contract; two external-wallet signature requests; canonical hashes returned"
+      },
       "legacyConfirmFlagAccepted": false,
-      "liveNineToolListRechecked": false
+      "liveNineToolListRechecked": true,
+      "liveValueSubmissionProbed": false,
+      "retainedSettlementIsMcpTrace": false
     },
     "usdcSettlement": {
       "state": "LIVE_PROVEN",
@@ -132,11 +127,11 @@
         "20260811060000_cover_agent_event_composite_fk",
         "20260811064822_voice_spend_reservations",
         "20260811073000_durable_first_party_settlement_flow",
-        "20260811074000_durable_submission_intents"
+        "20260811074000_durable_submission_intents",
+        "20260811074500_financial_truth_post_promotion_cutover",
+        "20260811140612_tab_owner_select_returning"
       ],
-      "migrationsPending": [
-        "20260811074500_financial_truth_post_promotion_cutover"
-      ],
+      "migrationsPending": [],
       "tables": 29,
       "tablesWithRls": 29,
       "sensitiveMutationRpcPrivileges": {
@@ -146,8 +141,16 @@
         "service_role": true
       },
       "advisorErrors": 0,
+      "advisorWarnings": [
+        "reviewed RLS-enabled tables with no policy (intentional fail-closed surfaces)",
+        "reviewed authenticated SECURITY DEFINER RPC exposure",
+        "leaked-password protection is not enabled"
+      ],
       "unindexedForeignKeyWarning": false,
       "auth": {
+        "githubProviderEnabled": true,
+        "githubCanonicalRoundTripProbed": true,
+        "sessionSurvivedFullReload": true,
         "emailProviderEnabled": true,
         "newUserSignupsEnabled": true,
         "emailConfirmationRequired": true,
@@ -155,6 +158,7 @@
         "redirectUrls": [
           "https://finaltab.vercel.app/auth/callback"
         ],
+        "emailFallbackUiEnabled": false,
         "liveEmailDeliveryProbed": false
       },
       "voiceQuota": {
@@ -162,9 +166,9 @@
         "rlsEnabled": true,
         "directAnonymousGrant": false,
         "directAuthenticatedGrant": false,
-        "consumerRpc": "consume_voice_quota(text)",
+        "consumerRpc": "consume_voice_quota(text) (legacy; revoked at cutover)",
         "anonymousRpcAccess": false,
-        "authenticatedRpcAccess": true,
+        "authenticatedRpcAccess": false,
         "transcriptionSessionsPerUserPerMinute": 8,
         "readbacksPerUserPerMinute": 20,
         "spendReservationMigration": "20260811064822_voice_spend_reservations",
@@ -173,13 +177,14 @@
       },
       "publicProductionConfigurationPrepared": true,
       "sensitiveVoiceProviderVariablesConfigured": true,
-      "finalApplicationDeploymentProbed": false,
-      "caveat": "The baseline plus five ordered additive migrations, 29-table RLS schema, sensitive RPC privilege matrix, advisor result, durable quotas, spend reservations, and sensitive provider configuration are proven. The post-promotion cutover is not applied. Cross-device application, shared-journal behavior, provider behavior, and other live flows remain unclaimed until the candidate is deployed and probed."
+      "finalApplicationDeploymentProbed": true,
+      "collaborationOwnerPathProbed": true,
+      "caveat": "The baseline/additive/cutover/owner-select migrations, 29-table RLS schema, browser-role denial matrix, GitHub OAuth/reload, and one authenticated owner collaboration path are proven. Advisor warnings remain. Two-identity isolation, shared-journal recovery, cross-device behavior, email delivery, and voice-provider behavior remain unclaimed."
     },
     "identity": {
       "canonicalAccount": "Supabase Auth / auth.uid()",
-      "signInCreateAccountCallback": "SOURCE_IMPLEMENTED",
-      "brandedReturnPage": "SOURCE_IMPLEMENTED",
+      "signInCreateAccountCallback": "GITHUB_CANONICAL_LIVE_PROVEN",
+      "brandedReturnPage": "LIVE_PROVEN_IN_GITHUB_ROUND_TRIP",
       "privyBridge": "OPTIONAL_DISABLED_PAID_CUSTOM_AUTH_NOT_AUTHORIZED",
       "privyRequiredForReadiness": false,
       "privyUnconfiguredUi": "HIDDEN",
@@ -193,6 +198,7 @@
         "verification key",
         "live subject-pair probe"
       ],
+      "emailFallbackUi": "DISABLED",
       "brandedInboundEmail": "PENDING_VERIFIED_DOMAIN_AND_CUSTOM_SMTP_OR_SEND_EMAIL_HOOK"
     },
     "agentControl": {
@@ -209,11 +215,22 @@
       "compositeForeignKeyCoverageMigration": "20260811060000_cover_agent_event_composite_fk",
       "liveFlowProbed": false
     },
+    "collaboration": {
+      "state": "LIVE_PROVEN_SINGLE_OWNER_PATH",
+      "githubAuthenticated": true,
+      "tabCreated": true,
+      "ownerMembershipVerified": true,
+      "participantAdded": true,
+      "auditRecordsVerified": true,
+      "ownerSelectReturningRepairApplied": true,
+      "twoIdentityIsolationProbed": false,
+      "crossDeviceResumeProbed": false
+    },
     "video": {
       "state": "PENDING",
       "target": "3840x2160 at 60 fps",
-      "captures": "PENDING_POST_DEPLOY_PROBE",
-      "narration": "PROVISIONAL_REGENERATE_AFTER_APPROVED_CAPTURES",
+      "captures": "PENDING_FINAL_ASSET_VERIFICATION",
+      "narration": "PENDING_FINAL_RENDER_VERIFICATION",
       "publicUrl": null,
       "measuredMetadata": null
     }
@@ -427,16 +444,19 @@
           "20260811073000_durable_first_party_settlement_flow",
           "20260811074000_durable_submission_intents"
         ],
+        "financialTruthCutoverApplied": true,
+        "tabOwnerSelectReturningApplied": true,
         "sensitiveMutationRpcAccess": "service_role_only",
         "advisorErrors": 0,
+        "advisorWarningsRemain": true,
         "unindexedForeignKeyWarning": false,
-        "postPromotionCutoverApplied": false,
-        "voiceQuotaRpc": "consume_voice_quota(text), authenticated-only",
+        "postPromotionCutoverApplied": true,
+        "voiceQuotaRpc": "consume_voice_quota(text), revoked from authenticated at cutover",
         "voiceQuotaLimits": "8 transcription sessions and 20 readbacks per user per minute",
         "voiceSpendReservationRpc": "reserve_voice_budget, service-role-only"
       },
       "method": "Supabase project creation and health check; committed migrations applied in order; schema, RLS, policy, grant, and foreign-key index queries run against the hosted project.",
-      "caveat": "This proves infrastructure and schema state, not cross-device application behavior. The newer web release still needs deployment and a live multi-identity/browser probe."
+      "caveat": "This proves infrastructure, cutover, and one authenticated owner collaboration path. It does not prove two-identity isolation, shared-journal recovery, or cross-device behavior."
     },
     {
       "id": "voice.productionConfiguration",
@@ -453,7 +473,7 @@
         "directAuthenticatedTableGrant": false,
         "rpc": "consume_voice_quota(text)",
         "rpcAnonymousAccess": false,
-        "rpcAuthenticatedAccess": true,
+        "rpcAuthenticatedAccess": false,
         "spendReservationRpc": "reserve_voice_budget",
         "spendReservationRpcAccess": "service_role_only",
         "transcriptionSessionsPerUserPerMinute": 8,
@@ -462,7 +482,7 @@
         "elevenLabsProductionVariable": "CONFIGURED_SENSITIVE"
       },
       "method": "Committed migration applied to the hosted Supabase project; database grants and function access verified; provider keys added through Vercel sensitive Production environment storage without recording their values.",
-      "caveat": "Configuration is proven, but the newer release has not been deployed and neither provider lifecycle has been live-probed from the production browser."
+      "caveat": "Configuration and deployment are proven, but neither provider lifecycle has been live-probed successfully from the production browser."
     },
     {
       "id": "settle.v2.onchain",

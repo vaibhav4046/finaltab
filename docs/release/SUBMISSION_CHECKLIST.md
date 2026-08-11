@@ -1,13 +1,14 @@
 # KeeperHub Agents Onchain — pre-submission checklist
 
 **Current state:** the one-atomic-unit V2 rail settlement, 29-table RLS Supabase
-additive schema, durable voice quotas/spend reservations, and sensitive provider
-configuration are proven. The post-promotion cutover, final deploy/provider probe,
-unified nine-tool production MCP capture, final 4K/60 V2 video and public URL,
-and human form submission remain
-blocking. Main commit `b084497` is the clean baseline: both GitHub CI jobs were
-green and the protected production probe passed 13/13. Repeat every release
-gate on the final commit.
+schema/cutover, canonical GitHub OAuth, authenticated tab creation, durable
+voice budget controls, sensitive provider configuration, and exactly-nine-tool
+non-value MCP probe are proven. The real voice-provider lifecycle, final 4K/60
+V2 video and public URL, and human form submission remain blocking. Deployment
+`dpl_EYEXUVqto8UDcUqoqWKcE1Ui1kPa` at commit
+`2d808c7a589385e2f8494189978da64d982fb0cc` is healthy, exact-SHA CI is green,
+and canonical Playwright passed 14/14. Repeat every release gate on the final
+submission commit.
 
 The live DoraHacks detail page was verified on 2026-08-11. It states all times
 are UTC+2 and sets the deadline at **2026-08-13 12:00 UTC+2**
@@ -17,9 +18,9 @@ link. Ten finalists are scheduled to pitch August 17–19.
 
 ## 1. Repository and CI
 
-Baseline evidence at `b084497`: 284 passing + 1 env-gated skip, 24 generated pages,
-Playwright 8/8, and both CI jobs green. The boxes below intentionally remain
-open until the final submission commit reproduces that baseline.
+Canonical release evidence: exact-SHA CI green and Playwright 14/14. The boxes
+below intentionally remain open until the final submission commit reproduces
+the full clean-checkout baseline.
 
 - [ ] Submitted commit is pushed and the public repository is readable logged out.
 - [ ] MIT `LICENSE`, `SECURITY.md`, and `CONTRIBUTING.md` render on GitHub.
@@ -28,8 +29,8 @@ open until the final submission commit reproduces that baseline.
       `pnpm build`, and `pnpm test:e2e` are green.
 - [ ] The final test count is copied from that clean run, not the historical
       V1 `212 passed, 1 skipped` baseline.
-- [ ] Final local evidence reproduces 387 passing + 1 provider-gated vision skip
-      and a production build that generates 33/33 pages.
+- [ ] Final local totals and generated-page count are copied from the last clean
+      post-video run rather than a pre-deploy working-tree snapshot.
 - [ ] Added-line, tracked-file, and media secret scans are clean.
 
 ## 2. V2 deployment — already proven, recheck links
@@ -48,20 +49,23 @@ open until the final submission commit reproduces that baseline.
 
 ## 3. Production MCP V2
 
-- [ ] Live endpoint is configured with the V2 address and
+- [x] Live endpoint is configured with the V2 address and
       `FINALTAB_SETTLEMENT_CONTRACT_VERSION=2`.
 - [ ] Anonymous `initialize`, `tools/list`, and tool calls are rejected.
-- [ ] A scoped test token can initialize and list tools without appearing in
+- [x] A scoped test token initialized and listed tools without appearing in
       logs, screenshots, traces, or video.
-- [ ] Production tools expose arbitrary caller participants and external-wallet
+- [x] Production preparation exposes arbitrary caller participants and
+      external-wallet
       signing; they do not use server-held user keys.
 - [ ] The value-moving sequence is
       `allocate_receipt → prepare_receipt_settlement → wallet signatures →
       simulate_signed_settlement → create_broadcast_approval_challenge →
       human personal_sign → submit_signed_settlement → settlement_status`.
-- [ ] No production copy or trace uses `confirm: true` as approval.
-- [ ] Authenticated `tools/list` returns exactly the nine current production
+- [x] No production copy or current trace uses `confirm: true` as approval.
+- [x] Authenticated `tools/list` returns exactly the nine current production
       tools and no retired fixed-wallet path.
+- [x] Authenticated non-value `split_equal` and arbitrary-participant V2
+      preparation passed; no submission call was made during this probe.
 - [ ] UI, `POST /api/settle/execute`, and MCP `submit_signed_settlement` all
       write the same durable submission journal. An accepted retry skips both
       simulation and execution; a prepared retry reuses the stored successful
@@ -91,7 +95,7 @@ open until the final submission commit reproduces that baseline.
 Historical V1 settlements at `0xCcf6…7e64`, including execution
 `69zzrj7z676u89ce1x76j`, do not satisfy this V2 gate.
 
-## 5. Supabase infrastructure — provisioned; deployed behavior probe open
+## 5. Supabase infrastructure — deployed; bounded behavior proof
 
 - [x] Entrant approved organization `xjpjpoxicyvmdfzmrdkk`, London `eu-west-2`,
       and free plan with verified monthly cost `0` before creation.
@@ -101,25 +105,29 @@ Historical V1 settlements at `0xCcf6…7e64`, including execution
       `20260811073000`, then `20260811074000`.
 - [x] Schema verification found 29/29 public tables with RLS. Sensitive new
       mutation RPCs deny `PUBLIC`, `anon`, and `authenticated` and allow
-      `service_role`; advisors report no errors, and the unindexed-FK warning is
-      cleared.
+      `service_role`; advisors report zero error-level findings with reviewed
+      warnings remaining, and the unindexed-FK warning is cleared.
 - [x] Public production configuration points to the verified project; no
       secret/service-role value is exposed in browser configuration.
-- [ ] The newer release is deployed and Supabase auth/persistence is probed
-      with more than one identity.
+- [x] The newer release is deployed; one real GitHub identity passed callback,
+      reload, authenticated owner tab create/read, membership, participant add,
+      and audit verification.
+- [ ] Supabase tenant isolation is live-probed with more than one identity.
 - [ ] Cross-device, durable-history, or collaboration copy appears only after
       those behaviors pass a live browser check.
 
-Until the live-behavior boxes pass, FINALTab may describe the provisioned
-project and verified additive schema, but not deployed cross-device or provider
+Until the remaining behavior boxes pass, FINALTab may describe the proven
+single-owner collaboration path but not two-user, cross-device, or provider
 behavior.
 
 - [x] Apply additive migrations `20260811052236`, `20260811060000`,
       `20260811064822`, `20260811073000`, and `20260811074000` individually and
       in order; remeasure RLS, RPC grants, advisors, and foreign-key indexes.
-- [ ] Deploy and probe the candidate before applying post-promotion migration
-      `20260811074500`; then prove legacy direct financial writes and
-      `consume_voice_quota(text)` execution are denied.
+- [x] Post-promotion migration `20260811074500` is applied; legacy direct
+      financial writes, `consume_voice_quota(text)`, and browser-role elevated
+      schema privileges are denied.
+- [x] `tab_owner_select_returning` is applied and a real owner create/read passes
+      without weakening the separate owner-pinned insert policy.
 - [ ] Configure a random server-only `FINALTAB_AGENT_ATTESTATION_SECRET` of at
       least 32 bytes and confirm it never enters logs or browser bundles.
 - [ ] Configure an independent random server-only
@@ -136,7 +144,7 @@ behavior.
       custom SMTP or Send Email Hook are live-probed. The branded return page may
       be shown as implemented.
 
-## 6. Hybrid voice — local candidate, production blocking
+## 6. Hybrid voice — deployed/configured, provider lifecycle blocking
 
 - [x] AssemblyAI permanent key remains server-only; the browser receives only
       a short-lived EU streaming redemption credential.
@@ -144,14 +152,12 @@ behavior.
       configuration, and waits for final `Turn` plus `Termination` on stop.
 - [x] ElevenLabs readback is bounded, uncached, text-backed, and truthfully
       labelled as a short buffered browser clip.
-- [x] Final local candidate passed 387 checks + 1 provider-gated vision skip,
-      and the production build generated 33/33 pages.
 - [x] The baseline no-charge per-minute Supabase quota migration is applied remotely.
 - [x] The additive daily/monthly spend-reservation migration `20260811064822`
       is applied and its service-role-only database boundary is verified.
 - [x] `voice_quota_windows` has RLS enabled and direct anonymous/authenticated
-      table grants revoked; `consume_voice_quota(text)` denies anonymous callers
-      and is authenticated-only.
+      table grants revoked; after cutover, the legacy
+      `consume_voice_quota(text)` RPC denies authenticated callers too.
 - [x] Fixed per-user/minute limits are 8 transcription sessions and 20
       readbacks.
 - [x] AssemblyAI and ElevenLabs keys are stored as sensitive Vercel Production
@@ -210,22 +216,26 @@ The historical 101.64-second V1 and older 92.7-second cut are not V2 media.
 REPOSITORY_URL=https://github.com/vaibhav4046/finaltab
 LIVE_URL=https://finaltab.vercel.app
 MCP_URL=https://finaltab.vercel.app/api/mcp
+MCP_PRODUCTION_PROBE=EXACTLY_9_TOOLS_NON_VALUE_CALCULATION_AND_PREPARATION_PASSED_NO_SUBMIT
 V2_CONTRACT_ADDRESS=0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB
 V2_DEPLOYMENT_EXECUTION_ID=xasakw5nfxkh2s0fh4stn
 V2_DEPLOYMENT_TX=0x904ec881ef7c2ec7375c20887b4181cf58224b44162d837743fa869b0a598e8f
 V2_DEPLOYMENT_BLOCK=45321107
 SOURCIFY_MATCH_ID=43497805
-BASELINE_COMMIT=b084497bf883dbf4f1d7123203e9866679d99b67
-BASELINE_VERCEL_DEPLOYMENT_ID=dpl_Dh6dTpAMPgRkFsTeNE2qKBK9nAgL
-BASELINE_PROTECTED_PROBE=13/13
+CANONICAL_COMMIT=2d808c7a589385e2f8494189978da64d982fb0cc
+CANONICAL_VERCEL_DEPLOYMENT_ID=dpl_EYEXUVqto8UDcUqoqWKcE1Ui1kPa
+CANONICAL_HEALTH=ready
+CANONICAL_PLAYWRIGHT=14/14
 SUPABASE_PROJECT_REF=yoavihmldqbkuxinrsih
 SUPABASE_REGION=eu-west-2
 SUPABASE_PLAN=free
-SUPABASE_SCHEMA_STATE=ADDITIVE_APPLIED_29_OF_29_PUBLIC_TABLES_RLS_SENSITIVE_MUTATION_RPCS_SERVICE_ROLE_ONLY_NO_ADVISOR_ERRORS_UNINDEXED_FK_WARNING_CLEARED
-SUPABASE_APP_PROBE=PENDING_FINAL_DEPLOY
-VOICE_DURABLE_QUOTA=PROVISIONED_SUPABASE_AUTHENTICATED_ONLY_8_STT_20_READBACK_PER_USER_PER_MINUTE
+SUPABASE_SCHEMA_STATE=BASELINE_ADDITIVE_CUTOVER_OWNER_SELECT_APPLIED_29_OF_29_PUBLIC_TABLES_RLS_ZERO_ERROR_LEVEL_ADVISOR_FINDINGS_REVIEWED_WARNINGS_REMAIN
+SUPABASE_APP_PROBE=GITHUB_OAUTH_RELOAD_AND_SINGLE_OWNER_TAB_CREATE_READ_PROVEN
+GITHUB_OAUTH_PRODUCTION_STATE=CANONICAL_ROUND_TRIP_AND_RELOAD_PROVEN
+EMAIL_FALLBACK_PRODUCTION_STATE=DISABLED_DELIVERY_UNPROVEN
+VOICE_DURABLE_QUOTA=PROVISIONED_SUPABASE_SERVICE_ROLE_RESERVATIONS_8_STT_20_READBACK_PER_USER_PER_MINUTE
 VOICE_PROVIDER_SECRETS=CONFIGURED_SENSITIVE_VERCEL_PRODUCTION
-VOICE_PRODUCTION_STATE=PENDING_FINAL_DEPLOY_AND_LIVE_PROVIDER_PROBE
+VOICE_PRODUCTION_STATE=DEPLOYED_CONFIGURED_PENDING_LIVE_PROVIDER_PROBE
 V2_SETTLEMENT_EXECUTION_ID=3hmlqi36zweiwg6fc5o2u
 V2_SETTLEMENT_TX=0x7a6fb760f691954a41c71d5d508629c58aa09207bba0de4eaf164f097c59a789
 V2_SETTLEMENT_BLOCK=45327128
@@ -236,7 +246,7 @@ V2_MCP_HUMAN_APPROVAL_TRACE=PENDING
 PRIVY_PRODUCTION_STATE=OPTIONAL_DISABLED_PAID_CUSTOM_AUTH_NOT_AUTHORIZED
 BRANDED_INBOUND_EMAIL=PENDING_VERIFIED_DOMAIN_AND_CUSTOM_SMTP_OR_SEND_EMAIL_HOOK
 AGENT_CONTROL_MIGRATION=APPLIED
-FINANCIAL_TRUTH_CUTOVER=PENDING_POST_PROMOTION
+FINANCIAL_TRUTH_CUTOVER=APPLIED_AND_BROWSER_ROLE_DENIAL_VERIFIED
 V2_VIDEO_URL=PENDING
 ONBOARDING_PR=https://github.com/KeeperHub/cli/pull/95
 ```

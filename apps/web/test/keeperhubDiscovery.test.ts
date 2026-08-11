@@ -120,12 +120,26 @@ describe("KeeperHub integration discovery", () => {
     expect(token.responses["200"].content["application/json"].schema.$ref).toBe(
       "#/components/schemas/voiceStreamingSession",
     );
-    expect(openapi.components.schemas.voiceStreamingSession.required).toContain("token");
-    expect(openapi.components.schemas.voiceStreamingSession.properties.token.description).toContain(
+    const sessionSchema = openapi.components.schemas.voiceStreamingSession;
+    expect(sessionSchema.required).toEqual([
+      "token",
+      "expiresInSeconds",
+      "maxSessionDurationSeconds",
+      "websocketUrl",
+      "sampleRate",
+      "encoding",
+      "model",
+      "mode",
+      "languageDetection",
+      "keyterms",
+      "voiceFocus",
+    ]);
+    expect(Object.keys(sessionSchema.properties)).toEqual(sessionSchema.required);
+    expect(sessionSchema.properties.token.description).toContain(
       "not the permanent provider API key",
     );
-    expect(openapi.components.schemas.voiceStreamingSession.properties.websocketUrl.pattern).toBe("^wss://");
-    expect(openapi.components.schemas.voiceStreamingSession.properties.maxSessionDurationSeconds.const).toBe(180);
+    expect(sessionSchema.properties.websocketUrl.pattern).toBe("^wss://");
+    expect(sessionSchema.properties.maxSessionDurationSeconds.const).toBe(180);
     expect(token.responses["501"].description).toContain("not configured");
     expect(token.responses["403"].description).toContain("opaque FINALTab API tokens");
     expect(token.responses["503"].description).toContain("Durable budget storage");

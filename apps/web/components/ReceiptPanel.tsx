@@ -22,6 +22,16 @@ interface ReceiptPanelProps {
 const MAX_FILE_BYTES = 10 * 1024 * 1024;
 const ALLOWED_TYPES = new Set(["image/png", "image/jpeg", "image/webp"]);
 
+export function validateReceiptUpload(
+  file: Pick<File, "size" | "type">,
+  consent: boolean,
+): string | null {
+  if (!consent) return "Confirm the receipt-processing consent before uploading.";
+  if (!ALLOWED_TYPES.has(file.type)) return "Use a PNG, JPEG, or WebP image.";
+  if (file.size > MAX_FILE_BYTES) return "That image is over 10 MB. Crop or compress it first.";
+  return null;
+}
+
 function amountToMinor(value: string): bigint | null {
   if (!/^\d+(\.\d{1,2})?$/.test(value)) return null;
   try {
@@ -65,16 +75,9 @@ export function ReceiptPanel({ receipt, onReceipt, locked = false }: ReceiptPane
 
   const handleFile = useCallback(
     async (file: File) => {
-      if (!consent) {
-        setError("Confirm the receipt-processing consent before uploading.");
-        return;
-      }
-      if (!ALLOWED_TYPES.has(file.type)) {
-        setError("Use a PNG, JPEG, or WebP image.");
-        return;
-      }
-      if (file.size > MAX_FILE_BYTES) {
-        setError("That image is over 10 MB. Crop or compress it first.");
+      const validationError = validateReceiptUpload(file, consent);
+      if (validationError) {
+        setError(validationError);
         return;
       }
 
@@ -189,7 +192,16 @@ export function ReceiptPanel({ receipt, onReceipt, locked = false }: ReceiptPane
       />
 
       {!parsed ? (
-        <div>
+        <div
+          onPaste={(event) => {
+            const file = Array.from(event.clipboardData.files).find((candidate) =>
+              ALLOWED_TYPES.has(candidate.type),
+            );
+            if (!file) return;
+            event.preventDefault();
+            void handleFile(file);
+          }}
+        >
           <label className="mb-3 flex min-h-11 cursor-pointer items-start gap-1 rounded-lg border border-edge-soft bg-panel-2 p-2 text-sm text-fog sm:gap-2">
             <span className="grid h-11 w-11 shrink-0 place-items-center">
               <input
@@ -229,8 +241,9 @@ export function ReceiptPanel({ receipt, onReceipt, locked = false }: ReceiptPane
             ) : (
               <>
                 <span aria-hidden="true" className="text-2xl">⌁</span>
-                <span className="font-mono text-xs uppercase tracking-wider">Take photo, drop, or browse</span>
+                <span className="font-mono text-xs uppercase tracking-wider">Take photo, drop, browse, or paste</span>
                 <span className="text-xs text-fog-dim">PNG · JPEG · WebP · 10 MB max</span>
+                <span className="text-xs text-fog-dim">Confirm consent, then paste while this panel is focused.</span>
               </>
             )}
           </button>

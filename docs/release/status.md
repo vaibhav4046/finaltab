@@ -12,26 +12,24 @@ current V2 contract, MCP flow, settlement, or video.
 
 ## Verdict
 
-**V2 deployment, a value-moving V2 settlement, and the additive Supabase schema
-are proven; the submission package is not complete yet.**
+**The canonical product release, V2 rail, GitHub OAuth, non-value MCP surface,
+and hardened Supabase schema are proven; final voice and video evidence are not.**
 `FinalTabBatchSettlementV2` was deployed through KeeperHub on Base Sepolia and
 its creation and runtime source are an exact Sourcify match. A separate,
 explicitly authorized one-atomic-unit run completed through KeeperHub and was
 independently verified on Base Sepolia. `finaltab-production` is active in
-London on Supabase's free plan. Its four baseline migrations plus ordered
-additive migrations `52236`, `60000`, `64822`, `73000`, and `74000` produce 29
-public tables, all under RLS. Sensitive new mutation RPCs are service-role-only,
-database advisors report no errors, and the unindexed-FK warning is cleared.
-Post-promotion cutover `74500` is not applied. Main commit `b084497` passed both
-GitHub CI jobs and a 13/13 protected release probe against the then-current
-immutable Vercel deployment and public alias. The newer application release,
-unified nine-tool MCP capture, final V2 video,
-public video URL, and DoraHacks confirmation are not yet retained. The hybrid
-AssemblyAI/ElevenLabs voice path is locally
-verified but not deployed. Its Supabase-backed durable quota guard is applied
-and both provider keys are stored as sensitive Vercel Production variables;
-the deployed provider lifecycle and quota behavior still require a live probe.
-Those remaining release steps are blocking.
+London on Supabase's free plan. Its baseline/additive migrations, financial
+cutover, and owner-select repair produce 29 public tables, all under RLS.
+Sensitive mutation RPCs, legacy direct financial writes, and the old voice RPC
+deny browser roles. Advisors report zero error-level findings, with reviewed
+RLS/function warnings and the leaked-password-protection warning still present.
+Canonical deployment `dpl_EYEXUVqto8UDcUqoqWKcE1Ui1kPa` serves commit
+`2d808c7a589385e2f8494189978da64d982fb0cc`: health is `ready`, exact-SHA CI is
+green, and canonical Playwright passes 14/14. A real GitHub OAuth round trip,
+reload, authenticated tab creation, nine-tool MCP listing, and non-value MCP
+calculation/preparation calls passed. Hybrid voice is deployed/configured but
+its real microphone/readback lifecycle remains unproven. Final video, public
+video URL, and DoraHacks confirmation are still blocking.
 
 ## Current V2 proof
 
@@ -39,19 +37,18 @@ Those remaining release steps are blocking.
 |---|---|---|
 | Public repository | `READY` | <https://github.com/vaibhav4046/finaltab> |
 | MIT license and contribution/security docs | `READY` | Repository root |
-| Live product URL | `LIVE_PROVEN AT b084497` | <https://finaltab.vercel.app>; deployment `dpl_Dh6dTpAMPgRkFsTeNE2qKBK9nAgL`; 13/13 protected probe |
+| Live product URL | `LIVE_PROVEN` | <https://finaltab.vercel.app>; deployment `dpl_EYEXUVqto8UDcUqoqWKcE1Ui1kPa`; commit `2d808c7a589385e2f8494189978da64d982fb0cc`; health `ready` |
 | V2 contract | `LIVE_PROVEN` | [`0x7b58791c…cCDB`](https://sepolia.basescan.org/address/0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB) |
 | KeeperHub V2 deployment | `LIVE_PROVEN` | execution `xasakw5nfxkh2s0fh4stn`; [tx `0x904ec881…e8f`](https://sepolia.basescan.org/tx/0x904ec881ef7c2ec7375c20887b4181cf58224b44162d837743fa869b0a598e8f); block `45321107`; verified receipt |
 | V2 source | `LIVE_PROVEN` | Sourcify exact creation/runtime match, match ID `43497805`; [repository entry](https://repo.sourcify.dev/84532/0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB) |
-| Authenticated MCP V2 surface | `SOURCE/TEST PROVEN; LIVE RECHECK PENDING` | Current source exposes exactly nine scoped production tools with arbitrary participants, external signatures, exact V2 plan binding, and fail-closed proof. The superseded `b084497` deployment passed auth/calculation/plan/proof probes, but does not prove the retired-tool cleanup. |
-| Clean release baseline | `PROVEN AT b084497` | 284 passing + 1 env-gated skip; both GitHub CI jobs green; 24 generated pages; Playwright 8/8 |
-| Final local candidate | `LOCAL_PROVEN; CI/DEPLOY PENDING` | 387 passing + 1 provider-gated vision skip; production build generated 33/33 pages. No full production/browser/provider claim is inferred. |
-| Hybrid voice candidate | `SCHEMA/CONFIG PROVEN; DEPLOY/PROBE PENDING` | AssemblyAI temp-token STT + buffered ElevenLabs readback; sensitive provider variables, per-minute quotas, and spend reservations are configured/applied; live provider lifecycle probe pending |
+| Authenticated MCP V2 surface | `LIVE_PROVEN — NON-VALUE PROBE` | A scoped token initialized and listed exactly nine tools; `split_equal` and arbitrary-participant V2 preparation passed. No submission call was made. |
+| Canonical release gates | `LIVE_PROVEN` | Exact-SHA GitHub Actions green; Playwright 14/14 across canonical desktop/mobile journeys; no volatile local total is promoted before the final rerun. |
+| Hybrid voice candidate | `DEPLOYED/CONFIG PROVEN; PROVIDER LIFECYCLE PENDING` | AssemblyAI temp-token STT + buffered ElevenLabs readback code is deployed; sensitive provider variables and server-side budget reservations are configured/applied; real microphone/readback lifecycle pending. |
 | Settlement durability | `SOURCE/TEST/SCHEMA PROVEN; APP PROBE PENDING` | Fixed four-stage review; first-party Freeze requires a current HMAC-attested run; UI/REST/MCP share a durable submission journal; accepted recovery skips simulation/execute; prepared recovery reuses its stored successful simulation and deterministic idempotency key under a bounded approval expiry. Hosted schema presence does not prove these flows until the candidate probe passes. |
-| Supabase identity + optional Privy bridge | `SUPABASE ADDITIVE SCHEMA PROVEN; PRIVY OPTIONAL/DISABLED` | Supabase is canonical RLS identity; sign-in/create-account/callback and branded return page are implemented. Privy Custom Authentication requires a paid tier, so the bridge remains fail-closed and hidden under the stop-before-charge constraint; it is not required for core readiness. Branded inbound email still needs verified-domain SMTP or a Send Email Hook. |
+| Supabase identity + optional Privy bridge | `GITHUB LIVE_PROVEN; PRIVY OPTIONAL/DISABLED` | GitHub OAuth, branded return, `/app`, reload, and an authenticated tab create/read passed. Privy remains fail-closed and hidden under the stop-before-charge constraint. Email fallback UI is disabled and delivery unproven. |
 | V2 USDC settlement rail | `LIVE_PROVEN` | KeeperHub `3hmlqi36zweiwg6fc5o2u`; [tx `0x7a6fb760…a789`](https://sepolia.basescan.org/tx/0x7a6fb760f691954a41c71d5d508629c58aa09207bba0de4eaf164f097c59a789); block `45327128`; 1 atomic USDC; exact V2 event binding and balance conservation |
 | V2 video | `BLOCKING — PENDING RENDER` | No truthful duration, checksum, or public URL yet |
-| Supabase infrastructure | `LIVE-PROVEN ADDITIVE SCHEMA; APP PROBE/CUTOVER PENDING` | `finaltab-production`, ref `yoavihmldqbkuxinrsih`, London `eu-west-2`, free plan; four baseline plus additive `52236`/`60000`/`64822`/`73000`/`74000` applied; 29/29 public tables with RLS; sensitive mutation RPCs deny `PUBLIC`/`anon`/`authenticated` and allow `service_role`; no advisor errors; unindexed-FK warning cleared; post-promotion `74500` and final deployed behavior probe pending |
+| Supabase infrastructure | `LIVE-PROVEN SCHEMA/CUTOVER/COLLABORATION WRITE` | `finaltab-production`, ref `yoavihmldqbkuxinrsih`, London `eu-west-2`, free plan; baseline/additive/cutover/owner-select migrations applied; 29/29 public tables with RLS; real owner create/read, membership, participant add, and audit passed; zero error-level findings, with reviewed warnings including leaked-password protection remaining. |
 | DoraHacks entry | `BLOCKING — PENDING HUMAN SUBMISSION` | Live page checked 2026-08-11; deadline 2026-08-13 12:00 UTC+2; confirmation not retained |
 | KeeperHub onboarding contribution | `PROVEN; ENTRY ROUTE AMBIGUOUS` | [PR #95](https://github.com/KeeperHub/cli/pull/95) was open and not merged when last checked; live Bounties tab currently contradicts the detail-page bounty copy |
 
@@ -110,42 +107,34 @@ current public submission URL.
 
 ## Test and release truth
 
-The old `212 passed, 1 skipped` result is a historical 2026-08-10 V1 baseline.
-Main commit
-[`b084497`](https://github.com/vaibhav4046/finaltab/commit/b084497bf883dbf4f1d7123203e9866679d99b67)
-measured **284 passing, 1 env-gated live-provider check skipped**. Its GitHub
-  quality and browser jobs were green, the production build generated 24 pages,
-and Playwright passed 8/8 journeys. A protected probe then passed 13/13 on both
-the immutable deployment and public alias. Treat this as the last proven
-baseline and rerun every gate for a newer submission commit.
-
-The final local candidate measures **387 passing checks with 1 provider-gated
-vision check skipped**, and its production build generated **33/33 pages**.
-Existing ElevenLabs narration clips and caption timings are provisional review
-references and must be regenerated after approved production captures. These are
-local candidate facts, not production-provider or final-render claims.
+The old `212 passed, 1 skipped` and `b084497` results are historical baselines.
+The current canonical release is deployment
+`dpl_EYEXUVqto8UDcUqoqWKcE1Ui1kPa` at commit
+[`2d808c7a589385e2f8494189978da64d982fb0cc`](https://github.com/vaibhav4046/finaltab/commit/2d808c7a589385e2f8494189978da64d982fb0cc).
+Its exact-SHA GitHub Actions run is green, health reports `ready`, and
+Playwright passed 14/14 against the canonical alias. Because test-only,
+migration, documentation, and video work followed that deploy, this snapshot
+does not publish a volatile aggregate local test count. The final submission
+commit must rerun every local and remote gate.
 
 ## Remaining disclosure
 
 - The V2 rail is value-proven with a deliberately minimal `0.000001` USDC run;
   the unified production MCP human-approval trace is still pending.
-- The production V2 MCP endpoint and scopes passed the redacted protected probe
-  at `b084497`; any newer deployment must be re-probed before promotion.
-- The current MCP source contains exactly nine production tools; the new live
-  deployment and authenticated tool list are not yet re-probed.
-- Supabase's four baseline plus five additive migrations (`52236`, `60000`,
-  `64822`, `73000`, and `74000`) are applied and schema-verified at 29/29 public
-  RLS tables. Post-promotion cutover `74500` is unapplied, and the newer
-  application release must still be deployed and live-probed before any
-  cross-device behavior claim.
+- The current production MCP endpoint lists exactly nine tools and passed
+  authenticated non-value calculation/preparation probes. No MCP value
+  submission was called, and the retained settlement is not relabeled as one.
+- Supabase's baseline/additive migrations, financial-truth cutover, and owner
+  select repair are applied and schema-verified at 29/29 public RLS tables. A
+  real authenticated owner create/read passed; two-identity isolation,
+  cross-channel recovery, and cross-device behavior remain unclaimed.
 - Groq has historical live evidence; other model-provider fallback legs should
   remain described according to their current measured state.
 - Sourcify exact matching is proven. BaseScan source verification is not
   claimed unless BaseScan itself reports it.
-- AssemblyAI and ElevenLabs remain deployment-gated. Their sensitive Production
-  variables and Supabase durable quotas are configured, but real
-  microphone/readback/quota lifecycle probes must pass before calling hybrid
-  voice live.
+- AssemblyAI and ElevenLabs are deployed/configured. Their sensitive Production
+  variables and Supabase budget controls are present, but a real
+  microphone/readback lifecycle must pass before calling hybrid voice live.
 - Privy remains deliberately unavailable because the required Custom
   Authentication feature needs a paid tier. Health exposes it as optional and
   unconfigured; Supabase Auth/RLS remains canonical. Branded inbound email
@@ -182,22 +171,20 @@ August 17 through August 19. Do not replace this with a countdown estimate.
 
 ## Completion gates
 
-1. Preserve the `b084497` clean CI and 13/13 protected deployment baseline on
-   the final submission commit.
+1. Preserve the `2d808c7a589385e2f8494189978da64d982fb0cc` exact-SHA green CI,
+   ready health, and 14/14 canonical Playwright release baseline.
 2. Preserve the retained V2 settlement manifest and its exact KeeperHub/chain
    identifiers; do not rebroadcast it.
-3. Probe the applied additive schema through the candidate: stale-review
-   rejection, tenant isolation, cross-channel journaling, and crash recovery.
-   Apply `74500` only after promotion, then prove legacy writes and the old quota
-   RPC are denied.
+3. Preserve the applied cutover and owner-select policy proof. Keep stale-review
+   rejection, two-identity isolation, cross-channel journaling, and crash
+   recovery labeled source/test/schema-proven until they are separately live.
 4. Capture a redacted production MCP trace that references the proven run
    without implying the standalone runner exercised the human approval route.
-5. Deploy and live-probe the provisioned Supabase-backed release before
-   claiming durable or cross-device behavior.
-6. Deploy the Supabase-guarded voice release and retain a real
-   microphone/readback/quota lifecycle probe; durable quotas and sensitive
-   provider variables are already configured.
-7. Capture the real product and nine-tool MCP flow, regenerate ElevenLabs voice
+5. Retain the canonical GitHub OAuth/reload and collaboration-create evidence;
+   do not expand it into an untested two-user or cross-device claim.
+6. Retain a real production microphone/readback lifecycle probe; server-side
+   budget controls and sensitive provider variables are already configured.
+7. Capture the real product and non-value nine-tool MCP proof, regenerate ElevenLabs voice
    and captions, then render and review the 3840×2160/60 V2 video.
 8. Upload the video, record its real public URL and measured metadata, and
    replace every `PENDING` marker.

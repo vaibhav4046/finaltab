@@ -1,5 +1,6 @@
 {
-  "status": "provisional-regenerate-after-approved-production-captures",
+  "status": "pending-selective-voice-regeneration",
+  "changedScenesPendingAlignment": [3, 4, 5, 6, 8],
   "durationSeconds": 96,
   "maxLineLength": 42,
   "cues": [
@@ -52,8 +53,7 @@
       "start": 16.4,
       "end": 19.388999999999996,
       "lines": [
-        "Scan a crowded receipt. Correct any",
-        "extraction."
+        "Sign in. Scan a crowded receipt."
       ]
     },
     {
@@ -61,7 +61,7 @@
       "start": 19.546,
       "end": 22.128999999999998,
       "lines": [
-        "Invite the table. Describe who had what."
+        "Correct the extraction. Add participants."
       ]
     },
     {
@@ -69,7 +69,8 @@
       "start": 22.448999999999998,
       "end": 24.645999999999997,
       "lines": [
-        "FINALTab reconciles every line—"
+        "Describe who had what. FINALTab",
+        "reconciles every line—"
       ]
     },
     {
@@ -85,7 +86,7 @@
       "start": 26.778999999999996,
       "end": 28.793,
       "lines": [
-        "to the cent, across the whole table."
+        "to the cent."
       ]
     },
     {
@@ -93,7 +94,7 @@
       "start": 31.4,
       "end": 33.449,
       "lines": [
-        "The graph collapses many obligations"
+        "A four-stage review attests the current"
       ]
     },
     {
@@ -101,7 +102,7 @@
       "start": 33.467,
       "end": 35.875,
       "lines": [
-        "into a small, deterministic transfer set."
+        "inputs; any edit invalidates it."
       ]
     },
     {
@@ -109,8 +110,7 @@
       "start": 36.241,
       "end": 39.056,
       "lines": [
-        "Freeze once, and the ledger hash,",
-        "settlement ID,"
+        "Freeze only after a fresh review, and the"
       ]
     },
     {
@@ -118,8 +118,8 @@
       "start": 39.086,
       "end": 43.142999999999994,
       "lines": [
-        "debits, payouts, chain, and contract",
-        "become one immutable plan."
+        "ledger, debits, payouts, chain, and",
+        "contract become one immutable plan."
       ]
     },
     {
@@ -127,7 +127,7 @@
       "start": 44.2,
       "end": 45.842,
       "lines": [
-        "Each debtor signs twice:"
+        "The retained plan verifies two debtor"
       ]
     },
     {
@@ -135,7 +135,8 @@
       "start": 46.023,
       "end": 48.861000000000004,
       "lines": [
-        "Circle authorizes their exact USDC pull;"
+        "signatures: Circle authorized the exact",
+        "USDC pull,"
       ]
     },
     {
@@ -143,7 +144,7 @@
       "start": 49.123000000000005,
       "end": 52.054,
       "lines": [
-        "FINALTab binds consent to the complete",
+        "and FINALTab bound consent to the complete",
         "payout plan."
       ]
     },
@@ -152,8 +153,8 @@
       "start": 52.315000000000005,
       "end": 55.896,
       "lines": [
-        "KeeperHub then simulates. A revert never",
-        "broadcasts."
+        "KeeperHub simulated before broadcast;",
+        "consumed proof cannot move value again."
       ]
     },
     {
@@ -161,8 +162,8 @@
       "start": 56.35,
       "end": 60.047000000000004,
       "lines": [
-        "After simulation and a final human",
-        "signature, KeeperHub submits."
+        "With explicit operator authorization,",
+        "KeeperHub submitted once."
       ]
     },
     {
@@ -170,7 +171,8 @@
       "start": 60.483000000000004,
       "end": 62.439,
       "lines": [
-        "Green appears when its receipt matches"
+        "Its terminal receipt and an independent",
+        "Base Sepolia check"
       ]
     },
     {
@@ -178,7 +180,8 @@
       "start": 62.457,
       "end": 65.30600000000001,
       "lines": [
-        "an independent Base Sepolia RPC check."
+        "match the same transaction, settlement",
+        "ID, and ledger hash."
       ]
     },
     {
@@ -203,7 +206,8 @@
       "start": 73.15,
       "end": 75.90700000000001,
       "lines": [
-        "The agent allocates, prepares the V2 plan,"
+        "A real MCP client authenticates, lists all",
+        "nine tools,"
       ]
     },
     {
@@ -211,7 +215,8 @@
       "start": 75.983,
       "end": 77.90400000000001,
       "lines": [
-        "and returns debtor typed data."
+        "allocates the receipt, prepares V2 typed",
+        "data,"
       ]
     },
     {
@@ -219,8 +224,8 @@
       "start": 78.421,
       "end": 82.33900000000001,
       "lines": [
-        "It simulates, gets a short-lived human",
-        "signature, then submits."
+        "and creates the short-lived approval",
+        "challenge. Then it stops:"
       ]
     },
     {
@@ -228,8 +233,8 @@
       "start": 82.85600000000001,
       "end": 87.50500000000001,
       "lines": [
-        "Status receives execution ID, settlement",
-        "ID, and ledger hash."
+        "no wallet signature, no submit, no second",
+        "value move."
       ]
     },
     {
@@ -237,8 +242,8 @@
       "start": 87.825,
       "end": 90.837,
       "lines": [
-        "Only the indexed event becomes",
-        "VERIFIED_SETTLED."
+        "A separate read-only panel verifies the",
+        "retained settlement."
       ]
     },
     {

@@ -17,7 +17,6 @@ const ticket = {
   sampleRate: 16000,
   encoding: "pcm_s16le" as const,
   model: "universal-3-5-pro",
-  apiVersion: "2026-06",
   mode: "balanced" as const,
   languageDetection: true,
   keyterms: ["FINALTab", "KeeperHub", "EIP-3009"],
@@ -68,45 +67,29 @@ describe("voice client session boundary", () => {
     );
   });
 
-  it("accepts only a Begin frame whose applied configuration matches the ticket", () => {
+  it("accepts the documented AssemblyAI Begin frame and trims its bounded ID", () => {
     const begin = {
       type: "Begin",
-      id: "session-123",
-      configuration: {
-        model: ticket.model,
-        mode: ticket.mode,
-        api_version: ticket.apiVersion,
-        voice_focus: ticket.voiceFocus,
-      },
+      id: "  session-123  ",
+      expires_at: 1_786_457_600,
     };
-    expect(validateVoiceBeginMessage(begin, ticket)).toEqual({
+    expect(validateVoiceBeginMessage(begin)).toEqual({
       id: "session-123",
-      configuration: {
-        model: ticket.model,
-        mode: ticket.mode,
-        apiVersion: ticket.apiVersion,
-        voiceFocus: ticket.voiceFocus,
-      },
+      expiresAt: 1_786_457_600,
     });
   });
 
   it.each([
-    ["model", "different-model", "speech model"],
-    ["mode", "max_accuracy", "streaming mode"],
-    ["api_version", "different-version", "streaming API version"],
-    ["voice_focus", "near-field", "Voice Focus"],
-  ])("fails closed when Begin.configuration.%s differs", (field, value, message) => {
-    expect(() => validateVoiceBeginMessage({
-      type: "Begin",
-      id: "session-123",
-      configuration: {
-        model: ticket.model,
-        mode: ticket.mode,
-        api_version: ticket.apiVersion,
-        voice_focus: ticket.voiceFocus,
-        [field]: value,
-      },
-    }, ticket)).toThrow(message);
+    [{ type: "Turn", id: "session-123", expires_at: 1 }, "Begin frame"],
+    [{ type: "Begin", id: "", expires_at: 1 }, "session ID"],
+    [{ type: "Begin", id: "x".repeat(513), expires_at: 1 }, "session ID"],
+    [{ type: "Begin", id: "session-123", expires_at: 0 }, "session expiry"],
+    [{ type: "Begin", id: "session-123", expires_at: -1 }, "session expiry"],
+    [{ type: "Begin", id: "session-123", expires_at: Number.NaN }, "session expiry"],
+    [{ type: "Begin", id: "session-123", expires_at: Number.POSITIVE_INFINITY }, "session expiry"],
+    [{ type: "Begin", id: "session-123", expires_at: "1786457600" }, "session expiry"],
+  ])("rejects a malformed documented Begin frame", (begin, message) => {
+    expect(() => validateVoiceBeginMessage(begin)).toThrow(message);
   });
 
   it("keeps audio frames at exactly 50 ms and schedules shutdown before the provider cap", () => {

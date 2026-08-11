@@ -56,13 +56,28 @@ describe("AssemblyAI temporary streaming sessions", () => {
     expect(JSON.parse(websocketUrl.searchParams.get("keyterms_prompt") ?? "[]")).toEqual(
       expect.arrayContaining(["FINALTab", "KeeperHub", "EIP-3009", "USDC"]),
     );
-    expect(session).toMatchObject({
+    expect(session).toEqual({
       token: temporaryToken,
       expiresInSeconds: 60,
       maxSessionDurationSeconds: 180,
+      websocketUrl: websocketUrl.toString(),
       sampleRate: 16_000,
       encoding: "pcm_s16le",
+      model: "universal-3-5-pro",
+      mode: "balanced",
       languageDetection: true,
+      keyterms: [
+        "FINALTab",
+        "KeeperHub",
+        "EIP-3009",
+        "USDC",
+        "Base Sepolia",
+        "ledger hash",
+        "settlement consent",
+        "cent-perfect",
+        "onchain",
+      ],
+      voiceFocus: "far-field",
     });
     expect(JSON.stringify(session)).not.toContain(permanentKey);
     expect(session.websocketUrl).not.toContain(temporaryToken);

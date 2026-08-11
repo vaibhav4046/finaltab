@@ -25,14 +25,14 @@ describe("durable tab collaboration boundaries", () => {
   it("normalizes draft and participant inputs without inventing wallet identity", () => {
     expect(CreateTabSchema.parse({ title: "  Team dinner  ", currency: "usd" })).toEqual({ title: "Team dinner", currency: "USD" });
     expect(AddParticipantSchema.parse({
-      displayName: "  Vee  ",
+      displayName: "  Participant A  ",
       walletAddress: "0xABCDEFabcdefABCDEFabcdefABCDEFabcdefABCD",
     })).toEqual({
-      displayName: "Vee",
+      displayName: "Participant A",
       walletAddress: "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd",
       attachSelf: false,
     });
-    expect(AddParticipantSchema.parse({ displayName: "Hem", walletAddress: null }).walletAddress).toBeNull();
+    expect(AddParticipantSchema.parse({ displayName: "Participant B", walletAddress: null }).walletAddress).toBeNull();
   });
 
   it("does not expose a path that marks an approval signed", () => {
@@ -84,5 +84,15 @@ describe("durable tab collaboration boundaries", () => {
     );
     expect(detailRoute).toContain('rpc("list_tab_approval_summaries"');
     expect(detailRoute).not.toContain('.from("settlement_approvals")');
+  });
+
+  it("lets a policy-checked owner read INSERT RETURNING before membership is materialized", () => {
+    const migration = readFileSync(
+      fileURLToPath(new URL("../../../supabase/migrations/20260811140612_tab_owner_select_returning.sql", import.meta.url)),
+      "utf8",
+    );
+    expect(migration).toContain("owner_id = (select auth.uid())");
+    expect(migration).toContain("or private.is_tab_member(id)");
+    expect(migration).not.toContain("for insert");
   });
 });

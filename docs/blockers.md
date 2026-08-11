@@ -4,17 +4,20 @@ Nothing here is faked in the app: blocked paths render as blocked, unproven stat
 
 ## CURRENT V2 BLOCKERS — 2026-08-11
 
-- Deploy and live-probe the now-applied additive schema (`52236`, `60000`,
-  `64822`, `73000`, `74000`) for tenant isolation, review invalidation,
-  cross-channel journaling, crash recovery, and voice budgets. Only after a
-  successful promotion, apply `74500` and prove legacy writes are revoked.
 - Configure a verified-domain SMTP provider or Send Email Hook before claiming
   branded inbound email. The paid Privy custom-auth bridge is optional and is
   deliberately disabled under the stop-before-charge constraint.
-- Deploy the current exactly-nine-tool MCP/product release; probe auth,
-  multi-identity persistence, review invalidation, voice, and the live tool list.
-- Bind the V2 MCP trace, KeeperHub receipt, independent V2 event/balance proof,
-  and final 4K/60 product video to one truthful evidence package.
+- Complete a real production microphone/readback lifecycle before claiming
+  hybrid voice live. The release, provider variables, and server-side budget
+  controls are deployed/configured, but the browser microphone permission flow
+  did not complete.
+- Keep the live non-value MCP probe separate from the retained value proof. The
+  canonical release lists exactly nine tools and passed calculation/preparation;
+  it did not call MCP submission, and the standalone settlement must not be
+  relabeled as one.
+- Keep two-identity isolation, review invalidation, and cross-channel journal
+  recovery labeled source/test/schema-proven until separately exercised.
+- Finish and review the final 4K/60 product video from truthful live captures.
 - Upload that video and complete the human DoraHacks form.
 
 V2 deployment itself is resolved: contract
@@ -136,20 +139,21 @@ rather than being done autonomously.
 
 - `finaltab-production` (`yoavihmldqbkuxinrsih`) is active in London
   (`eu-west-2`) on the free plan, with verified monthly cost `0`.
-- The four baseline migrations plus ordered additive migrations
+- The baseline migrations plus ordered additive migrations
   `20260811052236`, `20260811060000`, `20260811064822`, `20260811073000`, and
   `20260811074000` are applied. Verification found 29/29 public tables with RLS;
   every sensitive new mutation RPC denies `PUBLIC`, `anon`, and
   `authenticated` and allows `service_role`. Database advisors report no
-  errors, and `60000` clears the remaining unindexed agent-event composite-FK
-  warning. The durable minute-quota consumer RPC remains authenticated-only
-  until cutover; the new spend-reservation RPC is service-role-only.
-- Post-promotion cutover `20260811074500` is not applied and must follow a
-  successful candidate promotion. Recheck its legacy-write and old-quota-RPC
-  denials after applying it.
-- Remaining release gate: deploy the newer application and live-probe auth,
-  invitations, approvals, durable history, and cross-device resume with more
-  than one identity. Provisioning alone does not prove those browser behaviors.
+  error-level findings, and `60000` clears the remaining unindexed agent-event
+  composite-FK warning. Reviewed RLS/function warnings and the
+  leaked-password-protection warning remain.
+- Post-promotion cutover `20260811074500` and `tab_owner_select_returning` are
+  applied. Legacy direct financial writes and the old quota RPC deny browser
+  roles; the new spend-reservation RPC is service-role-only.
+- Canonical GitHub OAuth/reload and a real authenticated tab create/read,
+  owner membership, participant add, and audit record passed. Multi-identity,
+  invitation, durable journal recovery, and cross-device resume remain separate
+  probes rather than inferred behavior.
 
 ## Pre-existing upstream noise (not ours, disclosed)
 

@@ -3,9 +3,11 @@
 Status: implemented in source and applied at the database layer through ordered
 migrations `52236`, `60000`, `73000`, and `74000`. All affected public tables
 have RLS, sensitive mutation RPCs are service-role-only, and `60000` clears the
-agent-event composite-FK index warning. The application flows still require a
-candidate deployment probe; post-promotion cutover `74500` is not applied and
-must follow a successful promotion.
+agent-event composite-FK index warning. Canonical deployment
+`dpl_EYEXUVqto8UDcUqoqWKcE1Ui1kPa` at commit
+`2d808c7a589385e2f8494189978da64d982fb0cc` is live and `ready`, and
+post-promotion cutover `74500` is applied. The complete four-stage control-plane
+sequence remains source/test/schema-proven until separately exercised live.
 
 ## Product boundary
 

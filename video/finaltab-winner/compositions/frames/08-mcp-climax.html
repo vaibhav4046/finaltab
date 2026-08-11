@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="UTF-8"/><title>FINALTab — MCP climax capture slot</title></head>
+<head><meta charset="UTF-8"/><title>FINALTab — MCP non-broadcast safety boundary</title></head>
 <body>
 <template>
   <style>
@@ -11,29 +11,24 @@
     .clip{position:absolute;inset:0;overflow:hidden}.ground{background:#0B0F12}
     .scene{width:50%;height:50%;transform:scale(2);transform-origin:0 0;padding:54px 80px 150px;box-sizing:border-box}
     .head{display:flex;justify-content:space-between;align-items:flex-end}.head small{display:block;font:700 18px/1 GeistMono,monospace;letter-spacing:.16em;color:#FF936A;margin-bottom:11px}.head h2{margin:0;font:600 54px/1 Fraunces,Georgia,serif;letter-spacing:-.03em}.truth{max-width:470px;text-align:right;font:700 14px/1.4 GeistMono,monospace;color:#FF936A}
-    .capture{position:absolute;left:80px;top:194px;width:1045px;height:610px;border:1px solid rgba(255,147,106,.36);border-radius:24px;overflow:hidden}.capture img{width:100%;height:100%;object-fit:cover;object-position:left center}
-    .rail{position:absolute;right:80px;top:194px;width:665px;height:610px;border-left:1px solid rgba(145,160,168,.28);padding:4px 0 0 26px;box-sizing:border-box}.rail-label{font:700 14px/18px GeistMono,monospace;color:#91A0A8;letter-spacing:.12em;margin-bottom:9px}.step{height:54px;border:1px solid rgba(145,160,168,.25);border-left:3px solid #91A0A8;border-radius:10px;margin-bottom:8px;padding:8px 13px;box-sizing:border-box;background:#0F1519}.step span{display:block;height:13px;font:700 12px/13px GeistMono,monospace;color:#91A0A8;letter-spacing:.1em}.step b{display:block;height:21px;margin-top:4px;font:700 16px/21px GeistMono,monospace;color:#F4EEE2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.step.human{border-left-color:#FF936A}.step.human span{color:#FF936A}
-    .status{position:absolute;left:80px;right:80px;top:827px;height:68px;border:1px solid rgba(145,160,168,.36);border-radius:14px;background:#0F1519;padding:13px 18px;box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;gap:24px}.status code{font:700 19px/1.2 GeistMono,monospace;color:#F4EEE2}.status .arguments{font:400 14px/1.3 GeistMono,monospace;color:#91A0A8;text-align:right}.chain-proof{position:absolute;right:96px;top:911px;border:2px solid #B7F5D8;border-radius:10px;padding:10px 14px;font:700 15px/1 GeistMono,monospace;color:#B7F5D8;letter-spacing:.06em}.pending{position:absolute;left:96px;top:919px;font:700 14px/1 GeistMono,monospace;color:#FF936A;letter-spacing:.08em}
+    .capture{position:absolute;left:80px;top:194px;width:1045px;height:590px;border:1px solid rgba(255,147,106,.36);border-radius:24px;overflow:hidden}.capture img{width:100%;height:100%;object-fit:cover;object-position:left center}
+    .rail{position:absolute;right:80px;top:194px;width:665px;height:590px;border-left:1px solid rgba(145,160,168,.28);padding:4px 0 0 26px;box-sizing:border-box}.rail-label{font:700 14px/18px GeistMono,monospace;color:#91A0A8;letter-spacing:.12em;margin-bottom:11px}.step{height:76px;border:1px solid rgba(145,160,168,.25);border-left:3px solid #91A0A8;border-radius:10px;margin-bottom:9px;padding:11px 13px;box-sizing:border-box;background:#0F1519}.step span{display:block;height:14px;font:700 12px/14px GeistMono,monospace;color:#91A0A8;letter-spacing:.1em}.step b{display:block;height:22px;margin-top:7px;font:700 16px/22px GeistMono,monospace;color:#F4EEE2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.step.human{border-left-color:#FF936A}.step.human span{color:#FF936A}.step.proof{border-left-color:#B7F5D8}.step.proof span{color:#B7F5D8}
+    .status{position:absolute;left:80px;right:80px;top:810px;height:78px;border:1px solid rgba(255,147,106,.5);border-radius:14px;background:#0F1519;padding:13px 18px;box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;gap:24px}.status code{font:700 19px/1.2 GeistMono,monospace;color:#FF936A}.status .arguments{font:400 14px/1.3 GeistMono,monospace;color:#91A0A8;text-align:right}.status .arguments b{color:#B7F5D8}
   </style>
   <div id="root" data-composition-id="finaltab-mcp-climax" data-start="0" data-width="3840" data-height="2160" data-duration="18">
     <section id="f08-ground" class="clip ground" data-start="0" data-duration="18" data-track-index="0"></section>
     <section id="f08-scene" class="clip scene" data-start="0" data-duration="18" data-track-index="1">
-      <div id="f08-head" class="head"><div><small>08 · MCP CLIMAX</small><h2>The agent uses the same human safety boundary.</h2></div><div class="truth">THE RAIL IS A CAPTURE SPEC · NOT A SYNTHETIC CLIENT TRANSCRIPT</div></div>
-      <div id="f08-capture" class="capture"><img src="assets/capture-slots/C08-real-mcp-v2-run.svg" alt="C08 real MCP client recording capture slot"/></div>
-      <aside class="rail"><div class="rail-label">ATTESTED AGENT RUN · EXTERNAL WALLETS · REQUIRED TRACE ORDER</div>
+      <div id="f08-head" class="head"><div><small>08 · MCP SAFETY BOUNDARY</small><h2>The real client stops before value can move.</h2></div><div class="truth">AUTHENTICATED CLIENT · NON-BROADCAST TRACE<br/>RETAINED PROOF IS A SEPARATE READ-ONLY RECORD</div></div>
+      <div id="f08-capture" class="capture"><img src="assets/capture-slots/C08-mcp-nonbroadcast-status.svg" alt="C08 authenticated MCP non-broadcast trace and retained read-only status capture slot"/></div>
+      <aside class="rail" data-layout-allow-occlusion><div class="rail-label">REAL MCP CLIENT · REQUIRED SAFE TRACE ORDER</div>
         <div id="f08-step-1" class="step"><span>01 · AUTHENTICATE</span><b>initialize + tools/list</b></div>
         <div id="f08-step-2" class="step"><span>02 · ALLOCATE</span><b>allocate_receipt</b></div>
         <div id="f08-step-3" class="step"><span>03 · PREPARE V2</span><b>prepare_receipt_settlement</b></div>
-        <div id="f08-step-4" class="step"><span>04 · SIGN</span><b>two typed-data payloads / debtor</b></div>
-        <div id="f08-step-5" class="step"><span>05 · SIMULATE</span><b>broadcast: false</b></div>
-        <div id="f08-step-6" class="step human"><span>06 · STOP FOR HUMAN</span><b>approval challenge · personal-sign</b></div>
-        <div id="f08-step-7" class="step human"><span>07 · SUBMIT</span><b>submit_signed_settlement</b></div>
-        <div id="f08-step-8" class="step"><span>08 · POLL</span><b>execution + plan identifiers</b></div>
-        <div id="f08-step-9" class="step"><span>09 · PROVE</span><b>exact indexed event</b></div>
+        <div id="f08-step-4" class="step"><span>04 · CREATE CHALLENGE</span><b>broadcast approval boundary</b></div>
+        <div id="f08-step-5" class="step human"><span>05 · HARD STOP</span><b>no wallet action · no submission</b></div>
+        <div id="f08-step-6" class="step proof"><span>06 · SEPARATE READ ONLY</span><b>retained settlement status</b></div>
       </aside>
-      <div id="f08-status" class="status"><code>settlement_status({ executionId, settlementId, ledgerHash })</code><div class="arguments">3hmlqi36zweiwg6fc5o2u<br/>0x8b6708…aadb9db · 0x1581eb…b0cb91e</div></div>
-      <div id="f08-pending" class="pending">MCP SAME-RUN CAPTURE PENDING · DO NOT RENDER FINAL WITH C08 SLOT</div>
-      <div id="f08-chain-proof" class="chain-proof">CHAIN EVENT VERIFIED · BLOCK 45327128</div>
+      <div id="f08-status" class="status"><code>NO WALLET SIGNATURE · NO SUBMIT · NO SECOND VALUE MOVE</code><div class="arguments">RETAINED RUN · NOT THIS MCP SUBMISSION<br/><b>VERIFIED_SETTLED · BLOCK 45327128</b></div></div>
     </section>
   </div>
   <script>
@@ -44,15 +39,10 @@
     tl.fromTo("#f08-step-1",{opacity:.18,x:20},{opacity:1,x:0,duration:.34,ease:"power3.out"},1.0);
     tl.fromTo("#f08-step-2",{opacity:.18,x:20},{opacity:1,x:0,duration:.34,ease:"power3.out"},2.45);
     tl.fromTo("#f08-step-3",{opacity:.18,x:20},{opacity:1,x:0,duration:.34,ease:"power3.out"},4.0);
-    tl.fromTo("#f08-step-4",{opacity:.18,x:20},{opacity:1,x:0,duration:.34,ease:"power3.out"},5.55);
-    tl.fromTo("#f08-step-5",{opacity:.18,x:20},{opacity:1,x:0,duration:.34,ease:"power3.out"},7.1);
-    tl.fromTo("#f08-step-6",{opacity:.18,x:20},{opacity:1,x:0,duration:.38,ease:"power3.out"},8.65);
-    tl.fromTo("#f08-step-7",{opacity:.18,x:20},{opacity:1,x:0,duration:.34,ease:"power3.out"},10.35);
-    tl.fromTo("#f08-step-8",{opacity:.18,x:20},{opacity:1,x:0,duration:.34,ease:"power3.out"},11.95);
-    tl.fromTo("#f08-step-9",{opacity:.18,x:20},{opacity:1,x:0,duration:.34,ease:"power3.out"},13.4);
-    tl.fromTo("#f08-status",{opacity:0,y:18},{opacity:1,y:0,duration:.54,ease:"power3.out"},13.75);
-    tl.fromTo("#f08-pending",{opacity:0},{opacity:1,duration:.35,ease:"sine.out"},15.35);
-    tl.fromTo("#f08-chain-proof",{opacity:0,scale:1.45},{opacity:1,scale:1,duration:.38,ease:"power4.out"},17.05);
+    tl.fromTo("#f08-step-4",{opacity:.18,x:20},{opacity:1,x:0,duration:.34,ease:"power3.out"},5.8);
+    tl.fromTo("#f08-step-5",{opacity:.18,x:20},{opacity:1,x:0,duration:.38,ease:"power3.out"},8.2);
+    tl.fromTo("#f08-step-6",{opacity:.18,x:20},{opacity:1,x:0,duration:.38,ease:"power3.out"},11.2);
+    tl.fromTo("#f08-status",{opacity:0,y:18},{opacity:1,y:0,duration:.54,ease:"power3.out"},14.0);
     window.__timelines["finaltab-mcp-climax"]=tl;
   </script>
 </template>

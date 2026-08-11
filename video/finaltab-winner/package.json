@@ -3,14 +3,15 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "npx --yes hyperframes@0.7.105 preview",
-    "check": "npx --yes hyperframes@0.7.105 check",
-    "check:source": "node verify-video-gates.mjs --allow-placeholders && npx --yes hyperframes@0.7.105 check",
+    "dev": "npx --yes hyperframes@0.7.106 preview",
+    "check": "npx --yes hyperframes@0.7.106 check",
+    "check:enhanced": "npx --yes hyperframes@0.7.106 check --samples 15 --at-transitions --caption-zone \"x0=0;y0=.83;x1=1;y1=1;severity=error;seek=.25,1\" --frame-check",
+    "check:source": "node verify-video-gates.mjs --allow-placeholders && npx --yes hyperframes@0.7.106 check",
     "gate:render": "node verify-video-gates.mjs",
-    "voice": "node generate-voiceover.mjs",
+    "voice": "node generate-voiceover.mjs --scenes=3,4,5,6,8 --approved-captures-locked",
     "captions": "node build-captions.mjs",
-    "render": "npx --yes hyperframes@0.7.105 render",
-    "render:final": "node verify-video-gates.mjs && npx --yes hyperframes@0.7.105 render --fps 60 --resolution landscape-4k --quality high --strict-all --no-best-effort --skill product-launch-video -o ../../proof-output/finaltab-winner/finaltab-winner-96s-4k.mp4",
-    "publish": "npx --yes hyperframes@0.7.105 publish"
+    "render": "npx --yes hyperframes@0.7.106 render",
+    "render:final": "node verify-video-gates.mjs && npx --yes hyperframes@0.7.106 render --fps 60 --resolution landscape-4k --video-frame-format png --quality high --low-memory-mode --frames-cache-dir off --strict-all --no-best-effort --skill product-launch-video -o ../../proof-output/finaltab-winner/finaltab-winner-96s-4k.mp4",
+    "publish": "npx --yes hyperframes@0.7.106 publish"
   }
 }

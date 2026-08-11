@@ -11,18 +11,21 @@
 > Current overrides: the V2 rail moved one atomic unit through KeeperHub
 > execution `3hmlqi36zweiwg6fc5o2u`, and Supabase project
 > `yoavihmldqbkuxinrsih` has the baseline plus additive
-> `52236`/`60000`/`64822`/`73000`/`74000` applied: 29/29 public tables use RLS,
-> sensitive mutation RPCs are service-role-only, advisors report no errors, and
-> the unindexed-FK warning is cleared. The current source has exactly
+> `52236`/`60000`/`64822`/`73000`/`74000`, financial cutover, and owner-select
+> repair applied: 29/29 public tables use RLS, sensitive mutation RPCs and legacy
+> writes deny browser roles, advisors report zero error-level findings with reviewed warnings
+> remaining, and the unindexed-FK warning is cleared. Production lists exactly
 > nine MCP tools, external-wallet dual signing, and a mandatory attested
 > four-stage first-party review before Freeze. UI, REST, and MCP submissions use
 > one durable journal in source; accepted recovery skips simulation and execute,
 > while prepared recovery reuses its successful simulation and deterministic
-> idempotency key under a bounded approval expiry. Post-promotion cutover
-> `74500` is not applied; the applied schema is not a live-flow probe. Privy is
+> idempotency key under a bounded approval expiry. A real GitHub OAuth/reload and
+> authenticated owner tab create/read passed; two-identity and journal-recovery
+> behavior remain unclaimed. Privy is
 > an optional, code-complete bridge that remains fail-closed and deliberately
-> disabled because its required custom-auth feature needs a paid tier. The final application/provider
-> probe remains open; do not rewrite the archived V1 rows below as current facts.
+> disabled because its required custom-auth feature needs a paid tier. The real
+> voice-provider lifecycle remains open; do not rewrite the archived V1 rows
+> below as current facts.
 
 **Gate 0 Inventory — 2026-08-10**
 

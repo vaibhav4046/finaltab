@@ -101,7 +101,7 @@ const JOURNEY: JourneyStep[] = [
     number: "03",
     title: "Invite",
     status: "Backend provisioned",
-    copy: "The London Supabase schema is provisioned with RLS and indexed relations. Cross-device behavior stays unclaimed until the final release passes its live browser probe.",
+    copy: "The London Supabase schema is live with RLS and indexed relations. Production has proved signed-in tab creation, owner membership, participant persistence and reload; two-user invite acceptance remains a separate release gate.",
     icon: Users,
     tone: "border-quiet bg-surface-2 text-muted",
   },

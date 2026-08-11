@@ -9,9 +9,10 @@ GitHub access tokens are not settlement, MCP, or wallet principals.
 
 The product renders this path only when the server-only
 `FINALTAB_GITHUB_OAUTH_ENABLED=true` flag is present. That flag records operator
-intent; it does not prove that GitHub or Supabase is operational. `/api/health`
-reports configuration intent, while release evidence still requires a real
-same-device provider round trip and an authenticated RLS probe.
+intent; it does not prove that GitHub or Supabase is operational by itself.
+For the current canonical release, a real same-device provider round trip,
+branded return, `/app` entry, full reload, and authenticated RLS-backed tab
+create/read have passed. `/api/health` separately reports configuration intent.
 
 ## Provider setup
 
@@ -70,6 +71,14 @@ email until custom SMTP or a Send Email Hook and verified sender domain pass a
 live probe.
 
 ## Release probe
+
+Current retained release result: the canonical GitHub flow completed, returned
+through `/auth/complete`, entered `/app`, survived a full reload, and created a
+real production tab after the owner-select RLS repair. Owner membership,
+participant creation, and the audit record were verified. This proves one real
+GitHub-linked identity and its owner path; overlapping-flow behavior and
+two-identity tenant isolation remain source/test claims until separately
+exercised.
 
 - Start from `/auth?next=%2Fapp`, complete GitHub in the same browser, and verify
   the final URL is `/auth/complete?next=%2Fapp` before entering `/app`.

@@ -1,13 +1,15 @@
+import { createHash } from "node:crypto";
 import { readFile, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const projectDir = dirname(fileURLToPath(import.meta.url));
-const voiceDir = resolve(projectDir, "../../proof-output/finaltab-winner/voiceover");
+const proofDir = resolve(projectDir, "../../proof-output/finaltab-winner/voiceover");
+const assetDir = join(projectDir, "assets", "audio", "voice");
+const manifestPath = join(projectDir, "data", "voiceover-manifest.json");
 const sceneStarts = [0.65, 6.2, 16.4, 31.4, 44.2, 56.35, 66.25, 73.15, 91.05];
 const sceneEnds = [6, 16, 31, 44, 56, 66, 73, 91, 96];
 const maxLineLength = 42;
-const canonicalText = (value) => value.replace(/\s+/gu, " ").replace(/\s*—\s*/gu, "—").trim();
 const captionPhrases = [
   [
     "A shared bill should end with everyone certain—",
@@ -19,62 +21,68 @@ const captionPhrases = [
     "then sends the exact call through KeeperHub.",
   ],
   [
-    "Scan a crowded receipt. Correct any extraction.",
-    "Invite the table. Describe who had what.",
-    "FINALTab reconciles every line—",
+    "Sign in. Scan a crowded receipt.",
+    "Correct the extraction. Add participants.",
+    "Describe who had what. FINALTab reconciles every line—",
     "tax, tip, and service included—",
-    "to the cent, across the whole table.",
+    "to the cent.",
   ],
   [
-    "The graph collapses many obligations",
-    "into a small, deterministic transfer set.",
-    "Freeze once, and the ledger hash, settlement ID,",
-    "debits, payouts, chain, and contract become one immutable plan.",
+    "A four-stage review attests the current inputs;",
+    "any edit invalidates it.",
+    "Freeze only after a fresh review,",
+    "and the ledger, debits, payouts, chain, and contract become one immutable plan.",
   ],
   [
-    "Each debtor signs twice:",
-    "Circle authorizes their exact USDC pull;",
-    "FINALTab binds consent to the complete payout plan.",
-    "KeeperHub then simulates. A revert never broadcasts.",
+    "The retained plan verifies two debtor signatures:",
+    "Circle authorized the exact USDC pull,",
+    "and FINALTab bound consent to the complete payout plan.",
+    "KeeperHub simulated before broadcast; consumed proof cannot move value again.",
   ],
   [
-    "After simulation and a final human signature, KeeperHub submits.",
-    "Green appears when its receipt matches",
-    "an independent Base Sepolia RPC check.",
+    "With explicit operator authorization, KeeperHub submitted once.",
+    "Its terminal receipt and an independent Base Sepolia check",
+    "match the same transaction, settlement ID, and ledger hash.",
   ],
   [
     "Agents use the same safety rail through nine production MCP tools.",
     "FINALTab never holds wallet keys.",
   ],
   [
-    "The agent allocates, prepares the V2 plan,",
-    "and returns debtor typed data.",
-    "It simulates, gets a short-lived human signature, then submits.",
-    "Status receives execution ID, settlement ID, and ledger hash.",
-    "Only the indexed event becomes VERIFIED_SETTLED.",
+    "A real MCP client authenticates, lists all nine tools,",
+    "allocates the receipt, prepares V2 typed data,",
+    "and creates the short-lived approval challenge.",
+    "Then it stops: no wallet signature, no submit, no second value move.",
+    "A separate read-only panel verifies the retained settlement.",
   ],
   ["FINALTab: KeeperHub executes. Anyone verifies."],
 ];
+
+function invariant(value, message) {
+  if (!value) throw new Error(message);
+}
+
+function sha256(value) {
+  return createHash("sha256").update(value).digest("hex");
+}
+
+function canonicalText(value) {
+  return value.replace(/\s+/gu, " ").replace(/\s*—\s*/gu, "—").trim();
+}
 
 function timedPhrases(alignment, phrases) {
   const characters = alignment?.characters;
   const starts = alignment?.character_start_times_seconds;
   const ends = alignment?.character_end_times_seconds;
-  if (!Array.isArray(characters) || !Array.isArray(starts) || !Array.isArray(ends)) {
-    throw new Error("Alignment is missing character timing arrays");
-  }
+  invariant(Array.isArray(characters) && Array.isArray(starts) && Array.isArray(ends), "Alignment is missing character timing arrays");
   const joined = characters.join("");
   let cursor = 0;
   return phrases.map((text) => {
     const startIndex = joined.indexOf(text, cursor);
-    if (startIndex < 0) throw new Error(`Caption phrase was not found in alignment: ${text}`);
+    invariant(startIndex >= 0, `Caption phrase was not found in alignment: ${text}`);
     const endIndex = startIndex + text.length - 1;
     cursor = endIndex + 1;
-    return {
-      text,
-      start: Number(starts[startIndex]),
-      end: Number(ends[endIndex]),
-    };
+    return { text, start: Number(starts[startIndex]), end: Number(ends[endIndex]) };
   });
 }
 
@@ -88,39 +96,48 @@ function wrap(text) {
   return lines;
 }
 
-function srtTime(seconds) {
+function subtitleTime(seconds, separator) {
   const milliseconds = Math.max(0, Math.round(seconds * 1000));
   const hours = Math.floor(milliseconds / 3_600_000);
   const minutes = Math.floor((milliseconds % 3_600_000) / 60_000);
   const secs = Math.floor((milliseconds % 60_000) / 1000);
   const millis = milliseconds % 1000;
-  return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")},${String(millis).padStart(3, "0")}`;
+  return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}${separator}${String(millis).padStart(3, "0")}`;
 }
 
-const manifest = JSON.parse(await readFile(join(voiceDir, "manifest.json"), "utf8"));
-if (!Array.isArray(manifest.scenes) || manifest.scenes.length !== 9) {
-  throw new Error("Voiceover manifest must contain exactly nine scenes");
+function html(value) {
+  return value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 }
+
+function numberLiteral(value) {
+  return Number(value.toFixed(3)).toString();
+}
+
+const script = await readFile(join(projectDir, "SCRIPT.md"), "utf8");
+const scriptLines = [...script.matchAll(/^ {4}(.+)$/gm)].map((match) => match[1].trim());
+invariant(scriptLines.length === 9, "SCRIPT.md must contain exactly nine indented narration lines");
+
+const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
+invariant(Array.isArray(manifest.scenes) && manifest.scenes.length === 9, "Voiceover manifest must contain exactly nine scenes");
+invariant(Array.isArray(manifest.changedScenesPendingRegeneration) && manifest.changedScenesPendingRegeneration.length === 0, "Changed narration scenes are still pending regeneration");
+invariant(manifest.status === "generated-awaiting-caption-sync", "Voiceover manifest is not ready for caption sync");
+invariant(manifest.captureLockAcknowledged === true, "Canonical capture lock was not acknowledged during selective generation");
 
 const cues = [];
 for (const scene of manifest.scenes) {
   const index = Number(scene.scene) - 1;
-  const record = JSON.parse(await readFile(join(voiceDir, scene.alignment), "utf8"));
+  invariant(scene.text === scriptLines[index], `Voice text does not match SCRIPT.md for scene ${scene.scene}`);
+  const record = JSON.parse(await readFile(join(assetDir, scene.alignment), "utf8"));
+  invariant(record.text === scene.text, `Alignment text does not match voice manifest for scene ${scene.scene}`);
   const phrases = captionPhrases[index];
-  if (canonicalText(phrases.join(" ")) !== canonicalText(scene.text)) {
-    throw new Error(`Caption phrases do not reproduce scene ${scene.scene} exactly`);
-  }
+  invariant(canonicalText(phrases.join(" ")) === canonicalText(scene.text), `Caption phrases do not reproduce scene ${scene.scene} exactly`);
   const timed = timedPhrases(record.originalAlignment ?? record.alignment, phrases);
   const audioEnd = sceneStarts[index] + Number(scene.durationSeconds);
-  if (audioEnd > sceneEnds[index] + 0.015) {
-    throw new Error(`Scene ${scene.scene} audio ends at ${audioEnd.toFixed(3)}s, outside its ${sceneEnds[index]}s frame`);
-  }
+  invariant(audioEnd <= sceneEnds[index] + 0.015, `Scene ${scene.scene} audio ends outside its frame`);
+
   for (const phrase of timed) {
-    const text = phrase.text;
-    const lines = wrap(text);
-    if (lines.length > 2 || lines.some((line) => line.length > maxLineLength)) {
-      throw new Error(`Caption wrapping failed for scene ${scene.scene}: ${text}`);
-    }
+    const lines = wrap(phrase.text);
+    invariant(lines.length <= 2 && lines.every((line) => line.length <= maxLineLength), `Caption wrapping failed for scene ${scene.scene}: ${phrase.text}`);
     cues.push({
       scene: scene.scene,
       start: sceneStarts[index] + phrase.start,
@@ -135,19 +152,84 @@ for (let index = 0; index < cues.length - 1; index += 1) {
     cues[index].end = Math.max(cues[index].start + 0.08, cues[index + 1].start - 0.02);
   }
 }
-if (cues.some((cue) => cue.end <= cue.start)) throw new Error("Caption cue has a non-positive duration");
+invariant(cues.every((cue) => cue.end > cue.start), "Caption cue has a non-positive duration");
 
 const srt = cues.map((cue, index) => [
   String(index + 1),
-  `${srtTime(cue.start)} --> ${srtTime(cue.end)}`,
+  `${subtitleTime(cue.start, ",")} --> ${subtitleTime(cue.end, ",")}`,
   ...cue.lines,
   "",
 ].join("\n")).join("\n");
+const vtt = `WEBVTT\n\n${cues.map((cue, index) => [
+  String(index + 1),
+  `${subtitleTime(cue.start, ".")} --> ${subtitleTime(cue.end, ".")}`,
+  ...cue.lines,
+  "",
+].join("\n")).join("\n")}`;
+
+const cuePayload = {
+  status: "approved-final-capture-sync",
+  durationSeconds: 96,
+  maxLineLength,
+  scriptSha256: sha256(script),
+  cues,
+};
+const cueJson = `${JSON.stringify(cuePayload, null, 2)}\n`;
+cuePayload.sha256 = sha256(cueJson);
+
+const captionMarkup = cues.map((cue, index) => {
+  const id = String(index + 1).padStart(2, "0");
+  return `      <p id="cap-${id}" class="caption-cue">${cue.lines.map(html).join("<br/>")}</p>`;
+}).join("\n");
+const captionTimeline = cues.map((cue, index) => {
+  const id = String(index + 1).padStart(2, "0");
+  const start = numberLiteral(cue.start);
+  const fadeOut = numberLiteral(Math.max(cue.start + 0.18, cue.end - 0.14));
+  const end = numberLiteral(cue.end);
+  return [
+    `    tl.set("#cap-${id}",{visibility:"visible"},${start});`,
+    `    tl.fromTo("#cap-${id}",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},${start}).to("#cap-${id}",{opacity:0,duration:.14,ease:"sine.in"},${fadeOut});`,
+    `    tl.set("#cap-${id}",{opacity:0,visibility:"hidden"},${end});`,
+  ].join("\n");
+}).join("\n");
+const voiceMarkup = manifest.scenes.map((scene, index) => {
+  const id = String(scene.scene).padStart(2, "0");
+  return `    <audio id="voice-${id}" class="clip media-clip" src="assets/audio/voice/${scene.audio}" preload="auto" data-start="${sceneStarts[index]}" data-duration="${Number(scene.durationSeconds).toFixed(3)}" data-track-index="30"></audio>`;
+}).join("\n");
+
+let indexHtml = await readFile(join(projectDir, "index.html"), "utf8");
+indexHtml = indexHtml.replace(
+  /(<!-- GENERATED CAPTIONS START -->)[\s\S]*?(<!-- GENERATED CAPTIONS END -->)/u,
+  `$1\n${captionMarkup}\n      $2`,
+);
+indexHtml = indexHtml.replace(
+  /(<!-- GENERATED VOICE CLIPS START -->)[\s\S]*?(<!-- GENERATED VOICE CLIPS END -->)/u,
+  `$1\n${voiceMarkup}\n    $2`,
+);
+indexHtml = indexHtml.replace(
+  /(\/\/ GENERATED CAPTION TIMELINE START)[\s\S]*?(\/\/ GENERATED CAPTION TIMELINE END)/u,
+  `$1\n${captionTimeline}\n    $2`,
+);
+invariant(indexHtml.includes('id="cap-01"') && indexHtml.includes(`id="cap-${String(cues.length).padStart(2, "0")}"`), "Failed to update baked captions");
+invariant(indexHtml.includes('id="voice-09"'), "Failed to update voice clips");
 
 await writeFile(join(projectDir, "CAPTIONS.srt"), srt, "utf8");
-await writeFile(
-  join(voiceDir, "cue-sheet.json"),
-  `${JSON.stringify({ durationSeconds: 96, maxLineLength, cues }, null, 2)}\n`,
-  "utf8",
-);
-process.stdout.write(`Built ${cues.length} aligned caption cues through ${cues.at(-1).end.toFixed(2)}s\n`);
+await writeFile(join(projectDir, "CAPTIONS.vtt"), vtt, "utf8");
+await writeFile(join(projectDir, "data", "caption-cues.json"), `${JSON.stringify(cuePayload, null, 2)}\n`, "utf8");
+await writeFile(join(proofDir, "cue-sheet.json"), `${JSON.stringify(cuePayload, null, 2)}\n`, "utf8");
+await writeFile(join(projectDir, "index.html"), indexHtml, "utf8");
+
+manifest.status = "approved-final-capture-sync";
+manifest.regenerateAfterApprovedCaptures = false;
+manifest.captionSyncRequired = false;
+manifest.scriptSha256 = sha256(script);
+manifest.captionAssets = {
+  cueJsonSha256: sha256(`${JSON.stringify(cuePayload, null, 2)}\n`),
+  srtSha256: sha256(srt),
+  vttSha256: sha256(vtt),
+  bakedIndexSha256: sha256(indexHtml),
+};
+const serializedManifest = `${JSON.stringify(manifest, null, 2)}\n`;
+await writeFile(manifestPath, serializedManifest, "utf8");
+await writeFile(join(proofDir, "manifest.json"), serializedManifest, "utf8");
+process.stdout.write(`Built and synchronized ${cues.length} aligned cues through ${cues.at(-1).end.toFixed(2)}s\n`);

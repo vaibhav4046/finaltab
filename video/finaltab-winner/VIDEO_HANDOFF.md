@@ -1,75 +1,63 @@
-# FINALTab winner film — source handoff
+# VIDEO HANDOFF — FINALTab winner film
 
-## Built and verified
+## Current state
 
-- Master: `index.html`
-- Timeline: 96.0 seconds on a native 3840×2160 composition at 60 fps
-  (5,760 frames); final master target remains `landscape-4k`
-- Scenes: nine modular sub-compositions under `compositions/frames/`
-- Voice: nine checksum-retained **provisional script-pass** ElevenLabs MP3 clips under `assets/audio/voice/`
-- Voice model: `eleven_multilingual_v2`; voice ID `JBFqnCBsd6RMkjVDRZzb` (George)
-- Captions: 29 provisional baked cues derived from the retained ElevenLabs alignment cue sheet
-- Public proof binding: `data/release-proof.json`
-- Settlement: KeeperHub execution `3hmlqi36zweiwg6fc5o2u`; tx `0x7a6fb760f691954a41c71d5d508629c58aa09207bba0de4eaf164f097c59a789`; block `45327128`; exact one-atomic-unit transfer
-- HyperFrames 0.7.105 lint: 0 errors, 0 warnings
-- HyperFrames 0.7.105 check: pass; runtime 0, layout 0, motion 0, WCAG AA contrast 73/73
-- Visual evidence: `proof-output/finaltab-winner/snapshots/` and `proof-output/finaltab-winner/proof-snapshots/`
+The source is hardened for HyperFrames 0.7.106, but final rendering is deliberately blocked.
 
-The current voice, captions, and timing are review references only. The five
-ordered additive migrations (`52236`, `60000`, `64822`, `73000`, `74000`) are
-applied and schema-verified; that is not an application-flow probe. After
-candidate promotion, the still-unapplied `74500` cutover, redesigned product,
-Supabase authentication, security/deployment probes, and real captures are approved, regenerate
-ElevenLabs narration, alignment, baked captions, external captions, and scene
-timing before the final 4K contact-sheet review. No final render was produced.
+Completed:
 
-## Truthful capture blockers
+- Frame 8 is an authenticated non-broadcast MCP sequence with a hard stop and separate retained read-only proof.
+- Unsupported participant-invitation and fresh approval chronology are removed.
+- The retained transaction is labelled as separate from the filmed MCP client.
+- Capture contracts and a pending capture-hash lock exist.
+- SFX are local, licensed, hash-locked, and cued; BGM is disabled.
+- VTT exists beside SRT and cue JSON.
+- Selective narration and caption-sync scripts enforce changed scenes only.
+- One root motion sidecar and narrow layout annotations cover the enhanced 0.7.106 audit.
 
-The source deliberately uses obvious capture plates. They are not reconstructed product UI and not synthetic MCP output.
+Still required:
 
-1. `assets/capture/C03-complex-product-flow.mp4`
-2. `assets/capture/C04-net-freeze-bind.mp4`
-3. `assets/capture/C05-dual-consent-simulate.mp4`
-4. `assets/capture/C06-v2-keeperhub-proof.mp4`
-5. `assets/capture/C06-v2-proof-capsule.png`
-6. `assets/capture/C07-developer-mcp-surface.png`
-7. `assets/capture/C08-real-mcp-v2-run.mp4`
+1. Production promotion/cutover must be complete.
+2. Capture C03, C04, C05, C06A, C06B, C07, C08A, and C08B under `data/capture-contracts.json`.
+3. Replace all capture slots and pending labels.
+4. Approve `data/capture-lock.json` with bytes and SHA-256 for all eight artifacts.
+5. Set the four capture truth flags only after evidence exists.
+6. Selectively regenerate ElevenLabs scenes 3, 4, 5, 6, and 8.
+7. Rebuild captions and verify all hashes.
+8. Run source, enhanced, and final gates.
+9. Render only after the final gate passes.
 
-Final capture work must happen only after the final
-product/auth/security deployment probes, post-promotion cutover checks, and
-public-link checks. Privy's paid custom-auth bridge is deliberately disabled and
-must not appear in this release's captures. A live
-authenticated list must contain exactly nine production tools. C08 must be a
-real named MCP client with the human approval pause and the exact call
-`settlement_status({ executionId, settlementId, ledgerHash })`; the retained
-one-atomic-unit runner may not be relabelled as an MCP broadcast. Codex CLI must
-never be labeled “ChatGPT CLI.” Once the approved captures are locked,
-regenerate the voice/caption package and mark `data/voiceover-manifest.json` as
-`approved-final-capture-sync`; the current provisional checksum set must not
-ship.
+## Safe capture boundary
 
-## Gates and commands
+Autonomous captures may use the canonical product, authenticated non-value-moving MCP tools, retained KeeperHub evidence, and public Base Sepolia proof. The only expected user contingency is GitHub MFA or first-time consent. Do not request wallet action, call a settlement submission tool, or move value.
 
-Source-safe gate (expected to pass with placeholders):
+## Narration reuse decision
+
+Current scene files are checksum-valid. Reuse scenes 1, 2, 7, and 9 unchanged. Scenes 3, 4, 5, 6, and 8 contain retired wording and are timing references only until selectively regenerated.
+
+After canonical captures are approved:
 
 ```powershell
-node verify-video-gates.mjs --allow-placeholders
+npm run voice
+npm run captions
 ```
 
-Final gate (currently expected to fail closed):
+The first command regenerates exactly scenes 3, 4, 5, 6, and 8 and copies their alignment into the project. The second builds synchronized SRT, VTT, cue JSON, baked captions, voice durations, and hashes.
+
+## Verification
 
 ```powershell
+npm run check:source
+npm run check:enhanced
 node verify-video-gates.mjs
 ```
 
-After all captures replace the slots, the three truth flags in `data/release-proof.json` are true, and regenerated narration/captions are approved against those captures, run from `video/finaltab-winner`:
+Expected now: the source gate passes and reports the remaining capture, truth, lock, narration, and caption blockers. Expected before render: `FINAL RENDER GATE PASSED`.
+
+## Final render
 
 ```powershell
-npm run check
-node verify-video-gates.mjs
 npm run render:final
 ```
 
-Rendering still requires explicit approval after the final 3840×2160 capture
-contact sheet is reviewed. After render, verify the file is actually 3840×2160
-at 60 fps and record duration, codecs, bytes, and SHA-256.
+This is native 3840×2160 at 60 fps, PNG video frames, strict-all, no best-effort, low-memory mode, and no frame cache. Do not run it before canonical captures are supplied and all gates pass.

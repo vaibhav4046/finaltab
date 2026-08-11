@@ -10,16 +10,13 @@ claims previously drifted across several documents, including conflicting
   [docs/release/SUBMISSION_CHECKLIST.md](docs/release/SUBMISSION_CHECKLIST.md)
 - Evidence labels: [docs/release/truth-snapshot.md](docs/release/truth-snapshot.md)
 
-Current gates: **the post-promotion Supabase financial cutover, final
-deployment/provider probe, unified nine-tool MCP capture, final 4K/60 video and
-public URL, and human submission are pending**. The V2
-one-atomic-unit settlement, verified 29-table RLS additive Supabase schema,
-durable voice quotas/spend reservations, and
-sensitive provider configuration are now proven. Main commit
-`b084497` has a green two-job CI baseline and a 13/13 protected production
-probe; newer submission commits must preserve those gates. The V2 deployment
-transaction alone does not satisfy the product-settlement proof gate.
-
-The final local suite is 387 passing with one provider-gated vision check
-skipped, and the production build generated 33/33 pages. These figures must be
-reproduced from the submitted commit before they become release evidence.
+Current gates: **the real production microphone/readback lifecycle, final 4K/60
+video and public URL, and human submission are pending**. The V2
+one-atomic-unit settlement, 29-table RLS schema, post-promotion financial
+cutover, sensitive provider configuration, canonical GitHub OAuth round trip,
+authenticated collaboration create/read, and exactly-nine-tool non-value MCP
+probe are proven. Canonical deployment `dpl_EYEXUVqto8UDcUqoqWKcE1Ui1kPa` at
+commit `2d808c7a589385e2f8494189978da64d982fb0cc` is healthy, its exact-SHA CI is
+green, and canonical Playwright passed 14/14. No MCP value submission was made
+during that probe, and the retained settlement must not be relabeled as one.
+Volatile local test totals wait for the final post-video rerun.

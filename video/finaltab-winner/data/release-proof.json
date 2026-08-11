@@ -75,6 +75,9 @@
     "settlementProofVerified": true,
     "productCaptureComplete": false,
     "liveMcpToolListCaptureComplete": false,
-    "sameRunMcpClientCaptureComplete": false
+    "mcpNonBroadcastCaptureComplete": false,
+    "retainedRunReadOnlyStatusCaptureComplete": false,
+    "mcpBroadcastClaimed": false,
+    "retainedRunOrigin": "authorized simulate-then-single-broadcast runner; not an MCP submission"
   }
 }

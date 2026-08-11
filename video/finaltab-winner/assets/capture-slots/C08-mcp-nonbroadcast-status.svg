@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="3200" height="1520" viewBox="0 0 1600 760">
+  <rect width="1600" height="760" rx="26" fill="#0F1519" stroke="#FF936A" stroke-width="2" stroke-dasharray="10 12"/>
+  <text x="90" y="278" fill="#F4EEE2" font-family="monospace" font-size="54" font-weight="700">CAPTURE CONTRACT C08</text>
+  <text x="90" y="345" fill="#FF936A" font-family="monospace" font-size="25">AUTHENTICATED MCP · NON-BROADCAST TO THE APPROVAL BOUNDARY</text>
+  <text x="90" y="410" fill="#91A0A8" font-family="monospace" font-size="23">initialize · tools/list · allocate_receipt · prepare_receipt_settlement · create challenge · STOP</text>
+  <text x="90" y="462" fill="#91A0A8" font-family="monospace" font-size="23">Separate retained status: read only · never relabelled as this MCP submission</text>
+  <text x="90" y="528" fill="#F4EEE2" font-family="monospace" font-size="23">NO WALLET SIGNATURE · NO SUBMIT · NO SECOND VALUE MOVE</text>
+  <text x="90" y="630" fill="#91A0A8" font-family="monospace" font-size="20">BUILD-TIME PLACEHOLDER — NOT A CLIENT RECORDING</text>
+</svg>

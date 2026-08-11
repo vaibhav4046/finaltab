@@ -23,12 +23,11 @@ tested; they are gated on inputs only a human can supply.
   block `45327128`, exactly `1` atomic USDC, with verified receipt, exact V2
   event binding, and conserved balances. Do not rebroadcast it.
 - Supabase: `finaltab-production` (`yoavihmldqbkuxinrsih`), London `eu-west-2`,
-  free plan; four baseline plus additive `52236`, `60000`, `64822`, `73000`, and
-  `74000` migrations applied. All 29 public tables have RLS, sensitive mutation
-  RPCs are service-role-only, advisors report no errors, and the unindexed-FK
-  warning is cleared. Post-promotion cutover `74500` is not applied. Final
-  application deployment and cross-device behavior remain separate release
-  gates.
+  free plan; baseline/additive, financial-cutover, and owner-select migrations
+  applied. All 29 public tables have RLS; sensitive mutation RPCs and legacy
+  direct writes deny browser roles. Advisors report zero error-level findings with reviewed
+  warnings remaining. Canonical GitHub OAuth/reload and an authenticated owner
+  tab create/read passed; multi-identity/cross-device behavior remains separate.
 
 ---
 
@@ -164,27 +163,28 @@ mocked receipt.
 
 ---
 
-## 3. Supabase project — resolved infrastructure, behavior probe pending
+## 3. Supabase project — resolved infrastructure, bounded behavior proof
 
 `finaltab-production` is active under project ref `yoavihmldqbkuxinrsih` in
-London (`eu-west-2`) on the free plan. The four baseline plus five ordered
-additive migrations are applied remotely, including
+London (`eu-west-2`) on the free plan. The baseline plus five ordered additive,
+financial-cutover, and owner-select migrations are applied remotely, including
 `20260811060000_cover_agent_event_composite_fk.sql`. Schema verification found
 29/29 public tables with RLS. Sensitive new mutation RPCs deny `PUBLIC`, `anon`,
-and `authenticated` and allow `service_role`; advisors report no errors and the
-unindexed-FK warning is cleared. Public production configuration is prepared
-without exposing a service-role value.
+and `authenticated` and allow `service_role`; legacy direct writes and the old
+voice RPC deny browser roles. Advisors report zero error-level findings, with reviewed
+RLS/function and leaked-password-protection warnings remaining. Public
+production configuration exposes no service-role value.
 
-The remaining action is a final deployment plus multi-identity browser probe.
-Until that passes, describe the project and schema as provisioned, but do not
-claim that cloud tabs, invitations, approvals, history, or cross-device resume
-have been exercised live.
+The canonical deployment passed GitHub OAuth/reload and a real authenticated
+owner tab create/read, membership, participant add, and audit verification.
+Until a multi-identity browser probe passes, do not claim that cross-tenant
+invitations, approvals, shared history, or cross-device resume were live-tested.
 
 The agent-control schema migration is applied, but HMAC provenance,
 stale-review invalidation, tenant isolation, and cross-device behavior must be
-rechecked through the candidate deployment before the agent control plane is
-called production-live. Migration `20260811074500` remains a separate
-post-promotion cutover.
+separately exercised before the complete agent control plane is called
+production-live. Migration `20260811074500` is applied; its browser-role denials
+are verified.
 
 ---
 

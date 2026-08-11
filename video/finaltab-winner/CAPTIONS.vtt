@@ -1,0 +1,136 @@
+WEBVTT
+
+1
+00:00:00.650 --> 00:00:03.324
+A shared bill should end with everyone
+certain—
+
+2
+00:00:03.344 --> 00:00:05.334
+and no one chasing screenshots.
+
+3
+00:00:06.200 --> 00:00:09.282
+FINALTab turns a receipt into a
+deterministic ledger,
+
+4
+00:00:09.544 --> 00:00:13.032
+binds each debtor's USDC pull to the whole
+payout plan,
+
+5
+00:00:13.398 --> 00:00:15.946
+then sends the exact call through
+KeeperHub.
+
+6
+00:00:16.400 --> 00:00:19.389
+Sign in. Scan a crowded receipt.
+
+7
+00:00:19.546 --> 00:00:22.129
+Correct the extraction. Add participants.
+
+8
+00:00:22.449 --> 00:00:24.646
+Describe who had what. FINALTab
+reconciles every line—
+
+9
+00:00:24.666 --> 00:00:26.759
+tax, tip, and service included—
+
+10
+00:00:26.779 --> 00:00:28.793
+to the cent.
+
+11
+00:00:31.400 --> 00:00:33.449
+A four-stage review attests the current
+
+12
+00:00:33.467 --> 00:00:35.875
+inputs; any edit invalidates it.
+
+13
+00:00:36.241 --> 00:00:39.056
+Freeze only after a fresh review, and the
+
+14
+00:00:39.086 --> 00:00:43.143
+ledger, debits, payouts, chain, and
+contract become one immutable plan.
+
+15
+00:00:44.200 --> 00:00:45.842
+The retained plan verifies two debtor
+
+16
+00:00:46.023 --> 00:00:48.861
+signatures: Circle authorized the exact
+USDC pull,
+
+17
+00:00:49.123 --> 00:00:52.054
+and FINALTab bound consent to the complete
+payout plan.
+
+18
+00:00:52.315 --> 00:00:55.896
+KeeperHub simulated before broadcast;
+consumed proof cannot move value again.
+
+19
+00:00:56.350 --> 00:01:00.047
+With explicit operator authorization,
+KeeperHub submitted once.
+
+20
+00:01:00.483 --> 00:01:02.439
+Its terminal receipt and an independent
+Base Sepolia check
+
+21
+00:01:02.457 --> 00:01:05.306
+match the same transaction, settlement
+ID, and ledger hash.
+
+22
+00:01:06.250 --> 00:01:10.052
+Agents use the same safety rail through
+nine production MCP tools.
+
+23
+00:01:10.372 --> 00:01:12.652
+FINALTab never holds wallet keys.
+
+24
+00:01:13.150 --> 00:01:15.907
+A real MCP client authenticates, lists all
+nine tools,
+
+25
+00:01:15.983 --> 00:01:17.904
+allocates the receipt, prepares V2 typed
+data,
+
+26
+00:01:18.421 --> 00:01:22.339
+and creates the short-lived approval
+challenge. Then it stops:
+
+27
+00:01:22.856 --> 00:01:27.505
+no wallet signature, no submit, no second
+value move.
+
+28
+00:01:27.825 --> 00:01:30.837
+A separate read-only panel verifies the
+retained settlement.
+
+29
+00:01:31.050 --> 00:01:34.527
+FINALTab: KeeperHub executes. Anyone
+verifies.

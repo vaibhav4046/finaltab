@@ -1,46 +1,47 @@
----
-workflow: product-launch-video
-flow: automation
-storyboard: no
-message: "FINALTab turns a messy shared bill into consent-bound, KeeperHub-executed, independently verified onchain settlement—and gives agents the same safe path through MCP."
-destination: youtube
-aspect: 3840x2160
-language: en
-audience: "KeeperHub hackathon judges, agent builders, and bounty reviewers"
-length: 96s
-angle: proof-first product reveal
-narration: yes
-voice: "ElevenLabs George — warm, precise, restrained"
-vo_mode: restructured
----
+# BRIEF — FINALTab winner film
 
-## Intent
+## Deliverable
 
-This is both a premium launch film and a judge-verifiable product walkthrough. Sell the human outcome first—one shared bill becomes one calm, auditable settlement—then show the real product, V2 consent design, KeeperHub execution, independent receipt verification, and an MCP agent completing the same flow. The pace should feel confident and fast, never breathless or slow.
+A 96-second, native 3840×2160, 60 fps product film built and rendered with HyperFrames 0.7.106. The visual system is Ledger Noir: warm receipt material, exact mono evidence, coral action boundaries, and proof green reserved for independently verified onchain facts.
 
-## Assets
+## Audience and outcome
 
-- `https://finaltab.vercel.app` — capture the rebuilt product’s real landing, settlement room, proof capsule, developer surface, and MCP configuration after V2 ships.
-- `contracts/contracts/FinalTabBatchSettlementV2.sol` — source for the plan-binding architecture beat.
-- `docs/release/evidence/` — sanitized KeeperHub execution, transaction, block, and independent RPC evidence generated after the V2 deployment.
-- `docs/release/MCP_TRACE_SPEC.md` — source of truth for the final visible MCP call sequence.
-- `capture/recordings/` — new 3840×2160 product and MCP recordings made only after the final production probe; no legacy V1 footage is treated as current proof.
+Hackathon judges should understand three things without trusting narration alone:
 
-## Customizations
+1. FINALTab turns an ambiguous shared receipt into an exact frozen settlement plan.
+2. Human and agent paths use the same external-wallet safety boundary.
+3. The retained Base Sepolia V2 settlement is publicly verifiable and is not presented as the output of the filmed MCP session.
 
-- Open with the text-only FINALTab wordmark and an animated receipt-rule
-  underline; do not introduce a separate symbol logo.
-- Explain the architecture visually: receipt → deterministic ledger → per-debtor USDC pull plus full-plan consent → KeeperHub → independent RPC proof.
-- Show a genuinely complex bill: corrected extraction, multiple participants, cent-perfect allocation, graph netting, distributed approvals, simulate-first execution, and current proof capsule.
-- Make MCP the closing hero: list tools, prepare, show the explicit approval boundary, submit externally signed V2 payload, poll to `VERIFIED_SETTLED`, then show balance delta and explorer proof.
-- Use baked, word-timed captions plus a separate SRT/VTT deliverable; ElevenLabs narration must be synchronized to the actual edit.
-- Render the master at 3840×2160 and 60 fps with H.264/AAC, then produce a smaller upload copy without changing content.
-- Use HyperFrames as the reproducible source and Supademo only where a guided interaction capture materially improves legibility.
+## Story spine
 
-## Notes
+- Human problem and architecture.
+- Real signed-in product flow: scan, correct, add user-entered participants, allocate, reconcile.
+- Four-stage current-input review, invalidation on edit, fresh rerun, freeze.
+- Sanitized retained evidence for both debtor signatures and the successful pre-broadcast simulation.
+- Retained KeeperHub receipt plus independent Base Sepolia proof.
+- Exactly nine authenticated production MCP tools.
+- Real MCP client runs only non-value-moving tools through approval-challenge creation, then stops.
+- A separate read-only panel verifies the retained settlement.
+- Public product, source, workflow, and transaction CTA.
 
-- Autonomous build: the user asked the agent to continue while they sleep and deliver the strongest truthful submission.
-- The old V1 contract failed adversarial review and must never appear as the current production rail. Every live claim and proof in this film must be V2-specific.
-- No fake typing, optimistic green states, server-hot-key flow presented as production, or unsupported “mainnet/production-ready/trustless” language.
-- Verified green appears only after both KeeperHub’s terminal receipt and the independent Base Sepolia RPC check pass.
-- Keep the final call to action practical: live product, GitHub, MCP endpoint, transaction proof, and KeeperHub integration package.
+## Truth boundaries
+
+- No synthetic product UI, terminal output, client transcript, proof result, or participant identity.
+- No second wallet signature, settlement submission, replay, or value move.
+- The retained execution came from an explicitly authorized simulate-then-single-broadcast runner, not from MCP.
+- Frame 8 may not imply that its client created the retained transaction.
+- Participant names are entered by the user and never inferred from a receipt.
+- Production captures must satisfy [data/capture-contracts.json](data/capture-contracts.json) and the final hash lock.
+
+## Audio
+
+- Voice: ElevenLabs George, model `eleven_multilingual_v2`.
+- Reuse unchanged scenes 1, 2, 7, and 9.
+- Selectively regenerate changed scenes 3, 4, 5, 6, and 8 only after canonical captures are locked.
+- Build SRT, VTT, cue JSON, baked captions, and audio hashes from the returned alignment.
+- No music bed is approved in the current source.
+- SFX are the documented local Pixabay-licensed files in `assets/audio/sfx`; no provider lookup was used.
+
+## Release condition
+
+The final render is intentionally blocked until all canonical captures, truth flags, capture hashes, selective narration, caption hashes, enhanced HyperFrames checks, and source gates pass.

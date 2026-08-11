@@ -1,11 +1,11 @@
 # DoraHacks submission copy — final media pending
 
 **Do not submit this draft yet.** V2 deployment, one value-moving V2 settlement,
-and the 29-table production Supabase additive schema are proven. Durable minute
-quota/spend-reservation controls and sensitive provider variables are also
-configured. The post-promotion financial cutover, final deployment/provider probe,
-unified nine-tool MCP capture, final video, public video URL, and DoraHacks
-confirmation are still pending. Current truth lives in
+the hardened 29-table Supabase schema, canonical GitHub OAuth, authenticated tab
+creation, and exactly-nine-tool non-value MCP probe are proven. Durable
+spend-reservation controls and sensitive provider variables are configured.
+The real microphone/readback lifecycle, final video, public video URL, and
+DoraHacks confirmation are still pending. Current truth lives in
 [release/status.md](release/status.md).
 
 The live DoraHacks project page was inspected on 2026-08-11. Its authoritative
@@ -33,7 +33,7 @@ Infrastructure**
 |---|---|
 | Blockchain, Web3, DeFi, Onchain | An exact-source-matched V2 contract on Base Sepolia, EIP-3009 and full-plan consent, atomic testnet-USDC execution, KeeperHub orchestration, and independent event verification. A deliberately minimal one-atomic-unit V2 run is retained with exact event and balance proof. |
 | AI Agents, MCP, Autonomous Agents | Exactly nine authenticated production MCP tools let external agents allocate, net, prepare, simulate, orchestrate, and verify. The first-party workspace adds a fixed, attested four-stage review before Freeze. Autonomy is bounded: every debtor signs externally and a permitted human wallet signs a short-lived broadcast approval before value can move. |
-| Infrastructure | OpenAPI, discovery metadata, a KeeperHub workflow package, scoped authentication, a shared durable UI/REST/MCP submission journal, fail-closed proof tooling, and a provisioned London Supabase schema make the rail reusable from other clients and agent systems. The hosted baseline plus five ordered additive migrations are verified at 29/29 public RLS tables with server-only sensitive mutation RPCs; the post-promotion cutover and cross-device release probe remain pending. |
+| Infrastructure | OpenAPI, discovery metadata, a KeeperHub workflow package, scoped authentication, a shared durable UI/REST/MCP submission journal, fail-closed proof tooling, and a provisioned London Supabase schema make the rail reusable from other clients and agent systems. The hosted baseline, additive, financial-cutover, and owner-select migrations are verified at 29/29 public RLS tables with server-only sensitive mutation RPCs. |
 
 ## Description
 
@@ -84,11 +84,11 @@ An optional hybrid voice layer keeps the same authorization boundary:
 AssemblyAI live transcription can fill the editable allocation instruction,
 and ElevenLabs can read back a short confirmation. Voice never allocates,
 signs, or submits by itself. Permanent provider keys remain server-side. This
-branch is locally verified. Supabase now provides an authenticated-only durable
-quota guard fixed at 8 transcription sessions and 20 readbacks per user per
-minute plus service-role-only spend reservations, and both provider keys are stored as sensitive Vercel Production
-variables. The capability must not be described as live until the newer release
-is deployed and its microphone, `Begin`/`Termination`, readback, quota, and text
+path is deployed and source-tested. Supabase provides durable per-user budget
+controls fixed at 8 transcription sessions and 20 readbacks per minute through
+service-role-only spend reservations, and both provider keys are stored as
+sensitive Vercel Production variables. The capability must not be described as
+live until its microphone, `Begin`/`Termination`, readback, quota, and text
 fallback paths pass a real provider probe.
 
 ## Current V2 deployment proof
@@ -133,35 +133,36 @@ that distinction visible.
 ## Supabase production infrastructure
 
 `finaltab-production` is active in London (`eu-west-2`) on the free plan under
-project ref `yoavihmldqbkuxinrsih`. The four baseline migrations plus ordered
-additive migrations `20260811052236`, `20260811060000`, `20260811064822`,
-`20260811073000`, and `20260811074000` are applied remotely. Verification found
-29/29 public tables with RLS enabled. Sensitive new mutation RPCs deny `PUBLIC`,
-`anon`, and `authenticated` and allow `service_role`; database advisors report
-no errors, and the unindexed-FK warning is cleared. The voice quota table
-revokes direct anonymous and authenticated grants; its
-`consume_voice_quota(text)` RPC is denied to anonymous callers and available
-only to authenticated users. Public deployment
-configuration is prepared, but durable cross-device application behavior is
-not claimed until the final release is deployed and live-probed. Post-promotion
-migration `20260811074500` is not applied and must follow a successful candidate
-promotion; legacy-write and old-quota-RPC denial must then be probed.
+project ref `yoavihmldqbkuxinrsih`. The baseline and ordered additive migrations
+`20260811052236`, `20260811060000`, `20260811064822`, `20260811073000`, and
+`20260811074000` are applied remotely, followed by the financial-truth cutover
+and `tab_owner_select_returning` repair. Verification found 29/29 public tables
+with RLS enabled. Sensitive mutation RPCs, legacy direct financial writes, and
+the old quota RPC deny browser roles; `reserve_voice_budget` allows only
+`service_role`. Advisors report zero error-level findings, with reviewed
+RLS/function warnings and the leaked-password-protection warning still present.
+The repair closed the owner `INSERT ... RETURNING` RLS edge without weakening
+the owner-pinned insert policy. A real authenticated production tab create/read,
+owner membership, participant add, and audit record passed. Two-identity
+isolation and shared-journal recovery remain separate unclaimed probes.
 
-Supabase Auth is the canonical account/RLS identity. The distinct sign-in and
-create-account routes, strict callback, and branded `/auth/complete` page are
-implemented. Privy is an optional linked-wallet identity bridge only. The
+Supabase Auth is the canonical account/RLS identity. A real canonical GitHub
+OAuth flow passed the branded `/auth/complete` page, entered `/app`, survived a
+full reload, and exercised the authenticated RLS-backed tab path. Privy is an
+optional linked-wallet identity bridge only. The
 authenticated dashboard showed the required Custom Authentication feature on a
 paid tier, so no billing details were entered and the bridge remains
 deliberately disabled. It is exposed as optional/unconfigured in health, hidden
 from unconfigured product UI, and does not block Supabase-backed readiness. A
-branded inbound email is also not live until a verified sender domain and custom
-SMTP or Send Email Hook are configured.
+email fallback UI is disabled and inbound delivery remains unproven; a branded
+email is not live until a verified sender domain and custom SMTP or Send Email
+Hook are configured.
 
 ## Links
 
-- Live product: <https://finaltab.vercel.app> — 13/13 protected release probe passed at main commit `b084497`
+- Live product: <https://finaltab.vercel.app> — `ready`; deployment `dpl_EYEXUVqto8UDcUqoqWKcE1Ui1kPa`; commit `2d808c7a589385e2f8494189978da64d982fb0cc`; canonical Playwright 14/14
 - Source: <https://github.com/vaibhav4046/finaltab>
-- MCP endpoint: <https://finaltab.vercel.app/api/mcp> — superseded V2 baseline live-probed at `b084497`; exactly-nine-tool release recheck pending
+- MCP endpoint: <https://finaltab.vercel.app/api/mcp> — authenticated exactly-nine-tool list plus non-value calculation/preparation live-proven; no submission called
 - V2 contract: <https://sepolia.basescan.org/address/0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB>
 - V2 deployment transaction: <https://sepolia.basescan.org/tx/0x904ec881ef7c2ec7375c20887b4181cf58224b44162d837743fa869b0a598e8f>
 - V2 settlement transaction: <https://sepolia.basescan.org/tx/0x7a6fb760f691954a41c71d5d508629c58aa09207bba0de4eaf164f097c59a789>
@@ -183,29 +184,25 @@ current production source.
 
 - V2 deployment through KeeperHub: proven.
 - V2 runtime and creation source exact match through Sourcify: proven.
-- V2 contract safety properties and MCP flow: 284 checks passed and one
-  env-gated live-provider check skipped at main commit `b084497`; both GitHub
-  CI jobs were green, the build generated 24 pages, and Playwright passed 8/8.
-- Superseded deployment baseline: 13/13 passed against both the immutable Vercel
-  deployment and `finaltab.vercel.app`, including scoped MCP auth, the exact V2
-  address/version, cent-perfect allocation, arbitrary-participant plan
-  preparation, and proof binding. The current exactly-nine-tool source still
-  needs its own deployment probe.
-- Final local candidate: 387 checks passed and one provider-gated vision check
-  skipped; the production build generated 33/33 pages. The existing nine
-  ElevenLabs clips and caption timings are provisional references only.
-  Production voice and the final 4K/60 product-film render remain pending.
+- Canonical release: deployment `dpl_EYEXUVqto8UDcUqoqWKcE1Ui1kPa` serves
+  commit `2d808c7a589385e2f8494189978da64d982fb0cc`; health is `ready`, exact-SHA
+  GitHub Actions is green, and canonical Playwright passed 14/14. Volatile local
+  aggregate counts wait for the final post-video rerun.
+- Authenticated MCP: production listed exactly nine tools and passed non-value
+  calculation and arbitrary-participant V2 preparation. No submission call was
+  made; the retained value proof is separately labeled.
+- Hybrid voice: code and budget controls are deployed/configured, but the real
+  microphone/readback lifecycle remains pending. The final 4K/60 product-film
+  render is also pending.
 - V2 value-moving rail through KeeperHub: live-proven at execution
   `3hmlqi36zweiwg6fc5o2u`, tx `0x7a6fb760…a789`, block `45327128`, with verified
   dual signatures, receipt, exact V2 event binding, and conserved balances.
-- Supabase production infrastructure: additive schema provisioned and verified;
-  all 29 public tables have RLS, sensitive mutation RPCs are service-role-only,
-  advisor errors are zero, and the unindexed-FK warning is cleared; email
-  auth/signups are enabled with confirmation and the production Site URL plus
-  exact `/auth/callback` are configured. Final application deployment and
-  cross-device behavior probe remain pending. The post-promotion cutover is
-  unapplied; HMAC provenance, tenant isolation,
-  shared-journal crash recovery, and legacy-write denial still require probes.
+- Supabase production infrastructure: baseline/additive/cutover/owner-select
+  schema is applied; all 29 public tables have RLS, sensitive mutation RPCs and
+  legacy writes deny browser roles, and error-level advisor findings are zero
+  with reviewed warnings remaining. GitHub OAuth/reload and authenticated tab creation are
+  live-proven. Email fallback is disabled/unproven; two-identity isolation,
+  HMAC flow provenance, and shared-journal crash recovery remain unclaimed.
 - Privy bridge: optional, code-complete, fail-closed, and deliberately disabled
   under the stop-before-charge constraint; it is not a submission blocker.
 - Unified production MCP human-approval trace: pending; the retained settlement
@@ -242,8 +239,8 @@ not the current deliverable. Neither file or a public URL is retained here.
 - Production MCP requires scoped authentication and external wallet signatures.
 - The current source contains exactly nine MCP tools and no fixed-wallet money
   path.
-- Persistence and production identity claims must match the final deployed
-  Supabase configuration.
+- Production identity is proven for one canonical GitHub account and one
+  authenticated owner tab; no two-user or cross-device inference is made.
 - Sourcify exact matching is proven; BaseScan source verification is not
   implied.
 
@@ -262,4 +259,4 @@ submission and never describe it as merged unless GitHub reports that state.
 | Contract integrity | V2 plan binding, dual signatures, replay controls, atomic execution, exact Sourcify match |
 | MCP safety | Scoped auth, external-wallet and signed-human-approval boundaries in source/tests, simulate-first flow, independent proof; live broadcast trace still pending |
 | Product usefulness | Receipt-to-settlement workflow with deterministic money rules |
-| Still required | Final deployment/probe, unified MCP capture, final video/public URL, required form links, form confirmation |
+| Still required | Real voice lifecycle, final video/public URL, required form links, form confirmation |

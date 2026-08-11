@@ -156,6 +156,8 @@ describe("production surface retirement gate", () => {
     ].map((file) => readFileSync(file, "utf8")).join("\n");
 
     expect(receipt).toContain("motion, useReducedMotion");
+    expect(receipt).toContain("event.clipboardData.files");
+    expect(receipt).toContain("Take photo, drop, browse, or paste");
     expect(receipt).toContain("grid gap-2 sm:grid-cols-[1fr_1.3fr_auto]");
     expect(split).toContain("motion, useReducedMotion");
     expect(split).toContain("min-h-11 rounded-md border px-3");

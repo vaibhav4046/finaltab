@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "status": "locked-truth-contracts",
+  "global": {
+    "canonicalOrigin": "https://finaltab.vercel.app",
+    "minimumVideo": { "width": 1920, "height": 1080, "fps": 30 },
+    "minimumStill": { "width": 1600, "height": 900 },
+    "secrets": "No bearer token, private key, signature bytes, email address, or local secret file may be visible.",
+    "valueMovement": "No capture may sign, submit, replay, or trigger a second value move."
+  },
+  "captures": [
+    {
+      "id": "C03",
+      "path": "assets/capture/C03-complex-product-flow.mp4",
+      "kind": "video",
+      "minimumDurationSeconds": 8,
+      "source": "canonical production product",
+      "required": [
+        "real GitHub account return or already-authenticated state",
+        "receipt scan or upload",
+        "user correction",
+        "user-entered participants",
+        "allocation and exact receipt-total reconciliation"
+      ],
+      "forbidden": [
+        "participant invitation claim",
+        "invented receipt names",
+        "synthetic product UI"
+      ],
+      "humanContingency": "GitHub MFA or first-consent only"
+    },
+    {
+      "id": "C04",
+      "path": "assets/capture/C04-net-freeze-bind.mp4",
+      "kind": "video",
+      "minimumDurationSeconds": 7,
+      "source": "canonical production product",
+      "required": [
+        "four ordered review stages",
+        "upstream edit invalidates the review",
+        "fresh review completes",
+        "freeze binds ledger, debits, payouts, chain, and contract"
+      ],
+      "forbidden": ["freeze without a fresh current-input review"],
+      "humanContingency": "none after authenticated session exists"
+    },
+    {
+      "id": "C05",
+      "path": "assets/capture/C05-retained-signature-simulation.png",
+      "kind": "still",
+      "source": "sanitized retained public evidence",
+      "required": [
+        "verified ReceiveWithAuthorization recovery",
+        "verified SettlementConsent recovery and contract digest match",
+        "successful pre-broadcast KeeperHub simulation",
+        "settlement and authorization nonce consumed"
+      ],
+      "forbidden": [
+        "wallet prompt",
+        "approval signature",
+        "fresh signing chronology",
+        "replay attempt"
+      ],
+      "humanContingency": "none"
+    },
+    {
+      "id": "C06A",
+      "path": "assets/capture/C06-retained-keeperhub-receipt.png",
+      "kind": "still",
+      "source": "retained KeeperHub terminal receipt",
+      "required": ["execution 3hmlqi36zweiwg6fc5o2u", "terminal success", "public transaction hash"],
+      "forbidden": ["claim that the retained run originated from MCP"],
+      "humanContingency": "none"
+    },
+    {
+      "id": "C06B",
+      "path": "assets/capture/C06-base-sepolia-proof.png",
+      "kind": "still",
+      "source": "public Base Sepolia explorer or independent RPC proof",
+      "required": ["block 45327128", "matching settlement ID", "matching ledger hash"],
+      "forbidden": ["deployment transaction substituted for settlement transaction"],
+      "humanContingency": "none"
+    },
+    {
+      "id": "C07",
+      "path": "assets/capture/C07-live-tools-list.png",
+      "kind": "still",
+      "source": "canonical developers page plus authenticated MCP tools/list",
+      "required": ["exactly nine production MCP tools", "authenticated endpoint", "external-wallet boundary"],
+      "forbidden": ["bearer token", "retired fixed-wallet tool", "seven-tool list"],
+      "humanContingency": "none"
+    },
+    {
+      "id": "C08A",
+      "path": "assets/capture/C08-mcp-nonbroadcast.mp4",
+      "kind": "video",
+      "minimumDurationSeconds": 8,
+      "source": "real named MCP client against canonical production",
+      "required": [
+        "initialize and tools/list",
+        "allocate_receipt",
+        "prepare_receipt_settlement",
+        "create_broadcast_approval_challenge",
+        "visible stop before wallet action"
+      ],
+      "forbidden": [
+        "wallet signature",
+        "submit_signed_settlement",
+        "broadcast",
+        "new value move"
+      ],
+      "humanContingency": "none"
+    },
+    {
+      "id": "C08B",
+      "path": "assets/capture/C08-retained-status.png",
+      "kind": "still",
+      "source": "separate retained-run read-only status or public proof",
+      "required": [
+        "explicit retained-run label",
+        "explicit not-this-MCP-submission label",
+        "execution ID, settlement ID, and ledger hash",
+        "VERIFIED_SETTLED and block 45327128"
+      ],
+      "forbidden": ["claim that C08A submitted the retained transaction"],
+      "humanContingency": "none"
+    }
+  ]
+}

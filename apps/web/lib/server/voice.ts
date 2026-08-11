@@ -12,7 +12,6 @@ const ASSEMBLYAI_MAX_SESSION_SECONDS = VOICE_STT_RESERVATION_SECONDS;
 const ASSEMBLYAI_SAMPLE_RATE = 16_000;
 const ASSEMBLYAI_ENCODING = "pcm_s16le";
 const ASSEMBLYAI_MODEL = "universal-3-5-pro";
-const ASSEMBLYAI_API_VERSION = "2025-05-12";
 const ASSEMBLYAI_MODE = "balanced";
 const ASSEMBLYAI_VOICE_FOCUS = "far-field";
 const ASSEMBLYAI_KEYTERMS = [
@@ -65,7 +64,6 @@ export interface AssemblyStreamingSession {
   sampleRate: number;
   encoding: typeof ASSEMBLYAI_ENCODING;
   model: typeof ASSEMBLYAI_MODEL;
-  apiVersion: typeof ASSEMBLYAI_API_VERSION;
   mode: typeof ASSEMBLYAI_MODE;
   languageDetection: true;
   keyterms: readonly string[];
@@ -149,7 +147,6 @@ export async function createAssemblyStreamingSession(
     sampleRate: ASSEMBLYAI_SAMPLE_RATE,
     encoding: ASSEMBLYAI_ENCODING,
     model: ASSEMBLYAI_MODEL,
-    apiVersion: ASSEMBLYAI_API_VERSION,
     mode: ASSEMBLYAI_MODE,
     languageDetection: true,
     keyterms: ASSEMBLYAI_KEYTERMS,

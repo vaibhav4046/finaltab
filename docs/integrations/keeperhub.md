@@ -38,10 +38,10 @@ the ElevenLabs response from the route, while the current browser client buffers
 the short MP3 before playback. Both permanent provider keys remain server-only.
 
 The production provider variables are stored as sensitive Vercel values. The
-candidate Supabase guard preserves the applied authenticated per-minute limits
-(8 transcription requests and 20 readbacks); pending migration `64822` adds atomic UTC-day/month user and project spend
-  budgets through the service-role-only
-  `reserve_voice_budget(uuid, text, integer)`. The route passes only the exact
+production Supabase guard preserves the applied per-minute limits
+(8 transcription requests and 20 readbacks); applied migration `64822` adds
+atomic UTC-day/month user and project spend budgets through the service-role-only
+`reserve_voice_budget(uuid, text, integer)`. The route passes only the exact
   Supabase user ID it already verified; browsers cannot invoke the reservation
   RPC directly. AssemblyAI reserves its
 full 180-second maximum before token mint and holds a 240-second, 1-user/
@@ -49,11 +49,12 @@ full 180-second maximum before token mint and holds a 240-second, 1-user/
 generation. All backing tables are RLS-protected with direct anonymous and
 authenticated access revoked. Safe budget and request headers survive subsequent
 provider errors. If the store is unavailable, the provider is not called. See
-[voice.md](voice.md) for exact cap semantics. These are code/configuration facts;
-live provider paths remain unclaimed until the final deploy/probe passes.
+[voice.md](voice.md) for exact cap semantics. These are deployed configuration
+facts; the live provider lifecycle remains unproven until a real
+microphone/readback probe passes.
 
-The routes and OpenAPI contract describe configuration-gated capability; they do
-not claim that either provider is enabled on any currently deployed origin. The
+The routes and OpenAPI contract describe configuration-gated capability on the
+current deployment; they do not claim a successful provider lifecycle. The
 prerecorded product-film narration is a separate asset generated with ElevenLabs
 only. AssemblyAI is used for interactive transcription, not film narration.
 
@@ -88,10 +89,12 @@ The observer is replay-safe because it is read-only. It neither broadcasts nor
 changes a settlement. Keep its returned observation in the caller's audit log.
 The Supabase production project has its four baseline plus additive `52236`,
 `60000`, `64822`, `73000`, and `74000` migrations applied and schema-verified at
-29/29 public RLS tables. Sensitive mutation RPCs are service-role-only; no
-advisor errors or unindexed-FK warning remain. Post-promotion cutover `74500` is
-not applied. The observer still does not claim durable application behavior
-until the newer release is deployed and its callback/audit path is live-probed.
+29/29 public RLS tables. Sensitive mutation RPCs are service-role-only, the
+unindexed-FK warning is cleared, and advisors have zero error-level findings
+with reviewed warnings remaining. Post-promotion cutover `74500` is applied.
+Canonical deployment `dpl_EYEXUVqto8UDcUqoqWKcE1Ui1kPa` at commit
+`2d808c7a589385e2f8494189978da64d982fb0cc` is live and `ready`; the observer's
+callback/audit path remains unclaimed until separately live-probed.
 
 Value-moving first-party UI, REST, and MCP calls are separate from this read-only
 observer and converge on the applied `74000` durable-journal schema. A durably accepted
@@ -187,8 +190,6 @@ iframe support remains deliberately undeclared.
 
 - KeeperHub organization access to import, validate, enable, and optionally
   publish the workflow.
-- A post-deploy live check that the web/MCP deployment is configured for the
-  proven V2 address and version; V1 is not accepted.
 - A redacted production MCP/status capture bound to the retained V2 settlement;
   the live one-atomic-unit run proves the rail but did not exercise the MCP human
   broadcast-challenge path.

@@ -4,3 +4,4 @@
 - `fonts/GeistMono-Regular.woff2` and `fonts/GeistMono-Bold.woff2` are copied from the repository's installed `geist` package for deterministic local rendering.
 - `vendor/gsap-3.14.2.min.js` is the pinned GSAP 3.14.2 browser distribution used by HyperFrames.
 - `audio/voice/scene-01.mp3` through `scene-09.mp3` are project-owned ElevenLabs narration generated from `SCRIPT.md`.
+- `audio/sfx/*.mp3` are copied from the HyperFrames `media-use` bundled local library and used under the Pixabay Content License. Exact files and license notes are retained in `audio/sfx/CREDITS.md` and `data/audio-manifest.json`.

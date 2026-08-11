@@ -35,15 +35,16 @@ fixed-wallet money path.
 GitHub is the primary public sign-in through Supabase SSR PKCE. Configure the
 GitHub OAuth credentials in Supabase, keep the production redirect on the exact
 `/auth/callback` path (including the reserved `sb_flow_id` and normalized `next`
-query), then set the server-only `FINALTAB_GITHUB_OAUTH_ENABLED=true`. This is a
-configuration gate, not proof of provider operation; retain a real same-device
-OAuth + authenticated RLS probe. Keep `FINALTAB_TEAM_EMAIL_AUTH_ENABLED=false`
+query), then set the server-only `FINALTAB_GITHUB_OAUTH_ENABLED=true`. The
+canonical release has completed a real same-device OAuth round trip, branded
+return, `/app` entry, reload, and authenticated RLS-backed tab create/read.
+Keep `FINALTAB_TEAM_EMAIL_AUTH_ENABLED=false`
 unless the operator has separately verified email delivery. That second flag is
 only a UI gate, not an address allowlist. See
 [`docs/integrations/github-auth.md`](docs/integrations/github-auth.md).
 
-The hosted Supabase project has the four baseline migrations plus these five
-additive migrations applied and verified in order:
+The hosted Supabase project has the baseline plus these five additive
+migrations applied and verified in order:
 
 1. `20260811052236_settlement_agent_control_plane.sql`;
 2. `20260811060000_cover_agent_event_composite_fk.sql`;
@@ -53,16 +54,18 @@ additive migrations applied and verified in order:
 
 The resulting hosted schema has 29/29 public tables under RLS. Every sensitive
 new mutation RPC denies `PUBLIC`, `anon`, and `authenticated` and allows only
-`service_role`; database advisors report no errors, and the additive
+`service_role`; database advisors report zero error-level findings with
+reviewed warnings remaining, and the additive
 agent-event composite foreign-key migration clears the remaining unindexed-FK
-warning. Do not reapply the additive files or run a blind schema push: the hosted
-migration timestamps can differ from local filenames. Deploy and probe the
-candidate before applying
-`20260811074500_financial_truth_post_promotion_cutover.sql`; that final migration
-is **not applied**. It revokes legacy direct financial writes and the old
-request-count-only voice RPC, plus all browser-role `TRUNCATE`, `REFERENCES`,
-`TRIGGER`, and `MAINTAIN` privileges in `public`, and remains deliberately
-post-promotion.
+warning. Do not reapply files or run a blind schema push: hosted migration
+timestamps can differ from local filenames. The promoted release is followed by
+the applied `20260811074500_financial_truth_post_promotion_cutover.sql` and
+`tab_owner_select_returning` repair. The cutover revokes legacy direct financial
+writes, the old request-count-only voice RPC, and browser-role `TRUNCATE`,
+`REFERENCES`, `TRIGGER`, and `MAINTAIN` privileges in `public`. The repair lets a
+new owner read `INSERT ... RETURNING` without weakening the separate owner-pinned
+insert policy. Database advisors have zero error-level findings; reviewed
+RLS/function warnings and the leaked-password-protection warning remain.
 
 The `74000` journal is the common durability boundary for first-party UI, REST,
 and MCP value submission. A recorded `accepted` retry must return its execution
@@ -71,15 +74,21 @@ successful simulation and deterministic KeeperHub idempotency key under the
 bounded approval expiry. New first-party work must still pass its current
 database approval check and wallet approval immediately before broadcast.
 
-After deploying the web service, verify:
+Canonical deployment `dpl_EYEXUVqto8UDcUqoqWKcE1Ui1kPa` at commit
+`2d808c7a589385e2f8494189978da64d982fb0cc` has completed these release checks:
 
-1. discovery reports the V2 address and readiness;
-2. anonymous MCP requests are rejected;
-3. a scoped redacted token can initialize and list exactly nine tools;
-4. production tools request external wallet signatures;
-5. first-party Freeze rejects a missing or stale attested review; and
-6. no token, provider secret, or attestation secret appears in logs or browser
-   bundles.
+1. `/api/health` reports `ready` and discovery reports the V2 address;
+2. a scoped redacted token initializes and lists exactly nine MCP tools;
+3. non-value `split_equal` and arbitrary-participant V2 preparation calls pass;
+4. canonical Playwright passes 14/14 desktop-and-mobile journeys;
+5. GitHub OAuth returns through the branded page to `/app` and survives reload;
+6. an authenticated production tab create/read, owner membership, participant
+   add, and audit record pass after the owner-select repair.
+
+No MCP value submission was called during that release probe. First-party stale
+review rejection, cross-channel journal recovery, two-identity isolation, and a
+real voice-provider lifecycle remain distinct probes rather than inferred
+successes.
 
 Privy is an optional enhancement and is deliberately disabled under the
 stop-before-charge constraint because the required custom-auth feature is on a

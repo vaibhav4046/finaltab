@@ -14,8 +14,8 @@ is just a new way to get a receipt or a debt graph into the same engine.
 
 ## 1. MCP distribution — ship the engine to every agent
 
-**Current V2 state: implemented, test-covered, and value-proven at the rail;
-the unified production MCP capture is pending.** The MCP server requires scoped authentication and supports
+**Current V2 state: implemented, test-covered, value-proven at the rail, and
+live-proven for the canonical non-value MCP surface.** The MCP server requires scoped authentication and supports
 arbitrary caller participants with external debtor-wallet signatures. Its
 production sequence is `allocate_receipt → prepare_receipt_settlement →
 simulate_signed_settlement → create_broadcast_approval_challenge → human
@@ -28,14 +28,14 @@ The V2 contract is deployed and source-matched exactly. KeeperHub execution
 `0x7a6fb760…a789` at block `45327128`; the retained manifest proves the dual
 signatures, exact V2 event binding, and conserved balances. That explicitly
 authorized standalone runner did not exercise the production MCP short-lived
-human approval boundary, so the complete MCP loop remains a capture/deploy gate.
+human approval boundary, so the complete value-moving MCP loop remains
+unproven.
 
-The superseded production baseline at main commit `b084497` passed 13/13
-protected checks against both the immutable Vercel deployment and
-`finaltab.vercel.app`: anonymous access returned 401, authenticated
-initialization negotiated MCP 2.0.0, arbitrary-participant V2 plan preparation
-used the exact Base Sepolia contract, and proof binding failed closed. The new
-exactly-nine-tool source still needs its own authenticated live recheck.
+Canonical deployment `dpl_EYEXUVqto8UDcUqoqWKcE1Ui1kPa` at commit
+`2d808c7a589385e2f8494189978da64d982fb0cc` is live and `ready` at
+`finaltab.vercel.app`. Its authenticated MCP recheck initialized successfully,
+listed exactly nine production tools, and passed non-value calculation plus
+arbitrary-participant V2 preparation. No MCP value submission was called.
 
 ### Historical V1 evidence — preserved
 
@@ -185,9 +185,10 @@ migrations applied: agent control (`52236`), agent-event composite-FK index
 coverage (`60000`), voice spend reservations (`64822`), first-party settlement
 flow (`73000`), and the shared UI/REST/MCP submission journal (`74000`). All
 29 public tables have RLS; sensitive new mutation RPCs are service-role-only,
-database advisors report no errors, and the unindexed-FK warning is cleared.
-Post-promotion cutover `74500` is not applied; after a successful promotion it
-revokes legacy direct financial writes and the old quota RPC. The agent migration adds fixed four-stage
+and the unindexed-FK warning is cleared. Database advisors have zero error-level
+findings, with reviewed warnings remaining. Post-promotion cutover `74500` is
+applied: legacy direct financial writes and the old quota RPC deny browser
+roles. The agent migration adds fixed four-stage
 review runs, provenance events, and bounded, expiring, user-deletable audit
 memory. That memory cannot rewrite code, policy, prompts, or authorization and
 must not be marketed as self-evolving.
@@ -197,9 +198,9 @@ code-complete, optional, fail-closed, and deliberately disabled because its
 required Custom Authentication capability needs a paid tier. It does not block
 core health readiness, and unconfigured UI does not advertise a broken setup.
 The branded return page is implemented; branded inbound email still requires a
-verified sender domain and custom SMTP or a Send Email Hook. Until the candidate
-application and multi-identity browser probe pass, product copy
-must distinguish verified backend infrastructure from live behavior.
+verified sender domain and custom SMTP or a Send Email Hook. The canonical
+application is deployed and ready, but until the multi-identity browser probe
+passes, product copy must not imply live two-user or cross-device behavior.
 
 ## Priority order (opinionated)
 

@@ -8,7 +8,6 @@ export interface VoiceSessionTicket {
   sampleRate: number;
   encoding: "pcm_s16le";
   model: string;
-  apiVersion: string;
   mode: "min_latency" | "balanced" | "max_accuracy";
   languageDetection: boolean;
   keyterms: string[];
@@ -17,12 +16,7 @@ export interface VoiceSessionTicket {
 
 export interface ValidatedVoiceBegin {
   id: string;
-  configuration: {
-    model: string;
-    mode: VoiceSessionTicket["mode"];
-    apiVersion: string;
-    voiceFocus: VoiceSessionTicket["voiceFocus"];
-  };
+  expiresAt: number;
 }
 
 export const VOICE_CHUNK_MILLISECONDS = 50;
@@ -103,7 +97,6 @@ export function parseVoiceSessionTicket(value: unknown): VoiceSessionTicket {
   }
 
   const model = requiredString(value.model, "speech model");
-  const apiVersion = requiredString(value.apiVersion, "streaming API version");
   const keyterms = rawKeyterms.map((term) => term.trim()).filter(Boolean).slice(0, 100);
   let configuredKeyterms: unknown;
   try {
@@ -135,7 +128,6 @@ export function parseVoiceSessionTicket(value: unknown): VoiceSessionTicket {
     sampleRate: Number(sampleRate),
     encoding,
     model,
-    apiVersion,
     mode,
     languageDetection,
     keyterms,
@@ -143,47 +135,23 @@ export function parseVoiceSessionTicket(value: unknown): VoiceSessionTicket {
   };
 }
 
-export function validateVoiceBeginMessage(value: unknown, ticket: VoiceSessionTicket): ValidatedVoiceBegin {
+export function validateVoiceBeginMessage(value: unknown): ValidatedVoiceBegin {
   if (!isRecord(value) || value.type !== "Begin") {
     throw new Error("Live transcription did not begin with an AssemblyAI Begin frame.");
   }
   const id = requiredString(value.id, "streaming session ID");
-  if (!isRecord(value.configuration)) {
-    throw new Error("AssemblyAI Begin did not include its applied configuration.");
+  if (id.length > 512) {
+    throw new Error("Voice service returned an invalid streaming session ID.");
+  }
+  const expiresAt = value.expires_at;
+  if (typeof expiresAt !== "number" || !Number.isFinite(expiresAt) || expiresAt <= 0) {
+    throw new Error("AssemblyAI Begin returned an invalid session expiry.");
   }
 
-  const configuration = value.configuration;
-  // AssemblyAI's current Begin contract echoes this field as `model`, not the
-  // `speech_model` query-parameter name. Sample rate and encoding are not
-  // echoed in Begin, so those are verified against the server-owned URL when
-  // the ticket is parsed rather than hallucinated as provider response fields.
-  const model = requiredString(configuration.model, "applied speech model");
-  const mode = requiredString(configuration.mode, "applied streaming mode");
-  const apiVersion = requiredString(configuration.api_version, "applied streaming API version");
-  const voiceFocus = requiredString(configuration.voice_focus, "applied Voice Focus mode");
-
-  if (model !== ticket.model) {
-    throw new Error("AssemblyAI applied a different speech model than the server approved.");
-  }
-  if (mode !== ticket.mode) {
-    throw new Error("AssemblyAI applied a different streaming mode than the server approved.");
-  }
-  if (apiVersion !== ticket.apiVersion) {
-    throw new Error("AssemblyAI applied a different streaming API version than the server approved.");
-  }
-  if (voiceFocus !== ticket.voiceFocus) {
-    throw new Error("AssemblyAI applied a different Voice Focus mode than the server approved.");
-  }
-
-  return {
-    id,
-    configuration: {
-      model,
-      mode: ticket.mode,
-      apiVersion,
-      voiceFocus: ticket.voiceFocus,
-    },
-  };
+  // AssemblyAI's documented Begin event contains only the session identity and
+  // expiry. Model, region, audio, mode, prompt, keyterms and Voice Focus remain
+  // pinned by parseVoiceSessionTicket against the server-owned WebSocket URL.
+  return { id, expiresAt };
 }
 
 export function voiceChunkSampleCount(sampleRate: number): number {

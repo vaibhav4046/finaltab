@@ -5,20 +5,20 @@
 > video measurement. Current V2 truth: contract
 > `0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB`, KeeperHub deployment execution
 > `xasakw5nfxkh2s0fh4stn`, tx `0x904ec881…e8f`, block `45321107`, Sourcify exact
-> match `43497805`. Main commit `b084497` supersedes the archived CI numbers:
-> 284 passing + 1 env-gated skip, two green GitHub CI jobs, a 24-page build,
-> Playwright 8/8, and a 13/13 protected probe on both immutable and public
-> Vercel URLs. Current V2 additions: KeeperHub execution
+> match `43497805`. Canonical deployment
+> `dpl_EYEXUVqto8UDcUqoqWKcE1Ui1kPa` at commit
+> `2d808c7a589385e2f8494189978da64d982fb0cc` supersedes the archived CI
+> numbers: health is `ready`, exact-SHA GitHub Actions is green, and canonical
+> Playwright passed 14/14. Current V2 additions: KeeperHub execution
 > `3hmlqi36zweiwg6fc5o2u` moved one atomic unit of USDC in tx
 > `0x7a6fb760…a789` at block `45327128`, with exact event/balance proof; Supabase
 > project `yoavihmldqbkuxinrsih` is provisioned and schema-verified with its four
-> baseline plus additive `52236`/`60000`/`64822`/`73000`/`74000` migrations:
-> 29/29 public tables have RLS, sensitive mutation RPCs are service-role-only,
-> advisors report no errors, and the unindexed-FK warning is cleared. The current local candidate reports 387 passing + 1
-> provider-gated vision skip and a 33/33-page build; it exposes exactly nine
-> production MCP tools and requires an attested four-stage review before
-> first-party Freeze. Post-promotion cutover `74500`, final
-> deploy/provider probe, unified MCP capture, and 4K/60 video remain pending. Use
+> baseline/additive, financial cutover, and owner-select migrations: 29/29
+> public tables have RLS, sensitive mutation RPCs and legacy writes deny browser
+> roles, and advisors report zero error-level findings with reviewed warnings remaining. A
+> real GitHub OAuth/reload, owner tab create/read, exactly-nine-tool list, and
+> non-value MCP calculation/preparation passed. A real voice lifecycle and the
+> 4K/60 video remain pending. Use
 > [status.md](status.md) and [SUBMISSION_CHECKLIST.md](SUBMISSION_CHECKLIST.md).
 
 Every row was run on **2026-08-10**. Gates 1–16 were measured against a clean tree at commit

@@ -24,16 +24,16 @@ KeeperHub.
 
 6
 00:00:16,400 --> 00:00:19,389
-Scan a crowded receipt. Correct any
-extraction.
+Sign in. Scan a crowded receipt.
 
 7
 00:00:19,546 --> 00:00:22,129
-Invite the table. Describe who had what.
+Correct the extraction. Add participants.
 
 8
 00:00:22,449 --> 00:00:24,646
-FINALTab reconciles every line—
+Describe who had what. FINALTab
+reconciles every line—
 
 9
 00:00:24,666 --> 00:00:26,759
@@ -41,56 +41,58 @@ tax, tip, and service included—
 
 10
 00:00:26,779 --> 00:00:28,793
-to the cent, across the whole table.
+to the cent.
 
 11
 00:00:31,400 --> 00:00:33,449
-The graph collapses many obligations
+A four-stage review attests the current
 
 12
 00:00:33,467 --> 00:00:35,875
-into a small, deterministic transfer set.
+inputs; any edit invalidates it.
 
 13
 00:00:36,241 --> 00:00:39,056
-Freeze once, and the ledger hash,
-settlement ID,
+Freeze only after a fresh review, and the
 
 14
 00:00:39,086 --> 00:00:43,143
-debits, payouts, chain, and contract
-become one immutable plan.
+ledger, debits, payouts, chain, and
+contract become one immutable plan.
 
 15
 00:00:44,200 --> 00:00:45,842
-Each debtor signs twice:
+The retained plan verifies two debtor
 
 16
 00:00:46,023 --> 00:00:48,861
-Circle authorizes their exact USDC pull;
+signatures: Circle authorized the exact
+USDC pull,
 
 17
 00:00:49,123 --> 00:00:52,054
-FINALTab binds consent to the complete
+and FINALTab bound consent to the complete
 payout plan.
 
 18
 00:00:52,315 --> 00:00:55,896
-KeeperHub then simulates. A revert never
-broadcasts.
+KeeperHub simulated before broadcast;
+consumed proof cannot move value again.
 
 19
 00:00:56,350 --> 00:01:00,047
-After simulation and a final human
-signature, KeeperHub submits.
+With explicit operator authorization,
+KeeperHub submitted once.
 
 20
 00:01:00,483 --> 00:01:02,439
-Green appears when its receipt matches
+Its terminal receipt and an independent
+Base Sepolia check
 
 21
 00:01:02,457 --> 00:01:05,306
-an independent Base Sepolia RPC check.
+match the same transaction, settlement
+ID, and ledger hash.
 
 22
 00:01:06,250 --> 00:01:10,052
@@ -103,26 +105,28 @@ FINALTab never holds wallet keys.
 
 24
 00:01:13,150 --> 00:01:15,907
-The agent allocates, prepares the V2 plan,
+A real MCP client authenticates, lists all
+nine tools,
 
 25
 00:01:15,983 --> 00:01:17,904
-and returns debtor typed data.
+allocates the receipt, prepares V2 typed
+data,
 
 26
 00:01:18,421 --> 00:01:22,339
-It simulates, gets a short-lived human
-signature, then submits.
+and creates the short-lived approval
+challenge. Then it stops:
 
 27
 00:01:22,856 --> 00:01:27,505
-Status receives execution ID, settlement
-ID, and ledger hash.
+no wallet signature, no submit, no second
+value move.
 
 28
 00:01:27,825 --> 00:01:30,837
-Only the indexed event becomes
-VERIFIED_SETTLED.
+A separate read-only panel verifies the
+retained settlement.
 
 29
 00:01:31,050 --> 00:01:34,527

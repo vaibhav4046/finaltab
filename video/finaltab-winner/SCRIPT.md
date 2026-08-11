@@ -5,7 +5,7 @@
 **Model:** `eleven_multilingual_v2` with timestamps
 **Voice settings (proposed):** stability 0.45 · similarity 0.75 · style 0.12 · speaker boost on
 **Voice direction:** Warm, precise, restrained. Speak like a careful operator showing evidence, not an announcer selling hype. Give code identifiers and proof states extra separation.
-**Timing note:** These are edit locks for preproduction. ElevenLabs alignment becomes authoritative after generation; adjust intra-frame holds, not the 96-second story spine, unless the synchronized cut would leave the 90–100 second window.
+**Timing note:** The 96-second story spine is locked. Scenes 3, 4, 5, 6, and 8 changed after the truth audit and are pending selective ElevenLabs regeneration. Only their fresh alignment may move their intra-frame caption holds.
 
 ---
 
@@ -28,28 +28,28 @@
 **Time:** 00:16.400 – 00:30.650
 **Delivery:** The first four sentences are crisp action cues. Slow slightly for “tax, tip, and service included” and land “to the cent.”
 
-    Scan a crowded receipt. Correct any extraction. Invite the table. Describe who had what. FINALTab reconciles every line—tax, tip, and service included—to the cent, across the whole table.
+    Sign in. Scan a crowded receipt. Correct the extraction. Add participants. Describe who had what. FINALTab reconciles every line—tax, tip, and service included—to the cent.
 
 ## Line 4 — Net and freeze (Frame 4)
 
 **Time:** 00:31.400 – 00:43.600
-**Delivery:** Start analytical, then make “Freeze once” decisive. Read the bound fields as a deliberate evidence list.
+**Delivery:** Make the invalidation boundary unmistakable. Land “Freeze only after a fresh review” as the control point, then read the bound fields as evidence.
 
-    The graph collapses many obligations into a small, deterministic transfer set. Freeze once, and the ledger hash, settlement ID, debits, payouts, chain, and contract become one immutable plan.
+    A four-stage review attests the current inputs; any edit invalidates it. Freeze only after a fresh review, and the ledger, debits, payouts, chain, and contract become one immutable plan.
 
 ## Line 5 — Dual signatures and simulation (Frame 5)
 
 **Time:** 00:44.200 – 00:55.860
-**Delivery:** Stress “signs twice.” Keep the two signature meanings distinct. End “never broadcasts” without drama.
+**Delivery:** This is retained evidence, not a recreated signing chronology. Keep the two signature meanings distinct and land the consumed-proof boundary plainly.
 
-    Each debtor signs twice: Circle authorizes their exact USDC pull; FINALTab binds consent to the complete payout plan. KeeperHub then simulates. A revert never broadcasts.
+    The retained plan verifies two debtor signatures: Circle authorized the exact USDC pull, and FINALTab bound consent to the complete payout plan. KeeperHub simulated before broadcast; consumed proof cannot move value again.
 
 ## Line 6 — KeeperHub plus independent proof (Frame 6)
 
 **Time:** 00:56.350 – 01:05.700
-**Delivery:** Treat “final human signature” as the control boundary. Let “independent Base Sepolia RPC check” sound conclusive, not celebratory.
+**Delivery:** Stress “submitted once.” Let the matching public identifiers sound conclusive, not celebratory.
 
-    After simulation and a final human signature, KeeperHub submits. Green appears when its receipt matches an independent Base Sepolia RPC check.
+    With explicit operator authorization, KeeperHub submitted once. Its terminal receipt and an independent Base Sepolia check match the same transaction, settlement ID, and ledger hash.
 
 ## Line 7 — MCP breadth (Frame 7)
 
@@ -61,10 +61,10 @@
 ## Line 8 — MCP climax (Frame 8)
 
 **Time:** 01:13.150 – 01:30.800
-**Delivery:** Present-tense execution. Pause after “typed data,” “then submits,” and the three-argument list. Give `VERIFIED_SETTLED` a clean final landing.
-**Screen text lock:** `settlement_status({ executionId, settlementId, ledgerHash })`
+**Delivery:** Present-tense, but make the stop boundary the climax. Pause after “approval challenge” and “Then it stops.” Keep the retained status panel explicitly separate from this non-broadcast client run.
+**Screen text lock:** `NO WALLET SIGNATURE · NO SUBMIT · NO SECOND VALUE MOVE`
 
-    The agent allocates, prepares the V2 plan, and returns debtor typed data. It simulates, gets a short-lived human signature, then submits. Status receives execution ID, settlement ID, and ledger hash. Only the indexed event becomes VERIFIED_SETTLED.
+    A real MCP client authenticates, lists all nine tools, allocates the receipt, prepares V2 typed data, and creates the short-lived approval challenge. Then it stops: no wallet signature, no submit, no second value move. A separate read-only panel verifies the retained settlement.
 
 ## Line 9 — CTA (Frame 9)
 
@@ -75,6 +75,7 @@
 
 ## Spoken-word budget
 
-- Locked narration: 196 words.
-- Guide pace across 96 seconds: approximately 122.5 words per minute including designed pauses.
-- The generated ElevenLabs character alignment is the final caption and scene-sync authority.
+- Locked narration: 211 words.
+- Guide pace across 96 seconds: approximately 132 words per minute including designed pauses.
+- Scenes 1, 2, 7, and 9 retain their approved wording and existing audio hashes. Scenes 3, 4, 5, 6, and 8 must be selectively regenerated before the final gate can pass.
+- The regenerated ElevenLabs character alignment is the final caption and scene-sync authority for changed scenes.

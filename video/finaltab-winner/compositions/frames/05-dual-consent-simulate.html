@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="UTF-8"/><title>FINALTab — Dual consent and simulation capture slot</title></head>
+<head><meta charset="UTF-8"/><title>FINALTab — Retained signature and simulation evidence</title></head>
 <body>
 <template>
   <style>
@@ -19,12 +19,12 @@
   <div id="root" data-composition-id="finaltab-dual-consent-simulate" data-start="0" data-width="3840" data-height="2160" data-duration="12">
     <section id="f05-ground" class="clip ground" data-start="0" data-duration="12" data-track-index="0"></section>
     <section id="f05-scene" class="clip scene" data-start="0" data-duration="12" data-track-index="1">
-      <div id="f05-head" class="head"><div><small>05 · EXTERNAL-WALLET CONSENT BOUNDARY</small><h2>Every debtor signs twice.</h2></div><div class="note">External participant wallets sign. FINALTab holds no user keys. The final take must contain real public-key recoveries and separate simulation requests.</div></div>
-      <div id="f05-plate" class="plate"><img src="assets/capture-slots/C05-dual-consent-simulate.svg" alt="C05 dual consent and simulation capture slot"/></div>
-      <article id="f05-sig-a" class="signature sig-a"><small>EIP-3009 · CIRCLE</small><h3>ReceiveWithAuthorization</h3><p>Binds the exact USDC pull, nonce, validity window, and recipient.</p></article>
-      <article id="f05-sig-b" class="signature sig-b"><small>EIP-712 · FINALTAB V2</small><h3>SettlementConsent</h3><p>Binds the ledger hash and complete debits + payouts plan.</p></article>
-      <article id="f05-sim" class="sim"><b>CAPTURE BOTH REAL OUTCOMES</b><p>PASS · broadcast:false<br/>REVERT · WOULD REVERT · NOT BROADCAST</p></article>
-      <div id="f05-truth" class="truth">CAPTURE SLOT C05 · NO SUCCESS CLAIM IS MADE BY THIS PLACEHOLDER</div>
+      <div id="f05-head" class="head"><div><small>05 · RETAINED EXTERNAL-WALLET EVIDENCE</small><h2>Two signatures. One consumed plan.</h2></div><div class="note">Public recovery record only. No wallet prompt, no approval signature, no replay, and no new value move.</div></div>
+      <div id="f05-plate" class="plate"><img src="assets/capture-slots/C05-dual-consent-simulate.svg" alt="C05 sanitized retained signature and simulation evidence slot"/></div>
+      <article id="f05-sig-a" class="signature sig-a"><small>EIP-3009 · VERIFIED RECOVERY</small><h3>ReceiveWithAuthorization</h3><p>Recovered external wallet: 0x07918A…550B · exact 1-atomic-unit pull.</p></article>
+      <article id="f05-sig-b" class="signature sig-b"><small>EIP-712 · VERIFIED RECOVERY</small><h3>SettlementConsent</h3><p>Digest matches the V2 contract and the complete frozen plan.</p></article>
+      <article id="f05-sim" class="sim"><b>RETAINED PRE-BROADCAST RECORD</b><p>simulation: success<br/>settlement + nonce: consumed</p></article>
+      <div id="f05-truth" class="truth">RETAINED RUN · READ ONLY · NEVER RE-SIGN OR REPLAY</div>
     </section>
   </div>
   <script>

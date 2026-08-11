@@ -10,7 +10,6 @@ import {
   VOICE_CHUNK_MILLISECONDS,
   voiceSessionStopDelayMs,
 } from "@/lib/voiceClient";
-import type { VoiceSessionTicket } from "@/lib/voiceClient";
 
 export type VoiceStatus = "idle" | "connecting" | "listening" | "stopping" | "error";
 export type ReadbackStatus = "idle" | "loading" | "ready" | "playing" | "error";
@@ -198,12 +197,11 @@ function awaitSocketOpen(socket: WebSocket, signal: AbortSignal): Promise<void> 
 
 function awaitValidatedBegin(
   socket: WebSocket,
-  ticket: VoiceSessionTicket,
   signal: AbortSignal,
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     const timeout = window.setTimeout(
-      () => finish(new Error("AssemblyAI did not confirm the applied voice configuration in time.")),
+      () => finish(new Error("AssemblyAI did not send a valid Begin frame in time.")),
       8_000,
     );
 
@@ -217,15 +215,15 @@ function awaitValidatedBegin(
       else resolve();
     };
     const onAbort = () => finish(new DOMException("Voice capture stopped", "AbortError"));
-    const onClose = () => finish(new Error("Live transcription closed before confirming its configuration."));
-    const onError = () => finish(new Error("Live transcription failed before confirming its configuration."));
+    const onClose = () => finish(new Error("Live transcription closed before its Begin confirmation."));
+    const onError = () => finish(new Error("Live transcription failed before its Begin confirmation."));
     const onMessage = (event: MessageEvent<unknown>) => {
       if (typeof event.data !== "string") {
         finish(new Error("AssemblyAI returned a non-text frame before its Begin confirmation."));
         return;
       }
       try {
-        validateVoiceBeginMessage(JSON.parse(event.data) as unknown, ticket);
+        validateVoiceBeginMessage(JSON.parse(event.data) as unknown);
         finish();
       } catch (error) {
         finish(error instanceof Error ? error : new Error("AssemblyAI Begin validation failed."));
@@ -498,7 +496,7 @@ export function useVoiceAllocation({ onLevel }: UseVoiceAllocationOptions = {}) 
 
       await Promise.all([
         awaitSocketOpen(socket, resources.abortController.signal),
-        awaitValidatedBegin(socket, ticket, resources.abortController.signal),
+        awaitValidatedBegin(socket, resources.abortController.signal),
       ]);
       if (resourcesRef.current !== resources || resources.expectedClose) return;
 

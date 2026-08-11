@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "eslint apps packages playwright.config.ts tests/e2e",
     "typecheck": "pnpm -r --if-present typecheck",
-    "test": "pnpm -r --if-present test",
+    "test": "pnpm --dir contracts build && pnpm -r --if-present test",
     "test:contracts": "pnpm --dir contracts test",
     "test:e2e": "pnpm --dir apps/web build && playwright test",
     "test:e2e:ui": "playwright test --ui",

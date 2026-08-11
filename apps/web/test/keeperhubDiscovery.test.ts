@@ -188,7 +188,7 @@ describe("KeeperHub integration discovery", () => {
       },
       durableQuota: {
         backend: "supabase-postgres-rpc",
-        function: "reserve_voice_budget(uuid, text, integer)",
+        function: "reserve_voice_budget_service(uuid, text, bigint)",
         identity: "route-verified-supabase-user-id",
         databaseExecutionRole: "service_role_only",
         limitsPerMinute: { transcriptionSessions: 8, readbacks: 20 },

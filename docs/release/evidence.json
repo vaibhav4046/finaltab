@@ -172,7 +172,7 @@
         "transcriptionSessionsPerUserPerMinute": 8,
         "readbacksPerUserPerMinute": 20,
         "spendReservationMigration": "20260811064822_voice_spend_reservations",
-        "spendReservationRpc": "reserve_voice_budget",
+        "spendReservationRpc": "reserve_voice_budget_service",
         "spendReservationRpcAccess": "service_role_only"
       },
       "publicProductionConfigurationPrepared": true,
@@ -453,7 +453,7 @@
         "postPromotionCutoverApplied": true,
         "voiceQuotaRpc": "consume_voice_quota(text), revoked from authenticated at cutover",
         "voiceQuotaLimits": "8 transcription sessions and 20 readbacks per user per minute",
-        "voiceSpendReservationRpc": "reserve_voice_budget, service-role-only"
+        "voiceSpendReservationRpc": "reserve_voice_budget_service, service-role-only"
       },
       "method": "Supabase project creation and health check; committed migrations applied in order; schema, RLS, policy, grant, and foreign-key index queries run against the hosted project.",
       "caveat": "This proves infrastructure, cutover, and one authenticated owner collaboration path. It does not prove two-identity isolation, shared-journal recovery, or cross-device behavior."
@@ -474,7 +474,7 @@
         "rpc": "consume_voice_quota(text)",
         "rpcAnonymousAccess": false,
         "rpcAuthenticatedAccess": false,
-        "spendReservationRpc": "reserve_voice_budget",
+        "spendReservationRpc": "reserve_voice_budget_service",
         "spendReservationRpcAccess": "service_role_only",
         "transcriptionSessionsPerUserPerMinute": 8,
         "readbacksPerUserPerMinute": 20,

@@ -41,7 +41,7 @@ The production provider variables are stored as sensitive Vercel values. The
 production Supabase guard preserves the applied per-minute limits
 (8 transcription requests and 20 readbacks); applied migration `64822` adds
 atomic UTC-day/month user and project spend budgets through the service-role-only
-`reserve_voice_budget(uuid, text, integer)`. The route passes only the exact
+`reserve_voice_budget_service(uuid, text, bigint)`. The route passes only the exact
   Supabase user ID it already verified; browsers cannot invoke the reservation
   RPC directly. AssemblyAI reserves its
 full 180-second maximum before token mint and holds a 240-second, 1-user/

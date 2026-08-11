@@ -84,7 +84,7 @@ describe("durable voice quota responses", () => {
       }, "transcription", 180);
 
       expect(decision.allowed).toBe(true);
-      expect(rpc).toHaveBeenCalledWith("reserve_voice_budget", {
+      expect(rpc).toHaveBeenCalledWith("reserve_voice_budget_service", {
         expected_user: "70e7fd4b-2c63-4935-b74f-f45d26f67b17",
         requested_capability: "transcription",
         requested_units: 180,
@@ -213,6 +213,13 @@ describe("voice spend reservation migration", () => {
     )),
     "utf8",
   );
+  const rpcCompatibility = readFileSync(
+    fileURLToPath(new URL(
+      "../../../supabase/migrations/20260811164505_voice_budget_rpc_numeric_compat.sql",
+      import.meta.url,
+    )),
+    "utf8",
+  );
 
   it("fixes provider units and every spend/concurrency cap in trusted SQL", () => {
     expect(VOICE_STT_RESERVATION_SECONDS).toBe(180);
@@ -256,5 +263,21 @@ describe("voice spend reservation migration", () => {
     expect(cutover).toContain("revoke execute on function public.consume_voice_quota(text) from authenticated");
     expect(migration).toContain("create index voice_spend_reservations_user_idx");
     expect(migration).not.toMatch(/grant\s+(select|insert|update|delete).*voice_(user|project|spend)/i);
+  });
+
+  it("uses a uniquely named bigint Data API adapter without widening execution grants", () => {
+    expect(rpcCompatibility).toContain(
+      "create function public.reserve_voice_budget_service(\n  expected_user uuid,\n  requested_capability text,\n  requested_units bigint",
+    );
+    expect(rpcCompatibility).toContain("security invoker\nset search_path = ''");
+    expect(rpcCompatibility).toContain("from public.reserve_voice_budget(");
+    expect(rpcCompatibility).toContain("when requested_units between 1 and 600 then requested_units::integer");
+    expect(rpcCompatibility).toContain(
+      "revoke all on function public.reserve_voice_budget_service(uuid, text, bigint)",
+    );
+    expect(rpcCompatibility).toContain(
+      "grant execute on function public.reserve_voice_budget_service(uuid, text, bigint)\n  to service_role",
+    );
+    expect(rpcCompatibility).not.toMatch(/grant execute[\s\S]*to (public|anon|authenticated)/i);
   });
 });

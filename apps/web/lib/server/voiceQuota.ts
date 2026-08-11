@@ -154,7 +154,7 @@ export async function reserveDurableVoiceBudget(
     throw new VoiceQuotaError("INVALID_RESPONSE", 503);
   }
   const { client, userId } = quotaClient(principal);
-  const { data, error } = await client.rpc("reserve_voice_budget", {
+  const { data, error } = await client.rpc("reserve_voice_budget_service", {
     expected_user: userId,
     requested_capability: capability,
     requested_units: units,

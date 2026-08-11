@@ -138,7 +138,7 @@ project ref `yoavihmldqbkuxinrsih`. The baseline and ordered additive migrations
 `20260811074000` are applied remotely, followed by the financial-truth cutover
 and `tab_owner_select_returning` repair. Verification found 29/29 public tables
 with RLS enabled. Sensitive mutation RPCs, legacy direct financial writes, and
-the old quota RPC deny browser roles; `reserve_voice_budget` allows only
+the old quota RPC deny browser roles; `reserve_voice_budget_service` allows only
 `service_role`. Advisors report zero error-level findings, with reviewed
 RLS/function warnings and the leaked-password-protection warning still present.
 The repair closed the owner `INSERT ... RETURNING` RLS edge without weakening

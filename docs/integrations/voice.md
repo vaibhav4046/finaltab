@@ -11,7 +11,7 @@ server-only.
    the required application scope and same-origin policy.
 2. The route parses its bounded input. The transcription token route accepts no
    body; readback accepts 1–600 trimmed UTF-16 code units.
-3. The route calls `reserve_voice_budget(uuid, text, integer)` through the
+3. The route calls `reserve_voice_budget_service(uuid, text, bigint)` through the
    server-only Supabase client, passing the exact user ID already verified by
    the route. Ordinary authenticated clients have no execute permission. The
    database atomically locks the project and user counters, checks the

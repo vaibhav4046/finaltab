@@ -85,4 +85,52 @@ describe("KeeperHub integration discovery", () => {
     expect(JSON.stringify(openapi)).not.toContain("#/$defs/");
     expect(openapi["x-keeperhub"].contractVersion).toBe("FinalTabBatchSettlementV2");
   });
+
+  it("documents configuration-gated AssemblyAI live STT and ElevenLabs readback", () => {
+    const openapi = buildFinalTabOpenApi("https://finaltab.example");
+    const token = openapi.paths["/api/voice/token"].post;
+    const speak = openapi.paths["/api/voice/speak"].post;
+
+    expect(openapi.tags.map((tag) => tag.name)).toContain("Voice");
+    expect(token.operationId).toBe("createVoiceTranscriptionSession");
+    expect(token["x-finaltab-required-scope"]).toBe("receipts:write");
+    expect(token["x-finaltab-configuration-gated"]).toBe(true);
+    expect("requestBody" in token).toBe(false);
+    expect(token.responses["200"].content["application/json"].schema.$ref).toBe(
+      "#/components/schemas/voiceStreamingSession",
+    );
+    expect(openapi.components.schemas.voiceStreamingSession.required).toContain("token");
+    expect(openapi.components.schemas.voiceStreamingSession.properties.token.description).toContain(
+      "not the permanent provider API key",
+    );
+    expect(openapi.components.schemas.voiceStreamingSession.properties.websocketUrl.pattern).toBe("^wss://");
+    expect(token.responses["501"].description).toContain("not configured");
+
+    expect(speak.operationId).toBe("streamVoiceReadback");
+    expect(speak["x-finaltab-required-scope"]).toBe("tabs:read");
+    expect(speak["x-finaltab-configuration-gated"]).toBe(true);
+    expect(speak.requestBody.content["application/json"].schema.$ref).toBe(
+      "#/components/schemas/voiceSpeakRequest",
+    );
+    expect(openapi.components.schemas.voiceSpeakRequest).toMatchObject({
+      additionalProperties: false,
+      required: ["text"],
+    });
+    expect(openapi.components.schemas.voiceSpeakRequest.properties.text).toMatchObject({
+      minLength: 1,
+      maxLength: 600,
+      pattern: "\\S",
+    });
+    expect(speak.responses["200"].content["audio/mpeg"].schema).toEqual({
+      type: "string",
+      format: "binary",
+    });
+    expect(speak.responses["501"].description).toContain("not configured");
+    expect(openapi["x-finaltab-voice"]).toMatchObject({
+      configurationGated: true,
+      permanentProviderKeys: "server-only",
+      demoNarrationProvider: "ElevenLabs-only",
+      deploymentAvailability: "configuration-dependent-not-asserted",
+    });
+  });
 });

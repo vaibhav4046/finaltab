@@ -5,7 +5,10 @@
 > video measurement. Current V2 truth: contract
 > `0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB`, KeeperHub deployment execution
 > `xasakw5nfxkh2s0fh4stn`, tx `0x904ec881…e8f`, block `45321107`, Sourcify exact
-> match `43497805`. V2 USDC settlement, clean combined CI, and video remain
+> match `43497805`. Main commit `b084497` supersedes the archived CI numbers:
+> 284 passing + 1 env-gated skip, two green GitHub CI jobs, a 24-route build,
+> Playwright 8/8, and a 13/13 protected probe on both immutable and public
+> Vercel URLs. V2 USDC settlement, Supabase provisioning, and video remain
 > pending. Use [status.md](status.md) and [SUBMISSION_CHECKLIST.md](SUBMISSION_CHECKLIST.md).
 
 Every row was run on **2026-08-10**. Gates 1–16 were measured against a clean tree at commit

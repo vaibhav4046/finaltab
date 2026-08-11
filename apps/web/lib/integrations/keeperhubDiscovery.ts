@@ -160,7 +160,7 @@ export function buildFinalTabOpenApi(origin: string) {
       title: "FINALTab Integration API",
       version: "2.0.0-testnet",
       description:
-        "Authenticated receipt, allocation, V2 settlement, proof, and KeeperHub observer surfaces. Money movement is Base Sepolia testnet only.",
+        "Authenticated receipt, allocation, configuration-gated voice, V2 settlement, proof, and KeeperHub observer surfaces. Money movement is Base Sepolia testnet only.",
       license: { name: "MIT", identifier: "MIT" },
     },
     servers: [{ url: origin }],
@@ -168,6 +168,7 @@ export function buildFinalTabOpenApi(origin: string) {
     tags: [
       { name: "Discovery" },
       { name: "Receipts" },
+      { name: "Voice" },
       { name: "Settlement" },
       { name: "KeeperHub" },
     ],
@@ -231,6 +232,70 @@ export function buildFinalTabOpenApi(origin: string) {
             "200": { description: "Reconciled allocation" },
             "401": { $ref: "#/components/responses/authError" },
             "422": { description: "Proposal cannot be reconciled" },
+          },
+        },
+      },
+      "/api/voice/token": {
+        post: {
+          tags: ["Voice"],
+          operationId: "createVoiceTranscriptionSession",
+          description:
+            "Configuration-gated AssemblyAI live speech-to-text session bootstrap. Requires receipts:write and accepts no request body. Returns a short-lived browser redemption credential plus constrained streaming settings; the permanent AssemblyAI provider key stays server-side. This contract does not assert that a deployment has the provider configured.",
+          "x-finaltab-required-scope": "receipts:write",
+          "x-finaltab-configuration-gated": true,
+          responses: {
+            "200": {
+              description: "Short-lived AssemblyAI live-transcription session settings",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/voiceStreamingSession" },
+                },
+              },
+            },
+            "400": { description: "A request body was supplied; this endpoint accepts no body" },
+            "401": { $ref: "#/components/responses/authError" },
+            "403": { description: "The authenticated principal lacks receipts:write or its session origin was rejected" },
+            "413": { description: "A non-empty request body was declared" },
+            "429": { description: "FINALTab request rate limit exceeded" },
+            "501": { description: "AssemblyAI transcription is not configured on the server" },
+            "502": { description: "AssemblyAI rejected or returned an invalid/unavailable session response" },
+            "503": { description: "AssemblyAI rate-limited session creation" },
+          },
+        },
+      },
+      "/api/voice/speak": {
+        post: {
+          tags: ["Voice"],
+          operationId: "streamVoiceReadback",
+          description:
+            "Configuration-gated ElevenLabs spoken readback for short product confirmations. Requires tabs:read and returns uncached MP3 audio; the current browser client buffers the short clip before playback. The permanent ElevenLabs provider key stays server-side. This interactive readback is separate from the demo video's prerecorded narration, which uses ElevenLabs only.",
+          "x-finaltab-required-scope": "tabs:read",
+          "x-finaltab-configuration-gated": true,
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/voiceSpeakRequest" },
+              },
+            },
+          },
+          responses: {
+            "200": {
+              description: "ElevenLabs MP3 spoken readback",
+              content: {
+                "audio/mpeg": {
+                  schema: { type: "string", format: "binary" },
+                },
+              },
+            },
+            "400": { description: "Missing or invalid readback text" },
+            "401": { $ref: "#/components/responses/authError" },
+            "403": { description: "The authenticated principal lacks tabs:read or its session origin was rejected" },
+            "413": { description: "JSON body exceeds 2,048 bytes" },
+            "429": { description: "FINALTab request rate limit exceeded" },
+            "501": { description: "ElevenLabs readback is not configured on the server" },
+            "502": { description: "ElevenLabs rejected or returned invalid/unavailable audio" },
+            "503": { description: "ElevenLabs rate-limited readback generation" },
           },
         },
       },
@@ -376,6 +441,62 @@ export function buildFinalTabOpenApi(origin: string) {
         address: { type: "string", pattern: "^0x[0-9a-fA-F]{40}$" },
         bytes32: { type: "string", pattern: "^0x[0-9a-fA-F]{64}$" },
         uintString: { type: "string", pattern: "^[0-9]+$" },
+        voiceStreamingSession: {
+          type: "object",
+          additionalProperties: false,
+          required: [
+            "token",
+            "expiresInSeconds",
+            "maxSessionDurationSeconds",
+            "websocketUrl",
+            "sampleRate",
+            "encoding",
+            "model",
+            "apiVersion",
+            "mode",
+            "languageDetection",
+            "keyterms",
+            "voiceFocus",
+          ],
+          properties: {
+            token: {
+              type: "string",
+              minLength: 20,
+              maxLength: 8192,
+              description:
+                "Short-lived AssemblyAI redemption credential. This is not the permanent provider API key.",
+            },
+            expiresInSeconds: { type: "integer", minimum: 1, maximum: 600 },
+            maxSessionDurationSeconds: { type: "integer", const: 600 },
+            websocketUrl: {
+              type: "string",
+              pattern: "^wss://",
+              description: "Constrained AssemblyAI streaming URL; the browser appends only the short-lived token.",
+            },
+            sampleRate: { type: "integer", const: 16000 },
+            encoding: { type: "string", const: "pcm_s16le" },
+            model: { type: "string", const: "universal-3-5-pro" },
+            apiVersion: { type: "string", const: "2025-05-12" },
+            mode: { type: "string", const: "balanced" },
+            languageDetection: { type: "boolean", const: true },
+            keyterms: { type: "array", items: { type: "string" } },
+            voiceFocus: { type: "string", const: "far-field" },
+          },
+        },
+        voiceSpeakRequest: {
+          type: "object",
+          additionalProperties: false,
+          required: ["text"],
+          properties: {
+            text: {
+              type: "string",
+              minLength: 1,
+              maxLength: 600,
+              pattern: "\\S",
+              description: "Readback text; FINALTab trims it before enforcing the 1-600 character bound.",
+            },
+          },
+        },
         signedDebit: {
           type: "object",
           additionalProperties: false,
@@ -467,6 +588,22 @@ export function buildFinalTabOpenApi(origin: string) {
       url: `${origin}/api/mcp`,
       transport: "streamable-http",
       authentication: "FinalTabBearer",
+    },
+    "x-finaltab-voice": {
+      configurationGated: true,
+      transcription: {
+        provider: "AssemblyAI",
+        mode: "live-streaming-stt",
+        route: `${origin}/api/voice/token`,
+      },
+      readback: {
+        provider: "ElevenLabs",
+        mode: "buffered-browser-audio-mpeg",
+        route: `${origin}/api/voice/speak`,
+      },
+      permanentProviderKeys: "server-only",
+      demoNarrationProvider: "ElevenLabs-only",
+      deploymentAvailability: "configuration-dependent-not-asserted",
     },
     "x-keeperhub": {
       mode: "direct-execution-api",

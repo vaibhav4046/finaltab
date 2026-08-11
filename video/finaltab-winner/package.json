@@ -5,6 +5,8 @@
   "scripts": {
     "dev": "npx --yes hyperframes@0.7.105 preview",
     "check": "npx --yes hyperframes@0.7.105 check",
+    "voice": "node generate-voiceover.mjs",
+    "captions": "node build-captions.mjs",
     "render": "npx --yes hyperframes@0.7.105 render",
     "publish": "npx --yes hyperframes@0.7.105 publish"
   }

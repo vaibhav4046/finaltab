@@ -63,7 +63,7 @@ Scene 4 (5.2–6.0s): hold the resolved lockup and outcome line completely still
 ## Frame 2 — One exact plan
 
 - scene: Receipt, deterministic ledger, dual debtor authorization, KeeperHub, and independent RPC proof become one continuous architecture rail
-- voiceover: "FINALTab turns one receipt into a deterministic ledger, binds every debtor's USDC pull to the entire payout plan, then sends the exact call through KeeperHub."
+- voiceover: "FINALTab turns a receipt into a deterministic ledger, binds each debtor's USDC pull to the whole payout plan, then sends the exact call through KeeperHub."
 - duration: 10s
 - poster: 9.2s
 - transition_in: zoom-through
@@ -173,7 +173,7 @@ Scene 5 (10.8–13.0s): chain `84532`, V2 contract `0x7b58791c...cCDB`, and plan
 ## Frame 5 — Two signatures, then simulate
 
 - scene: Each debtor supplies both exact typed-data signatures; KeeperHub simulation resolves honestly before any value-moving action appears
-- voiceover: "Each debtor signs twice: Circle's authorization to pull their exact USDC, and FINALTab consent to the complete payout plan. Then KeeperHub simulates. A revert never broadcasts."
+- voiceover: "Each debtor signs twice: Circle authorizes their exact USDC pull; FINALTab binds consent to the complete payout plan. KeeperHub then simulates. A revert never broadcasts."
 - duration: 12s
 - poster: 11.3s
 - transition_in: push-slide LEFT
@@ -209,7 +209,7 @@ Scene 5 (9.9–12.0s): a measured failure insert shows an actual invalid/reverti
 ## Frame 6 — Green has two witnesses
 
 - scene: A fresh V2 KeeperHub value-moving execution resolves into a proof capsule whose exact event binding is rechecked over Base Sepolia RPC
-- voiceover: "Only after simulation and final human approval does KeeperHub submit. Green appears only when its terminal receipt matches an independent Base Sepolia RPC check."
+- voiceover: "After simulation and a final human signature, KeeperHub submits. Green appears when its receipt matches an independent Base Sepolia RPC check."
 - duration: 10s
 - poster: 9.2s
 - transition_in: zoom-through
@@ -244,7 +244,7 @@ Scene 4 (8.5–10.0s): only now stamp `VERIFIED_SETTLED` in proof green and hold
 ## Frame 7 — Nine production tools
 
 - scene: The authenticated MCP surface self-assembles as a precise three-by-three production tool map
-- voiceover: "Agents get the same safety rail through nine production MCP tools. FINALTab never holds their wallet keys."
+- voiceover: "Agents use the same safety rail through nine production MCP tools. FINALTab never holds wallet keys."
 - duration: 7s
 - poster: 6.4s
 - transition_in: zoom-through
@@ -280,7 +280,7 @@ Scene 5 (6.4–7.0s): hold the complete three-by-three map. A quiet footer state
 ## Frame 8 — The agent earns the green
 
 - scene: A real MCP client performs the complete authenticated external-wallet V2 flow and resolves exact-plan proof
-- voiceover: "The agent allocates, prepares the V2 plan, and returns typed data for every debtor. It simulates, requests a short-lived human-signed challenge, then submits. The status call receives three exact arguments: execution ID, settlement ID, and ledger hash. Only the exact indexed event resolves VERIFIED_SETTLED."
+- voiceover: "The agent allocates, prepares the V2 plan, and returns debtor typed data. It simulates, gets a short-lived human signature, then submits. Status receives execution ID, settlement ID, and ledger hash. Only the indexed event becomes VERIFIED_SETTLED."
 - duration: 18s
 - poster: 17.2s
 - transition_in: crossfade
@@ -323,7 +323,7 @@ Scene 8 (16.1–18.0s): KeeperHub receipt and independent proof resolve together
 ## Frame 9 — One table, one proof
 
 - scene: FINALTab lockup, live product, GitHub, MCP endpoint, KeeperHub integration, and the fresh transaction proof resolve as a calm end card
-- voiceover: "FINALTab. One table. One plan. KeeperHub executes. Anyone can verify."
+- voiceover: "FINALTab: KeeperHub executes. Anyone verifies."
 - duration: 5s
 - poster: 4.5s
 - transition_in: blur-crossfade

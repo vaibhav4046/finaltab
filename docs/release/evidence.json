@@ -7,13 +7,44 @@
     "Claims measured on 2026-08-10 below are historical V1 evidence unless explicitly scoped otherwise.",
     "Current V2 deployment proof is recorded in currentRelease and the separate v2-deployment manifest."
   ],
-  "generatedAt": "2026-08-10",
-  "commit": "d4dfb7e+dirty",
-  "commitNote": "Measured against commit d4dfb7e PLUS an uncommitted working tree (7 modified tracked files, 3 untracked at the time of the run: the MCP agent-settlement path and this docs pass). Not a clean-checkout result: re-running these commands on a fresh clone of d4dfb7e produces the pre-MCP numbers, not these.",
-  "verificationHost": "local (win32), Node + pnpm workspace",
+  "generatedAt": "2026-08-11",
+  "scope": "Current V2 release plus explicitly archived V1 evidence",
+  "historicalEvidenceCommit": "d4dfb7e+dirty",
+  "historicalEvidenceCommitNote": "Measured against commit d4dfb7e PLUS an uncommitted working tree (7 modified tracked files, 3 untracked at the time of the run: the MCP agent-settlement path and this docs pass). Not a clean-checkout result: re-running these commands on a fresh clone of d4dfb7e produces the pre-MCP numbers, not these.",
+  "historicalVerificationHost": "local (win32), Node + pnpm workspace",
   "currentRelease": {
     "protocol": "V2",
     "measuredAt": "2026-08-11",
+    "sourceCommit": "b084497bf883dbf4f1d7123203e9866679d99b67",
+    "releaseBaseline": {
+      "state": "LIVE_PROVEN",
+      "githubCiJobs": "2/2 green",
+      "tests": "284 passing, 1 env-gated live-provider check skipped",
+      "productionBuildRoutes": 24,
+      "playwright": "8/8 passing",
+      "protectedProbe": {
+        "result": "13/13 passing",
+        "immutableDeploymentId": "dpl_Dh6dTpAMPgRkFsTeNE2qKBK9nAgL",
+        "immutableUrl": "https://finaltab-gn3eies20-vaibhav4046s-projects.vercel.app",
+        "publicAlias": "https://finaltab.vercel.app"
+      },
+      "caveat": "This is the last proven baseline. A newer submission commit or deployment must rerun every gate."
+    },
+    "localCandidate": {
+      "state": "LOCAL_PROVEN",
+      "tests": "302 passing, 1 env-gated live-provider check skipped",
+      "productionBuildRoutes": 26,
+      "playwright": "8/8 passing",
+      "voice": {
+        "productMode": "AssemblyAI live STT plus buffered ElevenLabs readback",
+        "demoNarration": "ElevenLabs only",
+        "narrationClipsDecoded": 9,
+        "captionCues": 29,
+        "captionTrackEndSeconds": 94.53,
+        "deploymentState": "BLOCKED_PENDING_DURABLE_QUOTA_TERMS_PROVIDER_CONFIG_AND_LIVE_PROBE"
+      },
+      "caveat": "Local working-tree evidence only. The public b084497 deployment does not contain or prove this candidate."
+    },
     "deployment": {
       "state": "LIVE_PROVEN",
       "contract": "0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB",
@@ -31,15 +62,22 @@
       "manifest": "docs/release/evidence/v2-deployment-2026-08-11T01-08-17-421Z.json"
     },
     "mcp": {
-      "state": "IMPLEMENTED_REQUIRES_LIVE_RECHECK",
+      "state": "LIVE_PROVEN_AT_BASELINE",
       "authentication": "scoped bearer token",
       "walletModel": "external debtor wallets plus a wallet-signed short-lived broadcast approval",
+      "productionTools": 9,
+      "gatedDemoTools": 3,
+      "protectedProbe": "Unauthenticated 401; MCP 2.0.0; exact V2 plan for arbitrary participants; cent-perfect calculation; proof binding; demo submit disabled.",
       "legacyConfirmFlagAccepted": false,
       "demoMoneyToolsEnabledByDefault": false
     },
     "usdcSettlement": {
       "state": "PENDING",
       "reason": "No retained value-moving V2 execution, transaction, event, or balance proof exists yet."
+    },
+    "supabase": {
+      "state": "NOT_PROVISIONED",
+      "reason": "Migration exists, but no approved and verified production project or cross-device persistence evidence exists."
     },
     "video": {
       "state": "PENDING",
@@ -49,6 +87,7 @@
   },
   "labels": {
     "LIVE_PROVEN": "A real external system was contacted and the response is recorded.",
+    "LOCAL_PROVEN": "The current local candidate passed reproducible checks but has not been deployed and live-probed.",
     "FIXTURE_PROVEN": "Exercised only against local fixtures or mocked module boundaries.",
     "LIVE_EXERCISED_FAILED": "A real external call was made and returned a real failure. The surface is proven; the success is not.",
     "BLOCKED": "Cannot be proven without an action outside autonomous scope.",

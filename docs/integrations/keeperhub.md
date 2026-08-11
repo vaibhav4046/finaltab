@@ -10,8 +10,10 @@ must not be pointed at the legacy V1 contract.
 | Surface | URL | Purpose |
 | --- | --- | --- |
 | Discovery | `/.well-known/finaltab.json` | FINALTab-owned capability document with live origin and V2 readiness |
-| OpenAPI | `/openapi.json` | Receipt, allocation, V2 settlement, proof, and callback contracts |
+| OpenAPI | `/openapi.json` | Receipt, allocation, configuration-gated voice, V2 settlement, proof, and callback contracts |
 | MCP | `/api/mcp` | Agent tool surface (described, but not reimplemented, by this package) |
+| Voice session | `/api/voice/token` | Configuration-gated AssemblyAI live-STT session bootstrap; returns only a short-lived browser credential |
+| Voice readback | `/api/voice/speak` | Configuration-gated ElevenLabs MP3 readback for short product confirmations |
 | Workflow export | `/integrations/keeperhub/workflow` | KeeperHub import/export schema v1 JSON download |
 | Observer | `/api/integrations/keeperhub/events` | Read-only callback target that re-fetches KeeperHub and independently verifies Base Sepolia |
 | Version-controlled template | `integrations/keeperhub/finaltab-proof-observer.workflow.json` | Reviewable Hub/import artifact with no credential material |
@@ -20,6 +22,21 @@ The well-known document is a **FINALTab convention**, not a claimed KeeperHub
 manifest standard. KeeperHub currently documents Workflow JSON import/export,
 Hub sharing, Marketplace publication, REST, MCP, and Webhook/Send Webhook nodes;
 it does not document a native third-party application or iframe manifest.
+
+## Optional hybrid voice
+
+Voice is an application convenience, not part of KeeperHub execution or proof.
+When the corresponding server configuration is present, AssemblyAI supplies
+live streaming speech-to-text and ElevenLabs supplies a short spoken readback.
+`POST /api/voice/token` exposes only a short-lived AssemblyAI redemption
+credential and constrained WebSocket settings; `POST /api/voice/speak` streams
+the ElevenLabs response from the route, while the current browser client buffers
+the short MP3 before playback. Both permanent provider keys remain server-only.
+
+The routes and OpenAPI contract describe configuration-gated capability; they do
+not claim that either provider is enabled on any currently deployed origin. The
+prerecorded product-demo narration is a separate asset generated with ElevenLabs
+only. AssemblyAI is used for interactive transcription, not demo narration.
 
 Authoritative references:
 

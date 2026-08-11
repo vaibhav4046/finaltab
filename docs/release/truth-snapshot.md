@@ -11,8 +11,12 @@
 > `0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB` through KeeperHub execution
 > `xasakw5nfxkh2s0fh4stn`, tx `0x904ec881…e8f`, block `45321107`, with a
 > verified receipt and Sourcify exact-match ID `43497805`. A V2 USDC settlement
-> and V2 video are still pending. Every “end-to-end” or `confirm: true` statement
-> below describes the historical V1 system only.
+> and V2 video are still pending. Main commit `b084497` is the current clean
+> release baseline: 284 passing + 1 env-gated skip, two green GitHub CI jobs, a
+> 24-route production build, Playwright 8/8, and a 13/13 protected probe against
+> both the immutable Vercel deployment and public alias. Supabase remains
+> unprovisioned. Every “end-to-end” or `confirm: true` statement below describes
+> the historical V1 system only.
 
 Every line here is either measured in this repo or measured against Base Sepolia.
 Where something is unproven it says so. Nothing is upgraded to "proven" by

@@ -1,8 +1,9 @@
 # DoraHacks submission copy — V2 proof pending
 
 **Do not submit this draft yet.** The V2 deployment is proven, but a V2 USDC
-settlement, final video, public video URL, and DoraHacks confirmation are still
-pending. Current truth lives in [release/status.md](release/status.md).
+settlement, verified Supabase project, final video, public video URL, and
+DoraHacks confirmation are still pending. Current truth lives in
+[release/status.md](release/status.md).
 
 The live DoraHacks project page was inspected on 2026-08-11. Its authoritative
 deadline is 2026-08-13 12:00 UTC+2 (10:00 UTC / 11:00 BST). It requires a
@@ -19,6 +20,17 @@ FINALTab — externally signed receipt settlement through KeeperHub
 FINALTab turns a shared receipt into a deterministic, wallet-approved USDC
 batch and refuses to call it settled until KeeperHub and an independent chain
 check prove the V2 transaction landed.
+
+## Categories and claim boundaries
+
+**Blockchain · Web3 · DeFi · AI Agents · Onchain · MCP · Autonomous Agents ·
+Infrastructure**
+
+| Category group | What FINALTab actually provides |
+|---|---|
+| Blockchain, Web3, DeFi, Onchain | An exact-source-matched V2 contract on Base Sepolia, external-wallet EIP-3009 and full-plan consent, atomic testnet-USDC execution, KeeperHub orchestration, and independent event verification. Deployment is proven; a fresh value-moving V2 settlement is still pending. |
+| AI Agents, MCP, Autonomous Agents | Nine authenticated production MCP tools let agents allocate, net, prepare, simulate, orchestrate, and verify. Autonomy is bounded: every debtor signs externally and a permitted human wallet signs a short-lived broadcast approval before value can move. |
+| Infrastructure | OpenAPI, discovery metadata, a KeeperHub workflow package, scoped authentication, idempotent submission, and fail-closed proof tooling make the settlement rail reusable from other clients and agent systems. Supabase persistence is not claimed until provisioned. |
 
 ## Description
 
@@ -50,6 +62,14 @@ checks the Base Sepolia receipt plus the V2 `SettlementExecuted` log's indexed
 `settlementId` and `ledgerHash` against the frozen plan. A transaction hash,
 `completed` string, or unrelated FINALTab settlement is not proof.
 
+An optional hybrid voice layer keeps the same authorization boundary:
+AssemblyAI live transcription can fill the editable allocation instruction,
+and ElevenLabs can read back a short confirmation. Voice never allocates,
+signs, or submits by itself. Permanent provider keys remain server-side. This
+branch is locally verified, but the capability must not be described as live
+until Vercel provisions its durable paid-provider quota and the deployed
+microphone, `Begin`/`Termination`, and readback paths pass a real provider probe.
+
 ## Current V2 deployment proof
 
 `FinalTabBatchSettlementV2` is deployed at
@@ -65,9 +85,9 @@ or move participant USDC.
 
 ## Links
 
-- Live product: <https://finaltab.vercel.app> — reverify V2 configuration before submission
+- Live product: <https://finaltab.vercel.app> — 13/13 protected release probe passed at main commit `b084497`
 - Source: <https://github.com/vaibhav4046/finaltab>
-- MCP endpoint: <https://finaltab.vercel.app/api/mcp> — authenticated; re-probe after V2 deploy
+- MCP endpoint: <https://finaltab.vercel.app/api/mcp> — authenticated V2 surface live-probed at `b084497`
 - V2 contract: <https://sepolia.basescan.org/address/0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB>
 - V2 deployment transaction: <https://sepolia.basescan.org/tx/0x904ec881ef7c2ec7375c20887b4181cf58224b44162d837743fa869b0a598e8f>
 - V2 settlement transaction: **PENDING — no proven V2 USDC settlement yet**
@@ -91,8 +111,18 @@ disabled by default. They are not presented as the production user workflow.
 - V2 deployment through KeeperHub: proven.
 - V2 runtime and creation source exact match through Sourcify: proven.
 - V2 contract safety properties and MCP flow: 284 checks passed and one
-  env-gated live-provider check skipped in the combined 2026-08-11 worktree;
-  rerun and record the same command on the submitted commit.
+  env-gated live-provider check skipped at main commit `b084497`; both GitHub
+  CI jobs were green, the build emitted 24 routes, and Playwright passed 8/8.
+- Protected deployment probe: 13/13 passed against both the immutable Vercel
+  deployment and `finaltab.vercel.app`, including scoped MCP auth, the exact V2
+  address/version, 9 production + 3 gated demo tools, cent-perfect allocation,
+  arbitrary-participant plan preparation, proof binding, and fail-closed demo
+  money tools.
+- Hybrid voice/category branch candidate: 302 checks passed and one env-gated
+  live-provider check skipped locally; the build emitted 26 routes and
+  Playwright passed 8/8. Nine ElevenLabs narration MP3s decoded successfully,
+  and 29 timestamp-derived captions end at 94.53 seconds. Production voice and
+  the final video render remain pending.
 - Authenticated external-wallet V2 settlement through KeeperHub: pending live
   receipt and independent chain proof.
 - Final V2 product video and public URL: pending.

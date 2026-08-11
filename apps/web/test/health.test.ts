@@ -8,6 +8,8 @@ const KEYS = [
   "GROQ_API_KEY",
   "CLAUDE_API_KEY",
   "OPENAI_API_KEY",
+  "ASSEMBLYAI_API_KEY",
+  "ELEVENLABS_API_KEY",
   "NEXT_PUBLIC_SUPABASE_URL",
   "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
   "FINALTAB_API_TOKENS_JSON",
@@ -29,7 +31,18 @@ describe("health readiness", () => {
     for (const key of KEYS) delete process.env[key];
     expect(healthSnapshot()).toMatchObject({
       status: "degraded",
-      checks: { v2Contract: false, keeperHub: false, vision: false, webSessionAuth: false, mcpAuth: false, shareableProof: false },
+      checks: {
+        v2Contract: false,
+        keeperHub: false,
+        vision: false,
+        webSessionAuth: false,
+        mcpAuth: false,
+        shareableProof: false,
+      },
+      capabilities: {
+        voiceTranscriptionConfigured: false,
+        voiceReadbackConfigured: false,
+      },
     });
   });
 
@@ -38,12 +51,25 @@ describe("health readiness", () => {
     process.env.FINALTAB_SETTLEMENT_CONTRACT_VERSION = "2";
     process.env.KEEPERHUB_API_KEY = "kh_test-only";
     process.env.GROQ_API_KEY = "configured";
+    process.env.ASSEMBLYAI_API_KEY = "configured";
+    process.env.ELEVENLABS_API_KEY = "configured";
     process.env.NEXT_PUBLIC_SUPABASE_URL = "https://example.supabase.co";
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY = "sb_publishable_test";
     process.env.FINALTAB_PROOF_SIGNING_SECRET = "test-only-proof-secret-that-is-longer-than-32-bytes";
     expect(healthSnapshot()).toMatchObject({
       status: "ready",
-      checks: { v2Contract: true, keeperHub: true, vision: true, webSessionAuth: true, mcpAuth: true, shareableProof: true },
+      checks: {
+        v2Contract: true,
+        keeperHub: true,
+        vision: true,
+        webSessionAuth: true,
+        mcpAuth: true,
+        shareableProof: true,
+      },
+      capabilities: {
+        voiceTranscriptionConfigured: true,
+        voiceReadbackConfigured: true,
+      },
     });
   });
 

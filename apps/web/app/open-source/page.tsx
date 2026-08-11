@@ -28,8 +28,8 @@ const PACKAGES: Array<{ name: string; what: string; checks: string }> = [
   },
   {
     name: "apps/web",
-    what: "Next.js product, authenticated MCP boundary, collaboration policies, KeeperHub discovery, V2 settlement preparation, and independent proof checks.",
-    checks: "123",
+    what: "Next.js product, authenticated MCP boundary, hybrid voice safety, collaboration policies, KeeperHub discovery, V2 settlement preparation, and independent proof checks.",
+    checks: "141",
   },
   {
     name: "contracts",
@@ -46,7 +46,7 @@ export default function OpenSourcePage() {
       <main className="atmosphere mx-auto max-w-5xl px-4 pb-24 pt-14 sm:px-6">
         <p className="font-mono text-xs uppercase tracking-[0.3em] text-signal">Open source</p>
         <h1 className="mt-3 max-w-2xl text-3xl font-bold tracking-tight text-paper sm:text-4xl">
-          284 passing checks. Four browser journeys across desktop and mobile. One reproducible V2 path.
+          302 passing checks. Four browser journeys across desktop and mobile. One reproducible V2 path.
         </h1>
         <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted">
           FINALTab is a pnpm monorepo. The money math is deterministic and tested; the AI layer only
@@ -117,7 +117,7 @@ export default function OpenSourcePage() {
 {`git clone https://github.com/vaibhav4046/finaltab
 cd finaltab
 pnpm install --frozen-lockfile
-pnpm test       # 284 passing, 1 env-gated live-API check skipped
+pnpm test       # 302 passing, 1 env-gated live-API check skipped
 pnpm test:e2e   # production build + 4 journeys on desktop and mobile`}
             </pre>
           </div>

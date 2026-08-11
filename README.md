@@ -8,6 +8,19 @@ Built for KeeperHub Agents Onchain. Current submission readiness is tracked in
 [docs/release/status.md](docs/release/status.md); historical evidence does not
 override that file.
 
+## Hackathon category map
+
+| Category | Evidence | Boundary |
+|---|---|---|
+| **Blockchain** | `FinalTabBatchSettlementV2` is deployed on Base Sepolia through KeeperHub and is an exact Sourcify creation/runtime match. | Deployment is proven; a fresh value-moving V2 run is still pending. |
+| **Web3** | Debtors use external wallets for EIP-3009 and full-plan `SettlementConsent` signatures. | The server does not hold arbitrary participant keys. |
+| **DeFi** | The V2 rail pulls and pays testnet USDC atomically and fails the entire batch on invalid consent, replay, or imbalance. | No mainnet or fresh V2 value proof is claimed. |
+| **AI Agents** | Models interpret receipts; deterministic code performs allocation, netting, hashing, and settlement validation. | A model never chooses or authorizes value movement. |
+| **Onchain** | KeeperHub execution is paired with independent Base Sepolia receipt and indexed-event checks. | A transaction hash or `completed` string alone is never proof. |
+| **MCP** | The authenticated server exposes nine production tools for calculation, preparation, execution safety, and proof. | Three fixed-wallet `demo_*` tools are separately gated and disabled by default. |
+| **Autonomous Agents** | Agents can prepare, simulate, orchestrate, and verify a settlement end to end. | Value movement still requires every debtor signature plus a short-lived human broadcast approval. |
+| **Infrastructure** | OpenAPI, discovery metadata, a KeeperHub workflow package, scoped MCP auth, idempotent execution, and proof tooling make the rail reusable. | Supabase-backed persistence is not claimed until it is provisioned and verified. |
+
 ## Product flow
 
 1. **Extract.** A vision model returns structured receipt lines. Model output is
@@ -73,6 +86,26 @@ The old `confirm: true` flag is not a V2 authorization mechanism.
 Configuration and flow details:
 [docs/integrations/mcp.md](docs/integrations/mcp.md).
 
+## Hybrid voice — configuration-gated
+
+The settlement workspace includes an optional, text-first voice layer:
+
+- **AssemblyAI live STT** turns browser-microphone speech into an editable
+  allocation instruction. The server mints a short-lived EU streaming token;
+  the permanent AssemblyAI key never reaches the browser.
+- **ElevenLabs readback** generates a short spoken confirmation through a
+  bounded server proxy. Text remains visible and editable, and no transcript
+  can allocate, sign, or submit value by itself.
+- **Demo narration** is a separate nine-scene ElevenLabs-only asset with
+  provider character timings driving the caption track.
+
+These source paths are locally tested but are **not claimed live** on the
+current `b084497` deployment. Production enablement remains gated on scoped
+authentication, server-side provider secrets, a durable paid-provider quota,
+and a post-deploy microphone/readback probe. AssemblyAI is not used to narrate
+the product video. The full local candidate measures 302 passing checks plus
+one env-gated provider check, a 26-route production build, and Playwright 8/8.
+
 ## Money and security rules
 
 - All money arithmetic uses integer minor units; floats never touch balances.
@@ -115,9 +148,13 @@ Copy `.env.example` to the web deployment's environment and supply secrets
 server-side. The example pins the public V2 address and protocol version. Demo
 money tools remain off unless explicitly enabled.
 
-Current combined worktree gate: **284 checks passed, 1 env-gated live-provider
-check skipped**. The Playwright suite exercises four journeys on desktop and
-mobile; the submitted commit must retain its own clean-run logs.
+The release baseline on main commit
+[`b084497`](https://github.com/vaibhav4046/finaltab/commit/b084497bf883dbf4f1d7123203e9866679d99b67)
+passed **284 checks with 1 env-gated live-provider check skipped**. Both GitHub
+CI jobs were green, the production build emitted 24 routes, Playwright passed
+8/8 desktop-and-mobile journeys, and a protected release probe passed 13/13
+against both the immutable deployment and `finaltab.vercel.app`. This is a
+baseline snapshot; rerun the same gates for any newer submission commit.
 
 ## Historical V1 evidence
 
@@ -138,7 +175,10 @@ current V2 external-wallet flow has moved USDC. Likewise, the historical
 - Bind its redacted MCP trace, KeeperHub receipt, exact-plan event/balance
   proof, and video to one run.
 - Render, review, upload, and publish the final V2 video URL.
-- Run clean combined CI and verify live deployment configuration.
+- Provision and verify Supabase before making persistence or cross-device claims.
+- Accept the Vercel Upstash Marketplace terms, provision the bounded durable
+  voice quota, add both voice-provider secrets server-side, and live-probe the
+  hybrid voice path before advertising it as deployed.
 - Submit as a human entrant before 2026-08-13 12:00 UTC+2
   (10:00 UTC / 11:00 BST); retain the confirmation.
 

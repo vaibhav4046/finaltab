@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { nettedTransfers, type Debt } from "@finaltab/engine";
 import { Panel, Badge, Button, ErrorNote, Spinner, BlockedNote, Mono } from "./ui";
+import { VoiceTape } from "./VoiceTape";
 import { apiErrorText, toDisplayText } from "@/lib/apiText";
 import { formatUsdcMinor, shortHex } from "@/lib/flow";
 import type { Person, ReceiptState, AllocationState } from "@/lib/types";
@@ -151,6 +152,16 @@ export function SplitPanel({
     return extras > 0n ? extras.toString() : null;
   }, [receipt, receiptTotalMinor]);
 
+  const allocationReadback = useMemo(() => {
+    if (!allocation) return null;
+    const visibleShares = allocation.shares.slice(0, 5).map((share) =>
+      `${nameOf(share.id)} ${fiatMinorToDisplay(share.fiatMinor, currency)}`,
+    );
+    const remainder = allocation.shares.length - visibleShares.length;
+    const suffix = remainder > 0 ? `, plus ${remainder} more participant${remainder === 1 ? "" : "s"}` : "";
+    return `Allocation reconciled exactly to the receipt total. ${visibleShares.join(", ")}${suffix}.`;
+  }, [allocation, currency, nameOf]);
+
   return (
     <Panel title="Split & Graph" step="02 · Allocate">
       <div className="space-y-4">
@@ -190,6 +201,15 @@ export function SplitPanel({
             rows={3}
             className="w-full resize-none rounded-md border border-edge bg-panel-2 p-3 font-sans text-sm text-paper placeholder:text-fog-dim focus:border-lime/50 focus:outline-none disabled:opacity-60"
             placeholder="e.g. Vee had the daal, Hem and Ravi shared the lamb, Ravi had two of the naan"
+          />
+          <VoiceTape
+            disabled={locked || busy}
+            instruction={instruction}
+            readbackText={allocationReadback}
+            onUseTranscript={(transcript) => {
+              setInstruction(transcript);
+              setError(null);
+            }}
           />
           <p className="mt-1.5 font-mono text-[10px] leading-relaxed text-fog-dim">
             Instructions allocate <span className="text-fog">line items only</span>. Tax, service and tip are always

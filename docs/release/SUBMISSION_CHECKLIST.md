@@ -1,7 +1,11 @@
 # KeeperHub Agents Onchain — pre-submission checklist
 
 **Current state:** blocked on a proven V2 USDC settlement, final V2 video and
-public URL, clean combined CI, and human form submission.
+public URL, verified Supabase provisioning, and human form submission. Main
+commit `b084497` is the clean baseline: both GitHub CI jobs were green and the
+protected production probe passed 13/13. Hybrid voice is also blocked on the
+human Upstash Marketplace terms gate and a real provider probe. Repeat every
+gate on the final commit.
 
 The live DoraHacks detail page was verified on 2026-08-11. It states all times
 are UTC+2 and sets the deadline at **2026-08-13 12:00 UTC+2**
@@ -10,6 +14,10 @@ video showing the agent executing onchain through KeeperHub, and a transaction
 link. Ten finalists are scheduled to pitch August 17–19.
 
 ## 1. Repository and CI
+
+Baseline evidence at `b084497`: 284 passing + 1 env-gated skip, 24-route build,
+Playwright 8/8, and both CI jobs green. The boxes below intentionally remain
+open until the final submission commit reproduces that baseline.
 
 - [ ] Submitted commit is pushed and the public repository is readable logged out.
 - [ ] MIT `LICENSE`, `SECURITY.md`, and `CONTRIBUTING.md` render on GitHub.
@@ -69,7 +77,42 @@ link. Ten finalists are scheduled to pitch August 17–19.
 Historical V1 settlements at `0xCcf6…7e64`, including execution
 `69zzrj7z676u89ce1x76j`, do not satisfy this V2 gate.
 
-## 5. V2 video — blocking
+## 5. Supabase persistence — blocking
+
+- [ ] The intended Supabase organization, region, and cost are approved by the
+      entrant before a project is created.
+- [ ] Migrations are applied to the verified project and row-level security is
+      checked with more than one identity.
+- [ ] Production secrets stay server-side and public configuration matches the
+      deployed project.
+- [ ] Cross-device, durable-history, or collaboration copy appears only after
+      those behaviors pass a live browser check.
+
+Until this section passes, FINALTab may describe the migration and local draft
+behavior, but not production cloud persistence.
+
+## 6. Hybrid voice — local candidate, production blocking
+
+- [x] AssemblyAI permanent key remains server-only; the browser receives only
+      a short-lived EU streaming redemption credential.
+- [x] Live capture uses 50 ms PCM16 frames, validates the applied `Begin`
+      configuration, and waits for final `Turn` plus `Termination` on stop.
+- [x] ElevenLabs readback is bounded, uncached, text-backed, and truthfully
+      labelled as a short buffered browser clip.
+- [x] Local candidate passed 302 checks + 1 env-gated skip, a 26-route build,
+      and Playwright 8/8.
+- [ ] Entrant accepts the Upstash Marketplace terms at the Vercel-owned link.
+- [ ] The prepared free London `finaltab-voice-guard` resource is provisioned
+      with auto-upgrade and production pack disabled.
+- [ ] Dedicated durable, route-specific voice quotas and global provider
+      concurrency guards are implemented and tested against that resource.
+- [ ] AssemblyAI and ElevenLabs keys are added only as sensitive Vercel
+      Production variables after explicit entrant authorization.
+- [ ] A deployed browser probe exercises microphone permission, validated
+      provider `Begin`, final-turn shutdown, `Termination`, buffered readback,
+      mute, captions, and text fallback without exposing a credential.
+
+## 7. V2 video — blocking
 
 - [ ] Video follows [../demo-storyboard.md](../demo-storyboard.md) and the trace
       contract in [MCP_TRACE_SPEC.md](MCP_TRACE_SPEC.md).
@@ -88,7 +131,7 @@ Historical V1 settlements at `0xCcf6…7e64`, including execution
 
 The historical 101.64-second V1 and older 92.7-second cut are not V2 media.
 
-## 6. DoraHacks form
+## 8. DoraHacks form
 
 - [ ] Correct entrant/team account is authenticated.
 - [x] Exact cutoff and timezone recorded from the live form on 2026-08-11:
@@ -122,6 +165,12 @@ V2_DEPLOYMENT_EXECUTION_ID=xasakw5nfxkh2s0fh4stn
 V2_DEPLOYMENT_TX=0x904ec881ef7c2ec7375c20887b4181cf58224b44162d837743fa869b0a598e8f
 V2_DEPLOYMENT_BLOCK=45321107
 SOURCIFY_MATCH_ID=43497805
+BASELINE_COMMIT=b084497bf883dbf4f1d7123203e9866679d99b67
+BASELINE_VERCEL_DEPLOYMENT_ID=dpl_Dh6dTpAMPgRkFsTeNE2qKBK9nAgL
+BASELINE_PROTECTED_PROBE=13/13
+SUPABASE_STATE=PENDING
+VOICE_DURABLE_QUOTA=PENDING_TERMS_ACCEPTANCE
+VOICE_PRODUCTION_STATE=PENDING_PROVIDER_CONFIG_AND_LIVE_PROBE
 V2_SETTLEMENT_EXECUTION_ID=PENDING
 V2_SETTLEMENT_TX=PENDING
 V2_VIDEO_URL=PENDING

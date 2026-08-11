@@ -3,7 +3,7 @@ import { PublicHeader } from "@/components/PublicHeader";
 
 export const metadata = {
   title: "FINALTab — developers",
-  description: "Authenticated MCP v2, HTTP APIs, external wallet approvals, and independent settlement proof.",
+  description: "Authenticated MCP v2, HTTP APIs, configuration-gated hybrid voice, external wallet approvals, and independent settlement proof.",
 };
 
 interface ToolDescription {
@@ -43,6 +43,8 @@ const JOURNEY = [
 const HTTP_ROUTES: Array<{ route: string; what: string }> = [
   { route: "POST /api/vision/extract", what: "Receipt image → structured lines; authenticated, size-bounded, Zod-validated, arithmetic-checked." },
   { route: "POST /api/vision/allocate", what: "Natural-language proposal → deterministic reconciliation. The model never decides the final cents." },
+  { route: "POST /api/voice/token", what: "Configuration-gated AssemblyAI live-STT bootstrap; receipts:write, no request body, short-lived browser credential only." },
+  { route: "POST /api/voice/speak", what: "Configuration-gated ElevenLabs MP3 readback; tabs:read, 2,048-byte body cap, 1-600 normalized characters." },
   { route: "POST /api/settle/simulate", what: "Server-side KeeperHub simulation of a caller-signed V2 payload." },
   { route: "POST /api/settle/approval", what: "Create the principal + exact-plan EIP-191 challenge a debtor wallet must sign." },
   { route: "POST /api/settle/execute", what: "Verify the short-lived approval, re-simulate, then submit the frozen V2 batch through KeeperHub." },
@@ -306,9 +308,37 @@ export default function DevelopersPage() {
           </p>
         </section>
 
+        <section className="mt-14" aria-labelledby="voice-heading">
+          <h2 id="voice-heading" className="font-mono text-sm font-semibold uppercase tracking-wider text-paper">
+            05 · Hybrid voice · configuration-gated
+          </h2>
+          <div className="mt-4 grid gap-4 md:grid-cols-2">
+            <div className="rounded-lg border border-quiet bg-surface-1 p-5">
+              <p className="text-sm font-semibold text-paper">AssemblyAI · live speech-to-text</p>
+              <p className="mt-2 text-xs leading-relaxed text-muted">
+                When AssemblyAI is configured on the server, FINALTab mints a short-lived redemption
+                credential and returns constrained EU streaming settings for interactive transcription.
+                The permanent provider key never enters the browser, OpenAPI response, or repository.
+              </p>
+            </div>
+            <div className="rounded-lg border border-quiet bg-surface-1 p-5">
+              <p className="text-sm font-semibold text-paper">ElevenLabs · spoken readback</p>
+              <p className="mt-2 text-xs leading-relaxed text-muted">
+                When ElevenLabs is configured on the server, FINALTab returns a short uncached MP3
+                confirmation that the current browser client buffers before playback. This interactive readback is distinct from the product-demo narration:
+                the prerecorded demo voiceover uses ElevenLabs only, not AssemblyAI.
+              </p>
+            </div>
+          </div>
+          <p className="mt-4 rounded-md border border-warn/30 bg-warn/5 px-4 py-3 text-xs leading-relaxed text-muted">
+            These routes fail closed when provider configuration is absent. Their presence in source or
+            OpenAPI does not claim that either provider is enabled on the currently deployed site.
+          </p>
+        </section>
+
         <section className="mt-14" aria-labelledby="proof-heading">
           <h2 id="proof-heading" className="font-mono text-sm font-semibold uppercase tracking-wider text-paper">
-            05 · Verify a settlement yourself
+            06 · Verify a settlement yourself
           </h2>
           <div className="mt-4 rounded-lg border border-quiet bg-surface-1 p-5">
             <p className="text-sm leading-relaxed text-muted">

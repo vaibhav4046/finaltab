@@ -10,6 +10,9 @@ claims previously drifted across several documents, including conflicting
   [docs/release/SUBMISSION_CHECKLIST.md](docs/release/SUBMISSION_CHECKLIST.md)
 - Evidence labels: [docs/release/truth-snapshot.md](docs/release/truth-snapshot.md)
 
-Current gates: **V2 USDC settlement proof, final video/public URL, clean CI,
-and human submission are pending**. The V2 deployment transaction alone does
-not satisfy the product-settlement proof gate.
+Current gates: **V2 USDC settlement proof, final video/public URL, verified
+Supabase provisioning, durably guarded production voice, and human submission
+are pending**. Main commit
+`b084497` has a green two-job CI baseline and a 13/13 protected production
+probe; newer submission commits must preserve those gates. The V2 deployment
+transaction alone does not satisfy the product-settlement proof gate.

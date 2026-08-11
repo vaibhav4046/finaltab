@@ -27,11 +27,18 @@ The V2 contract is deployed and source-matched exactly, but no retained V2 USDC
 settlement proves this current loop yet. Do not promote this section to
 `LIVE_PROVEN` until that receipt, event, and balance proof exists.
 
+The production surface itself was live-probed at main commit `b084497`: 13/13
+protected checks passed against both the immutable Vercel deployment and
+`finaltab.vercel.app`. Anonymous MCP access returned 401, authenticated
+initialization negotiated MCP 2.0.0, the server listed exactly 9 production and
+3 explicitly gated demo tools, arbitrary-participant V2 plan preparation used
+the exact Base Sepolia contract, and the demo value-moving tool stayed disabled.
+
 ### Historical V1 evidence — preserved
 
-FINALTab is live as an MCP server at `https://finaltab.vercel.app/api/mcp`
-(Streamable HTTP). Any MCP-capable client — Claude Desktop, Claude Code, or any
-agent framework — can call:
+On 2026-08-10, the former V1 MCP server was live at the same URL and exposed the
+seven tools below without the current V2 authorization model. This table is an
+archive of that interface, not client documentation for the live endpoint:
 
 | Tool | What it does |
 |---|---|
@@ -43,7 +50,8 @@ agent framework — can call:
 | `settle_tab` | Execute onchain via KeeperHub — refuses without explicit `confirm: true` |
 | `settlement_status` | Fail-closed KeeperHub verdict for an execution id |
 
-Verified with real JSON-RPC calls (initialize → tools/list → tools/call):
+The V1 interface was verified with real JSON-RPC calls (initialize → tools/list
+→ tools/call):
 `split_equal {"total":"54.00","people":["vee","hem","ravi"]}` returned three
 `"18.00"` shares with `sumsToTotal: true`, and `settlement_status` on execution
 `g0w11wukbk1v0psyditx4` returned `VERIFIED_SETTLED` with the real Base Sepolia
@@ -54,22 +62,27 @@ over this endpoint — `get_balances` → `prepare_settlement` → `settle_tab`
 atomically in under 3 seconds (tx `0x314189b4…c5eb`, block 45315909,
 executionId `69zzrj7z676u89ce1x76j`).
 
-Why this matters for scale: the marginal cost of a new "client" is zero. Instead
-of building N frontends, one MCP endpoint makes FINALTab the money-math and
-settlement-verification layer for any agent. LLMs are notoriously bad at cent
-arithmetic; an agent that delegates to `split_equal` never produces a split that
-doesn't sum. This is the highest-leverage, lowest-cost scaling path and it is
-already shipped.
+Those runs remain valid V1 evidence only. The current V2 endpoint does not
+expose `get_balances`, `prepare_settlement`, or `settle_tab`, and it does not
+accept `confirm: true` as authorization.
 
-Claude Desktop config:
+Why this matters for scale: the marginal integration cost of a new client stays
+low. One authenticated MCP endpoint can provide deterministic money math and
+settlement verification to many agent clients; an agent delegating to
+`split_equal` receives shares that reconcile exactly. The reusable surface is
+shipped, while value movement remains deliberately gated by external signatures
+and a human broadcast approval.
 
-```json
-{
-  "mcpServers": {
-    "finaltab": { "url": "https://finaltab.vercel.app/api/mcp" }
-  }
-}
+Current Codex and ChatGPT desktop config requires a scoped bearer token:
+
+```toml
+[mcp_servers.finaltab]
+url = "https://finaltab.vercel.app/api/mcp"
+bearer_token_env_var = "FINALTAB_MCP_TOKEN"
 ```
+
+See [integrations/mcp.md](integrations/mcp.md) for scopes, production tools,
+and the wallet-signed approval flow.
 
 ## 2. Bank-feed receipt ingest — Open Banking (VERIFIED surface, not integrated)
 

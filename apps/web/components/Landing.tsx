@@ -32,6 +32,40 @@ const BASESCAN_CONTRACT = `https://sepolia.basescan.org/address/${CONTRACT}`;
 const MCP_URL = "https://finaltab.vercel.app/api/mcp";
 const REPO_URL = "https://github.com/vaibhav4046/finaltab";
 
+const HACKATHON_CATEGORIES = [
+  "Blockchain",
+  "Web3",
+  "DeFi",
+  "AI Agents",
+  "Onchain",
+  "MCP",
+  "Autonomous Agents",
+  "Infrastructure",
+] as const;
+
+const CATEGORY_EVIDENCE = [
+  {
+    marker: "01 / Rail",
+    title: "V2 testnet settlement rail",
+    copy: "KeeperHub deployed the exact-source-matched V2 contract on Base Sepolia. It can settle USDC atomically; the fresh value-moving V2 proof remains a release gate.",
+  },
+  {
+    marker: "02 / Agent surface",
+    title: "Nine authenticated production MCP tools",
+    copy: "Agents can allocate, net, freeze, simulate, prepare approval, submit, and verify. Three fixed-wallet demo tools stay separately named and gated.",
+  },
+  {
+    marker: "03 / Autonomy boundary",
+    title: "Agents orchestrate. People authorize value.",
+    copy: "Every debtor supplies external-wallet signatures, and broadcast also requires a short-lived approval signed by a permitted human wallet.",
+  },
+  {
+    marker: "04 / Integration",
+    title: "Built to plug into KeeperHub",
+    copy: "OpenAPI, discovery metadata, workflow templates, MCP, and independent receipt proof make the rail reusable from other agent systems.",
+  },
+] as const;
+
 type JourneyStep = {
   number: string;
   title: string;
@@ -556,6 +590,52 @@ function HeroProofRail() {
   );
 }
 
+function CategoryProofDocket() {
+  return (
+    <section className="border-b border-quiet-soft py-12 sm:py-16" aria-labelledby="category-proof-title">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="surface-shadow overflow-hidden rounded-2xl border border-quiet bg-surface-1">
+          <div className="grid lg:grid-cols-[0.86fr_1.14fr]">
+            <div className="border-b border-dashed border-quiet p-6 sm:p-8 lg:border-b-0 lg:border-r">
+              <p className="font-mono text-xs font-semibold uppercase tracking-[0.24em] text-signal">
+                Hackathon category docket
+              </p>
+              <h2 id="category-proof-title" className="display-type mt-4 text-3xl leading-[1.08] text-txt sm:text-4xl">
+                Eight tracks. One auditable path.
+              </h2>
+              <p className="mt-4 max-w-xl text-sm leading-6 text-muted">
+                Each category maps to a shipped surface or an explicitly labelled release gate—not a marketing inference.
+              </p>
+              <ul className="mt-6 flex flex-wrap gap-2" aria-label="Hackathon categories">
+                {HACKATHON_CATEGORIES.map((category) => (
+                  <li
+                    key={category}
+                    className="rounded-md border border-signal/30 bg-signal/10 px-2.5 py-1.5 font-mono text-xs font-semibold text-signal"
+                  >
+                    {category}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <dl className="divide-y divide-quiet-soft">
+              {CATEGORY_EVIDENCE.map((item) => (
+                <div key={item.marker} className="grid gap-2 px-6 py-5 sm:grid-cols-[10rem_1fr] sm:px-8">
+                  <dt className="font-mono text-xs font-semibold uppercase tracking-[0.16em] text-faint">{item.marker}</dt>
+                  <dd>
+                    <p className="text-sm font-semibold text-txt">{item.title}</p>
+                    <p className="mt-1 text-sm leading-6 text-muted">{item.copy}</p>
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function SectionHeading({ eyebrow, title, copy }: { eyebrow: string; title: string; copy: string }) {
   return (
     <div className="max-w-3xl">
@@ -623,6 +703,8 @@ export default function Landing() {
             </motion.div>
           </div>
         </section>
+
+        <CategoryProofDocket />
 
         <section id="journey" className="border-b border-quiet-soft py-20 sm:py-28">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

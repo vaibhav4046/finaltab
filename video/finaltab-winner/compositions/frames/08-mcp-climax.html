@@ -9,17 +9,20 @@
     @font-face{font-family:GeistMono;src:url("assets/fonts/GeistMono-Bold.woff2") format("woff2");font-weight:700}
     #root{position:absolute;inset:0;width:3840px;height:2160px;overflow:hidden;color:#F4EEE2;background:transparent}
     .clip{position:absolute;inset:0;overflow:hidden}.ground{background:#0B0F12}
-    .scene{width:50%;height:50%;transform:scale(2);transform-origin:0 0;padding:54px 80px 150px;box-sizing:border-box}
+    .scene{width:50%;height:50%;transform:scale(2);transform-origin:0 0;padding:54px 80px 150px;box-sizing:border-box;pointer-events:none}
     .head{display:flex;justify-content:space-between;align-items:flex-end}.head small{display:block;font:700 18px/1 GeistMono,monospace;letter-spacing:.16em;color:#FF936A;margin-bottom:11px}.head h2{margin:0;font:600 54px/1 Fraunces,Georgia,serif;letter-spacing:-.03em}.truth{max-width:470px;text-align:right;font:700 14px/1.4 GeistMono,monospace;color:#FF936A}
-    .capture{position:absolute;left:80px;top:194px;width:1045px;height:590px;border:1px solid rgba(255,147,106,.36);border-radius:24px;overflow:hidden}.capture img{width:100%;height:100%;object-fit:cover;object-position:left center}
+    .capture{position:absolute;left:160px;top:388px;width:2090px;height:1180px;border:2px solid rgba(255,147,106,.36);border-radius:48px;overflow:hidden;background:#050807;box-shadow:0 32px 100px rgba(0,0,0,.42)}.capture-media{width:100%;height:100%;object-fit:cover}
     .rail{position:absolute;right:80px;top:194px;width:665px;height:590px;border-left:1px solid rgba(145,160,168,.28);padding:4px 0 0 26px;box-sizing:border-box}.rail-label{font:700 14px/18px GeistMono,monospace;color:#91A0A8;letter-spacing:.12em;margin-bottom:11px}.step{height:76px;border:1px solid rgba(145,160,168,.25);border-left:3px solid #91A0A8;border-radius:10px;margin-bottom:9px;padding:11px 13px;box-sizing:border-box;background:#0F1519}.step span{display:block;height:14px;font:700 12px/14px GeistMono,monospace;color:#91A0A8;letter-spacing:.1em}.step b{display:block;height:22px;margin-top:7px;font:700 16px/22px GeistMono,monospace;color:#F4EEE2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.step.human{border-left-color:#FF936A}.step.human span{color:#FF936A}.step.proof{border-left-color:#B7F5D8}.step.proof span{color:#B7F5D8}
     .status{position:absolute;left:80px;right:80px;top:810px;height:78px;border:1px solid rgba(255,147,106,.5);border-radius:14px;background:#0F1519;padding:13px 18px;box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;gap:24px}.status code{font:700 19px/1.2 GeistMono,monospace;color:#FF936A}.status .arguments{font:400 14px/1.3 GeistMono,monospace;color:#91A0A8;text-align:right}.status .arguments b{color:#B7F5D8}
   </style>
   <div id="root" data-composition-id="finaltab-mcp-climax" data-start="0" data-width="3840" data-height="2160" data-duration="18">
     <section id="f08-ground" class="clip ground" data-start="0" data-duration="18" data-track-index="0"></section>
-    <section id="f08-scene" class="clip scene" data-start="0" data-duration="18" data-track-index="1">
+    <div id="f08-capture" class="capture">
+      <video id="f08-live" class="clip capture-media" src="assets/capture/C08-mcp-nonbroadcast.mp4" preload="auto" data-start="0" data-duration="11.45" data-track-index="1" muted playsinline></video>
+      <img id="f08-retained" class="clip capture-media" src="assets/capture/C08-retained-status.png" alt="Separate retained-run read-only settlement proof" data-start="11.2" data-duration="6.8" data-track-index="2"/>
+    </div>
+    <section id="f08-scene" class="clip scene" data-start="0" data-duration="18" data-track-index="3">
       <div id="f08-head" class="head"><div><small>08 · MCP SAFETY BOUNDARY</small><h2>The real client stops before value can move.</h2></div><div class="truth">AUTHENTICATED CLIENT · NON-BROADCAST TRACE<br/>RETAINED PROOF IS A SEPARATE READ-ONLY RECORD</div></div>
-      <div id="f08-capture" class="capture"><img src="assets/capture-slots/C08-mcp-nonbroadcast-status.svg" alt="C08 authenticated MCP non-broadcast trace and retained read-only status capture slot"/></div>
       <aside class="rail" data-layout-allow-occlusion><div class="rail-label">REAL MCP CLIENT · REQUIRED SAFE TRACE ORDER</div>
         <div id="f08-step-1" class="step"><span>01 · AUTHENTICATE</span><b>initialize + tools/list</b></div>
         <div id="f08-step-2" class="step"><span>02 · ALLOCATE</span><b>allocate_receipt</b></div>
@@ -35,12 +38,13 @@
     window.__timelines=window.__timelines||{};
     const tl=gsap.timeline({paused:true});
     tl.fromTo("#f08-head",{opacity:0,y:14},{opacity:1,y:0,duration:.46,ease:"power3.out"},.12);
-    tl.fromTo("#f08-capture",{opacity:0,scale:1.02},{opacity:1,scale:1,duration:.62,ease:"expo.out"},.5);
+    tl.fromTo("#f08-capture",{opacity:0,scale:1.015},{opacity:1,scale:1,duration:.62,ease:"expo.out"},.5);
     tl.fromTo("#f08-step-1",{opacity:.18,x:20},{opacity:1,x:0,duration:.34,ease:"power3.out"},1.0);
     tl.fromTo("#f08-step-2",{opacity:.18,x:20},{opacity:1,x:0,duration:.34,ease:"power3.out"},2.45);
     tl.fromTo("#f08-step-3",{opacity:.18,x:20},{opacity:1,x:0,duration:.34,ease:"power3.out"},4.0);
     tl.fromTo("#f08-step-4",{opacity:.18,x:20},{opacity:1,x:0,duration:.34,ease:"power3.out"},5.8);
     tl.fromTo("#f08-step-5",{opacity:.18,x:20},{opacity:1,x:0,duration:.38,ease:"power3.out"},8.2);
+    tl.fromTo("#f08-retained",{opacity:0},{opacity:1,duration:.38,ease:"sine.out"},11.2);
     tl.fromTo("#f08-step-6",{opacity:.18,x:20},{opacity:1,x:0,duration:.38,ease:"power3.out"},11.2);
     tl.fromTo("#f08-status",{opacity:0,y:18},{opacity:1,y:0,duration:.54,ease:"power3.out"},14.0);
     window.__timelines["finaltab-mcp-climax"]=tl;

@@ -167,6 +167,10 @@ describe("durable settlement database and route boundary", () => {
     fileURLToPath(new URL("../../../supabase/migrations/20260811073000_durable_first_party_settlement_flow.sql", import.meta.url)),
     "utf8",
   );
+  const walletParticipantMigration = readFileSync(
+    fileURLToPath(new URL("../../../supabase/migrations/20260811154647_align_wallet_backed_settlement_participants.sql", import.meta.url)),
+    "utf8",
+  );
   const cutover = readFileSync(
     fileURLToPath(new URL("../../../supabase/migrations/20260811074500_financial_truth_post_promotion_cutover.sql", import.meta.url)),
     "utf8",
@@ -210,6 +214,31 @@ describe("durable settlement database and route boundary", () => {
     expect(migration).toContain("required execution transition argument is null");
     expect(migration).toContain("required terminal transition argument is null");
     expect(migration).toContain("required reconciliation transition argument is null");
+  });
+
+  it("aligns the database freeze boundary to the exact wallet-backed review set", () => {
+    expect(walletParticipantMigration.match(/create or replace function public\.freeze_reviewed_settlement_flow/g)).toHaveLength(1);
+    expect(walletParticipantMigration.match(/^\$\$;$/gm)).toHaveLength(1);
+    expect(walletParticipantMigration.match(/p\.wallet_address ~\* '\^0x\[0-9a-f\]\{40\}\$'/g)).toHaveLength(5);
+
+    const participantBinding = walletParticipantMigration.slice(
+      walletParticipantMigration.indexOf("if jsonb_typeof(run_record.input_snapshot -> 'participants')"),
+      walletParticipantMigration.indexOf("if jsonb_typeof(ledger_document -> 'receiptIds')"),
+    );
+    expect(participantBinding).toContain("jsonb_array_length(run_record.input_snapshot -> 'participants') < 2");
+    expect(participantBinding).toContain("jsonb_array_length(run_record.input_snapshot -> 'participants') > 32");
+    expect(participantBinding).toContain("and p.wallet_address ~* '^0x[0-9a-f]{40}$'");
+    expect(participantBinding).not.toMatch(
+      /count\(\*\) from public\.participants p where p\.tab_id = target_tab\)\s*<>/,
+    );
+    expect(participantBinding).toContain("then raise exception 'RUN_PAYER_NOT_IN_TAB'");
+    expect(walletParticipantMigration).toContain(
+      ") from public, anon, authenticated;",
+    );
+    expect(walletParticipantMigration).toContain(
+      ") to service_role;",
+    );
+    expect(walletParticipantMigration).not.toContain(") to authenticated;");
   });
 
   it("rejects cross-record/hash substitution and keeps transitions idempotent only for exact evidence", () => {

@@ -5,7 +5,7 @@
 **Model:** `eleven_multilingual_v2` with timestamps
 **Voice settings (proposed):** stability 0.45 · similarity 0.75 · style 0.12 · speaker boost on
 **Voice direction:** Warm, precise, restrained. Speak like a careful operator showing evidence, not an announcer selling hype. Give code identifiers and proof states extra separation.
-**Timing note:** The 96-second story spine is locked. Scenes 3, 4, 5, 6, and 8 changed after the truth audit and are pending selective ElevenLabs regeneration. Only their fresh alignment may move their intra-frame caption holds.
+**Timing note:** The 96-second story spine and canonical captures are locked. Scenes 3, 4, 5, 6, and 8 use the capture-synchronized selective ElevenLabs pass; only their fresh alignment may move their intra-frame caption holds.
 
 ---
 
@@ -77,5 +77,5 @@
 
 - Locked narration: 211 words.
 - Guide pace across 96 seconds: approximately 132 words per minute including designed pauses.
-- Scenes 1, 2, 7, and 9 retain their approved wording and existing audio hashes. Scenes 3, 4, 5, 6, and 8 must be selectively regenerated before the final gate can pass.
+- Scenes 1, 2, 7, and 9 retain their approved wording and existing audio hashes. Scenes 3, 4, 5, 6, and 8 use the final capture-synchronized selective generation package.
 - The regenerated ElevenLabs character alignment is the final caption and scene-sync authority for changed scenes.

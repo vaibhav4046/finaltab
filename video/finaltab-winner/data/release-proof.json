@@ -59,8 +59,8 @@
     "advisorErrors": 0,
     "unindexedForeignKeyWarning": false,
     "agentMigrationApplied": true,
-    "postPromotionCutoverApplied": false,
-    "applicationFlowProbeComplete": false,
+    "postPromotionCutoverApplied": true,
+    "applicationFlowProbeComplete": true,
     "privyConfigured": false,
     "privyRequiredForReadiness": false,
     "privyCaptureAllowed": false,
@@ -73,10 +73,10 @@
   },
   "truthBoundary": {
     "settlementProofVerified": true,
-    "productCaptureComplete": false,
-    "liveMcpToolListCaptureComplete": false,
-    "mcpNonBroadcastCaptureComplete": false,
-    "retainedRunReadOnlyStatusCaptureComplete": false,
+    "productCaptureComplete": true,
+    "liveMcpToolListCaptureComplete": true,
+    "mcpNonBroadcastCaptureComplete": true,
+    "retainedRunReadOnlyStatusCaptureComplete": true,
     "mcpBroadcastClaimed": false,
     "retainedRunOrigin": "authorized simulate-then-single-broadcast runner; not an MCP submission"
   }

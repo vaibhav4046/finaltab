@@ -1,69 +1,121 @@
-# Demo storyboard (~2.5 min)
+# FINALTab V2 product video storyboard — proof pending
 
-## As recorded (2026-08-10 master — supersedes the 2026-08-09 cut)
+This is a recording plan, not evidence. Target timing is editorial guidance and
+must never be copied into submission metadata. The final duration, checksum,
+and public URL remain **PENDING** until a completed render is measured.
 
-Final video: `proof-output/finaltab-demo.mp4` — 101.6s (1:42), 1920x1080 h264/aac, ElevenLabs voiceover (George). One continuous Playwright capture of the real app on :3017; every state on screen is a live result — and this cut includes a REAL settlement executing on camera:
+The canonical video must use one authenticated external-wallet V2 settlement
+and the matching trace defined in
+[release/MCP_TRACE_SPEC.md](release/MCP_TRACE_SPEC.md). If that settlement does
+not exist, do not manufacture a green state or substitute the historical V1
+transaction without an explicit “historical V1” label.
 
-- **Scene 2**: funded demo signer identities confirmed on screen before recording proceeds (addresses only; keys never render anywhere).
-- **Scene 3**: instruction used was "Hem had the gunpowder potatoes. Ravi had the garlic naan. Vee had everything else. Split the service charge fairly." Live shares came out 39.94 / 9.00 / 5.06 = 54.00, cent-perfect, reconciled to the cent on screen.
-- **Scene 6**: SIMULATE goes green for real — contract deployed at `0xccf6…f07e64`, signers funded.
-- **Scene 7**: EXECUTE runs live through KeeperHub (sponsored). The VERIFIED SETTLED banner — which only renders on chain-verified verdict VERIFIED_SETTLED — appears on camera, then the raw KeeperHub status JSON is opened showing executionId `dbukwam812iep68uehkhy`, tx `0xac6d32e5…7c8710`, block 45312815, `verified: true`, `receiptStatus: "success"`. (BaseScan itself Cloudflare-challenges headless browsers, so the raw status JSON is the on-camera tx evidence; it contains the BaseScan link.)
-- **Scene 8**: shows the open KeeperHub/cli PR #95 page (open, not merged).
+## Creative spine
 
-The 2026-08-09 notes below this block describe the earlier blocked-state cut and the original scene plan; kept for history.
+Target: roughly 100–120 seconds, premium dark ledger aesthetic, decisive pacing,
+captions that work without audio, and narration synchronized to visible state.
 
-Works silent (captions) or with voiceover. Record at 1440p, app in dark room aesthetic. No fake states on screen: if the org key is still missing at record time, stop at scene 6 and show the flight-recorder test run instead of a live settle (scene 7B).
+| Target | Beat | Required on-screen truth |
+|---|---|---|
+| 0:00–0:06 | Logo reveal | FINALTab mark, “Receipt → consent → landed proof” |
+| 0:06–0:16 | Problem | Shared receipt, fragmented IOUs, risk of an agent broadcasting without human consent |
+| 0:16–0:28 | Architecture | Model interprets; deterministic engine reconciles; wallets consent; KeeperHub executes; RPC verifies |
+| 0:28–0:43 | Product use case | Upload/allocate a complex receipt; shares reconcile exactly; debt graph nets deterministically |
+| 0:43–0:54 | Freeze and V2 | Ledger hash plus full-plan hash; V2 address `0x7b58791c…cCDB`; dual signature model |
+| 0:54–1:10 | Authenticated MCP | Real client initializes with a redacted scoped token, lists current tools, calls `allocate_receipt` and `prepare_receipt_settlement` |
+| 1:10–1:25 | External wallets | Debtors sign USDC `ReceiveWithAuthorization` and FINALTab `SettlementConsent`; no server-held user keys |
+| 1:25–1:38 | Safety boundary | `simulate_signed_settlement`, then short-lived broadcast challenge; human wallet reviews and `personal_sign`s it |
+| 1:38–1:52 | KeeperHub execution | `submit_signed_settlement`, execution ID, poll, verified successful receipt; no long dead wait |
+| 1:52–2:02 | Independent proof | Base Sepolia tx, block, V2 `SettlementExecuted` event, exact balance deltas, conservation |
+| 2:02–2:10 | Close | Sourcify exact-match deployment proof, reusable KeeperHub/MCP integration, repository and video URL |
 
-## Scene 1 — Cold open (0:00-0:15)
+## Scene requirements
 
-Screen: the DISHOOM receipt photo next to a group chat saying "I'll send it later lol".
-Caption/VO: "Every split app dies at the same spot: the part where money actually moves. FINALTab doesn't."
+### 1. Architecture must be explicit
 
-## Scene 2 — Upload + extraction (0:15-0:40)
+Animate five separate lanes rather than one vague “AI settles” arrow:
 
-Screen: drag the receipt into MIDNIGHT RECEIPT LAB. Extraction panel fills: line items, amounts as exact strings, service charge picked up.
-Caption/VO: "Groq vision reads the receipt into strict JSON. Every amount is an integer minor unit. There is not a single float touching money in this codebase."
+```text
+receipt/model interpretation
+→ deterministic integer engine
+→ debtor wallet consent
+→ KeeperHub simulation and execution
+→ independent RPC + exact settlementId/ledgerHash verification
+```
 
-## Scene 3 — Plain English allocation (0:40-1:05)
+Narration must not imply that the model controls arithmetic, holds keys, or
+decides when value moves.
 
-Screen: type "vee had the black daal and half the naan, split the rest evenly." Shares appear: vee 14.62, hem 33.53, ravi 5.85. Sum badge shows 54.00 = receipt total.
-Caption/VO: "The model proposes. The engine decides. Largest-remainder splitting, cent-perfect, re-reconciled against the receipt every time. In testing the model hallucinated about the service charge; the engine split it correctly anyway."
+### 2. Show the current MCP tools, not the V1 surface
 
-## Scene 4 — Netting animation (1:05-1:20)
+The production story uses:
 
-Screen: debt graph collapses to two arrows: hem -> vee, ravi -> vee.
-Caption/VO: "The debt graph nets down to the minimum transfers before anyone signs."
+```text
+allocate_receipt
+prepare_receipt_settlement
+simulate_signed_settlement
+create_broadcast_approval_challenge
+submit_signed_settlement
+settlement_status(executionId, settlementId, ledgerHash)
+```
 
-## Scene 5 — Freeze + sign (1:20-1:45)
+The token must be present for the real request but fully redacted from the
+screen and trace. Do not show `get_balances`, `prepare_settlement`,
+`settle_tab(confirm: true)`, or “seven tools” as the current flow.
 
-Screen: freeze the ledger; ledgerHash appears. Then edit an item: signatures visibly invalidate. Undo, re-freeze, debtors sign EIP-3009 authorizations.
-Caption/VO: "The ledger freezes into a keccak256 hash. Signature nonces derive from that hash, so editing anything after signing kills every signature by construction. Debtors sign gasless USDC authorizations. No approvals."
+The three `demo_*` tools may appear only in a clearly labelled appendix or
+failure-mode beat explaining that fixed-wallet fixtures are disabled by
+default. They must not masquerade as the product workflow.
 
-## Scene 6 — Simulate first (1:45-2:05)
+### 3. Consent must be visible and accurate
 
-Screen: Execution Rail. SIMULATE runs through KeeperHub, goes green.
-Caption/VO: "KeeperHub is the only execution layer. Simulate first. A failed simulation is never broadcast."
+Show both debtor typed-data requests and the separate broadcast approval:
 
-## Scene 7A — Execute + verify (2:05-2:30) [requires kh_ org key]
+- Circle USDC `ReceiveWithAuthorization`;
+- FINALTab V2 `SettlementConsent`, bound to the full debit/payout plan; and
+- short-lived EIP-191 approval bound to authenticated principal, chain,
+  contract, ledger, and settlement.
 
-Screen: EXECUTE. Status polls: pending -> completed. Then the receipt check: verified=true, receiptStatus=success. Badge flips to VERIFIED_SETTLED. BaseScan link on screen.
-Caption/VO: "A transaction hash proves submission. Only a chain-verified receipt proves landing. FINALTab never says settled until the chain does."
+The voiceover should say “wallet-signed approval,” not “confirm true.” Never
+show private keys, seed phrases, raw bearer tokens, or secret-bearing browser
+panels.
 
-## Scene 7B — Fallback if key still blocked
+### 4. Proof must be from the same run
 
-Screen: run `pnpm test` in packages/keeperhub-flight-recorder; the fake-server suite shows pending -> completed -> verified receipt -> exit 0, and timeout -> exit 3.
-Caption/VO: "Live execution needs an organization key we're still waiting on, so here is the verification logic under test: it fails closed. No receipt, no VERIFIED_SETTLED."
+The video, redacted MCP JSONL, KeeperHub execution ID, transaction hash, block,
+V2 event, and before/after balances must share one `runId`. A V2 deployment tx
+is useful architecture proof but cannot stand in for the product settlement.
 
-## Scene 8 — CLI contribution close (2:30-2:50)
+Current deployment proof that may be shown accurately:
 
-Screen: terminal: `kh execute status <id> --watch --require-verified` help output, then the 7 tests passing.
-Caption/VO: "We shipped the same discipline upstream: kh execute status now can refuse to call it done until receipts are chain-verified. One flag gates any agent pipeline on proof instead of hope. That is FINALTab."
+- V2 contract: `0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB`;
+- KeeperHub deployment execution: `xasakw5nfxkh2s0fh4stn`;
+- deployment tx: `0x904ec881ef7c2ec7375c20887b4181cf58224b44162d837743fa869b0a598e8f`;
+- block: `45321107`;
+- Sourcify: exact creation/runtime match, ID `43497805`.
 
-## Assets checklist
+The V2 settlement execution and transaction remain **PENDING** and must be
+inserted only after the run exists.
 
-- [ ] Receipt photo (DISHOOM) staged
-- [x] .env.local filled (Groq + KeeperHub org key, both proven live)
-- [ ] Dev server on :3017 (or use https://finaltab.vercel.app live)
-- [ ] kh.exe built for scene 8
-- [x] ElevenLabs voiceover generated: 8 mp3s in `proof-output/voiceover/` (scene1-cold-open ... scene8-cli-close), George voice, matches the VO lines above
-- Scene 7A is now REAL for the sponsored flight (see `proof-output/first-flight-2026-08-09T06-16-38-800Z.json`); the contract-deploy + live settle variant unlocks once the org wallet has deploy gas (see blockers.md)
+## Voice and edit gate
+
+- [ ] Narration text matches the action visible in that exact second.
+- [ ] Captions are verbatim, synchronized, and within safe margins.
+- [ ] Network waits are compressed without hiding errors or changing order.
+- [ ] Failure/recovery calls remain in the trace even if the edit summarizes them.
+- [ ] Every hash or address held on screen is legible long enough to verify.
+- [ ] Music never masks narration; SFX reinforce state transitions rather than
+      implying success early.
+- [ ] Final file passes manual frame review and secret scan.
+
+## Historical V1 appendix — not current footage
+
+A 101.64-second V1 master and an earlier 92.7-second cut were recorded in 2026.
+The retained notes describe fixed Vee/Hem/Ravi demo signers, the V1 contract
+`0xCcf6…7e64`, and a successful V1 KeeperHub settlement. The files are absent
+from this checkout and have no current public URL.
+
+Historical V1 MCP evidence used seven former tools and `confirm: true`; execution
+`69zzrj7z676u89ce1x76j`, tx `0x314189b4…c5eb`, block `45315909`. Preserve those
+facts as V1 history only. They do not prove the V2 external-wallet flow or
+satisfy the V2 video gate.

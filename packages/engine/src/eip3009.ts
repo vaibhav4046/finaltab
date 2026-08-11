@@ -61,7 +61,7 @@ export const RECEIVE_WITH_AUTHORIZATION_TYPES = {
   ],
 } as const;
 
-export interface ReceiveAuthorization extends TransferAuthorization {}
+export type ReceiveAuthorization = TransferAuthorization;
 
 /** Full typed-data payload for wallet signTypedData / viem signTypedData. */
 export function buildTransferAuthorizationTypedData(auth: TransferAuthorization) {

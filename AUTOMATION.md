@@ -1,4 +1,10 @@
-# FINALTab Autonomous Automation
+# Historical V1 automation notes
+
+> **Do not use this runbook for V2.** It predates scoped MCP authentication,
+> external-wallet dual signatures, the wallet-signed broadcast challenge, and
+> the KeeperHub-deployed V2 contract. Current deployment and release steps are
+> in [DEPLOYMENT.md](DEPLOYMENT.md). The commands and status below are retained
+> only as V1 history.
 
 End-to-end CLI automation: deploy → settle → collect proof → submit.
 
@@ -121,7 +127,7 @@ Contract Execution (on-chain)
 - ✅ Contract: 11/11 tests passing
 - ✅ Engine: 52/52 tests passing
 - ✅ Web: Build clean, TypeScript green
-- ✅ Deployment: DONE — contract live at 0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64 (2259 bytes via eth_getCode). Source not yet verified on Basescan.
+- ✅ Historical V1 deployment: contract live at 0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64 (2259 bytes via eth_getCode). This is not the current V2 address.
 - ⏳ Settlement: Manual execution via UI
 - ⏳ Proof: Ready to collect after settlement
 - ⏳ Submission: Ready to upload to hackathon

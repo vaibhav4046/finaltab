@@ -1,41 +1,59 @@
-import { keeperHubClient, jsonError, keeperHubDetail } from "@/lib/server/clients";
-import { SettleBodySchema, settleContractCall, settlementContractAddress } from "@/lib/server/settlement";
-import { SimulationRevertError, KeeperHubError } from "@finaltab/keeperhub";
+import { KeeperHubError, SimulationRevertError } from "@finaltab/keeperhub";
+import {
+  ApiPayloadTooLargeError,
+  authorizeApiRequest,
+  readJsonBodyWithLimit,
+  withAccessHeaders,
+} from "@/lib/server/apiAccess";
+import { jsonError, keeperHubDetail } from "@/lib/server/clients";
+import {
+  SettlementSubmissionBlockedError,
+  simulateSignedSettlement,
+} from "@/lib/server/settlementSubmission";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
-export async function POST(req: Request): Promise<Response> {
-  const { client, blockedReason } = keeperHubClient();
-  if (!client) return jsonError(blockedReason!, 501);
+const MAX_SIMULATE_BYTES = 400_000;
 
-  const contractAddress = settlementContractAddress();
-  if (!contractAddress) {
-    return jsonError(
-      "NEXT_PUBLIC_SETTLEMENT_CONTRACT is not set on this deployment, so the server does not know which contract to call. The contract itself is deployed on Base Sepolia at 0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64 — this is a configuration gap, not a missing deployment.",
-      501,
-    );
+export async function POST(request: Request): Promise<Response> {
+  const access = await authorizeApiRequest(request, {
+    scope: "settlements:prepare",
+    maxBytes: MAX_SIMULATE_BYTES,
+    rateLimit: 12,
+    rateWindowMs: 60_000,
+  });
+  if (!access.ok) return access.response;
+  const secured = (response: Response) => withAccessHeaders(response, access.headers);
+
+  let input: unknown;
+  try {
+    input = await readJsonBodyWithLimit(request, MAX_SIMULATE_BYTES);
+  } catch (error) {
+    if (error instanceof ApiPayloadTooLargeError) {
+      return secured(Response.json({ error: "PAYLOAD_TOO_LARGE", maxBytes: error.maxBytes }, { status: 413 }));
+    }
+    return secured(jsonError(error instanceof Error ? error.message : "invalid request body", 400));
   }
 
-  let body;
   try {
-    body = SettleBodySchema.parse(await req.json());
-  } catch (e) {
-    return jsonError(e instanceof Error ? e.message : "invalid request body", 400);
-  }
-
-  try {
-    const sim = await client.simulateContractCall(settleContractCall(body, contractAddress));
-    return Response.json({ ok: true, simulation: sim });
-  } catch (e) {
-    if (e instanceof SimulationRevertError) {
-      // Simulation says the transaction would revert. This is a hard stop:
-      // nothing is broadcast, and the client must not offer execute.
-      return Response.json({ ok: false, wouldRevert: true, detail: e.detail, message: e.message }, { status: 409 });
+    const result = await simulateSignedSettlement(input);
+    return secured(Response.json({ ok: true, v2: true, simulation: result.simulation }));
+  } catch (error) {
+    if (error instanceof SimulationRevertError) {
+      return secured(Response.json(
+        { ok: false, wouldRevert: true, detail: error.detail, message: error.message },
+        { status: 409 },
+      ));
     }
-    if (e instanceof KeeperHubError) {
-      return jsonError(`KeeperHub ${e.httpStatus}: ${keeperHubDetail(e)}`, 502);
+    if (error instanceof SettlementSubmissionBlockedError) return secured(jsonError(error.message, 501));
+    if (error instanceof KeeperHubError) {
+      return secured(jsonError(`KeeperHub ${error.httpStatus}: ${keeperHubDetail(error)}`, 502));
     }
-    return jsonError(e instanceof Error ? e.message : "simulation failed", 502);
+    const message = error instanceof Error ? error.message : "simulation failed";
+    if (/FINALTAB_SETTLEMENT_CONTRACT_VERSION|contract address is not configured/.test(message)) {
+      return secured(jsonError(message, 501));
+    }
+    return secured(jsonError(message, 400));
   }
 }

@@ -21,7 +21,7 @@ export function canonicalAmount(input: string): string {
   }
   const [wholeRaw = "", fracRaw = ""] = s.split(".");
   let whole = wholeRaw.replace(/^0+/, "");
-  let frac = fracRaw.replace(/0+$/, "");
+  const frac = fracRaw.replace(/0+$/, "");
   if (whole === "") whole = "0";
   const out = frac === "" ? whole : `${whole}.${frac}`;
   return out === "0." ? "0" : out;

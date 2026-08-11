@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "exportedAt": "2026-08-11T00:00:00.000Z",
+  "workflow": {
+    "name": "FINALTab proof observer bridge",
+    "description": "Receive a KeeperHub executionId plus the expected settlementId and ledgerHash, then ask FINALTab to re-fetch and independently verify that exact V2 plan. Read-only; never broadcasts a transaction."
+  },
+  "nodes": [
+    {
+      "id": "trigger",
+      "type": "trigger",
+      "position": { "x": 100, "y": 200 },
+      "data": {
+        "type": "trigger",
+        "label": "Webhook",
+        "config": { "triggerType": "Webhook" }
+      }
+    },
+    {
+      "id": "observe-finaltab-proof",
+      "type": "action",
+      "position": { "x": 420, "y": 200 },
+      "data": {
+        "type": "action",
+        "label": "Verify with FINALTab",
+        "config": {
+          "actionType": "webhook/send-webhook",
+          "webhookUrl": "https://finaltab.vercel.app/api/integrations/keeperhub/events",
+          "webhookMethod": "POST",
+          "webhookHeaders": "{\"Content-Type\":\"application/json\",\"Authorization\":\"Bearer REPLACE_WITH_FINALTAB_SCOPED_TOKEN\"}",
+          "webhookPayload": "{\"event\":\"keeperhub.execution.observe\",\"executionId\":\"{{Webhook.input.executionId}}\",\"settlementId\":\"{{Webhook.input.settlementId}}\",\"ledgerHash\":\"{{Webhook.input.ledgerHash}}\"}"
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "trigger-to-observer",
+      "source": "trigger",
+      "target": "observe-finaltab-proof"
+    }
+  ],
+  "integrationBindings": []
+}

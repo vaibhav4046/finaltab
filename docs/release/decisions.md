@@ -3,6 +3,12 @@
 The choices that shaped FINALTab, each with the alternative that was rejected and why. Decisions
 that were later proven wrong are marked as such rather than rewritten.
 
+> Most numbered entries originated in V1 and are retained as design history.
+> Current V2 adds full-plan `SettlementConsent`, scoped MCP authentication,
+> external debtor wallets, and a wallet-signed short-lived broadcast challenge.
+> A literal `confirm: true` is not V2 approval. Current release state is in
+> [status.md](status.md).
+
 ---
 
 ## 1. `receiveWithAuthorization`, not `transferWithAuthorization`
@@ -156,8 +162,9 @@ is cheaper than an inflated total.
 > (tx `0xac6d32e5…7c8710`, block 45312815). The principle stands — nothing was edited around or
 > faked; the honest state simply changed from "blocked" to "working". Decision kept for history.
 
-**Chosen:** the 92.7s master was recorded in one continuous session against the real app, with the
-blocked settle state left in.
+**Historical choice:** the superseded 92.7s cut was recorded in one continuous
+session against the then-current app, with the blocked settle state left in.
+It is not the V2 submission video and is not present in this checkout.
 
 **Rejected:** editing around the blocked state, or re-shooting against fixtures.
 

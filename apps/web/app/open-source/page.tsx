@@ -2,39 +2,39 @@ import { PublicHeader } from "@/components/PublicHeader";
 
 export const metadata = {
   title: "FINALTab — open source",
-  description: "The FINALTab monorepo: packages, test counts, and the KeeperHub CLI contribution.",
+  description: "The FINALTab V2 monorepo: reproducible checks and the KeeperHub CLI contribution.",
 };
 
-const PACKAGES: Array<{ name: string; what: string; tests: string }> = [
+const PACKAGES: Array<{ name: string; what: string; checks: string }> = [
   {
     name: "packages/engine",
-    what: "Deterministic money core — fiat/USDC parsing, largest-remainder splits, debt netting, canonical ledger hashing, EIP-3009 typed data.",
-    tests: "52",
+    what: "Deterministic money core — integer minor units, largest-remainder splits, debt netting, canonical V2 plan hashing, and EIP-3009 typed data.",
+    checks: "60",
   },
   {
     name: "packages/vision",
     what: "Groq receipt extraction + natural-language allocation. Model output is always a proposal; the engine reconciles.",
-    tests: "32 (+1 live-API, env-gated)",
+    checks: "32 passing · 1 live API skipped",
   },
   {
     name: "packages/keeperhub",
     what: "Fail-closed KeeperHub client — simulate, execute, status. Refuses to report success it cannot prove.",
-    tests: "32",
+    checks: "35",
   },
   {
     name: "packages/keeperhub-flight-recorder",
     what: "kh-proof CLI: replays the verification chain for any executionId — terminal state, onchain receipt, verified flag.",
-    tests: "7",
+    checks: "7",
   },
   {
     name: "apps/web",
-    what: "The Next.js app itself. Locks the error-text coercion behind the Simulate path and the demo-signer persistence rules.",
-    tests: "66",
+    what: "Next.js product, authenticated MCP boundary, collaboration policies, KeeperHub discovery, V2 settlement preparation, and independent proof checks.",
+    checks: "123",
   },
   {
     name: "contracts",
-    what: "FinalTabBatchSettlement.sol — batch EIP-3009 settlement, Hardhat suite.",
-    tests: "11",
+    what: "FinalTabBatchSettlementV2 — plan-bound pulls and payouts, consent, replay resistance, atomicity, expiry, and exact conservation. V1 remains only as regression history.",
+    checks: "27",
   },
 ];
 
@@ -46,12 +46,12 @@ export default function OpenSourcePage() {
       <main className="atmosphere mx-auto max-w-5xl px-4 pb-24 pt-14 sm:px-6">
         <p className="font-mono text-xs uppercase tracking-[0.3em] text-signal">Open source</p>
         <h1 className="mt-3 max-w-2xl text-3xl font-bold tracking-tight text-paper sm:text-4xl">
-          200 tests. Every claim in the product traces to one of them.
+          284 passing checks. Four browser journeys across desktop and mobile. One reproducible V2 path.
         </h1>
         <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted">
           FINALTab is a pnpm monorepo. The money math is deterministic and tested; the AI layer only
-          proposes; the KeeperHub layer is fail-closed. The repo is public — read the tests before
-          you trust the marketing.
+          proposes; the KeeperHub layer is fail-closed. Safety-critical behavior is covered by unit,
+          integration, contract, and Playwright checks you can run yourself.
         </p>
 
         <section className="mt-14" aria-labelledby="packages-heading">
@@ -63,7 +63,7 @@ export default function OpenSourcePage() {
               <div key={p.name} className="rounded-md border border-quiet bg-surface-1 px-4 py-3">
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
                   <code className="font-mono text-xs font-semibold text-paper">{p.name}</code>
-                  <span className="font-mono text-[11px] text-signal">{p.tests} tests</span>
+                  <span className="font-mono text-[11px] text-signal">{p.checks}</span>
                 </div>
                 <p className="mt-1.5 text-xs leading-relaxed text-muted">{p.what}</p>
               </div>
@@ -107,11 +107,18 @@ export default function OpenSourcePage() {
                 github.com/vaibhav4046/finaltab
               </a>
             </p>
-            <pre className="lab-scroll mt-4 overflow-x-auto rounded-md border border-quiet-soft bg-canvas p-4 font-mono text-xs leading-relaxed text-paper-dim">
+            <p id="repository-commands-label" className="sr-only">Repository setup and test commands</p>
+            <pre
+              className="lab-scroll mt-4 overflow-x-auto rounded-md border border-quiet-soft bg-canvas p-4 font-mono text-xs leading-relaxed text-paper-dim"
+              role="region"
+              aria-labelledby="repository-commands-label"
+              tabIndex={0}
+            >
 {`git clone https://github.com/vaibhav4046/finaltab
 cd finaltab
-pnpm install
-pnpm -r --if-present test   # 200 passing, 1 skipped — 189 Vitest + 11 Hardhat`}
+pnpm install --frozen-lockfile
+pnpm test       # 284 passing, 1 env-gated live-API check skipped
+pnpm test:e2e   # production build + 4 journeys on desktop and mobile`}
             </pre>
           </div>
         </section>

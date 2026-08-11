@@ -1,4 +1,6 @@
 {
+  "releaseScope": "V1_HISTORICAL",
+  "currentUse": "Preserved proof of the former fixed-demo-signer, seven-tool, confirm:true MCP flow. Not V2 settlement evidence.",
   "proof": "live-proof-4-mcp",
   "truthLabel": "LIVE_PROVEN",
   "capturedAt": "2026-08-10T22:15:30Z",

@@ -1,208 +1,129 @@
-# Submission Checklist — DoraHacks Form
+# KeeperHub Agents Onchain — pre-submission checklist
 
-**Deadline**: August 13, 2026, 12:00 UTC+2 (08:00 UTC)  
-**Form URL**: https://dorahacks.io/hackathon/agents-onchain/detail (logged in)  
-**Primary submission**: Main track + optional Best Onboarding UX bounty
+**Current state:** blocked on a proven V2 USDC settlement, final V2 video and
+public URL, clean combined CI, and human form submission.
 
----
+The live DoraHacks detail page was verified on 2026-08-11. It states all times
+are UTC+2 and sets the deadline at **2026-08-13 12:00 UTC+2**
+(**10:00 UTC / 11:00 BST**). The form requires a source link, a short demo
+video showing the agent executing onchain through KeeperHub, and a transaction
+link. Ten finalists are scheduled to pitch August 17–19.
 
-## Form Fields (Re-Verify Before Filling)
+## 1. Repository and CI
 
-> **CRITICAL**: Open the DoraHacks form logged-in BEFORE submitting. Fields and deadlines may differ from this checklist. Update this file if they do.
+- [ ] Submitted commit is pushed and the public repository is readable logged out.
+- [ ] MIT `LICENSE`, `SECURITY.md`, and `CONTRIBUTING.md` render on GitHub.
+- [ ] `pnpm install --frozen-lockfile` succeeds from a clean checkout.
+- [ ] `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm test:contracts`,
+      `pnpm build`, and `pnpm test:e2e` are green.
+- [ ] The final test count is copied from that clean run, not the historical
+      V1 `212 passed, 1 skipped` baseline.
+- [ ] Added-line, tracked-file, and media secret scans are clean.
 
-### Main Track Required Fields
+## 2. V2 deployment — already proven, recheck links
 
-1. **Team Name**
-   - Value: FINALTab (or your team name)
-   - Type: Text
+- [ ] Contract resolves at
+      [`0x7b58791c…cCDB`](https://sepolia.basescan.org/address/0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB).
+- [ ] KeeperHub deployment execution is `xasakw5nfxkh2s0fh4stn`.
+- [ ] Deployment transaction
+      [`0x904ec881…e8f`](https://sepolia.basescan.org/tx/0x904ec881ef7c2ec7375c20887b4181cf58224b44162d837743fa869b0a598e8f)
+      remains successful at block `45321107`.
+- [ ] Retained receipt says `verified: true` and `receiptStatus: "success"`.
+- [ ] Sourcify reports exact creation and runtime matches for chain `84532`,
+      address `0x7b58791c…cCDB`, match ID `43497805`.
+- [ ] Copy says “Sourcify exact match,” not “BaseScan source verified,” unless
+      BaseScan has independently changed.
 
-2. **GitHub Repository**
-   - Value: https://github.com/vaibhav4046/finaltab
-   - Type: URL
-   - Verify: Link works logged-out, main branch is current
+## 3. Production MCP V2
 
-3. **Live Demo URL** (if required)
-   - Value: https://finaltab.vercel.app
-   - Type: URL
-   - Verify: Page loads, proof capsule visible
+- [ ] Live endpoint is configured with the V2 address and
+      `FINALTAB_SETTLEMENT_CONTRACT_VERSION=2`.
+- [ ] Anonymous `initialize`, `tools/list`, and tool calls are rejected.
+- [ ] A scoped test token can initialize and list tools without appearing in
+      logs, screenshots, traces, or video.
+- [ ] Production tools expose arbitrary caller participants and external-wallet
+      signing; they do not use server-held user keys.
+- [ ] The value-moving sequence is
+      `allocate_receipt → prepare_receipt_settlement → wallet signatures →
+      simulate_signed_settlement → create_broadcast_approval_challenge →
+      human personal_sign → submit_signed_settlement → settlement_status`.
+- [ ] No production copy or trace uses `confirm: true` as approval.
+- [ ] `demo_get_balances`, `demo_prepare_settlement`, and `demo_settle_tab` are
+      disabled by default and clearly labelled testnet fixtures.
 
-4. **Demo Video**
-   - File: `proof-output/finaltab-demo.mp4` — measured 101.6s (1:42), 1080p, H.264/AAC/MP4, 7,472,357 bytes
-   - Type: File upload or YouTube link
-   - Verify: Plays end-to-end, no corruption, sound/captions legible
-   - Content: includes a LIVE KeeperHub settlement executing on camera — tx `0xac6d32e5…7c8710`,
-     block 45312815, VERIFIED SETTLED banner + raw status JSON on screen (re-recorded 2026-08-10)
-   - Note: an earlier revision of this checklist specified 2:20–2:40. The recorded master is 1:42. If
-     the form enforces a minimum length, re-record rather than pad.
+## 4. V2 settlement proof — blocking
 
-5. **Settlement Transaction Hash** (KeeperHub Proof)
-   - Value: `0x7bf655f3f72774839908021039e640b5ac8acaf5462b1376200cbb490045c12d`
-   - This is the REAL batch settlement (block 45310631, 2026-08-10): 4.20 + 3.80 USDC
-     pulled from two debtors, 8.00 USDC paid out, `verified: true`,
-     `receiptStatus: "success"`, `SettlementExecuted` event bound to the ledgerHash.
-   - Verify: https://sepolia.basescan.org/tx/0x7bf655f3f72774839908021039e640b5ac8acaf5462b1376200cbb490045c12d
-   - Do NOT use `0x11300427…` — that was a zero-value rail-proof flight, not a settlement.
+- [ ] At least one authenticated external-wallet V2 settlement moves Base
+      Sepolia testnet USDC through KeeperHub.
+- [ ] Debtors signed both `ReceiveWithAuthorization` and `SettlementConsent`.
+- [ ] A permitted human wallet signed the short-lived broadcast challenge.
+- [ ] The exact payload was simulated immediately before submission.
+- [ ] KeeperHub execution ID, transaction hash, block, verified receipt, and
+      independent RPC proof all describe the same run.
+- [ ] The configured V2 contract emitted the expected `SettlementExecuted` log.
+- [ ] Before/after balances prove exact debtor debits, creditor payouts,
+      conservation, and zero unintended retained balance.
+- [ ] Evidence is retained under `proof-output/v2/<run-id>/` and referenced by
+      the canonical status document.
 
-6. **KeeperHub Execution ID**
-   - Value: `dthckv3julum6m5ktmdik`
-   - Verify: matches the settlement tx above; full fail-closed report in
-     `proof-output/live-settle-2026-08-10T19-19-04-531Z.json`
-   - Do NOT use `g0w11wukbk1v0psyditx4` — that is the zero-value flight's executionId.
+Historical V1 settlements at `0xCcf6…7e64`, including execution
+`69zzrj7z676u89ce1x76j`, do not satisfy this V2 gate.
 
-7. **Project Description** (if free-form)
-   - Template:
-     ```
-     Split a receipt in plain English, settle it as one atomic 
-     transaction on Base Sepolia, and never call it settled until 
-     KeeperHub and the chain prove it landed. Real EIP-712 signing, 
-     deterministic netting, verified onchain execution.
-     
-     - Receipt extraction via Groq vision
-     - Deterministic allocation + netting (engine, 52 tests)
-     - EIP-3009 safe authorization pattern (contract, 11 tests)
-     - LIVE batch settlement on Base Sepolia: 8.00 USDC moved atomically
-       (2 pulls + 1 payout) via KeeperHub, chain-verified
-       tx 0x7bf655f3f72774839908021039e640b5ac8acaf5462b1376200cbb490045c12d
-     - Proof: https://finaltab.vercel.app/app/proof?proof=[ID]
-     
-     Code: https://github.com/vaibhav4046/finaltab
-     ```
+## 5. V2 video — blocking
 
-8. **Team Members**
-   - Value: Your name + email (vaibhavlalwani26969@gmail.com if solo)
-   - Type: Text
+- [ ] Video follows [../demo-storyboard.md](../demo-storyboard.md) and the trace
+      contract in [MCP_TRACE_SPEC.md](MCP_TRACE_SPEC.md).
+- [ ] Logo, architecture, use case, product workflow, authenticated MCP agent,
+      external wallets, approval challenge, KeeperHub execution, and proof are
+      legible and narratively connected.
+- [ ] The settlement shown is the same V2 run as the published trace.
+- [ ] Captions and voiceover are synchronized and understandable independently.
+- [ ] No credential, private key, bearer header, cookie, private dashboard, or
+      unrelated personal data appears in any frame or audio.
+- [ ] Final encoded file is watched end to end.
+- [ ] Duration, resolution, frame rate, codecs, byte size, and SHA-256 are
+      measured from the final file rather than copied from a plan.
+- [ ] Public video URL works while logged out.
+- [ ] Every `PENDING` video marker is replaced with that real URL and metadata.
 
-### Best Onboarding UX Bounty (Optional)
+The historical 101.64-second V1 and older 92.7-second cut are not V2 media.
 
-> Only if you completed the KeeperHub CLI contribution
+## 6. DoraHacks form
 
-1. **Onboarding Contribution URL**
-   - Value: https://github.com/KeeperHub/cli/pull/95
-   - Type: Link to PR
-   - Status: **open, not merged.** Re-verified against the GitHub API on 2026-08-10: opened
-     2026-08-09 by `vaibhav4046`, `state: open`, `merged: false`, `draft: false`, 1 commit,
-     +336/−15 across 2 files, base `KeeperHub:main`, head
-     `vaibhav4046:feat/execute-status-require-verified`.
-   - Describe it as **open and under review**. Do not describe it as merged unless GitHub shows
-     `merged: true`.
+- [ ] Correct entrant/team account is authenticated.
+- [x] Exact cutoff and timezone recorded from the live form on 2026-08-11:
+      2026-08-13 12:00 UTC+2 (10:00 UTC / 11:00 BST).
+- [ ] Eligibility and jurisdiction terms are reviewed by the entrant.
+- [ ] Required source link resolves logged out.
+- [ ] Required short demo video visibly shows the agent executing onchain
+      through KeeperHub and resolves logged out.
+- [ ] Required V2 settlement transaction link resolves logged out and matches
+      the video/trace run.
+- [ ] Live app and V2 contract links also resolve logged out.
+- [ ] Main-track description matches [../submission.md](../submission.md).
+- [ ] PR #95 and its actionable KeeperHub integration feedback are prominent in
+      the main BUIDL, regardless of bounty UI state.
+- [ ] Authenticated Submit BUIDL flow is checked for a bounty control. The
+      detail page advertises a stackable $1,000 onboarding bounty for two
+      winners, but the public Bounties tab rendered “No Bounties” on
+      2026-08-11; do not assume a selectable checkbox.
+- [ ] PR #95 live state is rechecked and described exactly.
+- [ ] Final preview contains no `PENDING`, placeholder, or local path.
+- [ ] Submission confirmation page/email is retained.
 
-2. **Bounty Selection**
-   - Check this box in the form (if available)
-   - Contribution: `--require-verified` flag for `kh execute status`
-   - Benefit: Any agent can gate settlement on chain-verified receipts
+## Current values and pending fields
 
----
-
-## Pre-Submission Verification (DO THIS FIRST)
-
-Run these checks before filling the form:
-
-### Code & Repo
-- [ ] `git status` is clean on main branch
-- [ ] Latest commit is a43ada3 (Gate 0 docs) or later
-- [ ] No secrets in git log or visible files
-- [ ] `pnpm -r --if-present test` passes — 212 passing, 1 skipped (201 Vitest + 11 Hardhat; `contracts` is a workspace member, so the one command covers both)
-- [ ] GitHub repo is public and accessible logged-out
-
-### Settlement & Proof
-- [x] One fresh E2E settlement completed — 2026-08-10, VERIFIED_SETTLED through
-      production API → KeeperHub → contract (report:
-      `proof-output/live-settle-2026-08-10T19-19-04-531Z.json`)
-- [x] KeeperHub executionId: `dthckv3julum6m5ktmdik`
-- [x] Transaction hash: `0x7bf655f3f72774839908021039e640b5ac8acaf5462b1376200cbb490045c12d`
-- [x] Tx resolves: https://sepolia.basescan.org/tx/0x7bf655f3f72774839908021039e640b5ac8acaf5462b1376200cbb490045c12d
-- [x] Receipt shows `verified: true` and `receiptStatus: "success"` (in the report JSON)
-- [ ] Re-check the explorer link resolves on submission day
-
-### Video
-- [ ] `proof-output/finaltab-demo.mp4` exists and plays end-to-end
-- [ ] Duration: 1:42 (101.6s, measured by ffprobe)
-- [ ] Audio/captions legible and audible at normal volume
-- [ ] Proof capsule visible in final scene (show executionId and tx)
-- [ ] File size: <500MB recommended (check for encoding bloat)
-
-### Form & Environment
-- [ ] Logged into DoraHacks account
-- [ ] Navigated to: https://dorahacks.io/hackathon/agents-onchain/detail
-- [ ] Re-verify deadline fields (date, time, timezone)
-- [ ] Read eligibility terms: age 18+, jurisdiction, OFAC
-- [ ] Accept terms checkbox exists and functional
-
----
-
-## Copy-Paste Ready Values
-
-**Before submitting**, gather these and paste into a text file as backup:
-
+```text
+REPOSITORY_URL=https://github.com/vaibhav4046/finaltab
+LIVE_URL=https://finaltab.vercel.app
+MCP_URL=https://finaltab.vercel.app/api/mcp
+V2_CONTRACT_ADDRESS=0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB
+V2_DEPLOYMENT_EXECUTION_ID=xasakw5nfxkh2s0fh4stn
+V2_DEPLOYMENT_TX=0x904ec881ef7c2ec7375c20887b4181cf58224b44162d837743fa869b0a598e8f
+V2_DEPLOYMENT_BLOCK=45321107
+SOURCIFY_MATCH_ID=43497805
+V2_SETTLEMENT_EXECUTION_ID=PENDING
+V2_SETTLEMENT_TX=PENDING
+V2_VIDEO_URL=PENDING
+ONBOARDING_PR=https://github.com/KeeperHub/cli/pull/95
 ```
-GITHUB_URL: https://github.com/vaibhav4046/finaltab
-LIVE_URL: https://finaltab.vercel.app
-EXECUTOR_ID: dthckv3julum6m5ktmdik
-TRANSACTION_HASH: 0x7bf655f3f72774839908021039e640b5ac8acaf5462b1376200cbb490045c12d
-EXPLORER_LINK: https://sepolia.basescan.org/tx/0x7bf655f3f72774839908021039e640b5ac8acaf5462b1376200cbb490045c12d
-VIDEO_FILE: proof-output/finaltab-demo.mp4 (or YouTube link if uploaded)
-ONBOARDING_PR: https://github.com/KeeperHub/cli/pull/95 (open, not merged)
-DESCRIPTION: [See template above]
-TEAM_MEMBER: [Your name] <vaibhavlalwani26969@gmail.com>
-```
-
----
-
-## Submission Day Timeline
-
-| Time | Action |
-|------|--------|
-| 08:00 UTC | Deadline alert. Form still accepting. |
-| 08:15 | Final verification: repo, video, proof links |
-| 08:30 | Open DoraHacks form (logged in) |
-| 08:35 | Fill all fields from copy-paste list above |
-| 08:45 | Review form one final time |
-| 08:55 | Click Submit |
-| 09:00 | Deadline closes (12:00 UTC+2) |
-
-**Deadline**: August 13, 2026, 12:00 UTC+2 = **08:00 UTC**  
-**Safety margin**: 3 hours before, if form allows early submission.
-
----
-
-## After Submission
-
-1. **Confirm receipt**: Screenshot or email confirmation from DoraHacks
-2. **Archive proof**: Save executionId, tx hash, video file, and form screenshot
-3. **Monitor finalists**: Shortlist announced around August 17 (check email)
-4. **Prepare pitch**: If shortlisted, you'll pitch live August 17–19 (confirm your availability)
-
----
-
-## Troubleshooting
-
-**Video won't upload:**
-- Check file codec (must be H.264 video + AAC audio)
-- Try YouTube upload first, paste link in form instead
-
-**Transaction hash doesn't resolve:**
-- Verify you're checking on Base Sepolia (https://sepolia.basescan.org), not mainnet
-- Check executionId matches the proof capsule
-
-**Deadline passed:**
-- Contact DoraHacks support (they may accept late submissions)
-- Screenshot proof anyway for retrospective documentation
-
-**Form field missing or different:**
-- Update this checklist
-- Note the difference and proceed (form is authoritative, not this file)
-
----
-
-## Final Safety Check
-
-Before clicking Submit, verify:
-
-- [ ] No secrets (API keys, private keys, seed phrases) in any submitted material
-- [ ] Transaction is real (verified: true, receiptStatus: success)
-- [ ] Video is truthful (no faked states, no old recordings)
-- [ ] GitHub link works logged-out
-- [ ] Proof capsule executionId matches the transaction
-- [ ] Your name and email correct
-
-**Ready to submit?** Click Submit once and only once. Screenshot the confirmation.

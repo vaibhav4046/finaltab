@@ -39,6 +39,24 @@ describe("probeAuth", () => {
     const res = await makeClient().probeAuth();
     expect(res).toEqual({ ok: false, status: 401 });
   });
+
+  it("bounds a stalled HTTP handler with request-scoped cancellation", async () => {
+    const fetchImpl: typeof fetch = async (_input, init) =>
+      new Promise((_resolve, reject) => {
+        init?.signal?.addEventListener("abort", () => reject(new DOMException("aborted", "AbortError")), {
+          once: true,
+        });
+      });
+    const client = new KeeperHubClient({
+      apiKey: "kh_test_key",
+      fetchImpl,
+      requestTimeoutMs: 20,
+    });
+    const error = await client.probeAuth().catch((cause) => cause);
+    expect(error).toBeInstanceOf(KeeperHubError);
+    expect(error.httpStatus).toBe(408);
+    expect(error.message).toContain("timed out after 20ms");
+  });
 });
 
 describe("simulate", () => {

@@ -4,9 +4,23 @@
   "version": "0.1.0",
   "description": "AI-assisted shared-expense settlement with KeeperHub-verified onchain execution",
   "scripts": {
-    "test": "pnpm -r --if-present test",
+    "lint": "eslint apps packages playwright.config.ts tests/e2e",
+    "typecheck": "pnpm -r --if-present typecheck",
+    "test": "pnpm --dir contracts build && pnpm -r --if-present test",
+    "test:contracts": "pnpm --dir contracts test",
+    "test:e2e": "pnpm --dir apps/web build && playwright test",
+    "test:e2e:ui": "playwright test --ui",
     "build": "pnpm -r --if-present build",
-    "kh:proof": "node packages/keeperhub-flight-recorder/bin/kh-proof.mjs"
+    "kh:proof": "node packages/keeperhub-flight-recorder/bin/kh-proof.mjs",
+    "mcp:bootstrap-token": "node scripts/bootstrap-mcp-token.mjs"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "3.3.6",
+    "@playwright/test": "1.62.1",
+    "@types/node": "22.7.5",
+    "eslint": "9.39.5",
+    "eslint-config-next": "15.5.23",
+    "typescript": "5.9.3"
   },
   "packageManager": "pnpm@10.33.2"
 }

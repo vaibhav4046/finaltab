@@ -67,15 +67,21 @@ export function SplitPanel({
   }, [allocation]);
 
   // The execution rail freezes exactly what this panel is showing. Publishing
-  // the netted transfers only from the button's click handler let the two
-  // drift: toggling back to the raw graph left a stale array armed for freeze,
-  // and so did re-allocating without touching the toggle.
+  // business state must not depend on a presentational raw/netted toggle.
   useEffect(() => {
-    onNetted(showNetted ? netted : []);
-  }, [showNetted, netted, onNetted]);
+    onNetted(netted);
+  }, [netted, onNetted]);
 
   const allocate = async () => {
     if (!receipt) return;
+    if (people.length < 2 || !people.some((person) => person.id === payerId)) {
+      setError("Add at least two participants and choose who paid before allocating.");
+      return;
+    }
+    if (!receipt.confirmedAt) {
+      setError("Confirm the extracted receipt in step 01 before allocating it.");
+      return;
+    }
     setBusy(true);
     setError(null);
     setIssues([]);
@@ -117,6 +123,7 @@ export function SplitPanel({
         debts: json.debts,
         settlement: json.settlement,
       });
+      setShowNetted(true);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Allocation failed");
     } finally {
@@ -169,7 +176,8 @@ export function SplitPanel({
             ))}
           </div>
           <p className="mt-1.5 font-mono text-[9px] text-warn">
-            ⚠ Demo mode. Connect a real wallet (MetaMask) in /auth for real settlement.
+            Addresses shown here define this tab. Demo wallets are labelled in setup; live wallets require
+            ownership verification and an individual signature from each debtor.
           </p>
         </div>
 
@@ -188,11 +196,11 @@ export function SplitPanel({
             spread in proportion to each person&apos;s item share — the engine does not take an instruction on extras.
           </p>
           <div className="mt-2 flex items-center gap-3">
-            <Button onClick={() => void allocate()} disabled={!receipt || busy || locked}>
+            <Button onClick={() => void allocate()} disabled={!receipt?.confirmedAt || people.length < 2 || !payerId || busy || locked}>
               {busy ? "Reconciling…" : allocation ? "Re-allocate" : "Allocate"}
             </Button>
             {busy && <Spinner />}
-            {!receipt && <Mono dim>upload a receipt first</Mono>}
+            {!receipt ? <Mono dim>upload a receipt first</Mono> : !receipt.confirmedAt ? <Mono dim>confirm extraction first</Mono> : people.length < 2 ? <Mono dim>add at least two participants</Mono> : null}
           </div>
         </div>
 
@@ -277,7 +285,7 @@ export function SplitPanel({
                   {showNetted ? `${netted.length} transfer${netted.length === 1 ? "" : "s"}` : `${allocation.debts.length} debt${allocation.debts.length === 1 ? "" : "s"}`}
                 </Badge>
                 <Button variant="ghost" disabled={locked} onClick={() => setShowNetted((v) => !v)}>
-                  {showNetted ? "Show raw" : "Net it"}
+                  {showNetted ? "Show raw graph" : "Show netted"}
                 </Button>
               </div>
             </div>
@@ -311,7 +319,7 @@ export function SplitPanel({
             )}
             {showNetted && (
               <p className="mt-1.5 font-mono text-[9px] text-fog-dim">
-                Same money, fewest transfers. Freeze on the right to lock this into a canonical ledger.
+                Same net position in at most n−1 deterministic transfers. Freeze on the right to lock this plan.
               </p>
             )}
           </div>

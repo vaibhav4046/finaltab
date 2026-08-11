@@ -1,91 +1,33 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import {
+  FileCheck2,
+  FlaskConical,
+  House,
+  ScanLine,
+  UserRound,
+  type LucideIcon,
+} from "lucide-react";
+import { FinalTabMark } from "./FinalTabMark";
 import { loadProfile, type Profile } from "@/lib/identity";
 
 type NavItem = {
   href: string;
   label: string;
-  icon: (active: boolean) => ReactNode;
+  shortLabel: string;
+  icon: LucideIcon;
 };
 
-function stroke(active: boolean): string {
-  return active ? "currentColor" : "currentColor";
-}
-
 const NAV_ITEMS: NavItem[] = [
-  {
-    href: "/app",
-    label: "Home",
-    icon: (a) => (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-        <path
-          d="M4 11l8-7 8 7v9a1 1 0 01-1 1h-5v-6h-4v6H5a1 1 0 01-1-1v-9z"
-          stroke={stroke(a)}
-          strokeWidth="1.7"
-          strokeLinejoin="round"
-        />
-      </svg>
-    ),
-  },
-  {
-    href: "/app/tab",
-    label: "Settle",
-    icon: (a) => (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-        <path
-          d="M6 3h12v17l-2-1.5-2 1.5-2-1.5L10 20l-2-1.5L6 20V3z"
-          stroke={stroke(a)}
-          strokeWidth="1.7"
-          strokeLinejoin="round"
-        />
-        <path d="M9 8h6M9 12h6" stroke={stroke(a)} strokeWidth="1.7" strokeLinecap="round" />
-      </svg>
-    ),
-  },
-  {
-    href: "/app/proof",
-    label: "Proof",
-    icon: (a) => (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-        <path
-          d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"
-          stroke={stroke(a)}
-          strokeWidth="1.7"
-          strokeLinejoin="round"
-        />
-        <path d="M9 12l2 2 4-4.5" stroke={stroke(a)} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    ),
-  },
-  {
-    href: "/lab",
-    label: "Lab",
-    icon: (a) => (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-        <path
-          d="M10 3v6l-5.2 8.7A2 2 0 006.5 21h11a2 2 0 001.7-3.3L14 9V3"
-          stroke={stroke(a)}
-          strokeWidth="1.7"
-          strokeLinejoin="round"
-        />
-        <path d="M8.5 3h7" stroke={stroke(a)} strokeWidth="1.7" strokeLinecap="round" />
-      </svg>
-    ),
-  },
-  {
-    href: "/auth",
-    label: "Profile",
-    icon: (a) => (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-        <circle cx="12" cy="8" r="3.5" stroke={stroke(a)} strokeWidth="1.7" />
-        <path d="M5 20c1.5-3.2 4-4.5 7-4.5s5.5 1.3 7 4.5" stroke={stroke(a)} strokeWidth="1.7" strokeLinecap="round" />
-      </svg>
-    ),
-  },
+  { href: "/app", label: "Home", shortLabel: "Home", icon: House },
+  { href: "/app/tab", label: "New settlement", shortLabel: "Settle", icon: ScanLine },
+  { href: "/app/proof", label: "Reference proof", shortLabel: "Proof", icon: FileCheck2 },
+  { href: "/lab", label: "Reliability lab", shortLabel: "Lab", icon: FlaskConical },
+  { href: "/auth", label: "Local profile", shortLabel: "Profile", icon: UserRound },
 ];
 
 function isActive(pathname: string, href: string): boolean {
@@ -93,95 +35,124 @@ function isActive(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
+function ShellMark() {
+  return <FinalTabMark />;
+}
+
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const mainRef = useRef<HTMLElement>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
 
   useEffect(() => {
     setProfile(loadProfile());
   }, [pathname]);
 
+  useEffect(() => {
+    mainRef.current?.focus({ preventScroll: true });
+  }, [pathname]);
+
   return (
-    <div className="min-h-screen">
-      {/* desktop rail */}
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-52 flex-col border-r border-quiet/60 bg-surface-1/60 lg:flex">
-        <Link href="/" className="flex items-center gap-2.5 px-5 py-5">
-          <span className="flex h-6 w-6 items-center justify-center rounded-md bg-signal text-ink">
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden>
-              <path d="M3 8.5l3.5 3.5L13 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+    <div className="min-h-dvh bg-canvas">
+      <a href="#app-main" className="skip-link">Skip to workspace</a>
+
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-60 flex-col border-r border-quiet-soft bg-surface-1/94 backdrop-blur-xl lg:flex">
+        <div className="border-b border-quiet-soft px-4 py-4">
+          <Link href="/" className="touch-target flex items-center gap-3 rounded-xl px-1" aria-label="FINALTab public home">
+            <ShellMark />
+            <div>
+              <p className="text-[15px] font-semibold tracking-[-0.02em] text-txt">FINAL<span className="text-signal">Tab</span></p>
+              <p className="font-mono text-xs text-faint">night-service ledger</p>
+            </div>
+          </Link>
+        </div>
+
+        <div className="px-4 pt-5">
+          <span className="inline-flex min-h-8 items-center gap-2 rounded-full border border-warn/30 bg-warn/10 px-3 font-mono text-xs font-semibold uppercase tracking-wide text-warn">
+            <span className="h-2 w-2 rounded-full bg-warn" aria-hidden="true" /> Testnet preview
           </span>
-          <span className="text-sm font-semibold tracking-wide">FINALTab</span>
-        </Link>
-        <nav className="mt-2 flex flex-1 flex-col gap-1 px-3">
+        </div>
+
+        <nav className="mt-5 flex flex-1 flex-col gap-1.5 px-3" aria-label="Workspace navigation">
+          <p className="px-3 pb-1 font-mono text-xs font-semibold uppercase tracking-[0.18em] text-faint">Workspace</p>
           {NAV_ITEMS.map((item) => {
             const active = isActive(pathname, item.href);
+            const Icon = item.icon;
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
+                aria-current={active ? "page" : undefined}
+                className={`touch-target flex items-center gap-3 rounded-xl px-3 text-sm font-medium transition-colors duration-200 ${
                   active
-                    ? "bg-surface-2 text-signal"
-                    : "text-muted hover:bg-surface-2/60 hover:text-txt"
+                    ? "bg-signal/12 text-signal"
+                    : "text-muted hover:bg-surface-2 hover:text-txt"
                 }`}
               >
-                {item.icon(active)}
-                {item.label}
+                <Icon size={19} strokeWidth={active ? 2.2 : 1.8} aria-hidden="true" />
+                <span>{item.label}</span>
+                {active ? <span className="ml-auto h-1.5 w-1.5 rounded-full bg-signal" aria-hidden="true" /> : null}
               </Link>
             );
           })}
         </nav>
-        <div className="border-t border-quiet/60 px-5 py-4">
-          <Link href="/auth" className="flex items-center gap-2.5 text-sm text-muted transition-colors hover:text-txt">
-            <span className="text-base">{profile ? profile.emoji : "○"}</span>
-            <span className="truncate">{profile ? profile.name : "Sign in"}</span>
+
+        <div className="border-t border-quiet-soft p-3">
+          <Link href="/auth" className="touch-target flex items-center gap-3 rounded-xl px-3 text-sm text-muted transition-colors hover:bg-surface-2 hover:text-txt">
+            <span className="grid h-8 w-8 place-items-center rounded-full border border-quiet bg-surface-2 text-base" aria-hidden="true">
+              {profile ? profile.emoji : <UserRound size={16} />}
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block truncate font-medium text-txt">{profile ? profile.name : "Local profile"}</span>
+              <span className="block truncate text-xs text-faint">Stored on this device</span>
+            </span>
           </Link>
-          <p className="mt-2 font-mono text-[10px] uppercase tracking-wider text-faint">
-            Base Sepolia · USDC
-          </p>
         </div>
       </aside>
 
-      {/* mobile top bar */}
-      <header className="sticky top-0 z-40 flex h-12 items-center justify-between border-b border-quiet/60 bg-canvas/90 px-4 backdrop-blur-md lg:hidden">
-        <Link href="/" className="flex items-center gap-2">
-          <span className="flex h-5 w-5 items-center justify-center rounded bg-signal text-ink">
-            <svg width="10" height="10" viewBox="0 0 16 16" fill="none" aria-hidden>
-              <path d="M3 8.5l3.5 3.5L13 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+      <header className="sticky top-0 z-40 flex min-h-16 items-center justify-between gap-3 border-b border-quiet-soft bg-canvas/90 px-4 backdrop-blur-xl lg:hidden">
+        <Link href="/" className="touch-target flex items-center gap-2.5 rounded-lg" aria-label="FINALTab public home">
+          <ShellMark />
+          <span className="text-sm font-semibold text-txt">FINAL<span className="text-signal">Tab</span></span>
+        </Link>
+        <div className="flex items-center gap-2">
+          <span className="hidden min-h-8 items-center rounded-full border border-warn/30 bg-warn/10 px-2.5 font-mono text-xs font-semibold text-warn min-[390px]:inline-flex">
+            TESTNET
           </span>
-          <span className="text-sm font-semibold">FINALTab</span>
-        </Link>
-        <Link href="/auth" className="flex items-center gap-1.5 text-sm text-muted">
-          {profile ? (
-            <>
-              <span>{profile.emoji}</span>
-              <span className="max-w-[100px] truncate text-txt">{profile.name}</span>
-            </>
-          ) : (
-            <span>Sign in</span>
-          )}
-        </Link>
+          <Link href="/auth" className="touch-target inline-flex max-w-36 items-center gap-2 rounded-xl px-2 text-sm text-muted transition-colors hover:bg-surface-1 hover:text-txt" aria-label={profile ? `Local profile for ${profile.name}` : "Open local profile"}>
+            <span className="grid h-8 w-8 place-items-center rounded-full border border-quiet bg-surface-1 text-base" aria-hidden="true">
+              {profile ? profile.emoji : <UserRound size={16} />}
+            </span>
+            <span className="hidden max-w-20 truncate sm:block">{profile ? profile.name : "Profile"}</span>
+          </Link>
+        </div>
       </header>
 
-      <main className="pb-20 lg:pb-0 lg:pl-52">{children}</main>
+      <main
+        ref={mainRef}
+        id="app-main"
+        tabIndex={-1}
+        className="min-h-dvh pb-24 outline-none lg:pb-0 lg:pl-60"
+      >
+        {children}
+      </main>
 
-      {/* mobile bottom nav */}
-      <nav className="safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-quiet/60 bg-surface-1/95 backdrop-blur-md lg:hidden">
+      <nav className="safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-quiet-soft bg-surface-1/96 backdrop-blur-xl lg:hidden" aria-label="Mobile workspace navigation">
         <div className="grid grid-cols-5">
           {NAV_ITEMS.map((item) => {
             const active = isActive(pathname, item.href);
+            const Icon = item.icon;
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex flex-col items-center gap-1 py-2.5 text-[10px] font-medium transition-colors ${
-                  active ? "text-signal" : "text-faint hover:text-muted"
+                aria-current={active ? "page" : undefined}
+                className={`flex min-h-[68px] flex-col items-center justify-center gap-1 px-1 py-2 text-xs font-medium transition-colors duration-200 ${
+                  active ? "bg-signal/8 text-signal" : "text-faint hover:bg-surface-2 hover:text-muted"
                 }`}
               >
-                {item.icon(active)}
-                {item.label}
+                <Icon size={20} strokeWidth={active ? 2.3 : 1.8} aria-hidden="true" />
+                <span>{item.shortLabel}</span>
               </Link>
             );
           })}

@@ -1,7 +1,7 @@
 import { Command } from "commander";
 import chalk from "chalk";
 import { readDb, writeLedger } from "../persistence.js";
-import type { Account, Expense } from "../types.js";
+import type { Expense } from "../types.js";
 
 export const settleCommand = new Command("settle")
   .description("Settle debts between two accounts")

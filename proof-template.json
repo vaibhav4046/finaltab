@@ -1,91 +1,75 @@
 {
   "_README": [
-    "This is a TEMPLATE, not evidence. It was written before anything had been measured,",
-    "and an earlier revision of it claimed 'test_coverage: 80%+' and listed Supabase",
-    "persistence as a shipped feature. Neither was true. Both are corrected below.",
-    "The real, measured evidence lives in docs/release/gates.md, docs/release/truth-snapshot.md,",
-    "and the machine-readable receipts in proof-output/. Where this file and those disagree,",
-    "those win."
+    "TEMPLATE ONLY — not evidence and not a submission artifact.",
+    "Fill V2 settlement fields only from one authenticated external-wallet run.",
+    "Historical V1 execution IDs, transactions, counts, and video metadata do not satisfy this template."
   ],
-  "hackathonMetadata": {
-    "title": "FINALTab: Cryptographic Bill Settlement Platform",
-    "track": "Production-Grade Agentic Settlement",
-    "measured_on": "2026-08-10",
-    "status": "DEPLOYED_AND_LIVE"
-  },
-  "codeQuality": {
-    "workspace_tests": "189 passed, 1 skipped",
-    "contract_tests": "11 passing",
-    "total_tests": "200 passing, 1 skipped",
-    "test_breakdown": "engine 52, keeperhub 32, vision 32, flight-recorder 7, web 66, contracts 11",
-    "web_build": "clean — 16 routes, static 16/16",
-    "typescript_checks": "tsc --noEmit exit 0",
-    "test_coverage": "NOT MEASURED — no coverage run has been performed, so no percentage is claimed"
-  },
-  "architecture": {
-    "contract": "FinalTabBatchSettlement.sol",
-    "pattern": "Safe EIP-3009 ReceiveWithAuthorization",
-    "nonce_derivation": "keccak256(ledgerHash, debtor, amount)",
-    "atomicity": "All pulls succeed OR entire settlement reverts",
-    "zero_retained": "Contract balance before == after (asserted in the Hardhat suite, never yet on a public chain)"
-  },
+  "schemaVersion": "2.0",
+  "release": "V2",
   "deployment": {
-    "blockchain": "Base Sepolia (84532)",
-    "usdc_address": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
-    "settlement_contract": "0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64",
-    "contract_code_size_bytes": 2259,
-    "contract_code_verified_by": "eth_getCode against https://sepolia.base.org, re-queried 2026-08-10",
-    "source_verified_on_basescan": false,
-    "deployer": "0x976EF25623A94F6F70924816697C7c7172210a5F",
-    "rpc": "https://sepolia.base.org (public endpoint; no API key required)",
-    "live_app": "https://finaltab.vercel.app"
+    "state": "LIVE_PROVEN",
+    "chainId": 84532,
+    "contract": "0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB",
+    "keeperHubExecutionId": "xasakw5nfxkh2s0fh4stn",
+    "transactionHash": "0x904ec881ef7c2ec7375c20887b4181cf58224b44162d837743fa869b0a598e8f",
+    "blockNumber": 45321107,
+    "verified": true,
+    "receiptStatus": "success",
+    "sourcify": {
+      "match": "exact_match",
+      "creationMatch": "exact_match",
+      "runtimeMatch": "exact_match",
+      "matchId": "43497805"
+    }
   },
-  "features": [
-    "Groq receipt extraction — LIVE, exercised against the real API",
-    "Natural-language allocation reconciled cent-perfect by the engine — LIVE",
-    "Deterministic debt netting engine (integer minor units, no floats)",
-    "Safe EIP-3009 ReceiveWithAuthorization (msg.sender == to enforced by USDC)",
-    "Ledger-hash-bound nonces: any edit after freeze invalidates every signature",
-    "KeeperHub simulate-first execution — LIVE, two chain-verified receipts",
-    "Fail-closed verification: VERIFIED_SETTLED requires verified === true AND receiptStatus === success",
-    "Claude and OpenAI fallback legs — TEST-COVERED ONLY, never contacted their real APIs",
-    "Supabase persistence — SCHEMA ONLY, migrations NOT applied, nothing is persisted",
-    "Atomic batch settlement via executeSettlement — NEVER EXECUTED ON A PUBLIC CHAIN"
-  ],
-  "settlement_flow": [
-    "1. Upload receipt image (browser)",
-    "2. Parse with Groq Vision (extract items/amounts)",
-    "3. Allocate to participants (natural language + engine reconciliation)",
-    "4. Freeze ledger (compute canonical hash, lock edits)",
-    "5. Sign transfers (EIP-712 ReceiveWithAuthorization per debtor)",
-    "6. Simulate settlement (KeeperHub dry-run, check would-revert)",
-    "7. Execute on-chain (broadcast via KeeperHub)",
-    "8. Verify settlement (terminal state + onchain receipt + verified flag)"
-  ],
-  "files": {
-    "contract": "contracts/contracts/FinalTabBatchSettlement.sol",
-    "mock_usdc": "contracts/contracts/MockUSDC3009.sol",
-    "tests": "contracts/test/FinalTabBatchSettlement.test.js",
-    "deploy_script": "contracts/scripts/deploy.js",
-    "engine": "packages/engine/src/eip3009.ts",
-    "web_app": "apps/web/",
-    "settlement_rail": "apps/web/components/ExecutionRail.tsx",
-    "signing": "apps/web/lib/flow.ts",
-    "measured_evidence": "docs/release/gates.md",
-    "honest_blocker_list": "docs/release/truth-snapshot.md",
-    "machine_readable_receipts": "proof-output/"
+  "settlement": {
+    "state": "PENDING",
+    "runId": null,
+    "keeperHubExecutionId": null,
+    "transactionHash": null,
+    "blockNumber": null,
+    "receiptVerified": null,
+    "receiptStatus": null,
+    "settlementEventCount": null,
+    "ledgerHash": null,
+    "settlementId": null,
+    "participantBalanceDeltas": null,
+    "contractBalanceDelta": null,
+    "conservationVerified": null
   },
-  "submission_checklist": {
-    "code_complete": true,
-    "tests_passing": true,
-    "contract_deployed": true,
-    "keeperhub_execution_chain_verified": true,
-    "demo_recorded": true,
-    "proof_collected": true,
-    "relayer_funded_with_native_eth": false,
-    "demo_signers_hold_usdc": false,
-    "batch_settlement_executed_onchain": false,
-    "contract_source_verified_on_basescan": false,
-    "submitted": false
+  "mcp": {
+    "authenticated": null,
+    "principal": null,
+    "externalWalletSignaturesVerified": null,
+    "broadcastApprovalVerified": null,
+    "demoOnly": false,
+    "tracePath": null,
+    "traceSha256": null
+  },
+  "video": {
+    "state": "PENDING",
+    "publicUrl": null,
+    "filename": null,
+    "durationSeconds": null,
+    "width": null,
+    "height": null,
+    "frameRate": null,
+    "videoCodec": null,
+    "audioCodec": null,
+    "byteLength": null,
+    "sha256": null,
+    "captionsReviewed": null,
+    "voiceSyncReviewed": null,
+    "secretScanClean": null
+  },
+  "ci": {
+    "commit": null,
+    "runUrl": null,
+    "testsPassed": null,
+    "testsSkipped": null,
+    "lint": null,
+    "typecheck": null,
+    "build": null,
+    "e2e": null
   }
 }

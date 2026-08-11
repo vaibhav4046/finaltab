@@ -1,4 +1,6 @@
 {
+  "releaseScope": "V1_HISTORICAL",
+  "currentUse": "Preserved V1 failed/unproven run. Not proof of FinalTabBatchSettlementV2.",
   "startedAt": "2026-08-10T19:16:46.249Z",
   "baseUrl": "https://finaltab.vercel.app",
   "settlementId": "0xf0e7dbbdf1202ab23aa674f9b52104b1cd76ac44aa9fa02cfa904b4c717b4d04",

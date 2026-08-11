@@ -21,6 +21,8 @@ export interface KeeperHubClientOptions {
   maxPollAttempts?: number;
   /** used when server sends no X-Poll-Interval-Hint */
   defaultPollIntervalMs?: number;
+  /** Bounds every individual HTTP request, including a stalled response body. */
+  requestTimeoutMs?: number;
 }
 
 const TERMINAL: ReadonlySet<string> = new Set(["completed", "failed", "cancelled"]);
@@ -32,6 +34,7 @@ export class KeeperHubClient {
   private readonly sleep: (ms: number) => Promise<void>;
   private readonly maxPollAttempts: number;
   private readonly defaultPollIntervalMs: number;
+  private readonly requestTimeoutMs: number;
 
   constructor(opts: KeeperHubClientOptions) {
     if (!opts.apiKey) throw new Error("KeeperHubClient: apiKey required");
@@ -41,6 +44,7 @@ export class KeeperHubClient {
     this.sleep = opts.sleep ?? ((ms) => new Promise((r) => setTimeout(r, ms)));
     this.maxPollAttempts = opts.maxPollAttempts ?? 120;
     this.defaultPollIntervalMs = opts.defaultPollIntervalMs ?? 3000;
+    this.requestTimeoutMs = opts.requestTimeoutMs ?? 15_000;
   }
 
   private headers(extra?: Record<string, string>): Record<string, string> {
@@ -57,21 +61,37 @@ export class KeeperHubClient {
     body?: unknown,
     extraHeaders?: Record<string, string>,
   ): Promise<{ status: number; json: unknown; headers: Headers }> {
-    const res = await this.fetchImpl(`${this.baseUrl}${path}`, {
-      method,
-      headers: this.headers(extraHeaders),
-      body: body === undefined ? undefined : JSON.stringify(body),
-    });
-    let json: unknown = null;
-    const text = await res.text();
-    if (text) {
-      try {
-        json = JSON.parse(text);
-      } catch {
-        json = { error: text };
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), this.requestTimeoutMs);
+    try {
+      const res = await this.fetchImpl(`${this.baseUrl}${path}`, {
+        method,
+        headers: this.headers(extraHeaders),
+        body: body === undefined ? undefined : JSON.stringify(body),
+        signal: controller.signal,
+      });
+      let json: unknown = null;
+      const text = await res.text();
+      if (text) {
+        try {
+          json = JSON.parse(text);
+        } catch {
+          json = { error: text };
+        }
       }
+      return { status: res.status, json, headers: res.headers };
+    } catch (cause) {
+      if (controller.signal.aborted) {
+        throw new KeeperHubError(
+          `${method} ${path} timed out after ${this.requestTimeoutMs}ms`,
+          408,
+          { code: "request_timeout" },
+        );
+      }
+      throw cause;
+    } finally {
+      clearTimeout(timer);
     }
-    return { status: res.status, json, headers: res.headers };
   }
 
   /** Auth probe: 200 = valid org key, 401 = invalid. GET /api/chains is public — no credential signal. */

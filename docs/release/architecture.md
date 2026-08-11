@@ -1,4 +1,13 @@
-# FINALTab Architecture Map
+# Historical V1 architecture map
+
+> **Superseded for current product claims.** This map and its counts describe
+> the 2026-08-10 V1 system. V2 uses external debtor wallets, dual
+> `ReceiveWithAuthorization` + `SettlementConsent` signatures, a wallet-signed
+> broadcast challenge, scoped MCP authentication, and
+> `FinalTabBatchSettlementV2` at
+> `0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB`. See
+> [../integrations/mcp.md](../integrations/mcp.md) and [status.md](status.md).
+> Old address and `confirm: true` references below are preserved V1 history.
 
 **Gate 0 Inventory — 2026-08-10**
 
@@ -97,7 +106,7 @@ is stale.
 
 - **Chain**: Base Sepolia (chainId 84532)
 - **USDC**: 0x036CbD53842c5426634e7929541eC2318f3dCF7e
-- **Settlement Contract**: 0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64 — **deployed and live**.
+- **Historical V1 settlement contract**: 0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64 — deployed and live for the archived V1 run, not current V2.
   `eth_getCode` against `https://sepolia.base.org` returns 2259 bytes at that address, re-queried
   2026-08-10. An earlier revision of this line said "deployed? TBD, see blockers", which contradicted
   gate 9; the contract being live and `executeSettlement` never having been *called* were two
@@ -117,7 +126,7 @@ is stale.
 | Settlement contract safe pattern | ReceiveWithAuthorization signature binding, atomicity, nonce derivation | ✓ 11 contract tests |
 | KeeperHub integration | Live settlement tx 0x7bf655f3…45c12d, executionId `dthckv3julum6m5ktmdik`, verified: true; earlier rail proof tx 0x1130...278c (`g0w11wukbk1v0psyditx4`) | ✓ Proven live |
 | Batch settlement onchain | Four settlements 2026-08-10, all chain-verified, exact balance deltas; e.g. 8.00 USDC moved atomically (2 EIP-3009 pulls + 1 payout); reports in [evidence/](evidence/) | ✓ Proven live |
-| AI agent settlement over MCP | Five JSON-RPC `tools/call` requests against production `/api/mcp` drove a full settlement: 2.00 USDC, tx 0x314189b4…c5eb, block 45315909, executionId `69zzrj7z676u89ce1x76j`, <3s; `settle_tab` gated behind `confirm: true` | ✓ Proven live |
+| Historical V1 agent settlement over MCP | Five JSON-RPC `tools/call` requests drove the former fixed-demo-signer flow: 2.00 USDC, tx 0x314189b4…c5eb, block 45315909, executionId `69zzrj7z676u89ce1x76j`; not V2 proof | ✓ V1 proven live |
 | CLI contribution | PR KeeperHub/cli#95 (open, not merged) | ⚠️ Pending review |
 | All tests passing | pnpm test + hardhat test | ✓ 201 + 11 = 212 tests, 1 skipped (measured 2026-08-10) |
 | LLM fallback cascade | 12 tests driving the real router with each SDK mocked at the module boundary | ⚠️ Cascade FIXTURE_PROVEN; only the Groq leg has ever contacted a real API |
@@ -125,7 +134,7 @@ is stale.
 ## Known Blockers (measured, not assumed)
 
 1. **Supabase Persistence**: Schema in `supabase/migrations/` but **not applied** — no project credentials. There is no server-side audit trail, no idempotency, and nothing is durable. The app is stateless per session; device-local state plus the KeeperHub transaction are the only sources of truth.
-2. **Contract Deployment Gas**: Superseded. The contract **is** deployed at `0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64` (2259 bytes of code, confirmed by `eth_getCode`). The KeeperHub deploy attempt that failed did so because the relayer held no native ETH: `Insufficient BASE balance. Have: 0.0, Need: 0.000000231.` (The relayer was later funded 0.00005 ETH; note that the settle transactions themselves were KeeperHub-sponsored — `sponsored: true`, gas paid by KeeperHub's gas-payer EOA, so "sponsors transfers, not contract-call gas" from an earlier revision was an over-generalization.) Source is **not yet verified on Basescan**, which is why the settle route passes the ABI inline.
+2. **Historical V1 deployment gas**: Superseded. V1 was deployed at `0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64`. Current V2 deployment proof is recorded separately in `evidence/v2-deployment-2026-08-11T01-08-17-421Z.json`.
 3. **Batch settlement onchain**: **resolved 2026-08-10** — `executeSettlement` moved 8.00 USDC atomically on Base Sepolia (tx `0x7bf655f3…45c12d`, block 45310631, chain-verified). While it was blocked, Simulate honestly rendered "WOULD REVERT — NOT BROADCAST" rather than replaying a receipt. Closure details in [../blockers.md](../blockers.md); measurement in [truth-snapshot.md](truth-snapshot.md).
 4. **Wallet Integration**: Real MetaMask connection is stubbed. Demo keys work; real `eth_signTypedData_v4` not tested end-to-end yet.
 5. **Fallback providers unproven live**: the Claude and OpenAI legs of the extraction cascade are test-covered but have never contacted their real APIs. No keys are configured for them.
@@ -147,4 +156,4 @@ The "Sign Button Silent Failure" listed here in a prior revision was **disproven
 2. **Resolve Sign hang**: Fix root cause (promise, error swallow, or state).
 3. **Gate 4 live proof**: One fresh end-to-end settlement through KeeperHub with new logging.
 4. **Supabase setup** (optional for demo, required for production persistence).
-5. **Contract deployment** (if required by KeeperHub submission path; currently stubbed on-chain as 0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64).
+5. **Historical V1 contract deployment**: `0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64`; current V2 is `0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB`.

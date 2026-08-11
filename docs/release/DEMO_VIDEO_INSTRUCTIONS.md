@@ -1,16 +1,16 @@
-# Demo Video Recording — Winner Frame-by-Frame
+# Demo video recording — historical V1 plan
 
-> **SUPERSEDED — this is the original plan, not a description of the delivered video.**
+> **SUPERSEDED — this is the original V1 plan, not the V2 submission spec.**
 >
-> The master that exists is `proof-output/finaltab-demo.mp4`: **101.6s (1:42)**, 1920×1080,
-> h264/aac, 7,472,357 bytes (ffprobe, 2026-08-10, re-recorded). Unlike the earlier 92.7s cut, the
-> "Real execution" scene DID get recorded live: a KeeperHub-sponsored `executeSettlement` runs on
-> camera through to the VERIFIED SETTLED banner, with the raw status JSON open on screen — tx
-> `0xac6d32e5…7c8710`, block 45312815, executionId `dbukwam812iep68uehkhy`, `verified: true`.
+> A historical V1 file was measured at **101.64s**, 1920×1080, H.264/AAC,
+> 7,472,357 bytes on 2026-08-10. It is not present in this checkout and it does
+> not show the final MCP agent story. An older 92.7-second cut is also
+> superseded. Neither file is the current submission deliverable.
 >
-> The timings in the table below are the original storyboard's cue points. They do not map onto the
-> delivered file. Keep this document as the recording script it was; do not read it as evidence.
-> For what the master actually contains, see [../demo-storyboard.md](../demo-storyboard.md).
+> The timings below are archived cue points. The V2 URL, duration, metadata,
+> and final scene plan remain pending until the new agent/MCP video is rendered.
+> Current status: [status.md](status.md). Capture contract:
+> [MCP_TRACE_SPEC.md](MCP_TRACE_SPEC.md).
 
 **Original target**: 2:20–2:40 (one continuous, truthful, representative take)  
 **Quality**: 1920×1080, 30fps minimum  
@@ -144,7 +144,7 @@ Exact to the cent."
 [0:35–0:55]
 "Participants tell us who had what in plain language.
 Groq proposes; the engine confirms.
-Six obligations collapse into two transfers—the minimum needed.
+Six obligations collapse into two deterministic netted transfers.
 Ledger frozen. Hash locked. Ready to sign."
 
 [0:55–1:10]
@@ -194,7 +194,10 @@ Code and proof on GitHub."
 2. **Check audio**: legible at volume levels
 3. **Check proof link**: executionId and tx hash are clickable (if embedded) or clearly readable
 4. **Check duration**: `ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1:precision=1 demo-video.mp4`
-5. **Timestamp for submission**: Ready by August 13 09:00 UTC (3h buffer before deadline)
+5. **Record provenance**: write the actual render time, duration, checksum, and
+   public URL into [status.md](status.md). Plan the upload buffer against the
+   live-form deadline verified on 2026-08-11: 2026-08-13 12:00 UTC+2
+   (10:00 UTC / 11:00 BST).
 
 ---
 
@@ -219,4 +222,4 @@ Code and proof on GitHub."
 ✓ Narration or captions explain each phase  
 ✓ No secrets, no hallucination, no faked state  
 ✓ Legible at any reasonable playback size  
-✓ Ready to paste URL into DoraHacks form by deadline
+✓ V2 URL and measured metadata recorded in the canonical status document

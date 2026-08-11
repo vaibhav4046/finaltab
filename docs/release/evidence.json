@@ -3,12 +3,50 @@
     "Machine-readable roll-up of every load-bearing claim FINALTab makes, each tied to how it was",
     "measured. If a claim is not in this file, it is not backed. If a claim is in this file with",
     "state UNPROVEN or BLOCKED, the project says so publicly rather than implying otherwise.",
-    "Prose counterpart: docs/release/truth-snapshot.md."
+    "Prose counterpart: docs/release/truth-snapshot.md.",
+    "Claims measured on 2026-08-10 below are historical V1 evidence unless explicitly scoped otherwise.",
+    "Current V2 deployment proof is recorded in currentRelease and the separate v2-deployment manifest."
   ],
   "generatedAt": "2026-08-10",
   "commit": "d4dfb7e+dirty",
   "commitNote": "Measured against commit d4dfb7e PLUS an uncommitted working tree (7 modified tracked files, 3 untracked at the time of the run: the MCP agent-settlement path and this docs pass). Not a clean-checkout result: re-running these commands on a fresh clone of d4dfb7e produces the pre-MCP numbers, not these.",
   "verificationHost": "local (win32), Node + pnpm workspace",
+  "currentRelease": {
+    "protocol": "V2",
+    "measuredAt": "2026-08-11",
+    "deployment": {
+      "state": "LIVE_PROVEN",
+      "contract": "0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB",
+      "keeperHubExecutionId": "xasakw5nfxkh2s0fh4stn",
+      "transactionHash": "0x904ec881ef7c2ec7375c20887b4181cf58224b44162d837743fa869b0a598e8f",
+      "blockNumber": 45321107,
+      "verified": true,
+      "receiptStatus": "success",
+      "sourcify": {
+        "match": "exact_match",
+        "creationMatch": "exact_match",
+        "runtimeMatch": "exact_match",
+        "matchId": "43497805"
+      },
+      "manifest": "docs/release/evidence/v2-deployment-2026-08-11T01-08-17-421Z.json"
+    },
+    "mcp": {
+      "state": "IMPLEMENTED_REQUIRES_LIVE_RECHECK",
+      "authentication": "scoped bearer token",
+      "walletModel": "external debtor wallets plus a wallet-signed short-lived broadcast approval",
+      "legacyConfirmFlagAccepted": false,
+      "demoMoneyToolsEnabledByDefault": false
+    },
+    "usdcSettlement": {
+      "state": "PENDING",
+      "reason": "No retained value-moving V2 execution, transaction, event, or balance proof exists yet."
+    },
+    "video": {
+      "state": "PENDING",
+      "publicUrl": null,
+      "measuredMetadata": null
+    }
+  },
   "labels": {
     "LIVE_PROVEN": "A real external system was contacted and the response is recorded.",
     "FIXTURE_PROVEN": "Exercised only against local fixtures or mocked module boundaries.",
@@ -38,7 +76,8 @@
     },
     {
       "id": "contract.deployed",
-      "claim": "The settlement contract is deployed on Base Sepolia",
+      "claim": "The historical V1 settlement contract is deployed on Base Sepolia",
+      "scope": "V1_HISTORICAL",
       "state": "LIVE_PROVEN",
       "measuredAt": "2026-08-10",
       "value": {
@@ -75,7 +114,8 @@
     },
     {
       "id": "settle.onchain",
-      "claim": "executeSettlement moves USDC on a public chain",
+      "claim": "Historical V1 executeSettlement moved testnet USDC on a public chain",
+      "scope": "V1_HISTORICAL",
       "state": "LIVE_PROVEN",
       "measuredAt": "2026-08-10",
       "value": {
@@ -96,7 +136,8 @@
     },
     {
       "id": "mcp.agentSettlement",
-      "claim": "An AI agent settled a tab end-to-end over MCP against production, no UI involved",
+      "claim": "A historical V1 agent settled a fixed-demo-signer tab over the former MCP surface",
+      "scope": "V1_HISTORICAL",
       "state": "LIVE_PROVEN",
       "measuredAt": "2026-08-10",
       "value": {

@@ -3,7 +3,7 @@ import { classifyExecution } from "../src/verify.js";
 import type { ExecutionReceipt, ExecutionStatusResponse } from "../src/types.js";
 
 const goodReceipt: ExecutionReceipt = {
-  hash: "0xabc",
+  hash: `0x${"a".repeat(64)}`,
   chainId: 84532,
   verified: true,
   receiptStatus: "success",
@@ -18,7 +18,7 @@ function status(partial: Partial<ExecutionStatusResponse>): ExecutionStatusRespo
 
 describe("classifyExecution — fail-closed semantics", () => {
   it("VERIFIED_SETTLED only when completed + all receipts verified successful", () => {
-    const v = classifyExecution(status({ receipts: [goodReceipt, { ...goodReceipt, hash: "0xdef" }] }));
+    const v = classifyExecution(status({ receipts: [goodReceipt, { ...goodReceipt, hash: `0x${"b".repeat(64)}` }] }));
     expect(v.verdict).toBe("VERIFIED_SETTLED");
   });
 
@@ -72,5 +72,15 @@ describe("classifyExecution — fail-closed semantics", () => {
   it("status pending/submitted -> PENDING", () => {
     expect(classifyExecution(status({ status: "pending" })).verdict).toBe("PENDING");
     expect(classifyExecution(status({ status: "submitted" })).verdict).toBe("PENDING");
+  });
+
+  it("unknown status -> UNPROVEN instead of falling through as completed", () => {
+    const v = classifyExecution({ ...status({ receipts: [goodReceipt] }), status: "queued_elsewhere" as never });
+    expect(v.verdict).toBe("UNPROVEN");
+  });
+
+  it("malformed receipt -> UNPROVEN even when KeeperHub marks it verified", () => {
+    const v = classifyExecution(status({ receipts: [{ ...goodReceipt, hash: "not-a-tx" }] }));
+    expect(v.verdict).toBe("UNPROVEN");
   });
 });

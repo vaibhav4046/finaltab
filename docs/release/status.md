@@ -1,113 +1,138 @@
-# Status
+# Submission status — source of truth
 
-**As of 2026-08-10, commit `d4dfb7e` plus an uncommitted working tree** (7 modified tracked files —
-the MCP agent-settlement path and this documentation pass are not committed yet). One page, no
-aspiration. Machine-readable twin:
-[evidence.json](evidence.json). Gate runs: [gates.md](gates.md).
+**Measured:** 2026-08-11
 
-## One-line verdict
+**Canonical copy:** [../submission.md](../submission.md)
 
-FINALTab is **submission-ready, end to end**: everything from receipt photo to the final broadcast
-of `executeSettlement` is live-proven. On 2026-08-10 an AI agent settled a tab over the production
-MCP endpoint, no UI involved — five JSON-RPC calls, 2.00 USDC moved atomically, under 3 seconds from
-acceptance to on-chain success (tx
-`0x314189b472033de62f8aea7603111c141315be390bc834e283e718382261c5eb`, block 45315909,
-`verified: true`, executionId `69zzrj7z676u89ce1x76j`). Three more real batch settlements landed the
-same day, e.g. 8.00 USDC via tx `0x7bf655f3…45c12d`, block 45310631. Gate 12, formerly the one
-disclosed hole, now passes.
+**Pre-submit gate:** [SUBMISSION_CHECKLIST.md](SUBMISSION_CHECKLIST.md)
 
-| Flag | State | Basis |
+This is the operational source of truth for the KeeperHub Agents Onchain
+submission. Historical V1 evidence is preserved, but it does not prove the
+current V2 contract, MCP flow, settlement, or video.
+
+## Verdict
+
+**V2 deployment is proven; V2 settlement and the submission package are not
+complete yet.** `FinalTabBatchSettlementV2` was deployed through KeeperHub on
+Base Sepolia and its creation and runtime source are an exact Sourcify match.
+No V2 testnet-USDC settlement receipt, final V2 video, public video URL, or
+DoraHacks confirmation is currently retained. Those remain blocking.
+
+## Current V2 proof
+
+| Artifact | State | Evidence |
 |---|---|---|
-| `MAIN_READY` | **YES** | Deployed app, 212 passing / 1 skipped, contract live on Base Sepolia, six chain-verified KeeperHub receipts including four real batch settlements — one driven end-to-end by an AI agent over MCP (gate 12 closed 2026-08-10), 1:42 master video with a live settlement ON CAMERA (tx `0xac6d32e5…7c8710`, block 45312815). |
-| `BOUNTY_READY` | **YES** | KeeperHub/cli PR [#95](https://github.com/KeeperHub/cli/pull/95) is open upstream — verified against the GitHub API on 2026-08-10. Tick the Best Onboarding UX box. |
+| Public repository | `READY` | <https://github.com/vaibhav4046/finaltab> |
+| MIT license and contribution/security docs | `READY` | Repository root |
+| Live product URL | `DEPLOYED; REVERIFY AFTER V2 CONFIG` | <https://finaltab.vercel.app> |
+| V2 contract | `LIVE_PROVEN` | [`0x7b58791c…cCDB`](https://sepolia.basescan.org/address/0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB) |
+| KeeperHub V2 deployment | `LIVE_PROVEN` | execution `xasakw5nfxkh2s0fh4stn`; [tx `0x904ec881…e8f`](https://sepolia.basescan.org/tx/0x904ec881ef7c2ec7375c20887b4181cf58224b44162d837743fa869b0a598e8f); block `45321107`; verified receipt |
+| V2 source | `LIVE_PROVEN` | Sourcify exact creation/runtime match, match ID `43497805`; [repository entry](https://repo.sourcify.dev/84532/0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB) |
+| Authenticated MCP V2 source | `IMPLEMENTED; LIVE RECHECK REQUIRED` | Scoped bearer authentication, external-wallet signatures, wallet-signed broadcast approval, independent receipt verification |
+| V2 USDC settlement | `BLOCKING — PENDING PROOF` | No retained V2 settlement execution ID, transaction, balance delta, or `SettlementExecuted` proof yet |
+| V2 video | `BLOCKING — PENDING RENDER` | No truthful duration, checksum, or public URL yet |
+| DoraHacks entry | `BLOCKING — PENDING HUMAN SUBMISSION` | Live page checked 2026-08-11; deadline 2026-08-13 12:00 UTC+2; confirmation not retained |
+| KeeperHub onboarding contribution | `PROVEN; ENTRY ROUTE AMBIGUOUS` | [PR #95](https://github.com/KeeperHub/cli/pull/95) was open and not merged when last checked; live Bounties tab currently contradicts the detail-page bounty copy |
 
-Neither flag is a prediction about placing. They mean the required artifacts exist and every claim
-attached to them has been measured.
+The V2 deployment evidence is retained at
+[evidence/v2-deployment-2026-08-11T01-08-17-421Z.json](evidence/v2-deployment-2026-08-11T01-08-17-421Z.json).
+It proves deployment, bytecode, domain separation, and source matching. It does
+**not** prove a V2 USDC settlement.
 
-## What works, proven live
+## MCP V2 truth
 
-| Capability | Proof |
-|---|---|
-| App deployed and reachable | https://finaltab.vercel.app |
-| Receipt photo → items + amounts | Live Groq calls through `/api/vision/extract` |
-| Plain-English allocation | Live Groq calls, reconciled cent-perfect against the engine |
-| Blur / unusable-photo rejection | Fixed metric verified in-browser (pristine fixture: 62.7 under the old broken metric vs 4149.8 canonical) |
-| Ledger freeze → canonical hash | 52 engine tests; hash locks edits by construction |
-| EIP-3009 signing (demo keys) | Exercised in a real browser session; produces valid signatures |
-| KeeperHub execution end to end | Six independent `VERIFIED_SETTLED` receipts, chain-confirmed, not merely status-field-confirmed |
-| **AI agent settlement over MCP** | An agent drove the full loop against production `https://finaltab.vercel.app/api/mcp`: `get_balances` → `prepare_settlement` → `settle_tab` (`confirm: true`) → `settlement_status` (`VERIFIED_SETTLED` first poll) → `get_balances`. 1.20 + 0.80 USDC pulled, 2.00 paid out, under 3s. tx `0x314189b4…c5eb` (block 45315909, executionId `69zzrj7z676u89ce1x76j`). Record: `docs/release/evidence/live-proof-4-mcp.json` |
-| **Live batch settlement (`executeSettlement`)** | Three more real settlements: tx `0x7bf655f3…45c12d` (block 45310631, 4.20 + 3.80 USDC pulled, 8.00 paid out), tx `0x770ada77…f120fc2` (block 45311736, executionId `ks6wxg5vnmc833nd2yyk4`, 9.00 + 5.06 pulled, 14.06 paid out), tx `0xac6d32e5…7c8710` (block 45312815, a second 9.00 + 5.06 → 14.06 run — executed ON CAMERA in the demo video). Exact balance deltas, contract retained zero. Reports: [evidence/](evidence/) + `proof-output/evidence-execution-*.json` |
-| Settlement contract on Base Sepolia | 2259 bytes at `0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64`, re-queried today |
-| Honest failure rendering | The Simulate white-screen crash is fixed; 11 call sites routed through `apps/web/lib/apiText.ts`, locked by 20 tests |
-| Build, types, tests | 212 passing / 1 skipped (web grew 66 → 78 with the MCP agent-settlement tests); `tsc` clean; 16-route production build clean |
+The current source registers nine production tools and three `demo_*` tools.
+Production requests require a scoped bearer token. The value-moving production
+flow is:
 
-## What does not work, stated plainly
+```text
+allocate_receipt
+→ prepare_receipt_settlement
+→ debtor wallets sign ReceiveWithAuthorization + SettlementConsent
+→ simulate_signed_settlement
+→ create_broadcast_approval_challenge
+→ a permitted human wallet personal-signs the short-lived challenge
+→ submit_signed_settlement
+→ settlement_status(executionId, settlementId, ledgerHash)
+```
 
-| Gap | Why it is not hidden |
-|---|---|
-| Contract source unverified on Basescan | Concrete consequence: the settle route passes the ABI inline. |
-| Supabase persistence | Schema written, never applied, no credentials. The app is stateless per session. Docs previously called this a working feature — that was wrong and is corrected. |
-| Claude and OpenAI fallback legs | 12 cascade tests with each SDK mocked at the module boundary. Neither has contacted its real API. Only Groq is live. |
-| Real-wallet signing | `eth_signTypedData_v4` path is stubbed. |
-| Instruction fidelity on split rules | Extras are always prorated proportionally regardless of the rule stated. Disclosed in the UI. A real capability gap. |
-| Coverage percentage | Never measured, so never claimed. Counts are reported instead. |
-| Screenshots | The browser screenshot tool failed all session (`Screenshot timed out after 5s`). No still was captured and none is claimed. |
+`confirm: true` is a historical V1 convention, not a V2 approval boundary.
+FINALTab does not hold arbitrary user wallet keys. The fixed Vee/Hem/Ravi tools
+are explicitly `demo_*`, testnet-only, and disabled unless
+`FINALTAB_ENABLE_DEMO_MONEY_TOOLS=true`; even then, broadcasting requires a
+configured human demo approver.
 
-## Claims retracted during this pass
+## Historical V1 evidence — preserved, not current
 
-Two documented "facts" turned out to be false and are retracted in place rather than silently
-edited:
+On 2026-08-10, V1 at `0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64`
+executed real Base Sepolia testnet-USDC settlements. One historical MCP run used
+the former seven-tool, fixed-demo-signer flow and `confirm: true`:
+execution `69zzrj7z676u89ce1x76j`, tx `0x314189b4…c5eb`, block `45315909`.
+Those records remain valid evidence for V1 only. They must not be presented as
+proof that V2 has settled USDC or that the current production MCP approval flow
+has broadcast successfully.
 
-1. **"Sign Button Silent Failure" was never real.** It was listed as a P0 blocker across several
-   docs. Live browser testing showed the button works. The genuine defect nearby was a React crash
-   on the Simulate path — an untyped `await res.json()` assigned into `string` state, producing
-   "Objects are not valid as a React child". Fixed and locked by tests.
-2. **A retraction that was itself wrong, now reversed.** An earlier pass of this document claimed
-   `https://github.com/KeeperHub/cli/pull/95` "never existed" and stripped it from the checklist.
-   That was written from a stale local task note ("worktree, no push") without querying GitHub. The
-   PR is real: opened 2026-08-09 by `vaibhav4046`, `state: open`, `merged: false`, 1 commit,
-   +336/−15, 7 new Go tests, base `KeeperHub:main`. Verified against the GitHub API on 2026-08-10.
-   The original citation was correct and is restored. Recorded here rather than quietly reverted,
-   because a false retraction is as much a documentation error as a false claim.
+The historical V1 video measurements (101.64 seconds and an earlier 92.7-second
+cut) are also not V2 metadata. The files are not retained here and have no
+current public submission URL.
 
-Every test count in the repo was also wrong (116, 119, 127 in various files). All were corrected
-to the then-measured 200 / 1 skipped, and again to the freshly measured 212 / 1 skipped after the
-MCP agent-settlement tests landed.
+## Test and release truth
 
-## Security posture
+The old `212 passed, 1 skipped` result is a historical 2026-08-10 V1 baseline.
+The combined 2026-08-11 worktree now measures **284 passing, 1 env-gated live
+provider check skipped** (`pnpm test`, exit 0). Re-run this on the submitted
+commit and use that retained log as the final count.
 
-A deployer private key was committed across six judge-facing docs and an Alchemy API key across
-four. Both are redacted in the working tree, and `hardhat.config.js` is now env-driven via
-`BASE_SEPOLIA_RPC_URL` with a public fallback. Today's scan of every tracked file found zero live
-key-shaped tokens.
+## Remaining disclosure
 
-**Residual risk, corrected 2026-08-10.** An earlier version of this section said both keys "remain in
-git history at commit `1f20560`" and pointed readers at `git show 1f20560:SUBMISSION.md` to recover
-one. That command was run: it returns no key. A full walk of the object database — all 190 blobs,
-not just the commit graph — found both credentials alive in **unreachable** objects only: 8 dangling
-blobs hold the deployer key, and the Alchemy key survives in dangling blobs inside
-`…/v2/<key>` URLs. **Zero of the 305 objects reachable from any ref contain either.** Git transfers
-only reachable objects, so neither is recoverable from a clone, fetch, or push of the public repo.
+- V2 settlement proof is pending.
+- The production V2 MCP endpoint and scopes must be re-probed after deployment
+  with secrets redacted.
+- Demo money tools are disabled by default and are not the user-wallet product.
+- Supabase migrations and production credentials must be checked before any
+  persistence or cross-device claim.
+- Groq has historical live evidence; other model-provider fallback legs should
+  remain described according to their current measured state.
+- Sourcify exact matching is proven. BaseScan source verification is not
+  claimed unless BaseScan itself reports it.
 
-The exposure is real but local to the author's machine, and the fix is `git gc --prune=now` rather
-than a history rewrite. The deployer key does control `0x976EF2…` as previously stated — verified by
-a local one-way key→address derivation — and its blast radius is testnet dust with zero authority
-over the deployed contract. Both remediations are user actions, reasoned through in
-[user-actions.md](user-actions.md#1-deployer-private-key-in-unreachable-git-objects).
+## Judge-readiness strategy
 
-## Remaining work
+KeeperHub's public event brief requires submissions to land real transactions,
+not mocks, and explicitly welcomes MCP/CLI integrations. KeeperHub's prior
+official hackathon wrap also emphasizes code, README and video review,
+production seriousness, tests, reusable MCP surfaces, audit/failure-mode
+thinking, and actionable integration feedback. Therefore the V2 deployment
+transaction is valuable but the strongest submission still requires a real V2
+product settlement, reusable authenticated flow, visible failure boundaries,
+and one consistent proof/video package. A polished edit cannot substitute for
+those artifacts.
 
-None of it is code. All four items are outside autonomous scope:
+The live DoraHacks detail page advertises a stackable $1,000 onboarding bounty
+for two winners, while `/hackathon/agents-onchain/bounties` rendered “No
+Bounties” on 2026-08-11. Treat this as a platform contradiction: feature PR #95
+prominently in the main BUIDL and verify any bounty control inside the
+authenticated Submit BUIDL flow. Do not claim that a bounty checkbox was
+selected unless the final form proves it.
 
-1. Submit the DoraHacks entry — copy drafted in [../submission.md](../submission.md).
-2. Upload `proof-output/finaltab-demo.mp4` and fill the `[VIDEO_URL]` marker.
-3. Tick the Best Onboarding UX bounty box and paste
-   https://github.com/KeeperHub/cli/pull/95 (already open upstream — nothing to publish).
-4. Rotate the Alchemy key, and run `git gc --prune=now` to drop the dangling blobs that still hold
-   both credentials locally. Neither is reachable from a commit, so neither reaches the public repo.
+## Deadline truth
 
-Gate 12 is closed. Both funding legs happened on 2026-08-10 — 20 testnet USDC per debtor from the
-Circle faucet into the persistent demo signers, and 0.00005 ETH sent to the relayer directly
-(tx `0xce5ec0bf…`, block 45310097; the deployer-key sweep was deliberately not used) — and the
-journey then ran through Execute to **VERIFIED_SETTLED** on the production stack. Evidence in
-[gates.md](gates.md) and [evidence/](evidence/).
+The live DoraHacks project detail page was inspected on 2026-08-11. It states
+that all times are UTC+2 and gives the deadline as **2026-08-13 12:00 UTC+2**,
+which is **10:00 UTC / 11:00 BST**. The page header displayed 11:00 in the
+browser's BST locale, consistent with that conversion. The form requires a
+source link, a short demo video showing the agent executing onchain through
+KeeperHub, and a transaction link. Ten finalists are scheduled to pitch from
+August 17 through August 19. Do not replace this with a countdown estimate.
+
+## Completion gates
+
+1. Configure and redeploy the web/MCP service for the V2 address and version.
+2. Execute one authenticated, external-wallet V2 settlement through KeeperHub.
+3. Retain its redacted MCP trace, KeeperHub receipt, independent RPC proof,
+   exact indexed V2 plan binding, and participant balance deltas.
+4. Render and review the V2 video from that same proof package.
+5. Upload the video, record its real public URL and measured metadata, and
+   replace every `PENDING` marker.
+6. Run clean CI, recheck PR state, submit the required links before the verified
+   deadline, and retain confirmation.

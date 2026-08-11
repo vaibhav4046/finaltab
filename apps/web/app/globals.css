@@ -1,80 +1,248 @@
 @import "tailwindcss";
 
 @theme {
-  /* ── Obsidian Ledger · semantic tokens ─────────────────────────────
-     canvas: warm graphite near-black. paper: receipt ivory.
-     signal (acid lime) is reserved for action + verified states only. */
-  --color-canvas: #121110;
-  --color-surface-1: #191714;
-  --color-surface-2: #201d19;
-  --color-quiet: #2c2822;
-  --color-quiet-soft: #221f1b;
+  /* Night-service ledger: restaurant warmth, settlement precision. */
+  --color-canvas: #0b0f12;
+  --color-surface-1: #11181d;
+  --color-surface-2: #172127;
+  --color-quiet: #33444e;
+  --color-quiet-soft: #223039;
 
-  --color-paper: #f4eddc;
-  --color-paper-dim: #e7dfc9;
-  --color-ink: #1a1712;
-  --color-ink-soft: #4d4639;
+  --color-paper: #f4eee2;
+  --color-paper-dim: #dbd2c3;
+  --color-ink: #161a1c;
+  --color-ink-soft: #4d565a;
 
-  --color-signal: #c8f542;
-  --color-signal-dim: #97bd2a;
-  --color-danger: #ff6f61;
-  --color-warn: #f5c542;
-  --color-info: #5bd1e8;
+  --color-signal: #ff936a;
+  --color-signal-dim: #df744d;
+  --color-verified: #b7f5d8;
+  --color-danger: #ff7b74;
+  --color-warn: #f5ca73;
+  --color-info: #7bd9f2;
 
-  --color-txt: #ece8de;
-  --color-muted: #a49d8f;
-  --color-faint: #6e6759;
+  --color-txt: #f3f4ef;
+  --color-muted: #bcc7cc;
+  --color-faint: #91a0a8;
 
-  /* legacy aliases — older components reference these names */
-  --color-night: #121110;
-  --color-panel: #191714;
-  --color-panel-2: #201d19;
-  --color-edge: #2c2822;
-  --color-edge-soft: #221f1b;
-  --color-lime: #c8f542;
-  --color-lime-dim: #97bd2a;
-  --color-coral: #ff6f61;
-  --color-amber: #f5c542;
-  --color-fog: #a49d8f;
-  --color-fog-dim: #6e6759;
+  /* Compatibility aliases used throughout the settlement lab. */
+  --color-night: #0b0f12;
+  --color-panel: #11181d;
+  --color-panel-2: #172127;
+  --color-edge: #33444e;
+  --color-edge-soft: #223039;
+  --color-lime: #b7f5d8;
+  --color-lime-dim: #8fd8b9;
+  --color-coral: #ff7b74;
+  --color-amber: #f5ca73;
+  --color-fog: #bcc7cc;
+  --color-fog-dim: #91a0a8;
 
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", monospace;
+  --font-display: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
 
-  /* motion tokens */
-  --duration-control: 140ms;
-  --duration-ui: 220ms;
-  --duration-sheet: 300ms;
+  --duration-control: 160ms;
+  --duration-ui: 240ms;
+  --duration-sheet: 320ms;
   --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 ::selection {
-  background: #c8f542;
-  color: #1a1712;
+  background: #ff936a;
+  color: #161a1c;
 }
 
 :focus-visible {
-  outline: 2px solid #c8f542;
-  outline-offset: 2px;
-  border-radius: 4px;
+  outline: 3px solid #ff936a;
+  outline-offset: 3px;
+  border-radius: 6px;
 }
 
 html {
   scroll-behavior: smooth;
-  background: #121110;
+  background: #0b0f12;
+  color-scheme: dark;
+  text-rendering: optimizeLegibility;
 }
 
 body {
-  background: #121110;
-  color: #ece8de;
+  min-width: 320px;
+  background: #0b0f12;
+  color: #f3f4ef;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
 
-/* warm receipt paper card */
+button,
+a,
+input,
+textarea,
+select {
+  touch-action: manipulation;
+}
+
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]) {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+.skip-link {
+  position: fixed;
+  left: 1rem;
+  top: 0.75rem;
+  z-index: 60;
+  min-height: 44px;
+  transform: translateY(-160%);
+  border-radius: 999px;
+  background: #f4eee2;
+  color: #161a1c;
+  padding: 0.65rem 1rem;
+  font-weight: 700;
+  transition: transform var(--duration-control) var(--ease-out-soft);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+.display-type {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.ledger-grid {
+  background-image:
+    linear-gradient(rgba(145, 160, 168, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(145, 160, 168, 0.04) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: linear-gradient(to bottom, black 35%, transparent 96%);
+}
+
+/* Accounting-register lines: a receipt product's own texture, not a generic square grid. */
+.ledger-register {
+  background-image:
+    linear-gradient(
+      90deg,
+      transparent 0,
+      transparent 8%,
+      rgba(255, 147, 106, 0.13) 8%,
+      rgba(255, 147, 106, 0.13) calc(8% + 1px),
+      transparent calc(8% + 1px),
+      transparent 70%,
+      rgba(123, 217, 242, 0.075) 70%,
+      rgba(123, 217, 242, 0.075) calc(70% + 1px),
+      transparent calc(70% + 1px)
+    ),
+    repeating-linear-gradient(
+      180deg,
+      transparent 0,
+      transparent 43px,
+      rgba(145, 160, 168, 0.07) 43px,
+      rgba(145, 160, 168, 0.07) 44px
+    );
+  background-position: 0 13px;
+}
+
+.ledger-register-hero {
+  mask-image: linear-gradient(to bottom, black 28%, transparent 95%);
+  opacity: 0.78;
+}
+
+.surface-shadow {
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.035) inset,
+    0 30px 70px -48px rgba(0, 0, 0, 0.95);
+}
+
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.route-progress {
+  transform-origin: top;
+  animation: route-arrive 720ms var(--ease-out-soft) both;
+}
+
+@keyframes route-arrive {
+  from { transform: scaleY(0); opacity: 0.25; }
+  to { transform: scaleY(1); opacity: 1; }
+}
+
+[data-finaltab-mark] .mark-receipt {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: mark-receipt-arrive 420ms var(--ease-out-soft) both;
+}
+
+[data-finaltab-mark] .mark-route {
+  stroke-dasharray: 24;
+  stroke-dashoffset: 24;
+  animation: mark-route-arrive 480ms var(--ease-out-soft) 180ms both;
+}
+
+[data-finaltab-mark] .mark-route-back {
+  animation-delay: 300ms;
+}
+
+[data-finaltab-mark] .mark-node {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: mark-node-arrive 240ms var(--ease-out-soft) 510ms both;
+}
+
+[data-finaltab-mark] .mark-node-last {
+  animation-delay: 620ms;
+}
+
+@keyframes mark-receipt-arrive {
+  from { opacity: 0; transform: scale(0.82) translateY(1px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes mark-route-arrive {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes mark-node-arrive {
+  from { opacity: 0; transform: scale(0.3); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.scan-window {
+  position: relative;
+  overflow: hidden;
+}
+
+.scan-window::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #ff936a 24%, #b7f5d8 76%, transparent);
+  box-shadow: 0 0 20px rgba(255, 147, 106, 0.4);
+  animation: scan-once 1.25s var(--ease-out-soft) 220ms both;
+  pointer-events: none;
+}
+
+@keyframes scan-once {
+  from { transform: translateY(-4px); opacity: 0; }
+  16% { opacity: 1; }
+  to { transform: translateY(330px); opacity: 0; }
+}
+
+/* Warm receipt paper card. */
 .receipt-paper {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 18%),
-    #f4eddc;
+    #f4eee2;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.6),
     0 18px 40px -18px rgba(0, 0, 0, 0.65),
@@ -84,7 +252,7 @@ body {
 
 .receipt-tear {
   height: 10px;
-  background: #f4eddc;
+  background: #f4eee2;
   clip-path: polygon(
     0 0, 100% 0, 100% 30%,
     97.5% 100%, 95% 30%, 92.5% 100%, 90% 30%, 87.5% 100%, 85% 30%,
@@ -97,9 +265,8 @@ body {
   );
 }
 
-/* dotted leaders between item and price, receipt style */
 .leader {
-  border-bottom: 1.5px dotted rgba(77, 70, 57, 0.5);
+  border-bottom: 1.5px dotted rgba(77, 86, 90, 0.5);
   transform: translateY(-3px);
 }
 
@@ -107,47 +274,48 @@ body {
   transition: background-color 400ms ease;
 }
 
-/* atmospheric wash for hero surfaces — additive light only, no blobs */
 .atmosphere {
   position: relative;
 }
+
 .atmosphere::before {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(1100px 500px at 70% -10%, rgba(200, 245, 66, 0.05), transparent 60%),
-    radial-gradient(900px 600px at 10% 110%, rgba(91, 209, 232, 0.04), transparent 60%);
+    linear-gradient(118deg, rgba(255, 147, 106, 0.055), transparent 34%),
+    linear-gradient(298deg, rgba(123, 217, 242, 0.045), transparent 28%);
 }
 
-.ticker {
-  display: flex;
-  gap: 3rem;
-  width: max-content;
-  animation: ticker-scroll 28s linear infinite;
-}
-@keyframes ticker-scroll {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-
-/* the single verified micro-celebration — one pulse, no confetti */
 @keyframes verified-pulse {
-  0% { box-shadow: 0 0 0 0 rgba(200, 245, 66, 0.35); }
-  100% { box-shadow: 0 0 0 24px rgba(200, 245, 66, 0); }
+  0% { box-shadow: 0 0 0 0 rgba(183, 245, 216, 0.35); }
+  100% { box-shadow: 0 0 0 24px rgba(183, 245, 216, 0); }
 }
+
 .verified-pulse {
   animation: verified-pulse 900ms var(--ease-out-soft) 1;
 }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .ticker { animation: none; }
-  .verified-pulse { animation: none; }
+  .verified-pulse,
+  .route-progress,
+  [data-finaltab-mark] .mark-receipt,
+  [data-finaltab-mark] .mark-route,
+  [data-finaltab-mark] .mark-node { animation: none; }
+  [data-finaltab-mark] .mark-route { stroke-dashoffset: 0; }
+  [data-finaltab-mark] .mark-receipt,
+  [data-finaltab-mark] .mark-node { opacity: 1; transform: none; }
+  .scan-window::after {
+    display: none;
+    animation: none;
+  }
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
@@ -155,15 +323,16 @@ body {
   width: 8px;
   height: 8px;
 }
+
 .lab-scroll::-webkit-scrollbar-thumb {
-  background: #2c2822;
+  background: #33444e;
   border-radius: 4px;
 }
+
 .lab-scroll::-webkit-scrollbar-track {
   background: transparent;
 }
 
-/* mobile bottom nav safe area */
 .safe-bottom {
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }

@@ -2,6 +2,7 @@ import { z } from "zod";
 import { extractReceiptWithFallback, analyzeImageQuality } from "@finaltab/vision";
 import { checkReceiptArithmetic } from "@finaltab/engine";
 import { jsonError } from "@/lib/server/clients";
+import { ApiPayloadTooLargeError, authorizeApiRequest, readJsonBodyWithLimit, withAccessHeaders } from "@/lib/server/apiAccess";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -11,11 +12,23 @@ const BodySchema = z.object({
 });
 
 export async function POST(req: Request): Promise<Response> {
+  const access = await authorizeApiRequest(req, {
+    scope: "receipts:write",
+    maxBytes: 14_500_000,
+    rateLimit: 10,
+    rateWindowMs: 60_000,
+  });
+  if (!access.ok) return access.response;
+  const secured = (response: Response) => withAccessHeaders(response, access.headers);
+
   let body: z.infer<typeof BodySchema>;
   try {
-    body = BodySchema.parse(await req.json());
+    body = BodySchema.parse(await readJsonBodyWithLimit(req, 14_500_000));
   } catch (e) {
-    return jsonError(e instanceof Error ? e.message : "invalid request body", 400);
+    if (e instanceof ApiPayloadTooLargeError) {
+      return secured(Response.json({ error: "PAYLOAD_TOO_LARGE", maxBytes: e.maxBytes }, { status: 413 }));
+    }
+    return secured(jsonError(e instanceof Error ? e.message : "invalid request body", 400));
   }
 
   // analyzeImageQuality is an unimplemented no-op that always returns PASS, so
@@ -45,13 +58,13 @@ export async function POST(req: Request): Promise<Response> {
     };
 
     if (!apiKeys.groqApiKey && !apiKeys.claudeApiKey && !apiKeys.openaiApiKey) {
-      return jsonError("No LLM API keys configured on the server.", 501);
+      return secured(jsonError("No LLM API keys configured on the server.", 501));
     }
 
     const { receipt, attempts, provider } = await extractReceiptWithFallback(body.imageDataUrl, apiKeys);
     const arithmeticIssues = checkReceiptArithmetic(receipt).map((i) => `${i.code}: ${i.message}`);
-    return Response.json({ receipt, attempts, provider, qualityWarning, arithmeticIssues });
+    return secured(Response.json({ receipt, attempts, provider, qualityWarning, arithmeticIssues }));
   } catch (e) {
-    return jsonError(e instanceof Error ? e.message : "extraction failed", 502);
+    return secured(jsonError(e instanceof Error ? e.message : "extraction failed", 502));
   }
 }

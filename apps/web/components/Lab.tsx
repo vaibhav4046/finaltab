@@ -5,6 +5,7 @@ import { ReceiptPanel } from "./ReceiptPanel";
 import { SplitPanel } from "./SplitPanel";
 import { ExecutionRail } from "./ExecutionRail";
 import { FundingPanel } from "./FundingPanel";
+import { ParticipantSetup, type SettlementMode } from "./ParticipantSetup";
 import { parseFiat } from "@finaltab/engine";
 import { makeDemoPeople } from "@/lib/flow";
 import { recordTab } from "@/lib/identity";
@@ -14,6 +15,7 @@ export function Lab() {
   // Demo signers are generated client-side only — render nothing address-
   // dependent until after mount so SSR and client HTML agree.
   const [people, setPeople] = useState<Person[] | null>(null);
+  const [mode, setMode] = useState<SettlementMode>("demo");
   const [receipt, setReceipt] = useState<ReceiptState | null>(null);
   const [receiptNonce, setReceiptNonce] = useState<string | null>(null);
   const [payerId, setPayerId] = useState("vee");
@@ -21,8 +23,17 @@ export function Lab() {
   const [netted, setNetted] = useState<Array<{ debtor: string; creditor: string; usdcMinor: string }>>([]);
   const [stage, setStage] = useState<ExecutionStage>("idle");
   const [locked, setLocked] = useState(false);
+  const [cloudTabId, setCloudTabId] = useState<string | null>(null);
 
   useEffect(() => {
+    const requestedTab = new URLSearchParams(window.location.search).get("tab");
+    if (requestedTab) {
+      setCloudTabId(requestedTab);
+      setMode("live");
+      setPeople([]);
+      setPayerId("");
+      return;
+    }
     setPeople(makeDemoPeople());
   }, []);
 
@@ -58,6 +69,26 @@ export function Lab() {
     );
   }
 
+  const resetAfterParticipantChange = (next: Person[]) => {
+    if (locked) return;
+    setPeople(next);
+    if (!next.some((person) => person.id === payerId)) setPayerId(next[0]?.id ?? "");
+    setAllocation(null);
+    setNetted([]);
+    setStage("idle");
+  };
+
+  const changeMode = (nextMode: SettlementMode) => {
+    if (locked || nextMode === mode) return;
+    setMode(nextMode);
+    const nextPeople = nextMode === "demo" ? makeDemoPeople() : [];
+    setPeople(nextPeople);
+    setPayerId(nextPeople[0]?.id ?? "");
+    setAllocation(null);
+    setNetted([]);
+    setStage("idle");
+  };
+
   return (
     <div className="mx-auto max-w-[1400px] px-4 pb-10 md:px-6">
       <header className="flex flex-wrap items-baseline justify-between gap-2 py-6">
@@ -71,6 +102,15 @@ export function Lab() {
           Base Sepolia · USDC · KeeperHub execution
         </p>
       </header>
+
+      <ParticipantSetup
+        mode={mode}
+        people={people}
+        locked={locked}
+        cloudTabId={cloudTabId}
+        onMode={changeMode}
+        onPeople={resetAfterParticipantChange}
+      />
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <ReceiptPanel
@@ -87,6 +127,7 @@ export function Lab() {
             setNetted([]);
             setStage("idle");
           }}
+          locked={locked}
         />
         <SplitPanel
           people={people}
@@ -112,9 +153,11 @@ export function Lab() {
         />
       </div>
 
-      <div className="mt-4">
-        <FundingPanel people={people} />
-      </div>
+      {mode === "demo" ? (
+        <div className="mt-4">
+          <FundingPanel people={people} />
+        </div>
+      ) : null}
     </div>
   );
 }

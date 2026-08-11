@@ -10,10 +10,10 @@ tested; they are gated on inputs only a human can supply.
 | # | Action | Why it needs you | Severity | Blocks |
 |---|---|---|---|---|
 | 1 | Purge a deployer private key from **unreachable** objects in your local `.git` | Deleting git objects is irreversible | Low | Local disk hygiene. Not reachable from any commit, so not exposed by clone or push |
-| 2 | Provide a persistent funded signer strategy for Base Sepolia | Needs a funded key + a product decision | High | The live settle leg |
+| 2 | Execute and retain an authenticated external-wallet V2 USDC settlement | Requires funded testnet wallets and human signatures | High | Current product proof and video |
 | 3 | Create a Supabase project and fill 4 env vars | Requires an account you own | Medium | Persistence across sessions |
-| 4 | Verify the contract source on Basescan | Requires a Basescan account/API key | Low | Human-readable tx for judges |
-| 5 | Submit to DoraHacks, publish the CLI PR, upload the demo video | Explicitly out of autonomous scope | High | Submission itself |
+| 4 | Optionally publish V2 source on BaseScan | Sourcify exact match is already proven; BaseScan requires its own account/API flow | Low | BaseScan-native readability only |
+| 5 | Render/upload the V2 video and submit to DoraHacks | Account and publication actions | High | Submission itself |
 | 6 | Rotate the Alchemy API key | Rotating a credential is never autonomous | Medium | Nothing functional — the repo no longer needs it |
 
 ---
@@ -71,7 +71,7 @@ Sepolia on 2026-08-10:
 | native ETH held | 0.00009666 (testnet dust) |
 | USDC held | 0 |
 | transaction count | 1 |
-| what that 1 tx did | deployed the live settlement contract (CREATE at nonce 0 = `0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64`, matches exactly) |
+| what that 1 tx did | deployed the historical V1 contract (CREATE at nonce 0 = `0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64`, matches exactly); it has no V2 authority |
 | authority over the deployed contract | **None.** `FinalTabBatchSettlement.sol` has no owner, admin, pause, withdraw, sweep, upgrade, or selfdestruct function. There is nothing privileged to call. |
 
 So the exposure costs at most 0.0001 testnet ETH and grants no control over
@@ -105,7 +105,10 @@ inspect the dangling blobs yourself before they go.
 
 ---
 
-## 2. Persistent funded signer on Base Sepolia — RESOLVED 2026-08-10
+## 2. Historical V1 signer funding — resolved 2026-08-10
+
+> This section proves how the V1 demo signers were funded. It does not close
+> the current V2 external-wallet settlement gate.
 
 **Closed.** Persistent demo signers were added (env-keyed, stored in gitignored
 `proof-output/demo-signers.local.json`), both debtors were funded 20 USDC each from the
@@ -149,7 +152,9 @@ mocked receipt.
 
 ## 3. Supabase project
 
-Schema is complete at `supabase/migrations/0001_init.sql` and applied nowhere.
+The production tenancy and approval migration is complete at
+`supabase/migrations/20260811003158_production_tenancy_and_approvals.sql` and
+has not been applied to a hosted project.
 
 Create a free project, then fill in `apps/web/.env.local`:
 
@@ -158,22 +163,24 @@ Create a free project, then fill in `apps/web/.env.local`:
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 
-Then run the migration. Until then the app is stateless per session; the core
-flow works without persistence.
+Then run the migration. Until then cloud tabs, invitations, approval history,
+and cross-device resume stay unavailable. Local draft editing still works, but
+receipt extraction, simulation, and submission require an authenticated session
+or a correctly scoped API token; persistence is not an authentication bypass.
 
 ---
 
-## 4. Verify the contract on Basescan
+## 4. V2 source publication
 
-`0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64` has bytecode but no published
-source. Two consequences:
+V2 at `0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB` is already source-verified by
+Sourcify with exact creation and runtime matches (match ID `43497805`). The
+retained deployment manifest proves that state.
 
-- KeeperHub cannot auto-fetch the ABI, which is why
-  `apps/web/lib/server/settlement.ts` must pass `abi` inline (and therefore uses
-  the bare `functionName`, not the canonical signature).
-- A judge following the tx link sees raw calldata instead of a readable call.
-
-Verifying the source removes both.
+BaseScan publication is optional and must not be conflated with Sourcify. If a
+BaseScan account/API key is available, publish the exact V2 compiler settings
+and constructor input there for explorer-native readability. Until BaseScan
+confirms it, submission copy must say “Sourcify exact match,” not “verified on
+BaseScan.”
 
 ---
 
@@ -183,10 +190,13 @@ Explicitly outside autonomous scope, per the operating constraints for this work
 
 - Submit the entry on DoraHacks.
 - Publish/open the KeeperHub CLI PR.
-- Upload the demo video and fill `[VIDEO_URL]` in `docs/submission.md`.
+- Execute and retain one authenticated external-wallet V2 USDC settlement.
+- Render and upload the new V2 agent/MCP video from that same proof package,
+  then record its real public URL in `docs/submission.md`.
 
-`docs/submission.md` still contains `[VIDEO_URL]` as a deliberate placeholder.
-Do not submit with it hand-waved.
+`docs/submission.md` deliberately says the V2 URL is pending. Do not replace
+that state until the uploaded link works while logged out, and do not submit
+with it hand-waved.
 
 ---
 

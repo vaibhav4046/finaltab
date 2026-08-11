@@ -18,6 +18,9 @@
  */
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { classify } from "../src/classify.mjs";
+
+export { classify } from "../src/classify.mjs";
 
 const TERMINAL = new Set(["completed", "failed", "cancelled"]);
 
@@ -59,38 +62,6 @@ async function fetchStatus(baseUrl, apiKey, executionId) {
     pollHintSec: res.headers.get("X-Poll-Interval-Hint"),
     retryAfterSec: res.headers.get("Retry-After"),
   };
-}
-
-/** Same fail-closed classification as @finaltab/keeperhub verify.ts. */
-export function classify(status) {
-  const receipts = status.receipts ?? [];
-  if (status.status === "pending" || status.status === "submitted") {
-    return { verdict: "PENDING", reason: `status is ${status.status} (not terminal)`, receipts };
-  }
-  if (status.status === "failed" || status.status === "cancelled") {
-    return {
-      verdict: "FAILED",
-      reason: status.error ? `status ${status.status}: ${status.error}` : `status ${status.status}`,
-      receipts,
-    };
-  }
-  if (receipts.length === 0) {
-    return { verdict: "UNPROVEN", reason: "status completed but receipts[] is empty — no chain-re-fetched proof", receipts };
-  }
-  for (const r of receipts) {
-    if (r.verified !== true) {
-      return { verdict: "UNPROVEN", reason: `receipt ${r.hash} verified=${String(r.verified)} — not chain-confirmed`, receipts };
-    }
-    if (r.receiptStatus !== "success") {
-      const closed = r.receiptStatus === "not_found" || r.receiptStatus === "timeout";
-      return {
-        verdict: closed ? "UNPROVEN" : "FAILED",
-        reason: `receipt ${r.hash} receiptStatus=${r.receiptStatus}${closed ? " — fails closed" : ""}`,
-        receipts,
-      };
-    }
-  }
-  return { verdict: "VERIFIED_SETTLED", reason: "terminal success; every receipt chain-verified successful", receipts };
 }
 
 function renderMarkdown(executionId, verdict, reason, status, polls, startedAt) {

@@ -29,9 +29,11 @@ export interface ImageQualityResult {
  * as "checked and fine".
  */
 export async function analyzeImageQuality(
-  _imageBuffer: Buffer,
-  _mimeType: string
+  imageBuffer: Buffer,
+  mimeType: string
 ): Promise<ImageQualityResult> {
+  void imageBuffer;
+  void mimeType;
   return {
     isBlurry: false,
     sharpnessScore: null,

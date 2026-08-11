@@ -1,0 +1,154 @@
+{
+  "tool": "finaltab-v2-keeperhub-deployer",
+  "version": 1,
+  "startedAt": "2026-08-11T01:08:17.421Z",
+  "mode": "SIMULATE_THEN_BROADCAST",
+  "chain": {
+    "name": "Base Sepolia",
+    "chainId": 84532
+  },
+  "result": "DEPLOYED_AND_SOURCE_VERIFIED",
+  "build": {
+    "contract": "contracts/FinalTabBatchSettlementV2.sol:FinalTabBatchSettlementV2",
+    "protocolVersion": 2,
+    "compilerVersion": "0.8.24+commit.e11b9ed9",
+    "optimizer": {
+      "enabled": true,
+      "runs": 200
+    },
+    "evmVersion": "paris",
+    "creationBytecodeBytes": 7579,
+    "runtimeBytecodeBytes": 6367,
+    "initCodeBytes": 7611,
+    "creationBytecodeHash": "0x0a5bcfc7c6092c9b8d35bae54a6dbf4143600b9d5f98a17101eb96b94fa6199a",
+    "runtimeTemplateHash": "0x35b4d4d51f9e0a24b9dbd9ece7c867185b8d3c9416b77fffd9053c1218fea8b4",
+    "initCodeHash": "0x10a62e4ee67f18654ed20c0f717bb41c1cee02e434e9d118fa2047aa64790662",
+    "standardJsonInputHash": "0xa2773b75ea9171026f11e49f37720311a16be7d6e8eb6a7e1755a980b0340ab8",
+    "constructor": {
+      "usdc": "0x036CbD53842c5426634e7929541eC2318f3dCF7e"
+    },
+    "immutableSlotCount": 13
+  },
+  "preflight": {
+    "rpcChainId": 84532,
+    "createX": "0xba5Ed099633D3B313e4D5F7bdc1305d3c28ba5Ed",
+    "createXCodeBytes": 11838,
+    "createXCodeHash": "0xbd8a7ea8cfca7b4e5f5041d7d4b17bc317c5ce42cfbc42066a00cf26b43eb53f",
+    "usdc": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+    "usdcCodeBytes": 1798,
+    "usdcCodeHash": "0xedc5281a85c0efecd49999a1ef668390c59b88702f2d4a07029d7f5d63059d6c"
+  },
+  "credential": {
+    "source": "env-file",
+    "organizationKeyAccepted": true
+  },
+  "keeperHub": {
+    "authHttpStatus": 200,
+    "chain": {
+      "found": true,
+      "enabled": true
+    },
+    "simulation": {
+      "httpStatus": 200,
+      "success": true,
+      "wouldRevert": false,
+      "gasEstimate": "1495143"
+    },
+    "executionId": "xasakw5nfxkh2s0fh4stn",
+    "idempotentReplay": false,
+    "polls": 1,
+    "terminal": {
+      "executionId": "xasakw5nfxkh2s0fh4stn",
+      "status": "completed",
+      "sponsored": true,
+      "transactionHash": "0x904ec881ef7c2ec7375c20887b4181cf58224b44162d837743fa869b0a598e8f",
+      "transactionLink": "https://sepolia.basescan.org/tx/0x904ec881ef7c2ec7375c20887b4181cf58224b44162d837743fa869b0a598e8f",
+      "receipts": [
+        {
+          "hash": "0x904ec881ef7c2ec7375c20887b4181cf58224b44162d837743fa869b0a598e8f",
+          "chainId": 84532,
+          "verified": true,
+          "receiptStatus": "success",
+          "blockNumber": 45321107,
+          "gasUsed": "1497038",
+          "verifiedAt": "2026-08-11T01:08:22.339Z"
+        }
+      ],
+      "error": null
+    },
+    "verdict": {
+      "verdict": "VERIFIED_SETTLED",
+      "reason": "terminal success; every receipt chain-verified successful"
+    }
+  },
+  "deployment": {
+    "verified": true,
+    "method": "base-sepolia-json-rpc",
+    "checkedAt": "2026-08-11T01:08:22.885Z",
+    "transactionHash": "0x904ec881ef7c2ec7375c20887b4181cf58224b44162d837743fa869b0a598e8f",
+    "blockNumber": 45321107,
+    "confirmations": 1,
+    "contractAddress": "0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB",
+    "createX": "0xba5Ed099633D3B313e4D5F7bdc1305d3c28ba5Ed",
+    "createXEvent": "ContractCreation(address)",
+    "runtimeCodeBytes": 6367,
+    "runtimeCodeHash": "0x4b8eaae22838d6cd0bd81e4c10bdfd276fc9b030df863fc28364a101dd7b91b2",
+    "runtimeComparison": {
+      "matched": true,
+      "compiledBytes": 6367,
+      "onchainBytes": 6367,
+      "ignoredImmutableBytes": 416,
+      "unmaskedMismatchCount": 0
+    },
+    "immutableUsdc": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+    "domain": {
+      "name": "FINALTab Settlement",
+      "version": "2",
+      "chainId": 84532,
+      "verifyingContract": "0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB",
+      "separator": "0xea0f9ad58cfe8d2403d03d252b1f4fcd8d8f86533223478dbb8ee7abe3833099",
+      "expectedSeparator": "0xea0f9ad58cfe8d2403d03d252b1f4fcd8d8f86533223478dbb8ee7abe3833099"
+    },
+    "explorer": "https://sepolia.basescan.org/address/0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB",
+    "transactionExplorer": "https://sepolia.basescan.org/tx/0x904ec881ef7c2ec7375c20887b4181cf58224b44162d837743fa869b0a598e8f"
+  },
+  "sourceVerification": {
+    "provider": "Sourcify API V2",
+    "submittedAt": "2026-08-11T01:08:26.198Z",
+    "submissionHttpStatus": 202,
+    "verificationId": "9fda2038-4f7b-43f7-b17a-ec42edf64a7a",
+    "polls": 1,
+    "verified": true,
+    "job": {
+      "isJobCompleted": true,
+      "verificationId": "9fda2038-4f7b-43f7-b17a-ec42edf64a7a",
+      "contract": {
+        "match": "exact_match",
+        "creationMatch": "exact_match",
+        "runtimeMatch": "exact_match",
+        "chainId": "84532",
+        "address": "0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB",
+        "verifiedAt": "2026-08-11T01:08:24Z",
+        "matchId": "43497805"
+      },
+      "error": null,
+      "etherscan": null,
+      "blockscout": null,
+      "routescan": null
+    },
+    "lookup": {
+      "httpStatus": 200,
+      "contract": {
+        "match": "exact_match",
+        "creationMatch": "exact_match",
+        "runtimeMatch": "exact_match",
+        "chainId": "84532",
+        "address": "0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB",
+        "verifiedAt": "2026-08-11T01:08:24Z",
+        "matchId": "43497805"
+      }
+    },
+    "repositoryUrl": "https://repo.sourcify.dev/84532/0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB"
+  },
+  "finishedAt": "2026-08-11T01:08:26.198Z"
+}

@@ -12,7 +12,22 @@ is just a new way to get a receipt or a debt graph into the same engine.
 
 ---
 
-## 1. MCP distribution — ship the engine to every agent (PROVEN)
+## 1. MCP distribution — ship the engine to every agent
+
+**Current V2 state: implemented and test-covered; live value-moving proof is
+pending.** The MCP server now requires scoped authentication and supports
+arbitrary caller participants with external debtor-wallet signatures. Its
+production sequence is `allocate_receipt → prepare_receipt_settlement →
+simulate_signed_settlement → create_broadcast_approval_challenge → human
+personal_sign → submit_signed_settlement → settlement_status`. Three
+fixed-wallet `demo_*` tools are disabled by default. `confirm: true` is not a V2
+approval mechanism.
+
+The V2 contract is deployed and source-matched exactly, but no retained V2 USDC
+settlement proves this current loop yet. Do not promote this section to
+`LIVE_PROVEN` until that receipt, event, and balance proof exists.
+
+### Historical V1 evidence — preserved
 
 FINALTab is live as an MCP server at `https://finaltab.vercel.app/api/mcp`
 (Streamable HTTP). Any MCP-capable client — Claude Desktop, Claude Code, or any

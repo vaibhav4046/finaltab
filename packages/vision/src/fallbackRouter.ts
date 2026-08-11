@@ -7,7 +7,12 @@
 import Anthropic from "@anthropic-ai/sdk";
 import OpenAI from "openai";
 import { ParsedReceiptSchema, type ParsedReceipt } from "@finaltab/engine";
-import { GroqClient, extractJsonObject, isRetryableGroqError } from "./groqClient.js";
+import {
+  GroqClient,
+  extractJsonObject,
+  isRetryableGroqError,
+  type GroqMessage,
+} from "./groqClient.js";
 import { RECEIPT_EXTRACTION_SYSTEM } from "./prompts.js";
 
 export interface ExtractReceiptResult {
@@ -87,7 +92,7 @@ async function extractViaGroq(
   let lastError: unknown = null;
 
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
-    const messages = [
+    const messages: GroqMessage[] = [
       { role: "system" as const, content: RECEIPT_EXTRACTION_SYSTEM },
       {
         role: "user" as const,
@@ -106,7 +111,7 @@ async function extractViaGroq(
             text: `Your previous output was invalid: ${lastError.message}. Output ONLY the corrected JSON object.`,
           },
         ],
-      } as any);
+      });
     }
 
     let raw: string;

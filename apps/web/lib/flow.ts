@@ -1,20 +1,29 @@
 "use client";
 
 import { privateKeyToAccount } from "viem/accounts";
-import { parseSignature, keccak256, encodeAbiParameters } from "viem";
+import { parseSignature } from "viem";
 import {
   BASE_SEPOLIA_CHAIN_ID,
   BASE_SEPOLIA_USDC,
   buildReceiveAuthorizationTypedData,
+  buildSettlementConsentTypedData,
+  aggregateSettlementTransfers,
+  hashSettlementPlan,
+  settlementAuthorizationNonce,
   canonicalizeLedger,
   ledgerToCanonicalJson,
   ledgerHash as computeLedgerHash,
-  settlementId as computeSettlementId,
   assertSettlementCurrency,
   type CanonicalLedger,
 } from "@finaltab/engine";
 import type { Person, FrozenLedgerState, SignedTransfer } from "./types";
 import { resolveDemoKeys } from "./demoKeys";
+import {
+  connectWallet,
+  getConnectedAccounts,
+  signEIP712,
+  switchToBaseSepolia,
+} from "./wallet";
 
 /** The three demo signers, in the order the UI renders them. */
 export const DEMO_SEED: ReadonlyArray<readonly [string, string]> = [
@@ -76,78 +85,135 @@ export function freezeLedger(
 
   const canonical = canonicalizeLedger(ledger);
   const hash = computeLedgerHash(canonical);
+  const settlementContract = (process.env.NEXT_PUBLIC_SETTLEMENT_CONTRACT || "") as `0x${string}`;
+  if (!/^0x[0-9a-fA-F]{40}$/.test(settlementContract)) {
+    throw new Error("NEXT_PUBLIC_SETTLEMENT_CONTRACT not configured for V2");
+  }
+  const { debits, payouts } = aggregateSettlementTransfers(canonical.transfers);
+  const planHash = hashSettlementPlan({
+    ledgerHash: hash,
+    settlementContract,
+    debits,
+    payouts,
+  });
   return {
     canonicalJson: ledgerToCanonicalJson(canonical),
     ledgerHash: hash,
-    settlementId: computeSettlementId(hash),
+    settlementId: planHash,
     transfers: canonical.transfers.map((t) => ({ from: t.from, to: t.to, value: t.value.toString() })),
+    debits: debits.map((d) => ({ debtor: d.debtor, value: d.value.toString() })),
+    payouts: payouts.map((p) => ({ creditor: p.creditor, value: p.value.toString() })),
   };
 }
 
-/** Derive receive authorization nonce from ledgerHash, debtor, and amount. */
-function receiveNonce(ledgerHash: `0x${string}`, from: `0x${string}`, value: bigint): `0x${string}` {
-  return keccak256(
-    encodeAbiParameters(
-      [{ type: "bytes32" }, { type: "address" }, { type: "uint256" }],
-      [ledgerHash, from, value],
-    ),
-  );
+/**
+ * Sign one aggregated pull per debtor. Each debtor signs both USDC's
+ * ReceiveWithAuthorization and FINALTab's complete V2 payout plan.
+ */
+export async function signAllTransfers(people: Person[], frozen: FrozenLedgerState): Promise<SignedTransfer[]> {
+  const out: SignedTransfer[] = [];
+  for (let index = 0; index < frozen.debits.length; index++) {
+    out.push(await signPreparedDebit(people, frozen, index));
+  }
+  return out;
 }
 
 /**
- * Sign every transfer as a ReceiveWithAuthorization to the settlement contract.
- * Debtors sign authorization to pull funds TO the settlement contract.
- * Nonces derive from ledger hash + debtor + amount, binding to this settlement only.
+ * Collect one V2 debtor approval. Demo identities sign locally; live identities
+ * must expose the exact participant wallet through the injected provider.
+ * Returning one debit at a time makes account switching and remote approval
+ * state explicit instead of pretending one click represented three people.
  */
-export async function signAllTransfers(people: Person[], frozen: FrozenLedgerState): Promise<SignedTransfer[]> {
-  console.log("[signAllTransfers] Starting with", frozen.transfers.length, "transfers");
+export async function signPreparedDebit(
+  people: Person[],
+  frozen: FrozenLedgerState,
+  debitIndex: number,
+): Promise<SignedTransfer> {
   const byAddress = new Map(people.map((p) => [p.address.toLowerCase(), p]));
   const settlementContract = (process.env.NEXT_PUBLIC_SETTLEMENT_CONTRACT || "") as `0x${string}`;
   if (!settlementContract) throw new Error("NEXT_PUBLIC_SETTLEMENT_CONTRACT not configured");
-  console.log("[signAllTransfers] Contract:", settlementContract);
 
   const now = BigInt(Math.floor(Date.now() / 1000));
   const validAfter = 0n;
   const validBefore = now + AUTH_VALIDITY_SECONDS;
 
-  const out: SignedTransfer[] = [];
-  for (let i = 0; i < frozen.transfers.length; i++) {
-    const t = frozen.transfers[i]!;
-    console.log(`[signAllTransfers] Transfer ${i}:`, t);
-    const person = byAddress.get(t.from.toLowerCase());
-    if (!person?.demoPrivateKey) throw new Error(`No demo key for debtor ${t.from}`);
-    console.log(`[signAllTransfers] Found person:`, person.name, person.address);
-    const account = privateKeyToAccount(person.demoPrivateKey);
-    console.log(`[signAllTransfers] Created account:`, account.address);
+  const debit = frozen.debits[debitIndex];
+  if (!debit) throw new Error(`Unknown debit ${debitIndex}`);
+  const person = byAddress.get(debit.debtor.toLowerCase());
+  if (!person) throw new Error(`No participant for debtor ${debit.debtor}`);
 
-    const value = BigInt(t.value);
-    const nonce = receiveNonce(frozen.ledgerHash, t.from, value);
-    const typed = buildReceiveAuthorizationTypedData({
-      from: t.from,
-      to: settlementContract,
-      value,
-      validAfter,
-      validBefore,
-      nonce,
-    });
-    console.log(`[signAllTransfers] Built typed data, about to sign...`);
-    const signature = await account.signTypedData(typed);
-    console.log(`[signAllTransfers] Got signature:`, signature);
-    const { v, r, s } = parseSignature(signature);
-    out.push({
-      from: t.from,
-      to: settlementContract,
-      value: t.value,
-      validAfter: validAfter.toString(),
-      validBefore: validBefore.toString(),
-      nonce,
-      v: Number(v ?? 27n),
-      r,
-      s,
-    });
+  const value = BigInt(debit.value);
+  const nonce = settlementAuthorizationNonce(frozen.settlementId, debit.debtor, value);
+  const authorization = {
+    from: debit.debtor,
+    to: settlementContract,
+    value,
+    validAfter,
+    validBefore,
+    nonce,
+  } as const;
+  const consent = {
+    planHash: frozen.settlementId,
+    debtor: debit.debtor,
+    value,
+    validAfter,
+    validBefore,
+  } as const;
+  const authTyped = buildReceiveAuthorizationTypedData(authorization);
+  const consentTyped = buildSettlementConsentTypedData(settlementContract, consent);
+
+  let authHex: `0x${string}`;
+  let consentHex: `0x${string}`;
+  if (person.demoPrivateKey) {
+    const account = privateKeyToAccount(person.demoPrivateKey);
+    authHex = await account.signTypedData(authTyped);
+    consentHex = await account.signTypedData(consentTyped);
+  } else {
+    let connected = await getConnectedAccounts();
+    if (connected.length === 0) {
+      const account = await connectWallet();
+      connected = account ? [account.address] : [];
+    }
+    if (!connected.some((address) => address.toLowerCase() === debit.debtor.toLowerCase())) {
+      throw new Error(`Connect ${person.name}'s wallet (${debit.debtor}) to approve this debit.`);
+    }
+    if (!(await switchToBaseSepolia())) throw new Error("Switch the wallet to Base Sepolia.");
+    const auth = await signEIP712(
+      debit.debtor,
+      authTyped.domain,
+      authTyped.types,
+      authTyped.message,
+      authTyped.primaryType,
+    );
+    if (!auth) throw new Error(`${person.name} cancelled the USDC authorization.`);
+    const signedConsent = await signEIP712(
+      debit.debtor,
+      consentTyped.domain,
+      consentTyped.types,
+      consentTyped.message,
+      consentTyped.primaryType,
+    );
+    if (!signedConsent) throw new Error(`${person.name} cancelled the payout-plan consent.`);
+    authHex = auth as `0x${string}`;
+    consentHex = signedConsent as `0x${string}`;
   }
-  console.log("[signAllTransfers] Completed successfully with", out.length, "signatures");
-  return out;
+
+  const authSignature = parseSignature(authHex);
+  const consentSignature = parseSignature(consentHex);
+  return {
+    from: debit.debtor,
+    to: settlementContract,
+    value: debit.value,
+    validAfter: validAfter.toString(),
+    validBefore: validBefore.toString(),
+    nonce,
+    authV: Number(authSignature.v ?? 27n),
+    authR: authSignature.r,
+    authS: authSignature.s,
+    consentV: Number(consentSignature.v ?? 27n),
+    consentR: consentSignature.r,
+    consentS: consentSignature.s,
+  };
 }
 
 /**

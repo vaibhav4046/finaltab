@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, FileText, HelpCircle, Settings } from "lucide-react";
+import { FileCheck2, FlaskConical, House, ScanLine, UserRound } from "lucide-react";
 
 interface NavItem {
   href: string;
@@ -11,29 +11,31 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { href: "/app", label: "Home", icon: <Home size={24} /> },
-  { href: "/app/tab", label: "Settle", icon: <FileText size={24} /> },
-  { href: "/app/lab", label: "Lab", icon: <HelpCircle size={24} /> },
-  { href: "/auth", label: "Profile", icon: <Settings size={24} /> },
+  { href: "/app", label: "Home", icon: <House size={20} aria-hidden="true" /> },
+  { href: "/app/tab", label: "Settle", icon: <ScanLine size={20} aria-hidden="true" /> },
+  { href: "/app/proof", label: "Proof", icon: <FileCheck2 size={20} aria-hidden="true" /> },
+  { href: "/lab", label: "Lab", icon: <FlaskConical size={20} aria-hidden="true" /> },
+  { href: "/auth", label: "Profile", icon: <UserRound size={20} aria-hidden="true" /> },
 ];
 
 export function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 border-t border-edge bg-panel md:hidden">
-      <div className="flex h-20 items-center justify-around">
+    <nav className="safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-quiet-soft bg-surface-1/96 backdrop-blur-xl lg:hidden" aria-label="Mobile workspace navigation">
+      <div className="grid grid-cols-5">
         {NAV_ITEMS.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`flex flex-col items-center gap-1 py-2 px-3 text-[10px] font-mono uppercase tracking-wider transition-colors ${
-                isActive ? "text-signal" : "text-fog hover:text-paper"
+              aria-current={isActive ? "page" : undefined}
+              className={`flex min-h-[68px] flex-col items-center justify-center gap-1 px-1 py-2 text-xs font-medium transition-colors ${
+                isActive ? "bg-signal/10 text-signal" : "text-faint hover:bg-surface-2 hover:text-muted"
               }`}
             >
-              <span className={isActive ? "text-signal" : "text-fog"}>{item.icon}</span>
+              <span aria-hidden="true">{item.icon}</span>
               <span>{item.label}</span>
             </Link>
           );

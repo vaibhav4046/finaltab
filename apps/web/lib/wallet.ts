@@ -11,12 +11,19 @@ declare global {
 }
 
 export interface WalletAccount {
-  address: string;
+  address: `0x${string}`;
+}
+
+export const BASE_SEPOLIA_CHAIN_ID = 84532;
+const BASE_SEPOLIA_HEX = "0x14a34";
+const ADDRESS_RE = /^0x[0-9a-fA-F]{40}$/;
+
+export function hasInjectedWallet(): boolean {
+  return typeof window !== "undefined" && Boolean(window.ethereum);
 }
 
 export async function connectWallet(): Promise<WalletAccount | null> {
   if (typeof window === "undefined" || !window.ethereum) {
-    console.error("MetaMask not installed");
     return null;
   }
 
@@ -29,9 +36,10 @@ export async function connectWallet(): Promise<WalletAccount | null> {
       return null;
     }
 
-    return { address: accounts[0] };
-  } catch (err) {
-    console.error("Wallet connection failed:", err);
+    const address = accounts[0];
+    if (!address || !ADDRESS_RE.test(address)) return null;
+    return { address: address as `0x${string}` };
+  } catch {
     return null;
   }
 }
@@ -49,11 +57,60 @@ export async function getConnectedAccounts(): Promise<string[]> {
   }
 }
 
+export async function switchToBaseSepolia(): Promise<boolean> {
+  if (!hasInjectedWallet()) return false;
+  try {
+    await window.ethereum!.request({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId: BASE_SEPOLIA_HEX }],
+    });
+    return true;
+  } catch (error) {
+    const code =
+      typeof error === "object" && error !== null && "code" in error
+        ? Number((error as { code: unknown }).code)
+        : null;
+    if (code !== 4902) return false;
+    try {
+      await window.ethereum!.request({
+        method: "wallet_addEthereumChain",
+        params: [
+          {
+            chainId: BASE_SEPOLIA_HEX,
+            chainName: "Base Sepolia",
+            nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
+            rpcUrls: ["https://sepolia.base.org"],
+            blockExplorerUrls: ["https://sepolia.basescan.org"],
+          },
+        ],
+      });
+      return true;
+    } catch {
+      return false;
+    }
+  }
+}
+
+export async function signMessage(account: `0x${string}`, message: string): Promise<`0x${string}` | null> {
+  if (!hasInjectedWallet()) return null;
+  try {
+    const signature = await window.ethereum!.request({
+      method: "personal_sign",
+      params: [message, account],
+    });
+    return typeof signature === "string" && /^0x[0-9a-fA-F]{130}$/.test(signature)
+      ? (signature as `0x${string}`)
+      : null;
+  } catch {
+    return null;
+  }
+}
+
 export async function signEIP712(
   account: string,
-  domain: Record<string, unknown>,
-  types: Record<string, unknown>,
-  value: Record<string, unknown>,
+  domain: object,
+  types: object,
+  value: object,
   primaryType: string = "ReceiveWithAuthorization",
 ): Promise<string | null> {
   if (typeof window === "undefined" || !window.ethereum) return null;
@@ -72,8 +129,7 @@ export async function signEIP712(
       ],
     })) as string;
     return signature;
-  } catch (err) {
-    console.error("Signature failed:", err);
+  } catch {
     return null;
   }
 }

@@ -11,6 +11,7 @@ import {
   type Profile,
   type TabRecord,
 } from "@/lib/identity";
+import { CloudAccessPanel } from "./CloudAccessPanel";
 
 const EMOJIS = ["🧾", "🦉", "🌙", "⚡", "🪙", "🐈‍⬛", "🔥", "🫐"];
 
@@ -50,6 +51,9 @@ export function AuthPanel() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10 md:px-6">
+      <div className="mb-5">
+        <CloudAccessPanel />
+      </div>
       {profile ? (
         <motion.section
           initial={{ opacity: 0, y: 12 }}
@@ -80,9 +84,8 @@ export function AuthPanel() {
           </div>
 
           <p className="mt-4 rounded border border-edge-soft bg-panel-2 p-3 font-mono text-[11px] leading-relaxed text-fog">
-            Device-local identity: your profile and tab history live in this browser only.
-            Cross-device sync ships when a Supabase project is connected — we do not pretend
-            a server account exists before it does.
+            This display profile stays on this device. When the cloud account above is active,
+            shared drafts, membership and approval history sync separately under authenticated RLS.
           </p>
 
           <h2 className="mt-8 mb-3 font-mono text-[11px] uppercase tracking-wider text-fog-dim">
@@ -140,8 +143,8 @@ export function AuthPanel() {
         >
           <h1 className="font-mono text-xl font-bold text-paper">Who is settling tonight?</h1>
           <p className="mt-1 font-sans text-sm text-fog">
-            Pick a name and a sigil. Identity is device-local until Supabase sync is connected —
-            honest software does not invent accounts.
+            Pick a name and a sigil for this browser. Durable shared tabs require the separate
+            cloud account above; a local profile never impersonates a server account.
           </p>
 
           <label className="mt-6 block font-mono text-[11px] uppercase tracking-wider text-fog-dim">

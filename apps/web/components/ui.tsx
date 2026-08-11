@@ -73,7 +73,7 @@ export function Button({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className={`rounded-md px-4 py-2 font-mono text-xs font-semibold uppercase tracking-wider transition-colors disabled:cursor-not-allowed ${variants[variant]}`}
+      className={`min-h-11 min-w-11 rounded-md px-4 py-2 font-mono text-xs font-semibold uppercase tracking-wider transition-colors disabled:cursor-not-allowed ${variants[variant]}`}
     >
       {children}
     </button>

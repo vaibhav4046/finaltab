@@ -117,7 +117,8 @@ function SignerRow({ person }: { person: Person }) {
         <button
           type="button"
           onClick={copy}
-          className="shrink-0 rounded border border-edge px-2 py-1 font-mono text-[9px] text-fog transition-colors hover:border-signal/50 hover:text-signal focus:border-signal focus:outline-none"
+          aria-label={`Copy ${person.name} wallet address`}
+          className="min-h-11 min-w-11 shrink-0 rounded border border-edge px-2 py-1 font-mono text-[9px] text-fog transition-colors hover:border-signal/50 hover:text-signal focus:border-signal focus:outline-none"
         >
           {copied ? "COPIED" : "COPY"}
         </button>
@@ -145,7 +146,8 @@ function SignerRow({ person }: { person: Person }) {
           type="button"
           onClick={() => void refresh()}
           disabled={loading}
-          className="ml-auto text-fog-dim underline-offset-2 transition-colors hover:text-signal focus:outline-none disabled:opacity-50"
+          aria-label={`Refresh ${person.name} onchain balances`}
+          className="ml-auto inline-flex min-h-11 min-w-11 items-center justify-center px-2 text-fog-dim underline-offset-2 transition-colors hover:text-signal focus:outline-none disabled:opacity-50"
         >
           {loading ? "…" : "refresh"}
         </button>
@@ -209,7 +211,7 @@ export function FundingPanel({ people }: { people: Person[] }) {
           href="https://faucet.circle.com"
           target="_blank"
           rel="noreferrer noopener"
-          className="text-signal underline underline-offset-2 hover:text-signal-dim"
+          className="inline-flex min-h-11 items-center text-signal underline underline-offset-2 hover:text-signal-dim"
         >
           Base Sepolia USDC faucet ↗
         </a>
@@ -220,7 +222,7 @@ export function FundingPanel({ people }: { people: Person[] }) {
               clearPersistedKeys();
               window.location.reload();
             }}
-            className="text-fog-dim underline underline-offset-2 transition-colors hover:text-danger focus:outline-none"
+            className="inline-flex min-h-11 items-center text-fog-dim underline underline-offset-2 transition-colors hover:text-danger focus:outline-none"
           >
             rotate signers (drops funded addresses)
           </button>

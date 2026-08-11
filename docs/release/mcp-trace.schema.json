@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://finaltab.vercel.app/schemas/mcp-trace-event-2.0.json",
+  "title": "FINALTab MCP V2 trace event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "runId", "seq", "at", "type", "data"],
+  "properties": {
+    "schemaVersion": {
+      "const": "2.0"
+    },
+    "runId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "seq": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "type": {
+      "enum": [
+        "trace.start",
+        "mcp.request",
+        "mcp.response",
+        "human.confirmation",
+        "wallet.signature",
+        "keeperhub.receipt",
+        "chain.proof",
+        "trace.end"
+      ]
+    },
+    "data": {
+      "type": "object"
+    }
+  }
+}

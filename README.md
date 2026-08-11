@@ -1,77 +1,153 @@
 # FINALTab
 
-Split a real receipt with plain English, settle it as one atomic onchain batch, and never call it settled until the chain proves it landed.
+Turn a shared receipt into an exact, externally signed USDC settlement, route
+the transaction through KeeperHub, and refuse to call it settled until both
+KeeperHub and an independent Base Sepolia check prove it landed.
 
-Built for the KeeperHub "Agents Onchain" hackathon. KeeperHub is the exclusive execution layer: FINALTab never holds a private key for broadcasting, never talks to an RPC node to send transactions, and never invents a transaction state. Every onchain action goes simulate-first through KeeperHub, and the app only shows VERIFIED_SETTLED when KeeperHub returns a chain-verified receipt.
+Built for KeeperHub Agents Onchain. Current submission readiness is tracked in
+[docs/release/status.md](docs/release/status.md); historical evidence does not
+override that file.
 
-## What it does
+## Product flow
 
-1. **Upload a receipt photo.** Groq vision extracts line items into strict JSON: decimal-string amounts, nullable tax/tip/service charge, no floats anywhere.
-2. **Say who owes what in plain English.** "Vee had the black daal and half the naan, split the rest evenly." Groq proposes an allocation; the deterministic engine is the only thing that decides. Cent-perfect largest-remainder splitting. If the model's numbers do not reconcile against the receipt, the engine's numbers win.
-3. **Netting.** The debt graph collapses to the minimum set of transfers.
-4. **Freeze the ledger.** The canonical ledger is hashed (keccak256). Any edit after freezing invalidates every signature, because EIP-3009 nonces derive from the ledger hash.
-5. **Sign.** Each debtor signs a USDC `receiveWithAuthorization` (EIP-3009), naming the settlement contract as `to`. Not `transferWithAuthorization` — that variant lets anyone who observes the signature submit it, whereas `receiveWithAuthorization` is enforced by USDC to require `msg.sender == to`, so only the settlement contract can ever redeem it. No approvals, no allowances, no debtor gas.
-6. **Settle.** One `executeSettlement` call moves everyone's USDC atomically on Base Sepolia. One bad signature reverts the whole batch.
-7. **Verify.** KeeperHub simulates first; a failed simulation is never broadcast. After execution, the flight recorder polls the status endpoint (honoring `X-Poll-Interval-Hint` and `Retry-After`) and marks VERIFIED_SETTLED only when the execution is terminal-successful AND a receipt exists AND `verified === true` AND `receiptStatus === "success"`. A transaction hash alone proves submission, not landing.
+1. **Extract.** A vision model returns structured receipt lines. Model output is
+   schema-checked and never trusted for arithmetic.
+2. **Allocate.** The engine converts decimal strings to integer minor units and
+   applies deterministic largest-remainder allocation so shares reconcile
+   exactly.
+3. **Net.** The debt graph is reduced deterministically to at most `n-1`
+   transfers. FINALTab does not claim that greedy netting is globally minimal.
+4. **Freeze.** Canonical ledger and complete V2 debit/payout plan hashes lock the
+   state that wallets review.
+5. **Consent.** Every debtor's wallet signs Circle USDC
+   `ReceiveWithAuthorization` and FINALTab `SettlementConsent`. The server does
+   not hold arbitrary user keys.
+6. **Simulate.** KeeperHub simulates the exact signed V2 call before any
+   broadcast request.
+7. **Approve.** A permitted human wallet reviews and EIP-191-signs a short-lived
+   challenge bound to the authenticated API principal, chain, V2 contract,
+   ledger, and plan.
+8. **Execute and verify.** KeeperHub submits one idempotent atomic call.
+   `VERIFIED_SETTLED` requires a successful KeeperHub receipt plus an
+   independently fetched receipt whose indexed settlementId and ledgerHash match the frozen plan.
 
-## Monorepo layout
+## Current V2 deployment
 
-| Path | What | Tests |
-|------|------|-------|
-| `packages/engine` | Integer-minor-unit money engine: validation, largest-remainder split, reconcile, netting, canonical ledger + keccak256 hash, EIP-3009 payload builder | 52 |
-| `packages/vision` | Groq receipt extraction + NL allocation proposals (strict JSON schemas, model output never trusted for arithmetic) | 32 (+1 live, env-gated) |
-| `packages/keeperhub` | KeeperHub API client: simulate, execute, status polling, fail-closed receipt verification | 32 |
-| `packages/keeperhub-flight-recorder` | `kh-proof` CLI: polls an executionId to a terminal verdict with honest exit codes | 7 |
-| `contracts` | `FinalTabBatchSettlement.sol` + mock EIP-3009 USDC, Hardhat | 11 |
-| `apps/web` | MIDNIGHT RECEIPT LAB: the Next.js app (App Router, Tailwind, Framer Motion) + the MCP server and agent settlement path | 78 |
-| `supabase/migrations` | Postgres schema for tabs, ledgers, signatures, settlements | not yet applied |
-| `docs` | Submission copy, demo storyboard, honest blocker list, CLI PR draft | |
+`FinalTabBatchSettlementV2` is live on Base Sepolia:
 
-One command runs everything: `pnpm -r --if-present test` yields **212 passing, 1 skipped** — 201 Vitest tests across five packages plus the 11 Hardhat contract tests, since `contracts` is a workspace member too. Measured 2026-08-10 — engine 52, keeperhub 32, vision 32, flight-recorder 7, web 78, contracts 11. The one skipped test is a live-API vision test that runs only when a real `GROQ_API_KEY` is present. No coverage percentage is claimed, because no coverage run has been performed.
+| Proof | Value |
+|---|---|
+| Contract | [`0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB`](https://sepolia.basescan.org/address/0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB) |
+| KeeperHub execution | `xasakw5nfxkh2s0fh4stn` |
+| Deployment transaction | [`0x904ec881…e8f`](https://sepolia.basescan.org/tx/0x904ec881ef7c2ec7375c20887b4181cf58224b44162d837743fa869b0a598e8f) |
+| Block | `45321107` |
+| KeeperHub receipt | `verified: true`, `receiptStatus: "success"` |
+| Source | [Sourcify exact creation/runtime match](https://repo.sourcify.dev/84532/0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB), match ID `43497805` |
 
-## Money rules (non-negotiable)
+Retained manifest:
+[docs/release/evidence/v2-deployment-2026-08-11T01-08-17-421Z.json](docs/release/evidence/v2-deployment-2026-08-11T01-08-17-421Z.json).
 
-- All arithmetic in integer minor units. Floats never touch money.
-- **USD** 2dp minor units map to USDC 6dp minor units at face value (x10^4). Any other currency is refused for settlement rather than converted: a GBP ledger splits correctly and renders "SPLIT ONLY — NOT SETTLEABLE ONCHAIN". There is no code path that invents an FX rate.
-- Splits are largest-remainder: the sum of shares always equals the total, to the cent.
-- The LLM proposes; the engine decides. Every proposal is re-reconciled deterministically before it becomes a ledger.
+This transaction proves deployment and source matching. A value-moving V2 USDC
+settlement is **pending** and is not inferred from the deployment.
 
-## Honest status
+## Authenticated MCP V2
 
-Live: **https://finaltab.vercel.app**
+Endpoint: `https://finaltab.vercel.app/api/mcp`
 
-Proven live, through the app's own API routes and the first-flight script:
+Every request requires a scoped bearer token. Store only SHA-256 token digests
+in `FINALTAB_API_TOKENS_JSON`; never expose raw tokens in client code, logs,
+screenshots, or traces.
 
-- **An AI agent settled a tab end-to-end over MCP** (2026-08-10): five JSON-RPC `tools/call` requests against the production endpoint `https://finaltab.vercel.app/api/mcp` — `get_balances` → `prepare_settlement` → `settle_tab` with explicit `confirm: true` → `settlement_status` (`VERIFIED_SETTLED` on the first poll) → `get_balances` again. `executeSettlement` pulled 1.20 + 0.80 USDC via the debtors' EIP-3009 signatures and paid 2.00 USDC to the creditor atomically, under 3 seconds from acceptance to on-chain success. Proof: [tx 0x314189b4…c5eb](https://sepolia.basescan.org/tx/0x314189b472033de62f8aea7603111c141315be390bc834e283e718382261c5eb) (executionId `69zzrj7z676u89ce1x76j`, block 45315909); full step record in [docs/release/evidence/live-proof-4-mcp.json](docs/release/evidence/live-proof-4-mcp.json).
-- Receipt extraction (`/api/vision/extract`) against real Groq.
-- NL allocation (`/api/vision/allocate`) against real Groq, reconciled cent-perfect by the engine (model even hallucinated a note about the service charge; the engine split it correctly anyway).
-- **Three more real batch settlements on Base Sepolia**, including (2026-08-10): production API -> KeeperHub -> `executeSettlement` pulled 4.20 + 3.80 USDC from two debtors via signed EIP-3009 authorizations and paid 8.00 USDC to the creditor in one atomic transaction, with exact balance deltas and a chain-verified receipt. Proof: [tx 0x7bf655f3…45c12d](https://sepolia.basescan.org/tx/0x7bf655f3f72774839908021039e640b5ac8acaf5462b1376200cbb490045c12d) (executionId `dthckv3julum6m5ktmdik`, block 45310631, `verified: true`, `receiptStatus: "success"`); fail-closed run report in [docs/release/evidence/](docs/release/evidence/).
-- KeeperHub rail proven separately by two earlier zero-value flights: [tx 0x1130...278c](https://sepolia.basescan.org/tx/0x11300427473e95d241d924891b2cc0131b0047263e461787c27a2f854c39278c) (executionId `g0w11wukbk1v0psyditx4`, block 45243955).
-- CLI contribution shipped upstream: [KeeperHub/cli PR #95](https://github.com/KeeperHub/cli/pull/95) (open, not merged).
-- 101.6s demo video recorded in one continuous session against the real app — live Groq extraction, allocation, and a real KeeperHub settlement executing on camera through to the VERIFIED SETTLED banner (tx `0xac6d32e5…7c8710`); as-recorded notes in [docs/demo-storyboard.md](docs/demo-storyboard.md).
+The source registers nine production tools:
 
-Blocked, disclosed in [docs/blockers.md](docs/blockers.md):
+- calculation: `split_equal`, `split_weighted`, `net_debts`;
+- product: `allocate_receipt`, `prepare_receipt_settlement`;
+- execution safety: `simulate_signed_settlement`,
+  `create_broadcast_approval_challenge`, `submit_signed_settlement`;
+- proof: `settlement_status`.
 
-- The contract **is** deployed at [`0xCcf6b4De…`](https://sepolia.basescan.org/address/0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64) (2259 bytes of code, confirmed by `eth_getCode`) — an earlier revision of this README claimed otherwise and named a predicted address that was never used. Its source is **not yet verified on Basescan**, which is why the settle route must pass the ABI inline.
-- The KeeperHub deploy attempt that failed did so because the relayer held no native ETH at the time: `Insufficient BASE balance. Have: 0.0, Need: 0.000000231.` Resolved 2026-08-10 — the relayer was funded 0.00005 ETH directly ([tx 0xce5ec0bf…](https://sepolia.basescan.org/address/0x7AE891Ec51990684682a084381e97b59d787652B), block 45310097). An earlier revision generalized this to "KeeperHub sponsors transfers, not contract-call gas"; that was wrong — every recorded `executeSettlement` run reports `sponsored: true`, with gas paid by KeeperHub's own gas-payer EOA (`from: 0xdcf4bac4…` on the settle transactions, measured via `eth_getTransactionByHash`).
-- Supabase persistence is schema-complete but **not applied** (no project credentials yet). The app is stateless per session; nothing is persisted.
-- Batch settlement (`executeSettlement`) was blocked until 2026-08-10 for the same funding reason — while it was, Simulate honestly rendered "WOULD REVERT — NOT BROADCAST". Both funding legs then landed and the settle leg ran live (see the proof above). Full measurement in [docs/release/truth-snapshot.md](docs/release/truth-snapshot.md).
-- The Claude and OpenAI legs of the LLM fallback cascade are covered by tests but have never contacted their real APIs; only the Groq leg is live-proven.
+Three fixed-wallet `demo_*` tools are separately labelled, Base Sepolia-only,
+and disabled by default. They are not the production user-wallet workflow.
+The old `confirm: true` flag is not a V2 authorization mechanism.
 
-Nothing in the UI fakes any of this. Unproven states render as unproven.
+Configuration and flow details:
+[docs/integrations/mcp.md](docs/integrations/mcp.md).
 
-## Run it
+## Money and security rules
+
+- All money arithmetic uses integer minor units; floats never touch balances.
+- USD 2-decimal minor units map to USDC 6-decimal units at face value. Other
+  currencies may split but are refused for onchain settlement without an
+  explicit conversion source.
+- The model proposes; the deterministic engine decides and reconciles.
+- `ReceiveWithAuthorization` names the settlement contract as recipient.
+- V2 `SettlementConsent` binds the complete ordered debit/payout plan.
+- Invalid signature, nonce, expiry, consent, replay, or conservation reverts
+  the atomic batch.
+- A hash or `completed` status alone is never settlement proof.
+
+## Repository
+
+| Path | Responsibility |
+|---|---|
+| `packages/engine` | Integer money, allocation, netting, hashes, V2 plan and signature payloads |
+| `packages/vision` | Receipt extraction and allocation proposals |
+| `packages/keeperhub` | Simulation, execution, polling, idempotency, fail-closed receipt classification |
+| `packages/keeperhub-flight-recorder` | `kh-proof` CLI and auditable verdict output |
+| `contracts` | V1 history plus `FinalTabBatchSettlementV2` and adversarial tests |
+| `apps/web` | Next.js product, authenticated MCP/API surfaces, proof and integration routes |
+| `supabase/migrations` | Persistence/auth schema; deployment state must be verified separately |
+| `docs/release` | Canonical status, checklist, trace contract, and retained evidence |
+
+## Run and verify
 
 ```bash
 pnpm install
-cp .env.example apps/web/.env.local   # fill GROQ_API_KEY, KEEPERHUB_API_KEY
-pnpm test                             # all package tests
-cd contracts && npx hardhat test      # contract tests
-cd apps/web && pnpm dev               # http://localhost:3017
+pnpm lint
+pnpm typecheck
+pnpm test
+pnpm test:contracts
+pnpm build
+pnpm test:e2e
 ```
 
-Secrets are server-only. `GROQ_API_KEY`, `KEEPERHUB_API_KEY` and `SUPABASE_SECRET_KEY` are read exclusively in route handlers and never shipped to the client. `.env*` is git-ignored; `.env.example` carries names only.
+Copy `.env.example` to the web deployment's environment and supply secrets
+server-side. The example pins the public V2 address and protocol version. Demo
+money tools remain off unless explicitly enabled.
 
-## CLI contribution (Best Onboarding UX target)
+Current combined worktree gate: **284 checks passed, 1 env-gated live-provider
+check skipped**. The Playwright suite exercises four journeys on desktop and
+mobile; the submitted commit must retain its own clean-run logs.
 
-We also built `--require-verified` and `--timeout` for `kh execute status` in the KeeperHub CLI, so any agent can gate a pipeline on chain-verified receipts instead of a bare `completed` status. PR: https://github.com/KeeperHub/cli/pull/95 (7 new tests, back-compatible). Draft/rationale: [docs/keeperhub-cli-pr-draft.md](docs/keeperhub-cli-pr-draft.md).
+## Historical V1 evidence
+
+V1 at `0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64` executed real
+Base Sepolia testnet-USDC settlements on 2026-08-10. A historical MCP run used
+fixed demo signers, seven former tools, and `settle_tab(confirm: true)`:
+execution `69zzrj7z676u89ce1x76j`,
+[tx `0x314189b4…c5eb`](https://sepolia.basescan.org/tx/0x314189b472033de62f8aea7603111c141315be390bc834e283e718382261c5eb),
+block `45315909`.
+
+Those records remain evidence of V1 behavior only. They do not prove that the
+current V2 external-wallet flow has moved USDC. Likewise, the historical
+101.64-second video and older 92.7-second cut are not current submission media.
+
+## Current blockers
+
+- Execute and retain one authenticated external-wallet V2 USDC settlement.
+- Bind its redacted MCP trace, KeeperHub receipt, exact-plan event/balance
+  proof, and video to one run.
+- Render, review, upload, and publish the final V2 video URL.
+- Run clean combined CI and verify live deployment configuration.
+- Submit as a human entrant before 2026-08-13 12:00 UTC+2
+  (10:00 UTC / 11:00 BST); retain the confirmation.
+
+## KeeperHub onboarding contribution
+
+[KeeperHub/cli PR #95](https://github.com/KeeperHub/cli/pull/95) adds
+`--require-verified` and `--timeout` to fail closed on unverified execution
+status. It was open and not merged when last checked; recheck GitHub before
+using its state in the final submission. The DoraHacks detail page advertises
+an onboarding bounty, but its Bounties tab rendered “No Bounties” on
+2026-08-11. Include the contribution in the main BUIDL and verify the
+authenticated submit flow instead of assuming a separate bounty selector.

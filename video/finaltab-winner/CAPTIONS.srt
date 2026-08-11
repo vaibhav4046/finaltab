@@ -1,0 +1,165 @@
+1
+00:00:00,650 --> 00:00:02,650
+A shared bill should end
+with everyone
+
+2
+00:00:02,700 --> 00:00:05,600
+certain—and no one chasing screenshots.
+
+3
+00:00:06,350 --> 00:00:09,150
+FINALTab turns one receipt
+into a deterministic ledger,
+
+4
+00:00:09,200 --> 00:00:12,650
+binds every debtor's USDC pull
+to the entire payout plan,
+
+5
+00:00:12,700 --> 00:00:15,650
+then sends the exact call
+through KeeperHub.
+
+6
+00:00:16,400 --> 00:00:18,500
+Scan a crowded receipt.
+
+7
+00:00:18,550 --> 00:00:20,650
+Correct any extraction.
+
+8
+00:00:20,700 --> 00:00:22,600
+Invite the table.
+
+9
+00:00:22,650 --> 00:00:24,750
+Describe who had what.
+
+10
+00:00:24,800 --> 00:00:26,300
+FINALTab reconciles every
+
+11
+00:00:26,350 --> 00:00:28,950
+line—tax, tip, and service
+included—to the cent,
+
+12
+00:00:29,000 --> 00:00:30,650
+across the whole table.
+
+13
+00:00:31,400 --> 00:00:34,500
+The graph collapses many obligations
+into a small, deterministic transfer set.
+
+14
+00:00:34,550 --> 00:00:37,000
+Freeze once, and the ledger hash,
+settlement ID,
+
+15
+00:00:37,050 --> 00:00:40,100
+debits, payouts, chain, and contract
+
+16
+00:00:40,150 --> 00:00:43,600
+become one immutable plan.
+
+17
+00:00:44,350 --> 00:00:46,750
+Each debtor signs twice:
+
+18
+00:00:46,800 --> 00:00:49,550
+Circle's authorization
+to pull their exact USDC,
+
+19
+00:00:49,600 --> 00:00:52,300
+and FINALTab consent
+to the complete payout plan.
+
+20
+00:00:52,350 --> 00:00:53,950
+Then KeeperHub simulates.
+
+21
+00:00:54,000 --> 00:00:55,550
+A revert never broadcasts.
+
+22
+00:00:56,350 --> 00:00:58,250
+Only after simulation
+
+23
+00:00:58,300 --> 00:00:59,650
+and final human approval
+does KeeperHub submit.
+
+24
+00:00:59,700 --> 00:01:02,500
+Green appears only when
+its terminal receipt
+
+25
+00:01:02,550 --> 00:01:05,700
+matches an independent
+Base Sepolia RPC check.
+
+26
+00:01:06,350 --> 00:01:09,650
+Agents get the same safety rail
+through nine production MCP tools.
+
+27
+00:01:09,700 --> 00:01:12,600
+FINALTab never holds their wallet keys.
+
+28
+00:01:13,250 --> 00:01:16,600
+The agent allocates, prepares the V2 plan,
+and returns typed data for every debtor.
+
+29
+00:01:16,650 --> 00:01:20,450
+It simulates, requests a short-lived
+human-signed challenge, then submits.
+
+30
+00:01:20,500 --> 00:01:24,100
+The status call receives
+three exact arguments:
+
+31
+00:01:24,150 --> 00:01:27,150
+execution ID, settlement ID,
+and ledger hash.
+
+32
+00:01:27,200 --> 00:01:30,550
+Only the exact indexed event
+resolves VERIFIED_SETTLED.
+
+33
+00:01:31,250 --> 00:01:32,250
+FINALTab.
+
+34
+00:01:32,300 --> 00:01:33,150
+One table.
+
+35
+00:01:33,200 --> 00:01:34,000
+One plan.
+
+36
+00:01:34,050 --> 00:01:34,800
+KeeperHub executes.
+
+37
+00:01:34,850 --> 00:01:35,500
+Anyone can verify.

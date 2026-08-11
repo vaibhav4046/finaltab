@@ -1,4 +1,12 @@
-# Release Gates
+# Historical V1 release gates
+
+> **Archived measurement, not the current V2 gate.** The table below preserves
+> the 2026-08-10 V1 run, including its old contract address, test counts, and
+> video measurement. Current V2 truth: contract
+> `0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB`, KeeperHub deployment execution
+> `xasakw5nfxkh2s0fh4stn`, tx `0x904ec881…e8f`, block `45321107`, Sourcify exact
+> match `43497805`. V2 USDC settlement, clean combined CI, and video remain
+> pending. Use [status.md](status.md) and [SUBMISSION_CHECKLIST.md](SUBMISSION_CHECKLIST.md).
 
 Every row was run on **2026-08-10**. Gates 1–16 were measured against a clean tree at commit
 `b258ec3` and re-measured unchanged against the tree this commit publishes; gates 17–18 were added by
@@ -31,11 +39,11 @@ it says so and names what would unblock it rather than being quietly dropped fro
 | 6 | Secret scan (working tree) | `git ls-files \| xargs grep -E '<key patterns>'` | **PASS** — zero live `gsk_`/`sk-`/`xai-`/`alcht_` tokens in any tracked file. Working tree **only**; this gate is blind to the object database, which is why gate 16 exists |
 | 7 | No tracked `.env` | `git ls-files \| grep '\.env'` | **PASS** — only `.env.example`, names only, no values |
 | 8 | No key material in shipped source | grep for `privateKey = "0x…"` in `apps/`, `packages/*/src` | **PASS** — zero matches. The only 64-hex constants in frontend code are the public tx hash. |
-| 9 | Contract live on chain | `eth_getCode` vs `https://sepolia.base.org` | **PASS** — 2259 bytes at `0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64`, re-queried 2026-08-10 |
+| 9 | Historical V1 contract live on chain | `eth_getCode` vs `https://sepolia.base.org` | **PASS** — 2259 bytes at `0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64`, re-queried 2026-08-10 |
 | 10 | Demo video integrity | `ffprobe proof-output/finaltab-demo.mp4` | **PASS** — 92.68s, 1920×1080, h264 + aac, 6,256,484 bytes |
 | 11 | KeeperHub live execution | `proof-output/first-flight-*.json` | **PASS** — two independent `VERIFIED_SETTLED` receipts, both chain-confirmed |
 | 12 | `executeSettlement` onchain | `apps/web/scripts/live-settle.mjs` against production | **PASS** — VERIFIED_SETTLED, tx `0x7bf655f3…45c12d`, block 45310631, 8.00 USDC moved atomically. See below |
-| 13 | Contract source verified on Basescan | Basescan verify | **NOT DONE** |
+| 13 | Historical V1 source verified on BaseScan | BaseScan verify | **NOT DONE** — unrelated to V2 Sourcify exact match |
 | 14 | Coverage ≥ 80% | — | **NOT MEASURED** |
 | 15 | Upstream CLI contribution live | `GET api.github.com/repos/KeeperHub/cli/pulls/95` | **PASS** — PR #95 `state: open`, `merged: false`, 1 commit, +336/−15, 7 new Go tests |
 | 16 | Secret scan (whole object database) | `git cat-file --batch-all-objects` × all 190 blobs, cross-referenced against `git rev-list --objects --all` | **PASS for anything published, FAIL locally** — 0 of 305 reachable objects hold key material; 8 **unreachable** blobs do. See below. |

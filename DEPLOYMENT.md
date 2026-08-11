@@ -1,155 +1,89 @@
-# FINALTab Deployment & Live Settlement Execution
+# FINALTab V2 deployment and release runbook
 
-## Phase 1: Alchemy Setup (Manual)
+## Proven contract deployment
 
-1. Visit: https://dashboard.alchemy.com/apps/0ywa7ovevv84upnw/networks
-2. Enable **Base Sepolia** network
-3. Fund deployer: `0x976EF25623A94F6F70924816697C7c7172210a5F`
-   - Send 0.1-0.5 ETH via:
-     - https://sepoliafaucet.com OR
-     - https://www.coinbase.com/faucets/base-ethereum-sepolia-faucet
+`FinalTabBatchSettlementV2` is already deployed on Base Sepolia. Do not deploy
+another contract merely to fill a configuration field.
 
-## Phase 2: Deploy Contract
+| Field | Proven value |
+|---|---|
+| Contract | `0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB` |
+| KeeperHub execution | `xasakw5nfxkh2s0fh4stn` |
+| Transaction | `0x904ec881ef7c2ec7375c20887b4181cf58224b44162d837743fa869b0a598e8f` |
+| Block | `45321107` |
+| Source | Sourcify exact creation/runtime match `43497805` |
+| Evidence | `docs/release/evidence/v2-deployment-2026-08-11T01-08-17-421Z.json` |
+
+## Web and MCP configuration
+
+Set public protocol values exactly:
+
+```dotenv
+NEXT_PUBLIC_SETTLEMENT_CONTRACT=0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB
+FINALTAB_SETTLEMENT_CONTRACT_VERSION=2
+```
+
+Supply `KEEPERHUB_API_KEY`, provider keys, Supabase credentials, and
+`FINALTAB_API_TOKENS_JSON` only through server-side secret storage. Store only
+FINALTab token SHA-256 digests. Keep
+`FINALTAB_ENABLE_DEMO_MONEY_TOOLS=false` for the production external-wallet
+path.
+
+After deploying the web service, verify:
+
+1. discovery reports the V2 address and readiness;
+2. anonymous MCP requests are rejected;
+3. a scoped redacted token can initialize and list tools;
+4. production tools request external wallet signatures;
+5. demo money tools refuse while disabled; and
+6. no token or provider secret appears in logs or browser bundles.
+
+## V2 live settlement — pending release gate
+
+Deployment proof is not settlement proof. Before submission, execute one
+authenticated external-wallet Base Sepolia USDC settlement:
+
+```text
+allocate_receipt
+→ prepare_receipt_settlement
+→ debtor wallets sign both typed-data payloads
+→ simulate_signed_settlement
+→ create_broadcast_approval_challenge
+→ permitted human wallet personal_sign
+→ submit_signed_settlement
+→ settlement_status
+```
+
+Retain the redacted trace, KeeperHub execution/receipt, independent Base
+Sepolia receipt, V2 event, and exact balance deltas under one run ID. Follow
+`docs/release/MCP_TRACE_SPEC.md`.
+
+## Verification commands
 
 ```bash
-cd D:\project\finaltab\contracts
-$env:DEPLOYER_PRIVATE_KEY = "<your-deployer-private-key>"
-npx hardhat run scripts/deploy.js --network base-sepolia
+pnpm install --frozen-lockfile
+pnpm lint
+pnpm typecheck
+pnpm test
+pnpm test:contracts
+pnpm build
+pnpm test:e2e
 ```
 
-**Output:** Contract address saved to `apps/web/.env.local` as `NEXT_PUBLIC_SETTLEMENT_CONTRACT`
+Record the fresh results from the final commit. Historical V1 counts and video
+metadata are not current release evidence.
 
-Example output:
-```
-✓ FinalTabBatchSettlement deployed to 0x...
-✓ Updated apps/web/.env.local
-✓ Saved deployment info to deployment.json
-```
+## Video and submission — pending human actions
 
-## Phase 3: Web App Ready
+Render the final video only from the proven V2 settlement package. Measure its
+actual metadata and SHA-256, upload it to a URL that opens logged out, update
+the canonical release docs, and submit once before 2026-08-13 12:00 UTC+2
+(10:00 UTC / 11:00 BST). The live form was checked on 2026-08-11 and requires
+a source link, a short video showing the agent executing onchain through
+KeeperHub, and a transaction link. No current public video URL is claimed.
 
-Build already passing. No changes needed.
+## Historical V1 note
 
-```bash
-cd D:\project\finaltab\apps\web
-pnpm build  # Confirms settlement contract address is set
-```
-
-## Phase 4: Live Settlement Flow
-
-1. **Create receipt** (app UI)
-   - Upload image → Groq extracts items/amounts
-   
-2. **Create allocation** (app UI)
-   - Participants select split method
-   - App computes deterministic netting
-
-3. **Freeze ledger** (ExecutionRail → doFreeze)
-   - Canonicalizes → hashes → locks
-   - Invalidates if any edit after this
-
-4. **Sign transfers** (ExecutionRail → doSign)
-   - Demo keys sign with settlement contract as recipient
-   - Nonce = keccak256(ledgerHash, debtor, amount)
-   - Real wallets: call signEIP712 with ReceiveWithAuthorization
-
-5. **Simulate** (ExecutionRail → doSimulate)
-   - POST /api/settle/simulate
-   - KeeperHub dry-runs executeSettlement
-   - Returns: ok=true or wouldRevert=true
-
-6. **Execute** (ExecutionRail → doExecute)
-   - POST /api/settle/execute
-   - KeeperHub broadcasts to Base Sepolia
-   - Returns executionId for polling
-
-7. **Verify** (ExecutionRail → doPolling)
-   - Poll /api/settle/status/[executionId]
-   - Wait for tx hash + receipt
-   - Confirm: all pulls succeeded, all payouts completed
-
-## Phase 5: Proof Collection
-
-Script to capture evidence:
-
-```bash
-node scripts/collect-proof.js
-```
-
-Captures:
-- Transaction hash
-- Block number
-- Contract events (SettlementExecuted, PullExecuted, PayoutExecuted)
-- Final balances (proof of zero retained USDC)
-- Canonical ledger JSON + signatures
-
-Output: `proof.json` (ready for submission)
-
-## Phase 6: Demo Video
-
-Use existing Playwright + ElevenLabs pipeline:
-
-```bash
-cd D:\project\finaltab\apps\web
-pnpm playwright:record
-# Follow UI: receipt → allocation → freeze → sign → simulate → execute → verify
-# VO: "From receipt to settlement on-chain in under 2 minutes"
-```
-
-Output: `proof-output/finaltab-demo.mp4` (submitted with proof)
-
-## Files Modified This Session
-
-- ✅ `contracts/contracts/FinalTabBatchSettlement.sol` — Safe EIP-3009 ReceiveWithAuthorization pattern
-- ✅ `contracts/contracts/MockUSDC3009.sol` — Extended with receiveWithAuthorization
-- ✅ `contracts/test/FinalTabBatchSettlement.test.js` — All 11 tests passing
-- ✅ `contracts/hardhat.config.js` — Base Sepolia + Alchemy RPC
-- ✅ `contracts/scripts/deploy.js` — Saves deployment + settlement address
-- ✅ `packages/engine/src/eip3009.ts` — Added buildReceiveAuthorizationTypedData
-- ✅ `apps/web/lib/flow.ts` — Updated signAllTransfers to ReceiveWithAuthorization
-- ✅ `apps/web/lib/wallet.ts` — signEIP712 accepts primaryType parameter
-- ✅ `apps/web/.env.local` — Updated API keys + settlement contract placeholder
-
-## Tests Status
-
-Measured 2026-08-10 (see [docs/release/gates.md](docs/release/gates.md)):
-
-- Engine: 52 passing ✅
-- KeeperHub: 32 passing ✅
-- Vision: 32 passing, 1 skipped (needs live `GROQ_API_KEY`) ✅
-- Flight recorder: 7 passing ✅
-- Web: 78 passing ✅
-- Contract: 11 passing ✅
-- **Total: 212 passing, 1 skipped**
-- Web build: Clean (16 routes) ✅
-- TypeScript: No errors ✅
-
-## Submission Checklist
-
-- [ ] Alchemy: Base Sepolia enabled
-- [ ] Deployer: 0x976EF25623A94F6F70924816697C7c7172210a5F funded with 0.1+ ETH
-- [ ] Contract deployed → settlement address in .env.local
-- [ ] Web app builds successfully
-- [x] Live settlement executed on Base Sepolia — tx `0x7bf655f3…45c12d`, block 45310631, 8.00 USDC moved atomically (2026-08-10)
-- [x] Proof collected — chain-verified run report in `docs/release/evidence/`
-- [x] Demo video recorded — `proof-output/finaltab-demo.mp4` (1:42). Shows a LIVE chain execution end-to-end: receipt → allocation → freeze → EIP-3009 sign → simulate → KeeperHub execute → VERIFIED SETTLED banner + raw KeeperHub status (tx `0xac6d32e5…7c8710`, block 45312815) on camera.
-- [x] Second + third live settlements executed through the full UI flow (2026-08-10) — tx `0x770ada77…f120fc2` (block 45311736) and tx `0xac6d32e5…7c8710` (block 45312815, on camera). Status JSON evidence in `proof-output/evidence-execution-*.json`.
-- [x] Fourth live settlement driven end-to-end by an AI agent over MCP (2026-08-10) — five JSON-RPC calls against production `/api/mcp`, 2.00 USDC, <3s: tx `0x314189b4…c5eb` (block 45315909, executionId `69zzrj7z676u89ce1x76j`). Step record: `docs/release/evidence/live-proof-4-mcp.json`.
-- [ ] README updated with deployment steps
-- [ ] GitHub repo visibility set (if needed)
-- [ ] Vercel deploy ready (or deployment link captured)
-
-## Emergency Rollback
-
-If contract deploy fails after Alchemy funding:
-```bash
-# Reset to fallback RPC
-# Edit hardhat.config.js: url: "https://sepolia.base.org"
-# Retry deploy (public RPC less reliable but backup option)
-```
-
-## Support
-
-- Contract tests: `cd contracts && npx hardhat test`
-- Web app tests: `cd apps/web && pnpm test`
-- Live settlement state: check `/app/tab` UI (ExecutionRail shows current stage)
+The legacy V1 contract `0xCcf6…7e64`, fixed demo signers, seven-tool MCP flow,
+`confirm: true`, and 2026-08-10 settlements are preserved as historical
+evidence only. Do not copy them into V2 deployment or settlement fields.

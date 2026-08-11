@@ -3,8 +3,10 @@ import { z } from "zod";
 import {
   BASE_SEPOLIA_CHAIN_ID,
   BASE_SEPOLIA_USDC,
-  EXECUTE_SETTLEMENT_ABI,
-  EXECUTE_SETTLEMENT_SIGNATURE,
+  EXECUTE_SETTLEMENT_V2_ABI,
+  EXECUTE_SETTLEMENT_V2_SIGNATURE,
+  hashSettlementPlan,
+  settlementAuthorizationNonce,
 } from "@finaltab/engine";
 
 /**
@@ -24,14 +26,17 @@ export const SignedTransferSchema = z.object({
   validAfter: z.string().regex(/^[0-9]+$/),
   validBefore: z.string().regex(/^[0-9]+$/),
   nonce: Bytes32,
-  v: z.number().int().min(27).max(28),
-  r: Bytes32,
-  s: Bytes32,
+  authV: z.number().int().min(27).max(28),
+  authR: Bytes32,
+  authS: Bytes32,
+  consentV: z.number().int().min(27).max(28),
+  consentR: Bytes32,
+  consentS: Bytes32,
 });
 
 /**
- * Where the pulled USDC goes. The signed authorizations all name the settlement
- * contract as recipient, so the real creditors survive only in this array.
+ * Where the pulled USDC goes. V2 hashes this entire vector into planHash, and
+ * every debtor signs that plan through SettlementConsent.
  */
 export const PayoutSchema = z.object({
   creditor: Address,
@@ -59,6 +64,25 @@ export const SettleBodySchema = z
         message: `payouts must sum to pulls: pulled ${pulled}, payouts ${paid}`,
       });
     }
+
+    for (let i = 1; i < body.transfers.length; i++) {
+      if (body.transfers[i - 1]!.from.toLowerCase() >= body.transfers[i]!.from.toLowerCase()) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["transfers", i, "from"],
+          message: "V2 debtors must be unique and sorted by address",
+        });
+      }
+    }
+    for (let i = 1; i < body.payouts.length; i++) {
+      if (body.payouts[i - 1]!.creditor.toLowerCase() >= body.payouts[i]!.creditor.toLowerCase()) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["payouts", i, "creditor"],
+          message: "V2 creditors must be unique and sorted by address",
+        });
+      }
+    }
   });
 
 export type SettleBody = z.infer<typeof SettleBodySchema>;
@@ -67,6 +91,16 @@ export function settlementContractAddress(): string | null {
   const addr = process.env.NEXT_PUBLIC_SETTLEMENT_CONTRACT;
   if (!addr || !/^0x[0-9a-fA-F]{40}$/.test(addr)) return null;
   return addr;
+}
+
+/** Every value-moving server path must opt in to the audited V2 contract. */
+export function requiredV2SettlementContract(): `0x${string}` {
+  if (process.env.FINALTAB_SETTLEMENT_CONTRACT_VERSION !== "2") {
+    throw new Error("settlement submission is disabled until FINALTAB_SETTLEMENT_CONTRACT_VERSION=2");
+  }
+  const address = settlementContractAddress();
+  if (!address) throw new Error("a valid V2 settlement contract address is not configured");
+  return address.toLowerCase() as `0x${string}`;
 }
 
 /**
@@ -86,9 +120,12 @@ export function settleArgs(body: SettleBody): unknown[] {
       validAfter: t.validAfter,
       validBefore: t.validBefore,
       nonce: t.nonce,
-      v: t.v,
-      r: t.r,
-      s: t.s,
+      authV: t.authV,
+      authR: t.authR,
+      authS: t.authS,
+      consentV: t.consentV,
+      consentR: t.consentR,
+      consentS: t.consentS,
     })),
     body.payouts.map((p) => ({ creditor: p.creditor, value: p.value })),
   ];
@@ -103,16 +140,46 @@ export function settleContractCall(body: SettleBody, contractAddress: string) {
     throw new Error(`Authorization recipient must be the settlement contract, got ${wrong.to}`);
   }
 
+  const expectedPlanHash = hashSettlementPlan({
+    ledgerHash: body.ledgerHash as `0x${string}`,
+    settlementContract: contractAddress as `0x${string}`,
+    debits: body.transfers.map((t) => ({
+      debtor: t.from as `0x${string}`,
+      value: BigInt(t.value),
+    })),
+    payouts: body.payouts.map((p) => ({
+      creditor: p.creditor as `0x${string}`,
+      value: BigInt(p.value),
+    })),
+  });
+  if (body.settlementId.toLowerCase() !== expectedPlanHash.toLowerCase()) {
+    throw new Error(`V2 settlementId does not match the complete debit+payout plan`);
+  }
+  for (const transfer of body.transfers) {
+    const expectedNonce = settlementAuthorizationNonce(
+      expectedPlanHash,
+      transfer.from as `0x${string}`,
+      BigInt(transfer.value),
+    );
+    if (transfer.nonce.toLowerCase() !== expectedNonce.toLowerCase()) {
+      throw new Error(`V2 authorization nonce does not match the signed plan for ${transfer.from}`);
+    }
+  }
+
   return {
     chainId: BASE_SEPOLIA_CHAIN_ID,
     contractAddress,
     // Bare name, not the signature: KeeperHub resolves against the supplied ABI.
     functionName: "executeSettlement",
     functionArgs: JSON.stringify(settleArgs(body)),
-    abi: JSON.stringify(EXECUTE_SETTLEMENT_ABI),
+    abi: JSON.stringify(EXECUTE_SETTLEMENT_V2_ABI),
     taskId: `finaltab-settle-${body.settlementId.slice(2, 18)}`,
   };
 }
 
-export { BASE_SEPOLIA_CHAIN_ID, BASE_SEPOLIA_USDC, EXECUTE_SETTLEMENT_SIGNATURE };
+export {
+  BASE_SEPOLIA_CHAIN_ID,
+  BASE_SEPOLIA_USDC,
+  EXECUTE_SETTLEMENT_V2_SIGNATURE as EXECUTE_SETTLEMENT_SIGNATURE,
+};
 export type { z };

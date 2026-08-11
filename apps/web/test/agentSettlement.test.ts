@@ -1,12 +1,15 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { keccak256, encodeAbiParameters, recoverTypedDataAddress } from "viem";
+import { recoverTypedDataAddress } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { buildReceiveAuthorizationTypedData } from "@finaltab/engine";
+import {
+  buildReceiveAuthorizationTypedData,
+  buildSettlementConsentTypedData,
+  settlementAuthorizationNonce,
+} from "@finaltab/engine";
 import {
   AGENT_SIGNERS,
   formatUsdcMinor,
   prepareAgentSettlement,
-  receiveNonce,
   resolveAgentSigners,
   signPreparedTransfers,
   type AgentDebt,
@@ -43,21 +46,21 @@ const DEBTS: AgentDebt[] = [
 
 describe("prepareAgentSettlement", () => {
   it("is deterministic for the same debts and receiptRef", () => {
-    const a = prepareAgentSettlement(DEBTS, throwawayAddresses(), "receipt-1");
-    const b = prepareAgentSettlement(DEBTS, throwawayAddresses(), "receipt-1");
+    const a = prepareAgentSettlement(DEBTS, throwawayAddresses(), CONTRACT, "receipt-1");
+    const b = prepareAgentSettlement(DEBTS, throwawayAddresses(), CONTRACT, "receipt-1");
     expect(a.settlementId).toBe(b.settlementId);
     expect(a.ledgerHash).toBe(b.ledgerHash);
     expect(a.canonicalJson).toBe(b.canonicalJson);
   });
 
   it("produces a different settlementId for a different receiptRef", () => {
-    const a = prepareAgentSettlement(DEBTS, throwawayAddresses(), "receipt-1");
-    const b = prepareAgentSettlement(DEBTS, throwawayAddresses(), "receipt-2");
+    const a = prepareAgentSettlement(DEBTS, throwawayAddresses(), CONTRACT, "receipt-1");
+    const b = prepareAgentSettlement(DEBTS, throwawayAddresses(), CONTRACT, "receipt-2");
     expect(a.settlementId).not.toBe(b.settlementId);
   });
 
   it("converts USD to USDC minor units at x10000 per cent", () => {
-    const prepared = prepareAgentSettlement(DEBTS, throwawayAddresses(), "r");
+    const prepared = prepareAgentSettlement(DEBTS, throwawayAddresses(), CONTRACT, "r");
     const hem = prepared.transfers.find((t) => t.fromId === "hem")!;
     expect(hem.value).toBe("4200000"); // $4.20 → 4.20 USDC minor units
   });
@@ -69,6 +72,7 @@ describe("prepareAgentSettlement", () => {
         { debtor: "vee", creditor: "hem", amountUsd: "6.00" },
       ],
       throwawayAddresses(),
+      CONTRACT,
       "r",
     );
     expect(prepared.transfers).toHaveLength(1);
@@ -77,8 +81,8 @@ describe("prepareAgentSettlement", () => {
   });
 
   it("aggregates payouts by creditor and conserves money exactly", () => {
-    const prepared = prepareAgentSettlement(DEBTS, throwawayAddresses(), "r");
-    const pulled = prepared.transfers.reduce((acc, t) => acc + BigInt(t.value), 0n);
+    const prepared = prepareAgentSettlement(DEBTS, throwawayAddresses(), CONTRACT, "r");
+    const pulled = prepared.debits.reduce((acc, t) => acc + BigInt(t.value), 0n);
     const paid = prepared.payouts.reduce((acc, p) => acc + BigInt(p.value), 0n);
     expect(paid).toBe(pulled);
     expect(prepared.payouts).toHaveLength(1); // both debts flow to vee
@@ -88,9 +92,13 @@ describe("prepareAgentSettlement", () => {
   it("rejects self-debts, empty input, and zero-net graphs", () => {
     const addrs = throwawayAddresses();
     expect(() =>
-      prepareAgentSettlement([{ debtor: "vee", creditor: "vee", amountUsd: "1.00" }], addrs),
+      prepareAgentSettlement(
+        [{ debtor: "vee", creditor: "vee", amountUsd: "1.00" }],
+        addrs,
+        CONTRACT,
+      ),
     ).toThrow(/self-debt/);
-    expect(() => prepareAgentSettlement([], addrs)).toThrow(/no debts/);
+    expect(() => prepareAgentSettlement([], addrs, CONTRACT)).toThrow(/no debts/);
     expect(() =>
       prepareAgentSettlement(
         [
@@ -98,37 +106,25 @@ describe("prepareAgentSettlement", () => {
           { debtor: "vee", creditor: "hem", amountUsd: "5.00" },
         ],
         addrs,
+        CONTRACT,
       ),
     ).toThrow(/net to zero/);
   });
 });
 
-describe("receiveNonce", () => {
-  it("matches keccak256(abi.encode(ledgerHash, from, value))", () => {
-    const ledgerHash = keccak256("0x01");
-    const from = throwawayAddresses().vee;
-    const value = 4_200_000n;
-    expect(receiveNonce(ledgerHash, from, value)).toBe(
-      keccak256(
-        encodeAbiParameters(
-          [{ type: "bytes32" }, { type: "address" }, { type: "uint256" }],
-          [ledgerHash, from, value],
-        ),
-      ),
-    );
-  });
-});
-
 describe("signPreparedTransfers", () => {
-  it("signs one recoverable EIP-712 authorization per netted transfer", async () => {
-    const prepared = prepareAgentSettlement(DEBTS, throwawayAddresses(), "r");
+  it("signs one USDC authorization and one plan consent per aggregated debtor", async () => {
+    const prepared = prepareAgentSettlement(DEBTS, throwawayAddresses(), CONTRACT, "r");
     const signed = await signPreparedTransfers(prepared, throwawayAccounts(), CONTRACT);
-    expect(signed).toHaveLength(prepared.transfers.length);
+    expect(signed).toHaveLength(prepared.debits.length);
 
     for (const auth of signed) {
       expect(auth.to).toBe(CONTRACT);
-      expect([27, 28]).toContain(auth.v);
-      expect(auth.nonce).toBe(receiveNonce(prepared.ledgerHash, auth.from, BigInt(auth.value)));
+      expect([27, 28]).toContain(auth.authV);
+      expect([27, 28]).toContain(auth.consentV);
+      expect(auth.nonce).toBe(
+        settlementAuthorizationNonce(prepared.settlementId, auth.from, BigInt(auth.value)),
+      );
 
       // The signature must recover to the debtor over the exact typed data
       // the settlement contract forwards to USDC.
@@ -142,17 +138,33 @@ describe("signPreparedTransfers", () => {
           nonce: auth.nonce,
         }),
         signature: {
-          r: auth.r,
-          s: auth.s,
-          v: BigInt(auth.v),
+          r: auth.authR,
+          s: auth.authS,
+          v: BigInt(auth.authV),
         },
       });
       expect(recovered.toLowerCase()).toBe(auth.from.toLowerCase());
+
+      const consentRecovered = await recoverTypedDataAddress({
+        ...buildSettlementConsentTypedData(CONTRACT, {
+          planHash: prepared.settlementId,
+          debtor: auth.from,
+          value: BigInt(auth.value),
+          validAfter: BigInt(auth.validAfter),
+          validBefore: BigInt(auth.validBefore),
+        }),
+        signature: {
+          r: auth.consentR,
+          s: auth.consentS,
+          v: BigInt(auth.consentV),
+        },
+      });
+      expect(consentRecovered.toLowerCase()).toBe(auth.from.toLowerCase());
     }
   });
 
   it("refuses to sign when the key does not match the ledger address", async () => {
-    const prepared = prepareAgentSettlement(DEBTS, throwawayAddresses(), "r");
+    const prepared = prepareAgentSettlement(DEBTS, throwawayAddresses(), CONTRACT, "r");
     const wrongAccounts = throwawayAccounts();
     // Swap hem's account for vee's: address mismatch against the frozen ledger.
     wrongAccounts.set("hem", wrongAccounts.get("vee")!);

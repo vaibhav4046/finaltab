@@ -2,10 +2,12 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
+import { privateKeyToAccount } from "viem/accounts";
 import { Panel, Badge, Button, ErrorNote, Spinner, BlockedNote } from "./ui";
-import { freezeLedger, signAllTransfers, derivePayouts, shortHex, formatUsdcMinor } from "@/lib/flow";
+import { freezeLedger, signAllTransfers, signPreparedDebit, shortHex, formatUsdcMinor } from "@/lib/flow";
 import { apiErrorText, revertText } from "@/lib/apiText";
 import type { Person, ExecutionStage, FrozenLedgerState, SignedTransfer } from "@/lib/types";
+import { connectWallet, getConnectedAccounts, signMessage } from "@/lib/wallet";
 
 interface ExecutionRailProps {
   people: Person[];
@@ -22,6 +24,7 @@ interface RailState {
   frozen: FrozenLedgerState | null;
   signed: SignedTransfer[] | null;
   executionId: string | null;
+  proofCapability: string | null;
   verdict: string | null;
   simDetail: string | null;
   lastStatus: Record<string, unknown> | null;
@@ -29,7 +32,7 @@ interface RailState {
 
 const STAGE_LABELS: Array<{ key: string; label: string }> = [
   { key: "freeze", label: "Freeze ledger" },
-  { key: "sign", label: "Sign EIP-3009" },
+  { key: "sign", label: "Approve pull + payout plan" },
   { key: "simulate", label: "Simulate" },
   { key: "execute", label: "Execute via KeeperHub" },
   { key: "verify", label: "Verify receipt" },
@@ -71,6 +74,7 @@ export function ExecutionRail({
     frozen: null,
     signed: null,
     executionId: null,
+    proofCapability: null,
     verdict: null,
     simDetail: null,
     lastStatus: null,
@@ -103,7 +107,7 @@ export function ExecutionRail({
     try {
       if (netted.length === 0) throw new Error("Net the debts first — nothing to freeze.");
       const frozen = freezeLedger(people, netted, receiptId ?? "receipt-1", currency);
-      setRail((r) => ({ ...r, frozen, signed: null, executionId: null, verdict: null, simDetail: null }));
+      setRail((r) => ({ ...r, frozen, signed: null, executionId: null, proofCapability: null, verdict: null, simDetail: null }));
       onStage("frozen");
       onLocked(true);
     } catch (e) {
@@ -113,7 +117,7 @@ export function ExecutionRail({
 
   const doUnfreeze = () => {
     if (pollTimer.current) clearTimeout(pollTimer.current);
-    setRail({ frozen: null, signed: null, executionId: null, verdict: null, simDetail: null, lastStatus: null });
+    setRail({ frozen: null, signed: null, executionId: null, proofCapability: null, verdict: null, simDetail: null, lastStatus: null });
     setError(null);
     setBlocked(null);
     onStage("idle");
@@ -121,34 +125,24 @@ export function ExecutionRail({
   };
 
   const doSign = async () => {
-    console.log("[doSign] Entered, rail.frozen:", !!rail.frozen);
-    if (!rail.frozen) {
-      console.log("[doSign] Early return: no frozen state");
-      return;
-    }
-    console.log("[doSign] Setting busy=true");
+    if (!rail.frozen) return;
     setBusy(true);
     setError(null);
-
-    const timeoutId = setTimeout(() => {
-      console.error("[doSign] TIMEOUT: signing took >10s, likely hung");
-      setError("Signing timeout (>10s) — likely hung process");
-      setBusy(false);
-    }, 10000);
-
     try {
-      console.log("[doSign] Calling signAllTransfers with", people.length, "people and", rail.frozen.transfers.length, "transfers");
-      const signed = await signAllTransfers(people, rail.frozen);
-      console.log("[doSign] signAllTransfers returned", signed.length, "signatures");
-      clearTimeout(timeoutId);
-      setRail((r) => ({ ...r, signed }));
-      onStage("signed");
-      console.log("[doSign] Complete");
+      const already = rail.signed ?? [];
+      const allDemo = rail.frozen.debits.every((debit) =>
+        people.some(
+          (person) =>
+            person.address.toLowerCase() === debit.debtor.toLowerCase() && Boolean(person.demoPrivateKey),
+        ),
+      );
+      const signed = allDemo
+        ? await signAllTransfers(people, rail.frozen)
+        : [...already, await signPreparedDebit(people, rail.frozen, already.length)];
+      setRail((current) => ({ ...current, signed }));
+      if (signed.length === rail.frozen.debits.length) onStage("signed");
     } catch (e) {
-      clearTimeout(timeoutId);
-      const msg = e instanceof Error ? e.message : String(e);
-      console.error("[doSign] Failed:", msg, e);
-      setError(msg);
+      setError(e instanceof Error ? e.message : "Signature collection failed.");
     } finally {
       setBusy(false);
     }
@@ -158,10 +152,36 @@ export function ExecutionRail({
     settlementId: rail.frozen!.settlementId,
     ledgerHash: rail.frozen!.ledgerHash,
     transfers: rail.signed!,
-    // From the frozen transfers, not the signed ones — signing overwrites the
-    // recipient with the settlement contract.
-    payouts: derivePayouts(rail.frozen!.transfers),
+    // V2 planHash commits to these canonical, aggregated payouts.
+    payouts: rail.frozen!.payouts,
   });
+
+  const resolveBroadcastApprover = async (): Promise<`0x${string}`> => {
+    const debtors = new Set((rail.signed ?? []).map((transfer) => transfer.from.toLowerCase()));
+    const demoSigner = people.find(
+      (person) => Boolean(person.demoPrivateKey) && debtors.has(person.address.toLowerCase()),
+    );
+    if (demoSigner) return demoSigner.address as `0x${string}`;
+
+    let connected = await getConnectedAccounts();
+    if (connected.length === 0) {
+      const account = await connectWallet();
+      connected = account ? [account.address] : [];
+    }
+    const approver = connected.find((address) => debtors.has(address.toLowerCase()));
+    if (!approver) throw new Error("Connect any debtor wallet to approve this exact KeeperHub broadcast.");
+    return approver as `0x${string}`;
+  };
+
+  const signBroadcastMessage = async (approver: `0x${string}`, message: string): Promise<`0x${string}`> => {
+    const person = people.find((candidate) => candidate.address.toLowerCase() === approver.toLowerCase());
+    if (person?.demoPrivateKey) {
+      return privateKeyToAccount(person.demoPrivateKey).signMessage({ message });
+    }
+    const signature = await signMessage(approver, message);
+    if (!signature) throw new Error("Broadcast approval was cancelled. Nothing was submitted.");
+    return signature;
+  };
 
   const doSimulate = async () => {
     if (!rail.frozen || !rail.signed) return;
@@ -202,10 +222,13 @@ export function ExecutionRail({
   };
 
   const pollStatus = useCallback(
-    (executionId: string) => {
+    (executionId: string, settlementId: string, ledgerHash: string, proofCapability: string | null) => {
       const tick = async () => {
         try {
-          const res = await fetch(`/api/settle/status/${executionId}`);
+          const proofQuery = new URLSearchParams({ settlementId, ledgerHash });
+          const res = await fetch(`/api/settle/status/${executionId}?${proofQuery.toString()}`, {
+            headers: proofCapability ? { "x-finaltab-proof-capability": proofCapability } : undefined,
+          });
           const json = await res.json();
           if (!res.ok) {
             setError(apiErrorText(json, `Status check failed (HTTP ${res.status})`));
@@ -248,10 +271,53 @@ export function ExecutionRail({
     setBlocked(null);
     onStage("executing");
     try {
+      const approver = await resolveBroadcastApprover();
+      const challengeRes = await fetch("/api/settle/approval", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          settlementId: rail.frozen.settlementId,
+          ledgerHash: rail.frozen.ledgerHash,
+          approver,
+        }),
+      });
+      const challengeJson = await challengeRes.json();
+      if (challengeRes.status === 501) {
+        setBlocked(apiErrorText(challengeJson, "V2 settlement submission is not configured."));
+        onStage("simulating");
+        return;
+      }
+      if (challengeRes.status === 403) {
+        setBlocked(
+          apiErrorText(
+            challengeJson,
+            "This account can prepare settlements but needs an explicit settlements:submit grant to move testnet USDC.",
+          ),
+        );
+        onStage("simulating");
+        return;
+      }
+      if (!challengeRes.ok) {
+        setError(apiErrorText(challengeJson, `Approval challenge failed (HTTP ${challengeRes.status})`));
+        onStage("simulating");
+        return;
+      }
+      if (
+        typeof challengeJson.message !== "string" ||
+        !challengeJson.artifact ||
+        typeof challengeJson.artifact !== "object"
+      ) {
+        throw new Error("Approval challenge response was malformed. Nothing was submitted.");
+      }
+      const signature = await signBroadcastMessage(approver, challengeJson.message);
+
       const res = await fetch("/api/settle/execute", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify(settleBody()),
+        body: JSON.stringify({
+          signedSettlement: settleBody(),
+          approval: { ...challengeJson.artifact, signature },
+        }),
       });
       const json = await res.json();
       if (res.status === 501) {
@@ -270,9 +336,10 @@ export function ExecutionRail({
         return;
       }
       const executionId: string = json.accepted.executionId;
-      setRail((r) => ({ ...r, executionId }));
+      const proofCapability = typeof json.proofCapability === "string" ? json.proofCapability : null;
+      setRail((r) => ({ ...r, executionId, proofCapability }));
       onStage("pending");
-      pollStatus(executionId);
+      pollStatus(executionId, rail.frozen.settlementId, rail.frozen.ledgerHash, proofCapability);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Execute failed");
       onStage("simulating");
@@ -325,7 +392,7 @@ export function ExecutionRail({
                         <p className="break-all font-mono text-[10px] text-paper-dim">{rail.frozen.settlementId}</p>
                         <div className="pt-1.5">
                           <Button variant="ghost" onClick={doUnfreeze}>
-                            Unfreeze — voids signatures
+                            Revise plan · discard approvals
                           </Button>
                         </div>
                       </div>
@@ -338,30 +405,38 @@ export function ExecutionRail({
 
                 {s.key === "sign" && rail.frozen && (
                   <div className="mt-1.5">
-                    {!rail.signed ? (
+                    {!rail.signed || rail.signed.length < rail.frozen.debits.length ? (
                       <Button onClick={() => void doSign()} disabled={busy}>
-                        {busy && stage === "frozen" ? "Signing…" : `Sign ${rail.frozen.transfers.length} transfer(s)`}
+                        {busy
+                          ? "Waiting for wallet…"
+                          : people.every((person) => person.demoPrivateKey)
+                            ? `Run ${rail.frozen.debits.length} demo approval(s)`
+                            : `Collect approval ${(rail.signed?.length ?? 0) + 1}/${rail.frozen.debits.length}`}
                       </Button>
-                    ) : (
+                    ) : null}
+                    {rail.signed && rail.signed.length > 0 ? (
                       <div className="space-y-1.5">
                         {rail.signed.map((t, i2) => (
                           <div key={i2} className="rounded-md border border-edge bg-panel-2 px-2.5 py-1.5">
                             <p className="font-mono text-[10px] text-paper">
-                              {nameOfAddress(t.from)} → {nameOfAddress(t.to)} ·{" "}
+                              {nameOfAddress(t.from)} approved{" "}
                               <span className="text-lime">{formatUsdcMinor(t.value)} USDC</span>
                             </p>
-                            <p className="font-mono text-[9px] text-fog-dim">nonce {shortHex(t.nonce, 5)} · bound to ledgerHash</p>
+                            <p className="font-mono text-[9px] text-fog-dim">
+                              USDC pull + complete payout-plan consent · nonce {shortHex(t.nonce, 5)}
+                            </p>
                           </div>
                         ))}
                         <p className="font-mono text-[9px] text-fog-dim">
-                          Real EIP-712 signatures from demo signers. Edit anything → hash changes → all void.
+                          V2 recomputes the plan hash onchain. Any debtor, payout, amount, ledger, chain, or contract
+                          change invalidates approval.
                         </p>
                       </div>
-                    )}
+                    ) : null}
                   </div>
                 )}
 
-                {s.key === "simulate" && rail.signed && (
+                {s.key === "simulate" && rail.signed?.length === rail.frozen?.debits.length && (
                   <div className="mt-1.5">
                     {stage === "sim_failed" ? (
                       <div className="rounded-md border border-coral/40 bg-coral/5 p-2.5">
@@ -420,6 +495,17 @@ export function ExecutionRail({
                           Terminal success + onchain receipt exists + verified flag true. This banner only renders on
                           VERIFIED_SETTLED — there is no optimistic version of it.
                         </p>
+                        {rail.executionId ? (
+                          <a
+                            href={`/app/proof/${encodeURIComponent(rail.executionId)}?${new URLSearchParams({
+                              settlementId: rail.frozen?.settlementId ?? "",
+                              ledgerHash: rail.frozen?.ledgerHash ?? "",
+                            }).toString()}${rail.proofCapability ? `#proof=${encodeURIComponent(rail.proofCapability)}` : ""}`}
+                            className="mt-3 inline-flex min-h-11 items-center rounded-lg border border-lime/40 px-3 font-mono text-[10px] uppercase tracking-wider text-lime"
+                          >
+                            Open independently verified proof
+                          </a>
+                        ) : null}
                       </motion.div>
                     )}
                     {stage === "failed" && (

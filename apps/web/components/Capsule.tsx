@@ -1,266 +1,288 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
-const TX = "0x314189b472033de62f8aea7603111c141315be390bc834e283e718382261c5eb";
-const EXPLORER = `https://sepolia.basescan.org/tx/${TX}`;
+interface Receipt {
+  hash: string;
+  chainId: number;
+  verified: boolean;
+  receiptStatus: string;
+  blockNumber?: number;
+  gasUsed?: string;
+}
 
-const PROOF = {
-  record: "finaltab.flight.v1",
-  network: { chain: "Base Sepolia", chainId: 84532 },
-  trigger: {
-    surface: "MCP · settle_tab · confirm: true",
-    note: "Prepared, signed, and settled end-to-end by an AI agent over JSON-RPC. No UI involved.",
-  },
-  execution: {
-    provider: "KeeperHub",
-    executionId: "69zzrj7z676u89ce1x76j",
-    status: "success",
-  },
-  transaction: {
-    hash: TX,
-    blockNumber: 45315909,
-    gasUsed: 205748,
-    receiptStatus: "success",
-  },
-  settlement: {
-    settlementId: "0xa3d79513657a1a6f8b01c7bcb3c5026cd47e2ead9fc8b27a9239bcc1d6e55bb6",
-    ledgerHash: "0xcdc4a9f0b9e141cfce2ba149d90f3852adf07154184443a4b1d8d4ae92c3bc54",
-    receiptRef: "mcp-live-proof-4",
-    transfers: [
-      { from: "hem", to: "vee", usdc: "1.20" },
-      { from: "ravi", to: "vee", usdc: "0.80" },
-    ],
-    payout: { creditor: "vee", usdc: "2.00" },
-    contractRetained: "0.00",
-  },
-  verification: {
-    verified: true,
-    method: "independent RPC receipt fetch, fail-closed",
-    checks: [
-      "Both debtors signed EIP-3009 receiveWithAuthorization over the frozen ledger hash",
-      "KeeperHub execution status polled to a terminal state (success)",
-      "Transaction hash taken from the KeeperHub execution record",
-      "Receipt fetched independently from a Base Sepolia RPC — not from KeeperHub",
-      "receipt.status === success asserted (fail-closed: anything else = not verified)",
-      "Balances re-read after settlement: vee +2.00, hem −1.20, ravi −0.80, contract retains 0.00",
-    ],
-  },
-  explorer: EXPLORER,
-} as const;
+interface ProofPayload {
+  status: {
+    executionId: string;
+    status: string;
+    sponsored?: boolean;
+    transactionHash?: string;
+    receipts?: Receipt[];
+    [key: string]: unknown;
+  };
+  verdict: { verdict: "PENDING" | "VERIFIED_SETTLED" | "FAILED" | "UNPROVEN"; reason?: string };
+  keeperHubVerdict?: { verdict: string; reason?: string };
+  independent: null | {
+    method: string;
+    checkedAt: string;
+    verified: boolean;
+    receipts: Array<{
+      hash: string;
+      verified: boolean;
+      reason: string;
+      blockNumber?: number;
+      confirmations?: number;
+      contractLogFound?: boolean;
+      settlementBindingFound?: boolean;
+      observedSettlementId?: string;
+      observedLedgerHash?: string;
+    }>;
+  };
+  pollHintMs?: number | null;
+}
 
-type TabId = "summary" | "consent" | "execution" | "receipt" | "audit" | "raw";
-
-const TABS: Array<{ id: TabId; label: string }> = [
-  { id: "summary", label: "Summary" },
-  { id: "consent", label: "Consent" },
-  { id: "execution", label: "Execution" },
-  { id: "receipt", label: "Receipt" },
-  { id: "audit", label: "Audit" },
-  { id: "raw", label: "Raw JSON" },
-];
-
-function Row({ label, value, mono = true }: { label: string; value: string; mono?: boolean }) {
+function Row({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-quiet/50 py-2.5 last:border-0">
+    <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-quiet/50 py-3 last:border-0">
       <span className="text-sm text-muted">{label}</span>
-      <span className={`${mono ? "font-mono" : ""} break-all text-sm text-txt`}>{value}</span>
+      <span className="break-all text-right font-mono text-sm text-txt">{value}</span>
     </div>
   );
 }
 
-export function Capsule() {
-  const [tab, setTab] = useState<TabId>("summary");
+export function Capsule({
+  executionId,
+  settlementId,
+  ledgerHash,
+}: {
+  executionId?: string;
+  settlementId?: string;
+  ledgerHash?: string;
+}) {
+  const [lookup, setLookup] = useState(executionId ?? "");
+  const [settlementLookup, setSettlementLookup] = useState(settlementId ?? "");
+  const [ledgerLookup, setLedgerLookup] = useState(ledgerHash ?? "");
+  const [proof, setProof] = useState<ProofPayload | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(Boolean(executionId));
   const [copied, setCopied] = useState(false);
+  const [proofCapability, setProofCapability] = useState<string | null>(null);
+  const [capabilityReady, setCapabilityReady] = useState(false);
 
-  const copyLink = async () => {
+  useEffect(() => {
+    const fragment = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+    setProofCapability(fragment.get("proof"));
+    setCapabilityReady(true);
+  }, []);
+
+  const load = useCallback(async () => {
+    if (!executionId || !settlementId || !ledgerHash || !capabilityReady) return;
+    setLoading(true);
+    setError(null);
     try {
-      await navigator.clipboard.writeText(`${window.location.origin}/app/proof`);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1600);
-    } catch {
-      // clipboard unavailable (permissions/insecure context) — no-op, honest
+      const query = new URLSearchParams({ settlementId, ledgerHash });
+      const response = await fetch(
+        `/api/settle/status/${encodeURIComponent(executionId)}?${query.toString()}`,
+        {
+          cache: "no-store",
+          headers: proofCapability ? { "x-finaltab-proof-capability": proofCapability } : undefined,
+        },
+      );
+      const body = await response.json();
+      if (!response.ok) throw new Error(body.error ?? `Proof lookup failed (${response.status}).`);
+      setProof(body as ProofPayload);
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Proof lookup failed.");
+    } finally {
+      setLoading(false);
     }
-  };
+  }, [capabilityReady, executionId, ledgerHash, proofCapability, settlementId]);
 
-  const downloadJson = () => {
-    const blob = new Blob([JSON.stringify(PROOF, null, 2)], { type: "application/json" });
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  useEffect(() => {
+    if (!executionId || !settlementId || !ledgerHash || proof?.verdict.verdict !== "PENDING") return;
+    const timer = setTimeout(() => void load(), Math.max(1500, proof.pollHintMs ?? 3000));
+    return () => clearTimeout(timer);
+  }, [executionId, ledgerHash, load, proof, settlementId]);
+
+  const lookupForm = (
+    <form
+      className="mt-7 grid gap-2"
+      onSubmit={(event) => {
+        event.preventDefault();
+        const bytes32 = /^0x[0-9a-fA-F]{64}$/;
+        if (!/^[A-Za-z0-9_-]{6,128}$/.test(lookup)) {
+          setError("Enter a valid KeeperHub execution ID.");
+          return;
+        }
+        if (!bytes32.test(settlementLookup) || !bytes32.test(ledgerLookup)) {
+          setError("Enter the exact bytes32 settlementId and ledgerHash from the frozen plan.");
+          return;
+        }
+        const query = new URLSearchParams({ settlementId: settlementLookup, ledgerHash: ledgerLookup });
+        window.location.assign(`/app/proof/${encodeURIComponent(lookup)}?${query.toString()}`);
+      }}
+    >
+      <label htmlFor="execution-id" className="sr-only">KeeperHub execution ID</label>
+      <input
+        id="execution-id"
+        value={lookup}
+        onChange={(event) => setLookup(event.target.value)}
+        placeholder="KeeperHub execution ID"
+        className="min-h-12 flex-1 rounded-xl border border-quiet bg-surface-1 px-4 font-mono text-base text-txt outline-none focus-visible:ring-2 focus-visible:ring-signal"
+      />
+      <label htmlFor="settlement-id" className="sr-only">Frozen settlement ID</label>
+      <input
+        id="settlement-id"
+        value={settlementLookup}
+        onChange={(event) => setSettlementLookup(event.target.value)}
+        placeholder="0x… settlementId"
+        autoComplete="off"
+        spellCheck={false}
+        className="min-h-12 rounded-xl border border-quiet bg-surface-1 px-4 font-mono text-sm text-txt outline-none focus-visible:ring-2 focus-visible:ring-signal"
+      />
+      <label htmlFor="ledger-hash" className="sr-only">Frozen ledger hash</label>
+      <input
+        id="ledger-hash"
+        value={ledgerLookup}
+        onChange={(event) => setLedgerLookup(event.target.value)}
+        placeholder="0x… ledgerHash"
+        autoComplete="off"
+        spellCheck={false}
+        className="min-h-12 rounded-xl border border-quiet bg-surface-1 px-4 font-mono text-sm text-txt outline-none focus-visible:ring-2 focus-visible:ring-signal"
+      />
+      <button type="submit" className="min-h-12 rounded-xl bg-signal px-5 font-semibold text-ink">Verify now</button>
+    </form>
+  );
+
+  if (!executionId || !settlementId || !ledgerHash) {
+    return (
+      <div className="mx-auto max-w-2xl px-4 py-12 sm:px-6">
+        <p className="font-mono text-xs tracking-[0.25em] text-signal">LIVE PROOF LOOKUP</p>
+        <h1 className="mt-3 text-3xl font-semibold tracking-tight text-txt">Open a settlement capsule</h1>
+        <p className="mt-3 text-base leading-relaxed text-muted">
+          Enter the execution ID plus the frozen settlement and ledger hashes. FINALTab only verifies green when Base Sepolia contains the exact V2 event for those identifiers.
+        </p>
+        {lookupForm}
+        {error ? <p className="mt-3 text-sm text-danger" role="alert">{error}</p> : null}
+        <div className="mt-8 rounded-xl border border-info/30 bg-info/5 p-4 text-sm leading-relaxed text-muted">
+          The former static showcase record was removed. A successful transaction from the same contract is not enough: both indexed V2 plan identifiers must match before this page displays green.
+        </div>
+      </div>
+    );
+  }
+
+  if (loading && !proof) {
+    return <div className="mx-auto max-w-3xl px-4 py-16 text-center text-muted" role="status">Re-verifying KeeperHub and Base Sepolia…</div>;
+  }
+  if (error || !proof) {
+    return (
+      <div className="mx-auto max-w-2xl px-4 py-12 sm:px-6">
+        <p className="font-mono text-xs tracking-[0.25em] text-warn">PROOF NOT VERIFIED</p>
+        <h1 className="mt-3 text-3xl font-semibold tracking-tight text-txt">Check the execution or try again</h1>
+        <p className="mt-3 text-sm leading-6 text-danger" role="alert">{error ?? "No proof returned."}</p>
+        <div className="mt-4 rounded-xl border border-quiet bg-surface-1 p-4 text-sm text-muted">
+          No success is implied. The execution ID and both frozen-plan hashes remain editable below so a configuration error or mismatched proof never strands the lookup.
+        </div>
+        {lookupForm}
+        <button type="button" onClick={() => void load()} className="mt-3 min-h-11 rounded-lg border border-quiet px-4 text-txt">Retry current proof</button>
+      </div>
+    );
+  }
+
+  const verdict = proof.verdict.verdict;
+  const verified = verdict === "VERIFIED_SETTLED" && proof.independent?.verified === true;
+  const receipt = proof.status.receipts?.[0];
+  const txHash = receipt?.hash ?? proof.status.transactionHash ?? null;
+  const explorer = txHash ? `https://sepolia.basescan.org/tx/${txHash}` : null;
+  const tone = verified
+    ? { border: "border-signal/40", background: "bg-signal/10", text: "text-signal" }
+    : verdict === "FAILED"
+      ? { border: "border-danger/40", background: "bg-danger/10", text: "text-danger" }
+      : { border: "border-warn/40", background: "bg-warn/10", text: "text-warn" };
+
+  const download = () => {
+    const blob = new Blob([JSON.stringify(proof, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "finaltab-settlement-capsule.json";
-    a.click();
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = `finaltab-proof-${executionId}.json`;
+    anchor.click();
     URL.revokeObjectURL(url);
   };
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:py-12">
-      <p className="font-mono text-xs tracking-[0.25em] text-signal">SETTLEMENT CAPSULE</p>
-
-      {/* hero card */}
-      <div className="verified-pulse mt-4 rounded-xl border border-signal/40 bg-surface-1 p-6">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-signal/15 text-signal">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
-                <path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
-                <path d="M9 12l2 2 4-4.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </span>
-            <div>
-              <h1 className="text-lg font-semibold tracking-tight text-txt">VERIFIED SETTLEMENT</h1>
-              <p className="text-sm text-muted">AI agent via MCP · KeeperHub executed · Base Sepolia · receipt verified against RPC</p>
-            </div>
+      <p className="font-mono text-xs tracking-[0.25em] text-signal">SETTLEMENT CAPSULE · LIVE</p>
+      <section className={`mt-4 rounded-2xl border ${tone.border} bg-surface-1 p-6`} aria-labelledby="proof-title">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h1 id="proof-title" className="text-2xl font-semibold tracking-tight text-txt">
+              {verified ? "Verified settlement" : verdict === "PENDING" ? "Settlement pending" : verdict === "FAILED" ? "Settlement failed" : "Settlement unproven"}
+            </h1>
+            <p className="mt-2 text-sm text-muted">
+              KeeperHub execution plus independent receipt, V2 contract, settlementId, and ledgerHash verification.
+            </p>
           </div>
-          <span className="rounded-full border border-signal/40 bg-signal/10 px-3 py-1 font-mono text-[11px] uppercase tracking-wider text-signal">
-            success · verified
+          <span className={`rounded-full border ${tone.border} ${tone.background} px-3 py-1 font-mono text-xs uppercase tracking-wider ${tone.text}`}>
+            {verdict.replaceAll("_", " ")}
           </span>
         </div>
-        <div className="mt-5 grid gap-x-8 gap-y-2 sm:grid-cols-2">
-          <Row label="Execution ID" value={PROOF.execution.executionId} />
-          <Row label="Block" value={PROOF.transaction.blockNumber.toLocaleString("en-GB")} />
-          <Row label="Chain" value={`${PROOF.network.chain} · ${PROOF.network.chainId}`} />
-          <Row label="Gas used" value={`${PROOF.transaction.gasUsed.toLocaleString("en-GB")} · sponsored`} />
-          <Row label="Triggered by" value="AI agent · MCP settle_tab" mono={false} />
-          <Row label="Moved" value={`${PROOF.settlement.payout.usdc} USDC → ${PROOF.settlement.payout.creditor}`} />
+        <div className="mt-5">
+          <Row label="Execution ID" value={proof.status.executionId || executionId} />
+          <Row label="KeeperHub status" value={proof.status.status} />
+          <Row label="KeeperHub receipt gate" value={proof.keeperHubVerdict?.verdict ?? verdict} />
+          <Row label="Independent RPC" value={proof.independent ? (proof.independent.verified ? "verified" : "not verified") : "waiting for terminal receipt"} />
+          <Row label="Settlement ID" value={settlementId} />
+          <Row label="Ledger hash" value={ledgerHash} />
+          {receipt?.blockNumber ? <Row label="Block" value={receipt.blockNumber.toLocaleString("en-GB")} /> : null}
+          <Row label="Gas sponsorship" value={proof.status.sponsored ? "KeeperHub sponsored" : "not reported"} />
+          {txHash ? <Row label="Transaction" value={txHash} /> : null}
         </div>
-        <p className="mt-3 break-all font-mono text-xs text-faint">{TX}</p>
-      </div>
+        {proof.verdict.reason ? <p className="mt-4 rounded-lg border border-quiet bg-canvas p-3 text-sm text-muted">{proof.verdict.reason}</p> : null}
+      </section>
 
-      {/* actions */}
       <div className="mt-4 flex flex-wrap gap-2">
         <button
           type="button"
-          onClick={copyLink}
-          className="rounded-lg border border-quiet bg-surface-1 px-4 py-2 text-sm text-txt transition-colors hover:border-signal/50"
+          onClick={async () => {
+            await navigator.clipboard.writeText(window.location.href);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 1500);
+          }}
+          className="min-h-11 rounded-lg border border-quiet bg-surface-1 px-4 text-sm text-txt"
         >
-          {copied ? "Copied ✓" : "Copy link"}
+          {copied ? "Copied" : "Copy proof link"}
         </button>
-        <button
-          type="button"
-          onClick={downloadJson}
-          className="rounded-lg border border-quiet bg-surface-1 px-4 py-2 text-sm text-txt transition-colors hover:border-signal/50"
-        >
-          Download JSON
-        </button>
-        <a
-          href={EXPLORER}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="rounded-lg bg-signal px-4 py-2 text-sm font-semibold text-ink transition-transform hover:scale-[1.02]"
-        >
-          Open explorer ↗
-        </a>
+        <button type="button" onClick={download} className="min-h-11 rounded-lg border border-quiet bg-surface-1 px-4 text-sm text-txt">Download JSON</button>
+        {explorer ? <a href={explorer} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center rounded-lg bg-signal px-4 text-sm font-semibold text-ink">Open BaseScan ↗</a> : null}
       </div>
 
-      {/* tabs */}
-      <div className="mt-8 flex gap-1 overflow-x-auto rounded-lg border border-quiet bg-surface-1 p-1">
-        {TABS.map((t) => (
-          <button
-            key={t.id}
-            type="button"
-            onClick={() => setTab(t.id)}
-            className={`shrink-0 rounded-md px-3.5 py-1.5 text-sm transition-colors ${
-              tab === t.id ? "bg-surface-2 text-signal" : "text-muted hover:text-txt"
-            }`}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
+      <section className="mt-8 rounded-2xl border border-quiet bg-surface-1 p-5" aria-labelledby="audit-title">
+        <h2 id="audit-title" className="text-lg font-semibold text-txt">Independent audit checks</h2>
+        {proof.independent?.receipts.length ? (
+          <ul className="mt-4 space-y-3">
+            {proof.independent.receipts.map((item) => (
+              <li key={item.hash} className="rounded-xl border border-quiet bg-canvas p-4">
+                <p className={`font-mono text-xs font-semibold ${item.verified ? "text-signal" : "text-warn"}`}>{item.verified ? "PASS" : "NOT PROVEN"}</p>
+                <p className="mt-2 break-all font-mono text-xs text-muted">{item.hash}</p>
+                <p className="mt-2 text-sm text-txt">{item.reason}</p>
+                <p className="mt-2 text-xs text-muted">
+                  Confirmations: {item.confirmations ?? "unknown"} · settlement event: {item.contractLogFound ? "found" : "not found"} · exact plan: {item.settlementBindingFound ? "matched" : "not matched"}
+                </p>
+              </li>
+            ))}
+          </ul>
+        ) : <p className="mt-3 text-sm text-muted">No terminal receipt exists yet.</p>}
+      </section>
 
-      <div className="mt-4 rounded-xl border border-quiet bg-surface-1 p-5">
-        {tab === "summary" ? (
-          <div className="space-y-4">
-            <p className="text-txt">
-              This capsule is the proof record of a real settlement on Base Sepolia — driven
-              end-to-end by an AI agent over MCP. The agent called{" "}
-              <span className="font-mono text-sm">prepare_settlement</span>, then{" "}
-              <span className="font-mono text-sm">settle_tab</span> with an explicit confirm; two
-              debtors&apos; EIP-3009 signatures were pulled atomically by the FINALTab contract, and
-              the transaction landed in block {PROOF.transaction.blockNumber.toLocaleString("en-GB")}.
-              FINALTab&apos;s flight recorder verified the receipt independently against the RPC — it
-              never takes KeeperHub&apos;s word for it.
-            </p>
-            <p className="text-sm text-muted">
-              Every FINALTab settlement produces one of these. If verification cannot complete, the
-              capsule says <span className="font-mono text-warn">UNPROVEN</span> — it never fakes a
-              green tick.
-            </p>
-          </div>
-        ) : null}
-
-        {tab === "consent" ? (
-          <div className="space-y-4">
-            <p className="text-txt">
-              FINALTab&apos;s consent model: the split is frozen into a canonical ledger, hashed, and
-              every debtor signs an EIP-3009 <span className="font-mono text-sm">transferWithAuthorization</span> whose
-              nonce derives from that ledger hash. Change anything after freeze and every signature dies.
-              Nobody&apos;s money moves without their own signature over the exact final numbers.
-            </p>
-            <p className="text-sm text-muted">
-              This flight is the full consent path, live: hem signed for 1.20 USDC and ravi signed
-              for 0.80 USDC over ledger hash{" "}
-              <span className="break-all font-mono text-xs">{PROOF.settlement.ledgerHash}</span>, and
-              the deployed FINALTab contract pulled both authorizations and paid vee 2.00 USDC in one
-              atomic transaction. The contract path carries 11 Hardhat tests.
-            </p>
-          </div>
-        ) : null}
-
-        {tab === "execution" ? (
-          <div>
-            <Row label="Provider" value={PROOF.execution.provider} mono={false} />
-            <Row label="Execution ID" value={PROOF.execution.executionId} />
-            <Row label="Status" value={PROOF.execution.status} />
-            <Row label="Chain" value={`${PROOF.network.chain} (${PROOF.network.chainId})`} />
-          </div>
-        ) : null}
-
-        {tab === "receipt" ? (
-          <div>
-            <Row label="Transaction hash" value={TX} />
-            <Row label="Block number" value={PROOF.transaction.blockNumber.toLocaleString("en-GB")} />
-            <Row label="Gas used" value={PROOF.transaction.gasUsed.toLocaleString("en-GB")} />
-            <Row label="Receipt status" value={PROOF.transaction.receiptStatus} />
-            <a
-              href={EXPLORER}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-4 inline-block text-sm text-info hover:text-txt"
-            >
-              View on BaseScan ↗
-            </a>
-          </div>
-        ) : null}
-
-        {tab === "audit" ? (
-          <div>
-            <p className="text-sm text-muted">
-              Verification method: {PROOF.verification.method}. Checks performed:
-            </p>
-            <ul className="mt-3 space-y-2.5">
-              {PROOF.verification.checks.map((c) => (
-                <li key={c} className="flex gap-2.5 text-sm text-txt">
-                  <span className="mt-0.5 text-signal">✓</span>
-                  {c}
-                </li>
-              ))}
-            </ul>
-          </div>
-        ) : null}
-
-        {tab === "raw" ? (
-          <pre className="lab-scroll overflow-x-auto rounded-lg bg-canvas p-4 font-mono text-xs leading-relaxed text-muted">
-            {JSON.stringify(PROOF, null, 2)}
-          </pre>
-        ) : null}
-      </div>
-
-      <p className="mt-6 text-center font-mono text-[11px] text-faint">
-        Anyone with the repo can re-verify:{" "}
-        <span className="text-muted">kh-proof --execution {PROOF.execution.executionId}</span>
-      </p>
+      <details className="mt-6 rounded-xl border border-quiet bg-surface-1 p-4">
+        <summary className="cursor-pointer font-mono text-xs uppercase tracking-wider text-muted">Raw live proof JSON</summary>
+        <pre className="mt-3 max-h-96 overflow-auto rounded-lg bg-canvas p-4 font-mono text-xs text-muted">{JSON.stringify(proof, null, 2)}</pre>
+      </details>
     </div>
   );
 }

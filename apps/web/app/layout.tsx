@@ -4,9 +4,9 @@ import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "FINALTab — the bill isn't settled until the money moves",
+  title: "FINALTab — receipt to verified testnet settlement",
   description:
-    "FINALTab turns shared receipts into one agreed, verified settlement — from photo to zero IOUs. Deterministic splitting, EIP-3009 signatures, KeeperHub-executed USDC batch settlement on Base Sepolia, chain-verified receipts.",
+    "FINALTab turns shared receipts into exact splits and KeeperHub-executed USDC settlements on Base Sepolia, with explicit proof and product gaps.",
   manifest: "/manifest.webmanifest",
   icons: { icon: "/icon.svg" },
   appleWebApp: {
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#121110",
+  themeColor: "#0b0f12",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",

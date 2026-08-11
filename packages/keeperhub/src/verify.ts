@@ -16,16 +16,25 @@ export type Verdict =
   | { verdict: "PENDING"; reason: string };
 
 export function classifyExecution(status: ExecutionStatusResponse): Verdict {
-  const receipts = status.receipts ?? [];
+  const receipts = Array.isArray(status.receipts) ? status.receipts : [];
+  const state = String(status.status);
 
-  if (status.status === "pending" || status.status === "submitted") {
-    return { verdict: "PENDING", reason: `status is ${status.status} (not terminal)` };
+  if (state === "pending" || state === "submitted") {
+    return { verdict: "PENDING", reason: `status is ${state} (not terminal)` };
   }
 
-  if (status.status === "failed" || status.status === "cancelled") {
+  if (state === "failed" || state === "cancelled") {
     return {
       verdict: "FAILED",
-      reason: status.error ? `status ${status.status}: ${status.error}` : `status ${status.status}`,
+      reason: status.error ? `status ${state}: ${status.error}` : `status ${state}`,
+      receipts,
+    };
+  }
+
+  if (state !== "completed") {
+    return {
+      verdict: "UNPROVEN",
+      reason: `unknown execution status ${JSON.stringify(state)} — fails closed`,
       receipts,
     };
   }
@@ -40,6 +49,20 @@ export function classifyExecution(status: ExecutionStatusResponse): Verdict {
   }
 
   for (const r of receipts) {
+    if (
+      !r ||
+      typeof r.hash !== "string" ||
+      !/^0x[0-9a-fA-F]{64}$/.test(r.hash) ||
+      typeof r.chainId !== "number" ||
+      typeof r.verified !== "boolean" ||
+      typeof r.receiptStatus !== "string"
+    ) {
+      return {
+        verdict: "UNPROVEN",
+        reason: "KeeperHub returned a malformed receipt — fails closed",
+        receipts,
+      };
+    }
     if (r.verified !== true) {
       return {
         verdict: "UNPROVEN",

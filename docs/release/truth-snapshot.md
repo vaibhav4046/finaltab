@@ -1,5 +1,19 @@
 # Truth snapshot — measured 2026-08-10
 
+> **Historical evidence snapshot.** This document preserves measurements from
+> 2026-08-10; it is not the current submission checklist and some referenced
+> `proof-output/` files are not present in this checkout. Use
+> [status.md](status.md) for current readiness, video, test, deadline, and PR
+> state. Re-run the gates before promoting any historical count or service
+> result to a current claim.
+
+> **Current V2 override (2026-08-11):** V2 is deployed at
+> `0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB` through KeeperHub execution
+> `xasakw5nfxkh2s0fh4stn`, tx `0x904ec881…e8f`, block `45321107`, with a
+> verified receipt and Sourcify exact-match ID `43497805`. A V2 USDC settlement
+> and V2 video are still pending. Every “end-to-end” or `confirm: true` statement
+> below describes the historical V1 system only.
+
 Every line here is either measured in this repo or measured against Base Sepolia.
 Where something is unproven it says so. Nothing is upgraded to "proven" by
 plausibility.
@@ -15,7 +29,7 @@ plausibility.
 
 ---
 
-## The one-paragraph honest version
+## Historical V1 summary
 
 The **entire pipeline is live-proven end to end, including the settle leg — and
 an AI agent has driven it with no UI involved**. On 2026-08-10 four real batch
@@ -48,10 +62,10 @@ simulation — was already proven, most of it live.
 | KeeperHub auth + chain enablement | `LIVE_PROVEN` | `proof-output/first-flight-*.json`, `httpStatus 200`, chain 84532 `enabled: true` |
 | KeeperHub submit → poll → chain-verified receipt | `LIVE_PROVEN` | 2 flights, both `VERIFIED_SETTLED`. tx [`0x11300427…`](https://sepolia.basescan.org/tx/0x11300427473e95d241d924891b2cc0131b0047263e461787c27a2f854c39278c) block 45243955 gas 80521; tx [`0x98920aeb…`](https://sepolia.basescan.org/tx/0x98920aeb63caf322488ef4a61f344d5ff799c0b8f69b4255030f919a5be35f0e) block 45244012 gas 40921. Both `verified: true`, `receiptStatus: "success"` |
 | Fail-closed verdict logic | `LIVE_PROVEN` | The same harness returned `FAILED` for the deploy attempt with the real upstream reason, rather than reporting success |
-| Contract deployed on Base Sepolia | `LIVE_PROVEN` | `eth_getCode` on `0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64` → 2259 bytes |
-| Contract source verified on Basescan | `NOT_STARTED` | No published source; this is why the settle route must pass `abi` inline |
+| Historical V1 contract deployed on Base Sepolia | `LIVE_PROVEN` | `eth_getCode` on `0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64` → 2259 bytes |
+| Historical V1 source verified on BaseScan | `NOT_STARTED` | No published V1 source; this row does not describe V2's Sourcify exact match |
 | `executeSettlement` batch settlement onchain | `LIVE_PROVEN` | Four settlements on 2026-08-10. First: tx [`0x7bf655f3…`](https://sepolia.basescan.org/tx/0x7bf655f3f72774839908021039e640b5ac8acaf5462b1376200cbb490045c12d) block 45310631, executionId `dthckv3julum6m5ktmdik`, `verified: true`, `receiptStatus: "success"`, 3 USDC `Transfer` logs + 1 `SettlementExecuted` bound to the ledgerHash, exact balance deltas (+8.00 / −4.20 / −3.80), zero USDC retained. Report: `proof-output/live-settle-2026-08-10T19-19-04-531Z.json`. Then `ks6wxg5vnmc833nd2yyk4` / `0x770ada77…` (block 45311736) and `dbukwam812iep68uehkhy` / `0xac6d32e5…` (block 45312815, on camera), both 9.00 + 5.06 → 14.06 USDC. See "The settle leg" below |
-| **AI agent settlement over MCP** | `LIVE_PROVEN` | tx [`0x314189b4…`](https://sepolia.basescan.org/tx/0x314189b472033de62f8aea7603111c141315be390bc834e283e718382261c5eb) block 45315909, executionId `69zzrj7z676u89ce1x76j`, `verified: true`. Five JSON-RPC `tools/call` requests against production `https://finaltab.vercel.app/api/mcp`; 1.20 + 0.80 → 2.00 USDC; acceptance to on-chain success under 3 s. `settle_tab` is gated behind explicit `confirm: true`; 12 unit tests in `apps/web/test/agentSettlement.test.ts`. Step record: `docs/release/evidence/live-proof-4-mcp.json` |
+| **Historical V1 agent settlement over MCP** | `LIVE_PROVEN` | tx [`0x314189b4…`](https://sepolia.basescan.org/tx/0x314189b472033de62f8aea7603111c141315be390bc834e283e718382261c5eb) block 45315909, executionId `69zzrj7z676u89ce1x76j`, `verified: true`. This fixed-demo-signer run used the former `settle_tab(confirm: true)` flow and is not V2 proof. Step record: `docs/release/evidence/live-proof-4-mcp.json` |
 | Contract logic (atomicity, replay, nonce binding, expiry) | `FIXTURE_PROVEN` | 11 Hardhat tests against `MockUSDC3009` |
 | Calldata encoding for KeeperHub | `LIVE_PROVEN` | Decoded live request: selector `ab894f37`, both pulls carry `to = 0xCcf6b4De…`, values 19,440,000 + 11,670,000 = 31,110,000 = payout exactly |
 | Receipt extraction (vision) | `LIVE_PROVEN` | Real Groq API, strict JSON schema, decimal-string amounts |

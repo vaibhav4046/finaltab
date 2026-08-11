@@ -4,11 +4,11 @@ import { mkdtempSync, readFileSync, rmSync, existsSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { FakeKeeperHub } from "../../keeperhub/test/fakeServer.js";
-// classify() is exported from the CLI itself so its logic is unit-testable
-// without spawning a process.
+// Import the pure helper rather than Vite-transforming the executable: its
+// shebang must remain the first line when the CLI runs under Node.
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore — plain .mjs module
-import { classify } from "../bin/kh-proof.mjs";
+import { classify } from "../src/classify.mjs";
 
 const CLI = resolve(__dirname, "..", "bin", "kh-proof.mjs");
 

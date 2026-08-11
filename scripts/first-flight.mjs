@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * FINALTab first-flight — `node scripts/first-flight.mjs [--deploy] [--recipient 0x..]`
+ * FINALTab first-flight — `node scripts/first-flight.mjs [--recipient 0x..]`
  *
  * Proves the KeeperHub execution leg end-to-end on Base Sepolia with the
  * smallest possible real actions, simulate-first at every step:
@@ -11,15 +11,13 @@
  *   Stage C  zero-value flight simulate -> execute -> poll -> fail-closed verify
  *                              of a 0-value native self-transfer. Must end
  *                              VERIFIED_SETTLED (receipt verified + success).
- *   Stage D  contract deploy   (--deploy only) CreateX deployCreate(initCode)
- *                              with FinalTabBatchSettlement creation code bound
- *                              to Base Sepolia USDC. Simulate-first, same verify.
- *
  * A failed simulation is never broadcast. A transactionHash alone is never
  * treated as proof; only chain-verified receipts flip a stage to green.
+ * Contract deployment is intentionally separate: the retired `--deploy`
+ * option fails before credentials are loaded or any request is made.
  *
  * Exit codes: 0 all stages verified · 1 failed · 2 unproven (fails closed)
- *             3 blocked/timeout/config (nothing was broadcast in stage C/D)
+ *             3 blocked/timeout/config (nothing was broadcast in stage C)
  */
 import { readFileSync, existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join, dirname } from "node:path";
@@ -29,22 +27,23 @@ import { classify } from "../packages/keeperhub-flight-recorder/bin/kh-proof.mjs
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const CHAIN_ID = 84532; // Base Sepolia
-const USDC = "0x036CbD53842c5426634e7929541eC2318f3dCF7e";
-const CREATEX = "0xba5Ed099633D3B313e4D5F7bdc1305d3c28ba5Ed";
-const ARTIFACT = join(ROOT, "contracts", "artifacts", "contracts", "FinalTabBatchSettlement.sol", "FinalTabBatchSettlement.json");
 const TERMINAL = new Set(["completed", "failed", "cancelled"]);
 
 function parseArgs(argv) {
-  const args = { deploy: false, recipient: null, baseUrl: "https://app.keeperhub.com", timeoutMs: 300000, outDir: "proof-output" };
+  const args = { recipient: null, baseUrl: "https://app.keeperhub.com", timeoutMs: 300000, outDir: "proof-output" };
   for (let i = 2; i < argv.length; i++) {
     const a = argv[i];
-    if (a === "--deploy") args.deploy = true;
+    if (a === "--deploy") {
+      console.error("RETIRED: first-flight no longer deploys contracts.");
+      console.error("Use the simulate-first V2 KeeperHub path: node scripts/deploy-v2-keeperhub.mjs");
+      process.exit(3);
+    }
     else if (a === "--recipient") args.recipient = argv[++i];
     else if (a === "--base-url") args.baseUrl = argv[++i];
     else if (a === "--timeout-ms") args.timeoutMs = Number(argv[++i]);
     else if (a === "--out-dir") args.outDir = argv[++i];
     else if (a === "--help" || a === "-h") {
-      console.log("Usage: node scripts/first-flight.mjs [--deploy] [--recipient 0x..] [--base-url URL] [--timeout-ms N] [--out-dir DIR]");
+      console.log("Usage: node scripts/first-flight.mjs [--recipient 0x..] [--base-url URL] [--timeout-ms N] [--out-dir DIR]");
       process.exit(3);
     } else {
       console.error(`Unknown argument: ${a}`);
@@ -151,20 +150,6 @@ async function discoverWalletAddress(baseUrl, apiKey) {
   return m ? m[0] : null;
 }
 
-/** FinalTabBatchSettlement creation code + abi-encoded constructor(address usdc). */
-function buildInitCode() {
-  if (!existsSync(ARTIFACT)) {
-    throw new Error(`Artifact missing: ${ARTIFACT}. Run: cd contracts && npx hardhat compile`);
-  }
-  const artifact = JSON.parse(readFileSync(ARTIFACT, "utf8"));
-  const bytecode = artifact.bytecode;
-  if (typeof bytecode !== "string" || !bytecode.startsWith("0x") || bytecode.length <= 2) {
-    throw new Error("Artifact bytecode empty. Run: cd contracts && npx hardhat compile");
-  }
-  const encodedArg = USDC.slice(2).toLowerCase().padStart(64, "0");
-  return bytecode + encodedArg;
-}
-
 /** Runs one simulate -> execute -> poll -> classify leg. Returns {verdict, reason, executionId, terminal}. */
 async function fly(baseUrl, apiKey, path, body, label, timeoutMs) {
   console.log(`\n[${label}] simulating (nothing broadcast yet)...`);
@@ -251,28 +236,8 @@ async function main() {
     return CODE[flightC.verdict] ?? 3;
   }
 
-  // Stage D: real contract deploy through CreateX, only on explicit --deploy.
-  if (args.deploy) {
-    const initCode = buildInitCode();
-    console.log(`[D] initCode ${(initCode.length - 2) / 2} bytes (FinalTabBatchSettlement + USDC ${USDC}).`);
-    const flightD = await fly(
-      args.baseUrl, apiKey, "/api/execute/contract-call",
-      { chainId: CHAIN_ID, contractAddress: CREATEX, functionName: "deployCreate(bytes)", functionArgs: JSON.stringify([initCode]) },
-      "D deploy", args.timeoutMs,
-    );
-    report.stages.deploy = flightD;
-    console.log(`[D] ${flightD.verdict}: ${flightD.reason}`);
-    if (flightD.verdict === "VERIFIED_SETTLED") {
-      const hash = flightD.terminal?.receipts?.[0]?.hash;
-      console.log(`[D] Deployed. Find the address in the ContractCreation event of tx ${hash ?? "(see receipts)"} on sepolia.basescan.org,`);
-      console.log("    then set NEXT_PUBLIC_SETTLEMENT_CONTRACT in apps/web/.env.local.");
-    }
-    emit(args, report);
-    return CODE[flightD.verdict] ?? 3;
-  }
-
   emit(args, report);
-  console.log("\nFirst flight verified. Re-run with --deploy to put FinalTabBatchSettlement on Base Sepolia.");
+  console.log("\nFirst flight verified. Contract deployment is a separate, V2-only KeeperHub workflow.");
   return 0;
 }
 

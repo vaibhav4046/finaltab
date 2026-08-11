@@ -14,6 +14,8 @@ export interface ReceiptState {
   attempts: number;
   arithmeticIssues: string[];
   imageDataUrl: string;
+  /** Set only after a human confirms the editable extraction and arithmetic passes. */
+  confirmedAt?: string;
 }
 
 /**
@@ -56,9 +58,12 @@ export interface SignedTransfer {
   validAfter: string;
   validBefore: string;
   nonce: `0x${string}`;
-  v: number;
-  r: `0x${string}`;
-  s: `0x${string}`;
+  authV: number;
+  authR: `0x${string}`;
+  authS: `0x${string}`;
+  consentV: number;
+  consentR: `0x${string}`;
+  consentS: `0x${string}`;
 }
 
 export interface FrozenLedgerState {
@@ -66,6 +71,9 @@ export interface FrozenLedgerState {
   ledgerHash: `0x${string}`;
   settlementId: `0x${string}`;
   transfers: Array<{ from: `0x${string}`; to: `0x${string}`; value: string }>;
+  /** V2 executes one aggregated pull per debtor, avoiding duplicate EIP-3009 nonces. */
+  debits: Array<{ debtor: `0x${string}`; value: string }>;
+  payouts: Array<{ creditor: `0x${string}`; value: string }>;
 }
 
 export interface ExecutionState {

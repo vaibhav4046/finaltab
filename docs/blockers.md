@@ -2,7 +2,21 @@
 
 Nothing here is faked in the app: blocked paths render as blocked, unproven states render as unproven.
 
-## RESOLVED
+## CURRENT V2 BLOCKERS — 2026-08-11
+
+- Execute and retain one authenticated external-wallet V2 USDC settlement.
+- Bind the V2 MCP trace, KeeperHub receipt, independent V2 event/balance proof,
+  and final video to the same run.
+- Upload that video and complete the human DoraHacks form.
+
+V2 deployment itself is resolved: contract
+`0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB`, KeeperHub execution
+`xasakw5nfxkh2s0fh4stn`, tx `0x904ec881…e8f`, block `45321107`, Sourcify exact
+match `43497805`. **Everything below this paragraph is the preserved V1-era
+closure and blocker log, not current V2 release truth.** Current readiness is
+maintained in [release/status.md](release/status.md).
+
+## Historical V1 closures
 
 ### KeeperHub ORGANIZATION key — RESOLVED 2026-08-09
 
@@ -20,11 +34,11 @@ Nothing here is faked in the app: blocked paths render as blocked, unproven stat
 
 - PR open: https://github.com/KeeperHub/cli/pull/95 (`--require-verified` + `--timeout` for `execute status`). Open, **not merged**; it will not be described as merged unless GitHub shows it merged.
 
-### ElevenLabs voiceover — DONE
+### Historical V1 ElevenLabs voiceover — DONE
 
 - Key provided; 8 scene mp3s generated to `proof-output/voiceover/` (gitignored). Storyboard in [demo-storyboard.md](demo-storyboard.md).
 
-### Live executeSettlement — RESOLVED 2026-08-10 (VERIFIED_SETTLED)
+### Historical V1 live executeSettlement — RESOLVED 2026-08-10 (VERIFIED_SETTLED)
 
 The full settlement path ran end-to-end through **production** (finaltab.vercel.app
 API → KeeperHub → `FinalTabBatchSettlement` → Base Sepolia) and the chain proved it:
@@ -71,9 +85,9 @@ end-to-end over MCP** with no UI, five JSON-RPC calls against production
 (`69zzrj7z676u89ce1x76j` / tx `0x314189b4…c5eb`, block 45315909; step record
 `docs/release/evidence/live-proof-4-mcp.json`).
 
-## STILL BLOCKED
+## Historical V1 items that remained blocked
 
-### 1b. Contract is not verified on Basescan
+### 1b. Historical V1 contract is not verified on BaseScan
 
 - `0xCcf6b4De…` has bytecode but no published source, so KeeperHub cannot auto-fetch
   its ABI. This is why the settle route must pass `abi` inline (and therefore uses the
@@ -107,11 +121,11 @@ rewrite is a destructive, irreversible choice, so it sits in
 [user-actions.md](release/user-actions.md#1-deployer-private-key-committed-to-git-history)
 rather than being done autonomously.
 
-### 2. Supabase project credentials
+### 2. Hosted Supabase project state
 
-- Schema complete at `supabase/migrations/0001_init.sql`, not applied anywhere.
+- Production tenancy/approval migration complete at `supabase/migrations/20260811003158_production_tenancy_and_approvals.sql`, not applied to a hosted project.
 - Fix: create a free Supabase project, fill `SUPABASE_URL` + `SUPABASE_SECRET_KEY` (+ the two `NEXT_PUBLIC_*` values) in `apps/web/.env.local`, run the migration.
-- Until then the app is stateless per session; core flow works without persistence.
+- Until then cloud tabs, invitations, approval history, and cross-device resume are unavailable. Local draft editing remains available, while provider extraction and money APIs still require an authenticated session or correctly scoped token.
 
 ## Pre-existing upstream noise (not ours, disclosed)
 

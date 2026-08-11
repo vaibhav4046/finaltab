@@ -1,13 +1,12 @@
 {
   "name": "FINALTab",
   "short_name": "FINALTab",
-  "description": "Turn shared receipts into verified settlement. Scan → split → sign → settle.",
+  "description": "Turn a shared receipt into an exact testnet split and a KeeperHub-verified settlement receipt.",
   "start_url": "/app",
   "scope": "/",
   "display": "standalone",
-  "orientation": "portrait-primary",
-  "background_color": "#0a0a09",
-  "theme_color": "#121110",
+  "background_color": "#0b0f12",
+  "theme_color": "#0b0f12",
   "icons": [
     {
       "src": "/icon-192.png",

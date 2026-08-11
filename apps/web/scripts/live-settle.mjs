@@ -2,19 +2,20 @@
 /**
  * live-settle.mjs — run one REAL executeSettlement through the production API.
  *
- * Flow: build frozen ledger → sign EIP-3009 ReceiveWithAuthorization per debtor
+ * Flow: build frozen V2 plan → sign EIP-3009 authorization + FINALTab
+ * plan consent per aggregated debtor
  * → POST /api/settle/simulate → POST /api/settle/execute → poll
  * /api/settle/status/{id} to terminal → fail-closed on-chain verification of the
  * receipt (USDC Transfer logs + SettlementExecuted + balance deltas).
  *
  * Exits 0 only when the chain itself proves the settlement. Never prints keys.
  *
- * Usage: node apps/web/scripts/live-settle.mjs [--base-url https://finaltab.vercel.app]
+ * Usage: node apps/web/scripts/live-settle.mjs --contract 0xV2Address [--base-url https://finaltab.vercel.app]
  */
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { keccak256, toHex, encodeAbiParameters, parseSignature } from "viem";
+import { concat, keccak256, toHex, encodeAbiParameters, parseSignature } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -28,7 +29,13 @@ const BASE_URL = process.argv.includes("--base-url")
 const RPC = "https://sepolia.base.org";
 const CHAIN_ID = 84532;
 const USDC = "0x036CbD53842c5426634e7929541eC2318f3dCF7e";
-const SETTLEMENT_CONTRACT = "0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64";
+const contractFlag = process.argv.includes("--contract")
+  ? process.argv[process.argv.indexOf("--contract") + 1]
+  : process.env.NEXT_PUBLIC_SETTLEMENT_CONTRACT;
+if (!contractFlag || !/^0x[0-9a-fA-F]{40}$/.test(contractFlag)) {
+  throw new Error("Pass the deployed V2 address with --contract or NEXT_PUBLIC_SETTLEMENT_CONTRACT");
+}
+const SETTLEMENT_CONTRACT = contractFlag;
 const TRANSFER_TOPIC = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef";
 
 // keccak256("SettlementExecuted(bytes32,bytes32,uint256,uint256,uint256)")
@@ -69,14 +76,78 @@ function ledgerToCanonicalJson() {
 }
 
 const ledgerHash = keccak256(toHex(ledgerToCanonicalJson()));
-const settlementId = keccak256(encodeAbiParameters([{ type: "bytes32" }], [ledgerHash]));
 
-/** Mirrors apps/web/lib/flow.ts receiveNonce: keccak(abi.encode(ledgerHash, from, value)). */
+function aggregatePlan() {
+  const debitByAddress = new Map();
+  const payoutByAddress = new Map();
+  for (const transfer of LEDGER_TRANSFERS) {
+    const from = lower(transfer.from);
+    const to = lower(transfer.to);
+    debitByAddress.set(from, (debitByAddress.get(from) ?? 0n) + transfer.value);
+    payoutByAddress.set(to, (payoutByAddress.get(to) ?? 0n) + transfer.value);
+  }
+  return {
+    debits: [...debitByAddress.entries()]
+      .sort(([a], [b]) => (a < b ? -1 : 1))
+      .map(([debtor, value]) => ({ debtor, value })),
+    payouts: [...payoutByAddress.entries()]
+      .sort(([a], [b]) => (a < b ? -1 : 1))
+      .map(([creditor, value]) => ({ creditor, value })),
+  };
+}
+
+const PLAN_TYPEHASH = keccak256(
+  toHex("SettlementPlan(uint256 chainId,address settlementContract,address token,bytes32 ledgerHash,bytes32 debitsHash,bytes32 payoutsHash)"),
+);
+const DEBIT_TYPEHASH = keccak256(toHex("Debit(address debtor,uint256 value)"));
+const PAYOUT_TYPEHASH = keccak256(toHex("Payout(address creditor,uint256 value)"));
+
+function hashVector(hashes) {
+  return keccak256(hashes.length === 0 ? "0x" : concat(hashes));
+}
+
+const { debits: PLAN_DEBITS, payouts: PLAN_PAYOUTS } = aggregatePlan();
+const debitsHash = hashVector(
+  PLAN_DEBITS.map((debit) =>
+    keccak256(
+      encodeAbiParameters(
+        [{ type: "bytes32" }, { type: "address" }, { type: "uint256" }],
+        [DEBIT_TYPEHASH, debit.debtor, debit.value],
+      ),
+    ),
+  ),
+);
+const payoutsHash = hashVector(
+  PLAN_PAYOUTS.map((payout) =>
+    keccak256(
+      encodeAbiParameters(
+        [{ type: "bytes32" }, { type: "address" }, { type: "uint256" }],
+        [PAYOUT_TYPEHASH, payout.creditor, payout.value],
+      ),
+    ),
+  ),
+);
+const settlementId = keccak256(
+  encodeAbiParameters(
+    [
+      { type: "bytes32" },
+      { type: "uint256" },
+      { type: "address" },
+      { type: "address" },
+      { type: "bytes32" },
+      { type: "bytes32" },
+      { type: "bytes32" },
+    ],
+    [PLAN_TYPEHASH, BigInt(CHAIN_ID), SETTLEMENT_CONTRACT, USDC, ledgerHash, debitsHash, payoutsHash],
+  ),
+);
+
+/** V2 nonce: keccak(abi.encode(planHash, debtor, aggregateDebit)). */
 function receiveNonce(from, value) {
   return keccak256(
     encodeAbiParameters(
       [{ type: "bytes32" }, { type: "address" }, { type: "uint256" }],
-      [ledgerHash, from, value],
+      [settlementId, from, value],
     ),
   );
 }
@@ -94,6 +165,21 @@ const RECEIVE_TYPES = {
     { name: "nonce", type: "bytes32" },
   ],
 };
+const CONSENT_DOMAIN = {
+  name: "FINALTab Settlement",
+  version: "2",
+  chainId: CHAIN_ID,
+  verifyingContract: SETTLEMENT_CONTRACT,
+};
+const CONSENT_TYPES = {
+  SettlementConsent: [
+    { name: "planHash", type: "bytes32" },
+    { name: "debtor", type: "address" },
+    { name: "value", type: "uint256" },
+    { name: "validAfter", type: "uint256" },
+    { name: "validBefore", type: "uint256" },
+  ],
+};
 
 async function signTransfers() {
   const keys = JSON.parse(readFileSync(resolve(PROOF_DIR, "demo-signers.local.json"), "utf8"));
@@ -102,39 +188,54 @@ async function signTransfers() {
   const validBefore = BigInt(Math.floor(Date.now() / 1000) + 3600);
 
   const out = [];
-  for (const t of LEDGER_TRANSFERS) {
-    const personId = byAddress.get(lower(t.from));
+  for (const debit of PLAN_DEBITS) {
+    const personId = byAddress.get(lower(debit.debtor));
     const pk = keys[personId];
     if (!pk) throw new Error(`no demo key for ${personId}`);
     const account = privateKeyToAccount(pk);
-    if (lower(account.address) !== lower(t.from)) {
+    if (lower(account.address) !== lower(debit.debtor)) {
       throw new Error(`key/address mismatch for ${personId}`);
     }
-    const nonce = receiveNonce(t.from, t.value);
-    const signature = await account.signTypedData({
+    const nonce = receiveNonce(debit.debtor, debit.value);
+    const authorization = {
+      from: debit.debtor,
+      to: SETTLEMENT_CONTRACT,
+      value: debit.value,
+      validAfter,
+      validBefore,
+      nonce,
+    };
+    const authSignature = parseSignature(await account.signTypedData({
       domain: USDC_DOMAIN,
       types: RECEIVE_TYPES,
       primaryType: "ReceiveWithAuthorization",
+      message: authorization,
+    }));
+    const consentSignature = parseSignature(await account.signTypedData({
+      domain: CONSENT_DOMAIN,
+      types: CONSENT_TYPES,
+      primaryType: "SettlementConsent",
       message: {
-        from: t.from,
-        to: SETTLEMENT_CONTRACT,
-        value: t.value,
+        planHash: settlementId,
+        debtor: debit.debtor,
+        value: debit.value,
         validAfter,
         validBefore,
-        nonce,
       },
-    });
-    const { v, r, s } = parseSignature(signature);
+    }));
     out.push({
-      from: t.from,
+      from: debit.debtor,
       to: SETTLEMENT_CONTRACT,
-      value: t.value.toString(),
+      value: debit.value.toString(),
       validAfter: validAfter.toString(),
       validBefore: validBefore.toString(),
       nonce,
-      v: Number(v ?? 27n),
-      r,
-      s,
+      authV: Number(authSignature.v ?? 27n),
+      authR: authSignature.r,
+      authS: authSignature.s,
+      consentV: Number(consentSignature.v ?? 27n),
+      consentR: consentSignature.r,
+      consentS: consentSignature.s,
     });
   }
   return out;
@@ -142,22 +243,20 @@ async function signTransfers() {
 
 /** Mirrors apps/web/lib/flow.ts derivePayouts: aggregate ledger transfers by creditor, sort by address. */
 function derivePayouts() {
-  const byCreditor = new Map();
-  for (const t of LEDGER_TRANSFERS) {
-    const key = lower(t.to);
-    byCreditor.set(key, (byCreditor.get(key) ?? 0n) + t.value);
-  }
-  return [...byCreditor.entries()]
-    .sort(([a], [b]) => (a < b ? -1 : 1))
-    .map(([creditor, value]) => ({ creditor, value: value.toString() }));
+  return PLAN_PAYOUTS.map(({ creditor, value }) => ({ creditor, value: value.toString() }));
 }
 
 // ---------- HTTP + RPC helpers ----------
 
 async function api(method, path, body) {
+  const headers = { Origin: new URL(BASE_URL).origin };
+  if (body) headers["Content-Type"] = "application/json";
+  if (process.env.FINALTAB_MCP_TOKEN) {
+    headers.Authorization = `Bearer ${process.env.FINALTAB_MCP_TOKEN}`;
+  }
   const res = await fetch(`${BASE_URL}${path}`, {
     method,
-    headers: body ? { "Content-Type": "application/json" } : undefined,
+    headers,
     body: body ? JSON.stringify(body) : undefined,
   });
   let json = null;
@@ -167,6 +266,20 @@ async function api(method, path, body) {
     /* non-JSON response — leave null */
   }
   return { status: res.status, json };
+}
+
+async function signBroadcastApproval(challenge) {
+  if (!challenge?.artifact || typeof challenge.message !== "string") {
+    throw new Error("approval challenge response is malformed");
+  }
+  const keys = JSON.parse(readFileSync(resolve(PROOF_DIR, "demo-signers.local.json"), "utf8"));
+  const debtor = PLAN_DEBITS[0];
+  const personId = PEOPLE.find((person) => lower(person.address) === lower(debtor.debtor))?.id;
+  const privateKey = personId ? keys[personId] : null;
+  if (!privateKey) throw new Error("no demo key for the broadcast approver");
+  const account = privateKeyToAccount(privateKey);
+  if (lower(account.address) !== lower(debtor.debtor)) throw new Error("broadcast approver key/address mismatch");
+  return { ...challenge.artifact, signature: await account.signMessage({ message: challenge.message }) };
 }
 
 async function rpc(method, params) {
@@ -252,8 +365,24 @@ async function main() {
       throw new Error(`simulate failed: HTTP ${sim.status} ${JSON.stringify(sim.json).slice(0, 500)}`);
     }
 
-    // 2. Execute.
-    const exec = await api("POST", "/api/settle/execute", body);
+    // 2. Have one signed debtor approve submission of this exact plan. The
+    // artifact is retryable until its short expiry; KeeperHub idempotency and
+    // V2 settlement state prevent duplicate settlement.
+    const approvalChallenge = await api("POST", "/api/settle/approval", {
+      settlementId,
+      ledgerHash,
+      approver: transfers[0].from,
+    });
+    step("broadcast-approval-challenge", { http: approvalChallenge.status });
+    if (approvalChallenge.status !== 200) {
+      throw new Error(
+        `approval challenge failed: HTTP ${approvalChallenge.status} ${JSON.stringify(approvalChallenge.json).slice(0, 500)}`,
+      );
+    }
+    const approval = await signBroadcastApproval(approvalChallenge.json);
+
+    // 3. Execute through the same simulate-first submit path used by MCP.
+    const exec = await api("POST", "/api/settle/execute", { signedSettlement: body, approval });
     step("execute", { http: exec.status, ok: exec.json?.ok });
     if (exec.status !== 200 || exec.json?.ok !== true) {
       throw new Error(`execute failed: HTTP ${exec.status} ${JSON.stringify(exec.json).slice(0, 500)}`);
@@ -267,12 +396,13 @@ async function main() {
     report.executionId = executionId;
     step("accepted", { executionId });
 
-    // 3. Poll to terminal via the production status route (server classifies fail-closed).
+    // 4. Poll to terminal via the production status route (server classifies fail-closed).
     const deadline = Date.now() + 240_000;
     let last = null;
     let verdict = null;
     while (Date.now() < deadline) {
-      const st = await api("GET", `/api/settle/status/${executionId}`);
+      const proofQuery = new URLSearchParams({ settlementId, ledgerHash });
+      const st = await api("GET", `/api/settle/status/${executionId}?${proofQuery.toString()}`);
       if (st.status !== 200) {
         step("status-error", { http: st.status, body: JSON.stringify(st.json).slice(0, 300) });
         await sleep(4000);

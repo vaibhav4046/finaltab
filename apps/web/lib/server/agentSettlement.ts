@@ -6,18 +6,19 @@ import {
   createPublicClient,
   http,
   erc20Abi,
-  keccak256,
-  encodeAbiParameters,
   parseSignature,
   formatEther,
 } from "viem";
 import {
   BASE_SEPOLIA_USDC,
   buildReceiveAuthorizationTypedData,
+  buildSettlementConsentTypedData,
+  aggregateSettlementTransfers,
+  hashSettlementPlan,
+  settlementAuthorizationNonce,
   canonicalizeLedger,
   ledgerToCanonicalJson,
   ledgerHash as computeLedgerHash,
-  settlementId as computeSettlementId,
   nettedTransfers,
   parseFiat,
   type CanonicalLedger,
@@ -133,6 +134,8 @@ export interface PreparedAgentSettlement {
   participants: Array<{ id: string; name: string; address: `0x${string}` }>;
   /** Netted transfers in USDC minor units, at most n-1 of them. */
   transfers: Array<{ fromId: string; toId: string; from: `0x${string}`; to: `0x${string}`; value: string }>;
+  /** One V2 pull per debtor, aggregated and sorted by address. */
+  debits: Array<{ fromId: string; from: `0x${string}`; value: string }>;
   /** Aggregated by creditor, sorted by address — must sum to the pulls exactly. */
   payouts: Array<{ creditor: `0x${string}`; value: string }>;
 }
@@ -145,6 +148,7 @@ export interface PreparedAgentSettlement {
 export function prepareAgentSettlement(
   debts: AgentDebt[],
   addressById: Record<AgentSignerId, `0x${string}`>,
+  settlementContract: `0x${string}`,
   receiptRef?: string,
 ): PreparedAgentSettlement {
   if (debts.length === 0) throw new Error("no debts supplied");
@@ -184,19 +188,18 @@ export function prepareAgentSettlement(
 
   const canonical = canonicalizeLedger(ledger);
   const hash = computeLedgerHash(canonical);
-
-  const byCreditor = new Map<string, bigint>();
-  for (const t of canonical.transfers) {
-    byCreditor.set(t.to, (byCreditor.get(t.to) ?? 0n) + t.value);
-  }
-  const payouts = [...byCreditor.entries()]
-    .sort(([a], [b]) => (a < b ? -1 : 1))
-    .map(([creditor, value]) => ({ creditor: creditor as `0x${string}`, value: value.toString() }));
+  const aggregated = aggregateSettlementTransfers(canonical.transfers);
+  const planHash = hashSettlementPlan({
+    ledgerHash: hash,
+    settlementContract,
+    debits: aggregated.debits,
+    payouts: aggregated.payouts,
+  });
 
   const addressToId = new Map(participants.map((p) => [p.address.toLowerCase(), p.id]));
   return {
     ledgerHash: hash,
-    settlementId: computeSettlementId(hash),
+    settlementId: planHash,
     canonicalJson: ledgerToCanonicalJson(canonical),
     receiptRef: ref,
     participants,
@@ -207,7 +210,12 @@ export function prepareAgentSettlement(
       to: t.to,
       value: t.value.toString(),
     })),
-    payouts,
+    debits: aggregated.debits.map((d) => ({
+      fromId: addressToId.get(d.debtor)!,
+      from: d.debtor,
+      value: d.value.toString(),
+    })),
+    payouts: aggregated.payouts.map((p) => ({ creditor: p.creditor, value: p.value.toString() })),
   };
 }
 
@@ -218,31 +226,20 @@ export interface AgentSignedTransfer {
   validAfter: string;
   validBefore: string;
   nonce: `0x${string}`;
-  v: number;
-  r: `0x${string}`;
-  s: `0x${string}`;
-}
-
-/** Same nonce derivation the web lab and the proven live-settle leg use. */
-export function receiveNonce(
-  ledgerHash: `0x${string}`,
-  from: `0x${string}`,
-  value: bigint,
-): `0x${string}` {
-  return keccak256(
-    encodeAbiParameters(
-      [{ type: "bytes32" }, { type: "address" }, { type: "uint256" }],
-      [ledgerHash, from, value],
-    ),
-  );
+  authV: number;
+  authR: `0x${string}`;
+  authS: `0x${string}`;
+  consentV: number;
+  consentR: `0x${string}`;
+  consentS: `0x${string}`;
 }
 
 const AUTH_VALIDITY_SECONDS = 3600n;
 
 /**
- * Sign every netted transfer as a ReceiveWithAuthorization pulling INTO the
- * settlement contract. Real EIP-712 signatures over the real USDC domain —
- * the exact payload the contract forwards to USDC on Base Sepolia.
+ * Sign one aggregated debit per debtor twice: a USDC
+ * ReceiveWithAuthorization pulling into the contract, and a FINALTab-domain
+ * consent over the complete debit+payout plan.
  */
 export async function signPreparedTransfers(
   prepared: PreparedAgentSettlement,
@@ -254,35 +251,49 @@ export async function signPreparedTransfers(
   const validBefore = now + AUTH_VALIDITY_SECONDS;
 
   const out: AgentSignedTransfer[] = [];
-  for (const t of prepared.transfers) {
-    const account = accounts.get(t.fromId as AgentSignerId);
-    if (!account) throw new Error(`no signing account for debtor ${t.fromId}`);
-    if (account.address.toLowerCase() !== t.from.toLowerCase()) {
-      throw new Error(`key/address mismatch for ${t.fromId}`);
+  for (const debit of prepared.debits) {
+    const account = accounts.get(debit.fromId as AgentSignerId);
+    if (!account) throw new Error(`no signing account for debtor ${debit.fromId}`);
+    if (account.address.toLowerCase() !== debit.from.toLowerCase()) {
+      throw new Error(`key/address mismatch for ${debit.fromId}`);
     }
-    const value = BigInt(t.value);
-    const nonce = receiveNonce(prepared.ledgerHash, t.from, value);
-    const signature = await account.signTypedData(
-      buildReceiveAuthorizationTypedData({
-        from: t.from,
-        to: settlementContract,
-        value,
-        validAfter,
-        validBefore,
-        nonce,
-      }),
-    );
-    const { v, r, s } = parseSignature(signature);
-    out.push({
-      from: t.from,
+    const value = BigInt(debit.value);
+    const nonce = settlementAuthorizationNonce(prepared.settlementId, debit.from, value);
+    const authorization = {
+      from: debit.from,
       to: settlementContract,
-      value: t.value,
+      value,
+      validAfter,
+      validBefore,
+      nonce,
+    } as const;
+    const authSignature = parseSignature(
+      await account.signTypedData(buildReceiveAuthorizationTypedData(authorization)),
+    );
+    const consentSignature = parseSignature(
+      await account.signTypedData(
+        buildSettlementConsentTypedData(settlementContract, {
+          planHash: prepared.settlementId,
+          debtor: debit.from,
+          value,
+          validAfter,
+          validBefore,
+        }),
+      ),
+    );
+    out.push({
+      from: debit.from,
+      to: settlementContract,
+      value: debit.value,
       validAfter: validAfter.toString(),
       validBefore: validBefore.toString(),
       nonce,
-      v: Number(v ?? 27n),
-      r,
-      s,
+      authV: Number(authSignature.v ?? 27n),
+      authR: authSignature.r,
+      authS: authSignature.s,
+      consentV: Number(consentSignature.v ?? 27n),
+      consentR: consentSignature.r,
+      consentS: consentSignature.s,
     });
   }
   return out;

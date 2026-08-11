@@ -1,4 +1,6 @@
 {
+  "releaseScope": "V1_HISTORICAL",
+  "currentUse": "Preserved V1 testnet-USDC settlement evidence. Not proof of FinalTabBatchSettlementV2.",
   "startedAt": "2026-08-10T19:19:04.531Z",
   "baseUrl": "https://finaltab.vercel.app",
   "settlementId": "0x2a75abdc2ff24a2d468f1fdc994d0a1fd965c0c78b0510a6dccf2920cb79f64f",

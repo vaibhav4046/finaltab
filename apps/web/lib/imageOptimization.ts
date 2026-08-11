@@ -9,40 +9,95 @@ export interface LocalImageQuality {
   recommendation: string; // Human-readable warning
 }
 
+// Phone photos can exceed 12 megapixels. Sharpness is only an advisory signal,
+// so analyzing a bounded preview is both faster and substantially less memory
+// intensive than allocating RGBA + number[] buffers at native resolution.
+const MAX_ANALYSIS_EDGE = 768;
+const MAX_UPLOAD_EDGE = 2048;
+const MAX_DECODED_PIXELS = 50_000_000;
+const KEEP_ORIGINAL_BYTES = 2_500_000;
+
+function fileAsDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(new Error("Could not read the receipt image."));
+    reader.readAsDataURL(file);
+  });
+}
+
+/**
+ * Bound the image sent over JSON. Small source images stay byte-for-byte; large
+ * camera photos are orientation-corrected by the browser, downsampled, and
+ * encoded once at OCR-friendly quality.
+ */
+export async function prepareReceiptImage(file: File): Promise<string> {
+  const imageUrl = URL.createObjectURL(file);
+  try {
+    const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const candidate = new Image();
+      candidate.onload = () => resolve(candidate);
+      candidate.onerror = () => reject(new Error("Could not decode the receipt image."));
+      candidate.src = imageUrl;
+    });
+    const decodedPixels = img.naturalWidth * img.naturalHeight;
+    if (!Number.isSafeInteger(decodedPixels) || decodedPixels > MAX_DECODED_PIXELS) {
+      throw new Error("That image is too large to process safely. Crop it and try again.");
+    }
+    if (Math.max(img.naturalWidth, img.naturalHeight) <= MAX_UPLOAD_EDGE && file.size <= KEEP_ORIGINAL_BYTES) {
+      return await fileAsDataUrl(file);
+    }
+
+    const scale = Math.min(1, MAX_UPLOAD_EDGE / Math.max(img.naturalWidth, img.naturalHeight));
+    const width = Math.max(1, Math.round(img.naturalWidth * scale));
+    const height = Math.max(1, Math.round(img.naturalHeight * scale));
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const context = canvas.getContext("2d");
+    if (!context) throw new Error("This browser cannot prepare the receipt image.");
+    context.fillStyle = "#ffffff";
+    context.fillRect(0, 0, width, height);
+    context.drawImage(img, 0, 0, width, height);
+    return canvas.toDataURL("image/jpeg", 0.88);
+  } finally {
+    URL.revokeObjectURL(imageUrl);
+  }
+}
+
 /**
  * Check local image quality via Canvas Laplacian analysis.
  * Non-blocking warning only — user can override and proceed.
  */
 export async function checkLocalImageQuality(file: File): Promise<LocalImageQuality> {
   return new Promise((resolve) => {
-    const reader = new FileReader();
-
-    reader.onload = (event) => {
-      const img = new Image();
-
-      img.onload = () => {
-        try {
-          const quality = analyzeCanvasQuality(img);
-          resolve(quality);
-        } catch (e) {
-          // Quality check failed; assume OK and proceed
-          console.warn("[image-optimization] quality check error:", e);
-          resolve({ isBlurry: false, recommendation: "" });
-        }
-      };
-
-      img.onerror = () => {
-        resolve({ isBlurry: false, recommendation: "" });
-      };
-
-      img.src = event.target?.result as string;
+    const imageUrl = URL.createObjectURL(file);
+    const img = new Image();
+    const finish = (quality: LocalImageQuality) => {
+      URL.revokeObjectURL(imageUrl);
+      resolve(quality);
     };
 
-    reader.onerror = () => {
+    img.onload = () => {
+      try {
+        finish(analyzeCanvasQuality(img));
+      } catch (e) {
+        // Quality check failed; assume OK and proceed.
+        console.warn("[image-optimization] quality check error:", e);
+        finish({ isBlurry: false, recommendation: "" });
+      }
+    };
+
+    img.onerror = () => {
+      finish({ isBlurry: false, recommendation: "" });
+    };
+
+    try {
+      img.src = imageUrl;
+    } catch {
+      URL.revokeObjectURL(imageUrl);
       resolve({ isBlurry: false, recommendation: "" });
-    };
-
-    reader.readAsDataURL(file);
+    }
   });
 }
 
@@ -51,30 +106,33 @@ export async function checkLocalImageQuality(file: File): Promise<LocalImageQual
  * Returns { isBlurry, recommendation string }.
  */
 function analyzeCanvasQuality(img: HTMLImageElement): LocalImageQuality {
+  const scale = Math.min(1, MAX_ANALYSIS_EDGE / Math.max(img.naturalWidth, img.naturalHeight));
+  const width = Math.max(1, Math.round(img.naturalWidth * scale));
+  const height = Math.max(1, Math.round(img.naturalHeight * scale));
   const canvas = document.createElement("canvas");
-  canvas.width = img.naturalWidth;
-  canvas.height = img.naturalHeight;
+  canvas.width = width;
+  canvas.height = height;
 
   const ctx = canvas.getContext("2d");
   if (!ctx) {
     return { isBlurry: false, recommendation: "" };
   }
 
-  ctx.drawImage(img, 0, 0);
+  ctx.drawImage(img, 0, 0, width, height);
 
   // Get grayscale pixel data
   const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
   const data = imageData.data;
-  const pixels: number[] = [];
+  const pixels = new Uint8Array(width * height);
 
-  for (let i = 0; i < data.length; i += 4) {
+  for (let i = 0, pixelIndex = 0; i < data.length; i += 4, pixelIndex += 1) {
     // Convert RGBA to grayscale (R channel after greyscale)
     const gray = Math.round(0.299 * data[i]! + 0.587 * data[i + 1]! + 0.114 * data[i + 2]!);
-    pixels.push(gray);
+    pixels[pixelIndex] = gray;
   }
 
   // Calculate Laplacian variance
-  const laplacianVariance = calculateLaplacianVariance(pixels, canvas.width, canvas.height);
+  const laplacianVariance = calculateLaplacianVariance(pixels, width, height);
 
   // Threshold 100 is the conventional cv2.Laplacian(...).var() cutoff, so the
   // metric above must be that same quantity — see calculateLaplacianVariance.
@@ -85,7 +143,7 @@ function analyzeCanvasQuality(img: HTMLImageElement): LocalImageQuality {
 
   let recommendation = "";
   if (isBlurry) {
-    recommendation = "📷 This image looks blurry. Better lighting or focus might help, but we'll try anyway.";
+    recommendation = "This image looks blurry. Better lighting or focus might help, but we'll try anyway.";
   }
 
   return { isBlurry, recommendation };
@@ -102,8 +160,10 @@ function analyzeCanvasQuality(img: HTMLImageElement): LocalImageQuality {
  * bundled fixture measured 62.7 — so the "looks blurry" warning fired
  * unconditionally and carried no information.
  */
-function calculateLaplacianVariance(pixels: number[], width: number, height: number): number {
-  const laplacian: number[] = [];
+function calculateLaplacianVariance(pixels: Uint8Array, width: number, height: number): number {
+  let count = 0;
+  let total = 0;
+  let totalSquares = 0;
 
   // Apply Laplacian kernel at interior pixels
   for (let y = 1; y < height - 1; y++) {
@@ -116,12 +176,14 @@ function calculateLaplacianVariance(pixels: number[], width: number, height: num
       const center = pixels[idx]!;
 
       // Laplacian = -4*center + (top + bottom + left + right)
-      laplacian.push(-4 * center + top + bottom + left + right);
+      const value = -4 * center + top + bottom + left + right;
+      count += 1;
+      total += value;
+      totalSquares += value * value;
     }
   }
 
-  if (laplacian.length === 0) return 0;
-
-  const mean = laplacian.reduce((a, b) => a + b, 0) / laplacian.length;
-  return laplacian.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / laplacian.length;
+  if (count === 0) return 0;
+  const mean = total / count;
+  return Math.max(0, totalSquares / count - mean * mean);
 }

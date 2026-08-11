@@ -8,6 +8,7 @@ import {
   SETTLEMENT_CURRENCY,
 } from "@finaltab/engine";
 import { groqClient, jsonError } from "@/lib/server/clients";
+import { ApiPayloadTooLargeError, authorizeApiRequest, readJsonBodyWithLimit, withAccessHeaders } from "@/lib/server/apiAccess";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -20,14 +21,26 @@ const BodySchema = z.object({
 });
 
 export async function POST(req: Request): Promise<Response> {
+  const access = await authorizeApiRequest(req, {
+    scope: "receipts:write",
+    maxBytes: 300_000,
+    rateLimit: 30,
+    rateWindowMs: 60_000,
+  });
+  if (!access.ok) return access.response;
+  const secured = (response: Response) => withAccessHeaders(response, access.headers);
+
   const client = groqClient();
-  if (!client) return jsonError("GROQ_API_KEY is not configured on the server.", 501);
+  if (!client) return secured(jsonError("GROQ_API_KEY is not configured on the server.", 501));
 
   let body: z.infer<typeof BodySchema>;
   try {
-    body = BodySchema.parse(await req.json());
+    body = BodySchema.parse(await readJsonBodyWithLimit(req, 300_000));
   } catch (e) {
-    return jsonError(e instanceof Error ? e.message : "invalid request body", 400);
+    if (e instanceof ApiPayloadTooLargeError) {
+      return secured(Response.json({ error: "PAYLOAD_TOO_LARGE", maxBytes: e.maxBytes }, { status: 413 }));
+    }
+    return secured(jsonError(e instanceof Error ? e.message : "invalid request body", 400));
   }
 
   try {
@@ -38,10 +51,10 @@ export async function POST(req: Request): Promise<Response> {
     const proposal = { ...raw.proposal, payerId: body.payerId };
     const result = reconcileAllocation(body.receipt, proposal);
     if (!result.ok || !result.shares) {
-      return Response.json(
+      return secured(Response.json(
         { proposal, ok: false, issues: result.issues.map((i) => `${i.code}: ${i.message}`) },
         { status: 422 },
-      );
+      ));
     }
     const shares = [...result.shares.entries()].map(([id, v]) => ({ id, fiatMinor: v.toString() }));
 
@@ -51,7 +64,7 @@ export async function POST(req: Request): Promise<Response> {
     // the arithmetic and no settleable debts.
     const currency = body.receipt.currency;
     if (!isSettlementCurrency(currency)) {
-      return Response.json({
+      return secured(Response.json({
         proposal,
         ok: true,
         issues: [],
@@ -65,19 +78,19 @@ export async function POST(req: Request): Promise<Response> {
             `and it will not invent a ${currency}→USD rate. The split above is exact; ` +
             `onchain settlement is available for ${SETTLEMENT_CURRENCY} receipts only.`,
         },
-      });
+      }));
     }
 
     const debts = sharesToDebts(result.shares, proposal.payerId);
-    return Response.json({
+    return secured(Response.json({
       proposal,
       ok: true,
       issues: [],
       shares,
       debts: debts.map((d) => ({ debtor: d.debtor, creditor: d.creditor, usdcMinor: d.amount.toString() })),
       settlement: { eligible: true, currency },
-    });
+    }));
   } catch (e) {
-    return jsonError(e instanceof Error ? e.message : "allocation failed", 502);
+    return secured(jsonError(e instanceof Error ? e.message : "allocation failed", 502));
   }
 }

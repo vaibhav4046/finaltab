@@ -79,7 +79,7 @@
       "productionTools": 9,
       "retiredFixedWalletToolsInCurrentSource": 0,
       "durableSubmissionJournal": {
-        "state": "SOURCE_AND_TEST_PROVEN_MIGRATION_PENDING",
+        "state": "SOURCE_TEST_AND_SCHEMA_PROVEN_APP_PROBE_PENDING",
         "channels": ["first-party UI", "REST", "MCP"],
         "acceptedReplay": "returns the durable execution without simulation or execution",
         "preparedRecovery": "reuses the stored successful simulation and deterministic idempotency key under a bounded persisted approval expiry",
@@ -127,20 +127,26 @@
         "0001_init",
         "20260811003158_production_tenancy_and_approvals",
         "20260811042501_add_foreign_key_indexes",
-        "20260811043428_durable_voice_quotas"
-      ],
-      "migrationsPending": [
+        "20260811043428_durable_voice_quotas",
         "20260811052236_settlement_agent_control_plane",
+        "20260811060000_cover_agent_event_composite_fk",
         "20260811064822_voice_spend_reservations",
         "20260811073000_durable_first_party_settlement_flow",
-        "20260811074000_durable_submission_intents",
+        "20260811074000_durable_submission_intents"
+      ],
+      "migrationsPending": [
         "20260811074500_financial_truth_post_promotion_cutover"
       ],
-      "tables": 19,
-      "tablesWithRls": 19,
-      "policies": 45,
-      "anonymousTableGrants": 0,
-      "foreignKeysCoveredByIndexes": "34/34",
+      "tables": 29,
+      "tablesWithRls": 29,
+      "sensitiveMutationRpcPrivileges": {
+        "PUBLIC": false,
+        "anon": false,
+        "authenticated": false,
+        "service_role": true
+      },
+      "advisorErrors": 0,
+      "unindexedForeignKeyWarning": false,
       "auth": {
         "emailProviderEnabled": true,
         "newUserSignupsEnabled": true,
@@ -160,12 +166,15 @@
         "anonymousRpcAccess": false,
         "authenticatedRpcAccess": true,
         "transcriptionSessionsPerUserPerMinute": 8,
-        "readbacksPerUserPerMinute": 20
+        "readbacksPerUserPerMinute": 20,
+        "spendReservationMigration": "20260811064822_voice_spend_reservations",
+        "spendReservationRpc": "reserve_voice_budget",
+        "spendReservationRpcAccess": "service_role_only"
       },
       "publicProductionConfigurationPrepared": true,
       "sensitiveVoiceProviderVariablesConfigured": true,
       "finalApplicationDeploymentProbed": false,
-      "caveat": "Project, four-migration 19-table baseline schema, durable per-minute voice quota, and sensitive provider configuration are proven. Four additive migrations and the post-promotion cutover are not applied. Cross-device application, shared-journal durability, spend budgets, and live provider behavior remain unclaimed until the ordered rollout is deployed and probed."
+      "caveat": "The baseline plus five ordered additive migrations, 29-table RLS schema, sensitive RPC privilege matrix, advisor result, durable quotas, spend reservations, and sensitive provider configuration are proven. The post-promotion cutover is not applied. Cross-device application, shared-journal behavior, provider behavior, and other live flows remain unclaimed until the candidate is deployed and probed."
     },
     "identity": {
       "canonicalAccount": "Supabase Auth / auth.uid()",
@@ -184,7 +193,7 @@
       "brandedInboundEmail": "PENDING_VERIFIED_DOMAIN_AND_CUSTOM_SMTP_OR_SEND_EMAIL_HOOK"
     },
     "agentControl": {
-      "state": "SOURCE_AND_TEST_PROVEN_MIGRATION_PENDING",
+      "state": "SOURCE_TEST_AND_SCHEMA_PROVEN_APP_PROBE_PENDING",
       "stages": 4,
       "firstPartyFreezeRequiresCurrentAttestedReview": true,
       "upstreamEditsInvalidateReview": true,
@@ -193,7 +202,9 @@
       "chainAdapter": "base-sepolia",
       "solanaAdapter": false,
       "migration": "20260811052236_settlement_agent_control_plane",
-      "migrationApplied": false
+      "migrationApplied": true,
+      "compositeForeignKeyCoverageMigration": "20260811060000_cover_agent_event_composite_fk",
+      "liveFlowProbed": false
     },
     "video": {
       "state": "PENDING",
@@ -404,25 +415,35 @@
         "region": "eu-west-2",
         "plan": "free",
         "monthlyCost": 0,
-        "tables": 19,
-        "tablesWithRls": 19,
-        "policies": 45,
-        "anonymousTableGrants": 0,
-        "foreignKeysCoveredByIndexes": "34/34",
+        "tables": 29,
+        "tablesWithRls": 29,
+        "appliedAdditiveMigrations": [
+          "20260811052236_settlement_agent_control_plane",
+          "20260811060000_cover_agent_event_composite_fk",
+          "20260811064822_voice_spend_reservations",
+          "20260811073000_durable_first_party_settlement_flow",
+          "20260811074000_durable_submission_intents"
+        ],
+        "sensitiveMutationRpcAccess": "service_role_only",
+        "advisorErrors": 0,
+        "unindexedForeignKeyWarning": false,
+        "postPromotionCutoverApplied": false,
         "voiceQuotaRpc": "consume_voice_quota(text), authenticated-only",
-        "voiceQuotaLimits": "8 transcription sessions and 20 readbacks per user per minute"
+        "voiceQuotaLimits": "8 transcription sessions and 20 readbacks per user per minute",
+        "voiceSpendReservationRpc": "reserve_voice_budget, service-role-only"
       },
       "method": "Supabase project creation and health check; committed migrations applied in order; schema, RLS, policy, grant, and foreign-key index queries run against the hosted project.",
       "caveat": "This proves infrastructure and schema state, not cross-device application behavior. The newer web release still needs deployment and a live multi-identity/browser probe."
     },
     {
       "id": "voice.productionConfiguration",
-      "claim": "The hybrid voice path has a durable no-charge quota guard and sensitive production provider configuration",
+      "claim": "The hybrid voice path has durable quota and spend-reservation guards plus sensitive production provider configuration",
       "state": "LIVE_PROVEN",
       "measuredAt": "2026-08-11",
       "value": {
         "quotaBackend": "Supabase",
         "quotaMigration": "20260811043428_durable_voice_quotas",
+        "spendReservationMigration": "20260811064822_voice_spend_reservations",
         "table": "voice_quota_windows",
         "tableRls": true,
         "directAnonymousTableGrant": false,
@@ -430,6 +451,8 @@
         "rpc": "consume_voice_quota(text)",
         "rpcAnonymousAccess": false,
         "rpcAuthenticatedAccess": true,
+        "spendReservationRpc": "reserve_voice_budget",
+        "spendReservationRpcAccess": "service_role_only",
         "transcriptionSessionsPerUserPerMinute": 8,
         "readbacksPerUserPerMinute": 20,
         "assemblyAiProductionVariable": "CONFIGURED_SENSITIVE",

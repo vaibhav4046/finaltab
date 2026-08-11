@@ -180,13 +180,14 @@ at 10 tabs or 10 million, "a bare tx hash is never proof" is the same check.
 
 ## 6. Per-user accounts and bounded review agents
 
-The London Supabase project has four applied migrations and a verified baseline
-of 19/19 tables under RLS, 45 policies, no anonymous table grants, and 34/34
-foreign keys indexed. Four additive migrations are committed locally but not
-yet applied: agent control (`52236`), voice spend reservations (`64822`), the
-first-party settlement flow (`73000`), and the shared UI/REST/MCP submission
-journal (`74000`). Post-promotion cutover `74500` then revokes legacy direct
-financial writes and the old quota RPC. The agent migration adds fixed four-stage
+The London Supabase project has its four baseline plus five ordered additive
+migrations applied: agent control (`52236`), agent-event composite-FK index
+coverage (`60000`), voice spend reservations (`64822`), first-party settlement
+flow (`73000`), and the shared UI/REST/MCP submission journal (`74000`). All
+29 public tables have RLS; sensitive new mutation RPCs are service-role-only,
+database advisors report no errors, and the unindexed-FK warning is cleared.
+Post-promotion cutover `74500` is not applied; after a successful promotion it
+revokes legacy direct financial writes and the old quota RPC. The agent migration adds fixed four-stage
 review runs, provenance events, and bounded, expiring, user-deletable audit
 memory. That memory cannot rewrite code, policy, prompts, or authorization and
 must not be marketed as self-evolving.
@@ -196,7 +197,7 @@ code-complete and fail-closed, but its dashboard app, Supabase JWKS connection,
 allowed domains, identity-token setting, app ID, and verification key are not
 configured. The branded return page is implemented; branded inbound email still
 requires a verified sender domain and custom SMTP or a Send Email Hook. Until
-the migration, Privy setup, and multi-identity browser probe pass, product copy
+the candidate application, Privy setup, and multi-identity browser probe pass, product copy
 must distinguish verified backend infrastructure from live behavior.
 
 ## Priority order (opinionated)

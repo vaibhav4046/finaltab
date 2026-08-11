@@ -334,7 +334,7 @@ export default function DevelopersPage() {
           <p className="mt-4 rounded-md border border-warn/30 bg-warn/5 px-4 py-3 text-xs leading-relaxed text-muted">
             Paid voice requires a signed-in Supabase user through a same-origin cookie session or validated
             Supabase bearer JWT; opaque FINALTab API tokens are deliberately rejected. Before a provider boundary,
-            The pending service-role migration atomically enforces per-user and project UTC-day/month spend budgets alongside the applied fixed-minute limits
+            the applied service-role-only spend boundary atomically enforces per-user and project UTC-day/month budgets alongside the fixed-minute limits
             (8 transcription requests, 20 readbacks), and 1-user/4-project transcription concurrency. Storage and missing
             provider configuration fail closed before any success is reported. Presence in source or OpenAPI does not claim
             that either provider is enabled on the currently deployed site.

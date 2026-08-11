@@ -18,19 +18,21 @@
 > release baseline: 284 passing + 1 env-gated skip, two green GitHub CI jobs, a
 > 24-page production build, Playwright 8/8, and a 13/13 protected probe against
 > both the immutable Vercel deployment and public alias. Supabase project
-> `yoavihmldqbkuxinrsih` is provisioned in London on the free plan; 19/19 tables
-> use RLS, 45 policies are present, no anonymous table grants remain, and 34/34
-> foreign keys are indexed. The authenticated-only durable voice quota and
-> sensitive provider configuration are ready. The current local candidate has
+> `yoavihmldqbkuxinrsih` is provisioned in London on the free plan. Its four
+> baseline migrations plus additive `52236`, `60000`, `64822`, `73000`, and
+> `74000` are applied: all 29 public tables have RLS, sensitive new mutation RPCs
+> deny `PUBLIC`/`anon`/`authenticated` and allow `service_role`, database advisors
+> report no errors, and the remaining unindexed-FK warning is cleared. The
+> authenticated-only durable voice quota, spend reservations, and sensitive
+> provider configuration are ready. The current local candidate has
 > exactly nine production MCP tools, external-wallet signing, and a mandatory
 > attested four-stage first-party review before Freeze. Its final suite is 370
 > passing with one provider-gated vision skip and a 33/33-page production build.
 > UI, REST, and MCP value submissions share one durable journal in source: an
 > accepted retry skips simulation and execution, while prepared recovery reuses
 > the stored successful simulation and deterministic idempotency key under a
-> bounded approval expiry. Additive migrations `52236`, `64822`, `73000`, and
-> `74000` plus post-promotion cutover `74500` are not applied to the four-migration,
-> 19-table hosted baseline;
+> bounded approval expiry. Post-promotion cutover `74500` is not applied; the
+> additive schema does not prove live application/provider behavior;
 > Privy dashboard/JWKS/domain/identity-token/verifier configuration, final
 > application/provider probes, real captures, and the 4K/60 render remain open.
 > Every “end-to-end” or `confirm: true` statement below describes

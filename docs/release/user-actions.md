@@ -23,11 +23,12 @@ tested; they are gated on inputs only a human can supply.
   block `45327128`, exactly `1` atomic USDC, with verified receipt, exact V2
   event binding, and conserved balances. Do not rebroadcast it.
 - Supabase: `finaltab-production` (`yoavihmldqbkuxinrsih`), London `eu-west-2`,
-  free plan, four migrations applied; 19/19 RLS tables, 45 policies, no anonymous
-  table grants, and 34/34 foreign keys indexed. Additive migrations `52236`,
-  `64822`, `73000`, and `74000`, plus post-promotion cutover `74500`, are
-  committed locally but unapplied. Final application deployment and
-  cross-device behavior remain separate release gates.
+  free plan; four baseline plus additive `52236`, `60000`, `64822`, `73000`, and
+  `74000` migrations applied. All 29 public tables have RLS, sensitive mutation
+  RPCs are service-role-only, advisors report no errors, and the unindexed-FK
+  warning is cleared. Post-promotion cutover `74500` is not applied. Final
+  application deployment and cross-device behavior remain separate release
+  gates.
 
 ---
 
@@ -166,20 +167,24 @@ mocked receipt.
 ## 3. Supabase project — resolved infrastructure, behavior probe pending
 
 `finaltab-production` is active under project ref `yoavihmldqbkuxinrsih` in
-London (`eu-west-2`) on the free plan. Four migrations are applied remotely.
-Schema verification found 19/19 tables with RLS, 45 policies, no anonymous
-table grants, and 34/34 foreign keys indexed. Public production configuration
-is prepared without exposing a service-role value.
+London (`eu-west-2`) on the free plan. The four baseline plus five ordered
+additive migrations are applied remotely, including
+`20260811060000_cover_agent_event_composite_fk.sql`. Schema verification found
+29/29 public tables with RLS. Sensitive new mutation RPCs deny `PUBLIC`, `anon`,
+and `authenticated` and allow `service_role`; advisors report no errors and the
+unindexed-FK warning is cleared. Public production configuration is prepared
+without exposing a service-role value.
 
 The remaining action is a final deployment plus multi-identity browser probe.
 Until that passes, describe the project and schema as provisioned, but do not
 claim that cloud tabs, invitations, approvals, history, or cross-device resume
 have been exercised live.
 
-Migration `20260811052236_settlement_agent_control_plane.sql` is present in the
-working tree but is not yet applied. It must be installed and its RLS, grants,
-indexes, HMAC provenance, stale-review invalidation, and tenant isolation must be
-rechecked before the agent control plane is called production-live.
+The agent-control schema migration is applied, but HMAC provenance,
+stale-review invalidation, tenant isolation, and cross-device behavior must be
+rechecked through the candidate deployment before the agent control plane is
+called production-live. Migration `20260811074500` remains a separate
+post-promotion cutover.
 
 ---
 

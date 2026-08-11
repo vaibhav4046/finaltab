@@ -32,22 +32,27 @@ generated with at least 32 random bytes and must never use a `NEXT_PUBLIC_`
 prefix. The current production source has exactly nine MCP tools and no
 fixed-wallet money path.
 
-The hosted Supabase project currently verifies at 19 RLS-enabled tables, 45
-policies, zero anonymous table grants, and 34/34 indexed foreign keys. Review and
-apply these additive migrations individually and in order:
+The hosted Supabase project has the four baseline migrations plus these five
+additive migrations applied and verified in order:
 
 1. `20260811052236_settlement_agent_control_plane.sql`;
-2. `20260811064822_voice_spend_reservations.sql`;
-3. `20260811073000_durable_first_party_settlement_flow.sql`; and
-4. `20260811074000_durable_submission_intents.sql`.
+2. `20260811060000_cover_agent_event_composite_fk.sql`;
+3. `20260811064822_voice_spend_reservations.sql`;
+4. `20260811073000_durable_first_party_settlement_flow.sql`; and
+5. `20260811074000_durable_submission_intents.sql`.
 
-Do not run a blind schema push: the hosted migration timestamps differ from the
-local filenames. Repeat table/RLS/policy/grant/index and RPC-authority
-measurements after each exact file. Deploy and probe the candidate before
-applying `20260811074500_financial_truth_post_promotion_cutover.sql`; that final
-migration revokes legacy direct financial writes and the old request-count-only
-voice RPC, plus all browser-role `TRUNCATE`, `REFERENCES`, `TRIGGER`, and
-`MAINTAIN` privileges in `public`; it is deliberately post-promotion.
+The resulting hosted schema has 29/29 public tables under RLS. Every sensitive
+new mutation RPC denies `PUBLIC`, `anon`, and `authenticated` and allows only
+`service_role`; database advisors report no errors, and the additive
+agent-event composite foreign-key migration clears the remaining unindexed-FK
+warning. Do not reapply the additive files or run a blind schema push: the hosted
+migration timestamps can differ from local filenames. Deploy and probe the
+candidate before applying
+`20260811074500_financial_truth_post_promotion_cutover.sql`; that final migration
+is **not applied**. It revokes legacy direct financial writes and the old
+request-count-only voice RPC, plus all browser-role `TRUNCATE`, `REFERENCES`,
+`TRIGGER`, and `MAINTAIN` privileges in `public`, and remains deliberately
+post-promotion.
 
 The `74000` journal is the common durability boundary for first-party UI, REST,
 and MCP value submission. A recorded `accepted` retry must return its execution

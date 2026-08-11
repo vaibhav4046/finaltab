@@ -203,9 +203,10 @@ Pre-build validation must reject:
 
 ## Build and verification order
 
-1. Apply/verify the ordered additive migrations and post-promotion cutover,
-   configure/probe Privy, and close the final
-   product/security/deployment gates outside this video project.
+1. Retain the verified additive-migration evidence, deploy/probe the candidate,
+   apply and verify the still-pending `74500` cutover only after promotion,
+   configure/probe Privy, and close the final product/security/deployment gates
+   outside this video project.
 2. Complete C03–C08 captures and the same-run proof package in `CAPTURE_MANIFEST.md`.
 3. Populate and validate `data/release-proof.json`; run a whole-repo secret scan before staging any capture.
 4. Produce `frame.md` from the locked design system.

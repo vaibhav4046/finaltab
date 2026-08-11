@@ -47,7 +47,20 @@
     "retiredFixedWalletTools": 0,
     "walletModel": "external debtor wallets",
     "firstPartyFreezeReviewStages": 4,
-    "agentMigrationApplied": false,
+    "additiveMigrationsApplied": [
+      "20260811052236_settlement_agent_control_plane",
+      "20260811060000_cover_agent_event_composite_fk",
+      "20260811064822_voice_spend_reservations",
+      "20260811073000_durable_first_party_settlement_flow",
+      "20260811074000_durable_submission_intents"
+    ],
+    "publicTablesWithRls": "29/29",
+    "sensitiveMutationRpcAccess": "service_role_only",
+    "advisorErrors": 0,
+    "unindexedForeignKeyWarning": false,
+    "agentMigrationApplied": true,
+    "postPromotionCutoverApplied": false,
+    "applicationFlowProbeComplete": false,
     "privyConfigured": false,
     "chainAdapter": "base-sepolia"
   },

@@ -19,7 +19,7 @@ override that file.
 | **Onchain** | KeeperHub execution is paired with independent Base Sepolia receipt and indexed-event checks. | A transaction hash or `completed` string alone is never proof. |
 | **MCP** | The current source exposes exactly nine authenticated production tools for calculation, preparation, execution safety, and proof. | The retired fixed-wallet tools are absent from the production source; the new deployment still needs a live authenticated `tools/list` recheck. |
 | **Autonomous Agents** | The first-party settlement room runs a fixed four-stage review over receipt validity, allocation arithmetic, consent risk, and proof preflight before Freeze can unlock. | The memory is bounded, HMAC-attested audit memory—not self-modifying policy or code. External MCP callers use the explicit signed-payload contract instead of bypassing wallet consent. |
-| **Infrastructure** | OpenAPI, discovery metadata, a KeeperHub workflow package, scoped MCP auth, a shared durable submission journal, proof tooling, and a provisioned London Supabase project make the rail reusable. | The verified hosted state remains the four-migration, 19-table baseline; four additive migrations and one post-promotion cutover are still pending. |
+| **Infrastructure** | OpenAPI, discovery metadata, a KeeperHub workflow package, scoped MCP auth, a shared durable submission journal, proof tooling, and a provisioned London Supabase project make the rail reusable. | The hosted additive schema is verified at 29/29 public tables under RLS. The separate financial-truth cutover remains post-promotion, and application behavior is not claimed live until deployment probes pass. |
 
 ## Product flow
 
@@ -107,13 +107,13 @@ mechanism. The public alias must be re-probed after the new release is deployed
 before its live tool list is claimed to match this source.
 
 All three value-moving entry points—first-party UI, `POST /api/settle/execute`,
-and MCP `submit_signed_settlement`—use the same pending
+and MCP `submit_signed_settlement`—are implemented against the same hosted
 `settlement_submission_intents` journal. New work simulates and commits a
 `prepared` intent before KeeperHub. A retry with a durably recorded acceptance
 skips simulation and execution and returns that execution; a `prepared` retry
-reuses the stored successful simulation and deterministic idempotency key. This
-source behavior is not production-live until the pending migrations are applied
-and the promoted deployment passes its crash-recovery probes.
+reuses the stored successful simulation and deterministic idempotency key. The
+schema is applied, but this behavior is not claimed production-live until the
+candidate deployment passes its tenant-isolation and crash-recovery probes.
 
 Configuration and flow details:
 [docs/integrations/mcp.md](docs/integrations/mcp.md).
@@ -153,15 +153,18 @@ verification key are configured. Branded inbound email also remains pending a
 verified sender domain and custom SMTP or Send Email Hook.
 
 The settlement-agent control plane persists attested run, stage-event, and
-bounded audit-memory records in migration source. It cannot alter code or policy,
-and stage four records pre-signature proof as honestly skipped. Four additive
-migrations are not yet applied to the hosted 19-table Supabase baseline:
-`20260811052236` (agent control), `20260811064822` (voice spend reservations),
-`20260811073000` (first-party settlement flow), and `20260811074000` (shared
-submission intents). `20260811074500` is a separate post-promotion cutover that
-revokes legacy direct financial writes and the old quota RPC only after the new
-candidate passes live probes. None of those newer durability paths is called
-production-live yet.
+bounded audit-memory records. It cannot alter code or policy, and stage four
+records pre-signature proof as honestly skipped. The hosted database now has the
+baseline plus the ordered additive migrations `20260811052236` (agent control),
+`20260811060000` (agent-event composite-FK coverage), `20260811064822` (voice
+spend reservations), `20260811073000` (first-party settlement flow), and
+`20260811074000` (shared submission intents): 29/29 public tables have RLS, the
+sensitive mutation RPCs deny `PUBLIC`, `anon`, and `authenticated` while allowing
+`service_role`, the unindexed-FK warning is cleared, and the database advisors
+report no errors. `20260811074500` remains intentionally unapplied; it is a
+post-promotion cutover that revokes legacy direct financial writes and the old
+quota RPC only after the candidate passes live probes. The applied schema is not
+itself evidence that the newer application/provider flows are production-live.
 
 ## Money and security rules
 
@@ -186,7 +189,7 @@ production-live yet.
 | `packages/keeperhub-flight-recorder` | `kh-proof` CLI and auditable verdict output |
 | `contracts` | V1 history plus `FinalTabBatchSettlementV2` and adversarial tests |
 | `apps/web` | Next.js product, authenticated MCP/API surfaces, proof and integration routes |
-| `supabase/migrations` | Four applied baseline migrations; four pending additive control/voice/flow/journal migrations; one pending post-promotion financial cutover |
+| `supabase/migrations` | Four baseline plus five additive migrations applied and verified; one pending post-promotion financial cutover |
 | `docs/release` | Canonical status, checklist, trace contract, and retained evidence |
 
 ## Run and verify
@@ -237,11 +240,11 @@ the separate 2026-08-11 one-atomic-unit run above. Likewise, the historical
 - Deploy and live-probe the Supabase-guarded hybrid voice path before
   advertising it as live; durable quotas and sensitive provider variables are
   configured, but the current public deployment has not exercised them.
-- Apply and verify additive migrations `20260811052236`, `20260811064822`,
-  `20260811073000`, and `20260811074000`; configure the server-only secrets and
-  live-probe review invalidation, tenant isolation, durable cross-channel
-  submission, and crash recovery. Apply `20260811074500` only after promotion,
-  then prove legacy writes and the old quota RPC are denied.
+- Live-probe the applied agent-control, spend-reservation, first-party-flow, and
+  cross-channel-journal schema through the candidate deployment: review
+  invalidation, tenant isolation, durable submission, and crash recovery must
+  pass. Apply `20260811074500` only after promotion, then prove legacy writes and
+  the old quota RPC are denied.
 - Complete the fail-closed Privy dashboard/JWKS/domain/token configuration. A
   verified sender domain plus custom SMTP or a Send Email Hook is separately
   required before claiming a branded inbound authentication email.

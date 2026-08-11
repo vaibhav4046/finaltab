@@ -75,13 +75,16 @@ commits and local demo builds are not maintained security releases.
   prior review stale. `FINALTAB_AGENT_ATTESTATION_SECRET` is server-only and
   authenticates run, event, and bounded audit-memory envelopes; the memory cannot
   change code, prompts, policy, or authorization rules.
-- The hosted Supabase measurement is still exactly four applied migrations,
-  19 RLS-enabled tables, 45 policies, no anonymous table grants, and 34/34
-  indexed foreign keys. Additive migrations `20260811052236`, `20260811064822`,
-  `20260811073000`, and `20260811074000` are present in source but unapplied;
-  `20260811074500` is intentionally reserved for after candidate promotion. No
-  production durability or legacy-write cutover claim is made until the ordered
-  migration and tenant-isolation/crash-recovery probes pass.
+- The hosted Supabase project now has the four baseline migrations plus ordered
+  additive migrations `20260811052236`, `20260811060000`, `20260811064822`,
+  `20260811073000`, and `20260811074000`. All 29 public tables have RLS. Every
+  sensitive new mutation RPC denies `PUBLIC`, `anon`, and `authenticated` and
+  allows `service_role`; database advisors report no errors, and `60000` clears
+  the remaining unindexed agent-event composite-FK warning.
+- `20260811074500` remains unapplied and intentionally reserved for after a
+  successful candidate promotion. The applied schema does not prove the
+  application/provider flows; tenant-isolation, crash-recovery, and live flow
+  probes remain required before production behavior is claimed.
 - Groq and KeeperHub credentials belong only in server-side environment
   variables. `.env*`, proof captures, traces, and videos must be scanned before
   publication.

@@ -4,11 +4,10 @@ Nothing here is faked in the app: blocked paths render as blocked, unproven stat
 
 ## CURRENT V2 BLOCKERS — 2026-08-11
 
-- Apply and verify additive migrations `52236` (agent control), `64822` (voice
-  spend reservations), `73000` (first-party flow), and `74000` (shared
-  UI/REST/MCP submission journal), then promote and apply `74500` to revoke
-  legacy writes. The hosted schema remains at the verified four-migration,
-  19-table baseline until then.
+- Deploy and live-probe the now-applied additive schema (`52236`, `60000`,
+  `64822`, `73000`, `74000`) for tenant isolation, review invalidation,
+  cross-channel journaling, crash recovery, and voice budgets. Only after a
+  successful promotion, apply `74500` and prove legacy writes are revoked.
 - Complete the Privy dashboard/JWKS/domain/identity-token/verifier setup and
   live-probe subject pairing. Configure a verified-domain SMTP provider or Send
   Email Hook separately before claiming branded inbound email.
@@ -137,14 +136,17 @@ rather than being done autonomously.
 
 - `finaltab-production` (`yoavihmldqbkuxinrsih`) is active in London
   (`eu-west-2`) on the free plan, with verified monthly cost `0`.
-- Four migrations are applied. Verification found 19/19 tables with
-  RLS, 45 policies, no anonymous table grants, and 34/34 foreign keys covered
-  by indexes. The durable voice quota table has no direct anonymous or
-  authenticated grants; its consumer RPC is authenticated-only.
-- Additive migrations `20260811052236`, `20260811064822`, `20260811073000`, and
-  `20260811074000` are committed in source but not yet applied. Post-promotion
-  cutover `20260811074500` must follow the candidate probe. Recount RLS,
-  policies, grants, and indexes after the ordered rollout.
+- The four baseline migrations plus ordered additive migrations
+  `20260811052236`, `20260811060000`, `20260811064822`, `20260811073000`, and
+  `20260811074000` are applied. Verification found 29/29 public tables with RLS;
+  every sensitive new mutation RPC denies `PUBLIC`, `anon`, and
+  `authenticated` and allows `service_role`. Database advisors report no
+  errors, and `60000` clears the remaining unindexed agent-event composite-FK
+  warning. The durable minute-quota consumer RPC remains authenticated-only
+  until cutover; the new spend-reservation RPC is service-role-only.
+- Post-promotion cutover `20260811074500` is not applied and must follow a
+  successful candidate promotion. Recheck its legacy-write and old-quota-RPC
+  denials after applying it.
 - Remaining release gate: deploy the newer application and live-probe auth,
   invitations, approvals, durable history, and cross-device resume with more
   than one identity. Provisioning alone does not prove those browser behaviors.

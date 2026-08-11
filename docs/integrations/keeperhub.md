@@ -86,14 +86,15 @@ transaction hash or contract address. It accepts the execution ID plus the expec
 
 The observer is replay-safe because it is read-only. It neither broadcasts nor
 changes a settlement. Keep its returned observation in the caller's audit log.
-The Supabase production project and its four applied migrations are provisioned
-and schema-verified at the 19-table baseline. Additive migrations `52236`,
-`64822`, `73000`, and `74000` plus post-promotion cutover `74500` remain
-unapplied. The observer still does not claim durable application behavior until
-the newer release is deployed and its callback/audit path is live-probed.
+The Supabase production project has its four baseline plus additive `52236`,
+`60000`, `64822`, `73000`, and `74000` migrations applied and schema-verified at
+29/29 public RLS tables. Sensitive mutation RPCs are service-role-only; no
+advisor errors or unindexed-FK warning remain. Post-promotion cutover `74500` is
+not applied. The observer still does not claim durable application behavior
+until the newer release is deployed and its callback/audit path is live-probed.
 
 Value-moving first-party UI, REST, and MCP calls are separate from this read-only
-observer and converge on the pending `74000` durable journal. A durably accepted
+observer and converge on the applied `74000` durable-journal schema. A durably accepted
 retry returns its recorded execution without another simulation or execute; a
 prepared recovery reuses the stored successful simulation and deterministic
 KeeperHub idempotency key under a bounded approval expiry. New first-party work

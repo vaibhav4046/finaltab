@@ -12,15 +12,17 @@ current V2 contract, MCP flow, settlement, or video.
 
 ## Verdict
 
-**V2 deployment, a value-moving V2 settlement, and Supabase provisioning are
-proven; the submission package is not complete yet.**
+**V2 deployment, a value-moving V2 settlement, and the additive Supabase schema
+are proven; the submission package is not complete yet.**
 `FinalTabBatchSettlementV2` was deployed through KeeperHub on Base Sepolia and
 its creation and runtime source are an exact Sourcify match. A separate,
 explicitly authorized one-atomic-unit run completed through KeeperHub and was
 independently verified on Base Sepolia. `finaltab-production` is active in
-London on Supabase's free plan; its four applied migrations produced the
-verified 19-table schema baseline. Additive migrations `52236`, `64822`, `73000`,
-and `74000` plus the post-promotion `74500` cutover are not yet applied. Main commit `b084497` passed both
+London on Supabase's free plan. Its four baseline migrations plus ordered
+additive migrations `52236`, `60000`, `64822`, `73000`, and `74000` produce 29
+public tables, all under RLS. Sensitive new mutation RPCs are service-role-only,
+database advisors report no errors, and the unindexed-FK warning is cleared.
+Post-promotion cutover `74500` is not applied. Main commit `b084497` passed both
 GitHub CI jobs and a 13/13 protected release probe against the then-current
 immutable Vercel deployment and public alias. The newer application release,
 unified nine-tool MCP capture, Privy dashboard configuration, final V2 video,
@@ -44,12 +46,12 @@ Those remaining release steps are blocking.
 | Authenticated MCP V2 surface | `SOURCE/TEST PROVEN; LIVE RECHECK PENDING` | Current source exposes exactly nine scoped production tools with arbitrary participants, external signatures, exact V2 plan binding, and fail-closed proof. The superseded `b084497` deployment passed auth/calculation/plan/proof probes, but does not prove the retired-tool cleanup. |
 | Clean release baseline | `PROVEN AT b084497` | 284 passing + 1 env-gated skip; both GitHub CI jobs green; 24 generated pages; Playwright 8/8 |
 | Final local candidate | `LOCAL_PROVEN; CI/DEPLOY PENDING` | 370 passing + 1 provider-gated vision skip; production build generated 33/33 pages. No full production/browser/provider claim is inferred. |
-| Hybrid voice candidate | `CONFIGURED; DEPLOY/PROBE PENDING` | AssemblyAI temp-token STT + buffered ElevenLabs readback; sensitive provider variables and the baseline per-minute quota are configured; spend-reservation migration and live provider lifecycle probe pending |
-| Settlement durability | `SOURCE/TEST PROVEN; MIGRATIONS PENDING` | Fixed four-stage review; first-party Freeze requires a current HMAC-attested run; UI/REST/MCP share a durable submission journal; accepted recovery skips simulation/execute; prepared recovery reuses its stored successful simulation and deterministic idempotency key under a bounded approval expiry |
-| Supabase + Privy identity | `SUPABASE BASELINE PROVEN; PRIVY FAIL-CLOSED` | Supabase is canonical RLS identity; sign-in/create-account/callback and branded return page implemented. Privy app/JWKS/domain/identity-token/verifier setup and live subject-pairing remain pending; branded inbound email needs verified-domain SMTP or Send Email Hook. |
+| Hybrid voice candidate | `SCHEMA/CONFIG PROVEN; DEPLOY/PROBE PENDING` | AssemblyAI temp-token STT + buffered ElevenLabs readback; sensitive provider variables, per-minute quotas, and spend reservations are configured/applied; live provider lifecycle probe pending |
+| Settlement durability | `SOURCE/TEST/SCHEMA PROVEN; APP PROBE PENDING` | Fixed four-stage review; first-party Freeze requires a current HMAC-attested run; UI/REST/MCP share a durable submission journal; accepted recovery skips simulation/execute; prepared recovery reuses its stored successful simulation and deterministic idempotency key under a bounded approval expiry. Hosted schema presence does not prove these flows until the candidate probe passes. |
+| Supabase + Privy identity | `SUPABASE ADDITIVE SCHEMA PROVEN; PRIVY FAIL-CLOSED` | Supabase is canonical RLS identity; sign-in/create-account/callback and branded return page implemented. Privy app/JWKS/domain/identity-token/verifier setup and live subject-pairing remain pending; branded inbound email needs verified-domain SMTP or Send Email Hook. |
 | V2 USDC settlement rail | `LIVE_PROVEN` | KeeperHub `3hmlqi36zweiwg6fc5o2u`; [tx `0x7a6fb760…a789`](https://sepolia.basescan.org/tx/0x7a6fb760f691954a41c71d5d508629c58aa09207bba0de4eaf164f097c59a789); block `45327128`; 1 atomic USDC; exact V2 event binding and balance conservation |
 | V2 video | `BLOCKING — PENDING RENDER` | No truthful duration, checksum, or public URL yet |
-| Supabase infrastructure | `LIVE_PROVEN BASELINE; MIGRATION/APP PROBE PENDING` | `finaltab-production`, ref `yoavihmldqbkuxinrsih`, London `eu-west-2`, free plan; four applied migrations; 19/19 tables with RLS, 45 policies, no anon table grants, 34/34 FKs indexed; additive `52236`/`64822`/`73000`/`74000` and post-promotion `74500` pending; final deployed behavior not yet probed |
+| Supabase infrastructure | `LIVE-PROVEN ADDITIVE SCHEMA; APP PROBE/CUTOVER PENDING` | `finaltab-production`, ref `yoavihmldqbkuxinrsih`, London `eu-west-2`, free plan; four baseline plus additive `52236`/`60000`/`64822`/`73000`/`74000` applied; 29/29 public tables with RLS; sensitive mutation RPCs deny `PUBLIC`/`anon`/`authenticated` and allow `service_role`; no advisor errors; unindexed-FK warning cleared; post-promotion `74500` and final deployed behavior probe pending |
 | DoraHacks entry | `BLOCKING — PENDING HUMAN SUBMISSION` | Live page checked 2026-08-11; deadline 2026-08-13 12:00 UTC+2; confirmation not retained |
 | KeeperHub onboarding contribution | `PROVEN; ENTRY ROUTE AMBIGUOUS` | [PR #95](https://github.com/KeeperHub/cli/pull/95) was open and not merged when last checked; live Bounties tab currently contradicts the detail-page bounty copy |
 
@@ -131,10 +133,11 @@ local candidate facts, not production-provider or final-render claims.
   at `b084497`; any newer deployment must be re-probed before promotion.
 - The current MCP source contains exactly nine production tools; the new live
   deployment and authenticated tool list are not yet re-probed.
-- Supabase's four-migration, 19-table baseline is provisioned and
-  schema-verified; additive migrations `52236`, `64822`, `73000`, and `74000`
-  plus post-promotion cutover `74500` are unapplied and the newer application release
-  must still be deployed and live-probed before any cross-device behavior claim.
+- Supabase's four baseline plus five additive migrations (`52236`, `60000`,
+  `64822`, `73000`, and `74000`) are applied and schema-verified at 29/29 public
+  RLS tables. Post-promotion cutover `74500` is unapplied, and the newer
+  application release must still be deployed and live-probed before any
+  cross-device behavior claim.
 - Groq has historical live evidence; other model-provider fallback legs should
   remain described according to their current measured state.
 - Sourcify exact matching is proven. BaseScan source verification is not
@@ -182,10 +185,10 @@ August 17 through August 19. Do not replace this with a countdown estimate.
    the final submission commit.
 2. Preserve the retained V2 settlement manifest and its exact KeeperHub/chain
    identifiers; do not rebroadcast it.
-3. Apply and verify additive migrations `52236`, `64822`, `73000`, and `74000`,
-   configure server-only secrets, and probe stale-review rejection, tenant
-   isolation, cross-channel journaling, and crash recovery. Apply `74500` only
-   after promotion, then prove legacy writes and the old quota RPC are denied.
+3. Probe the applied additive schema through the candidate: stale-review
+   rejection, tenant isolation, cross-channel journaling, and crash recovery.
+   Apply `74500` only after promotion, then prove legacy writes and the old quota
+   RPC are denied.
 4. Complete and probe the Privy dashboard/JWKS/domain/identity-token/verifier
    configuration; keep branded inbound email unclaimed until SMTP/domain setup.
 5. Capture a redacted production MCP trace that references the proven run

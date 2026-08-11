@@ -9,7 +9,7 @@ workflow: product-launch-video
 fps: 60
 music: restrained analog pulse with tactile paper percussion and a controlled proof-climax lift
 captions: baked word-timed captions plus external SRT
-truth_status: source composition built; one-atomic-unit V2 KeeperHub settlement and independent RPC proof verified; current narration provisional; Privy/ordered migration/deployment probes and final real product/MCP captures pending
+truth_status: source composition built; one-atomic-unit V2 KeeperHub settlement, independent RPC proof, and five-migration additive Supabase schema verified; current narration provisional; Privy/application/provider deployment probes, post-promotion 74500 cutover, and final real product/MCP captures pending
 ---
 
 # FINALTab winner film

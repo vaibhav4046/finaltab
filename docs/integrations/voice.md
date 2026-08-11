@@ -59,6 +59,11 @@ revoked from `public`, `anon`, and `authenticated`. The earlier
 request-count-only RPC remains available only during the additive rollout and
 is revoked by the post-promotion cutover migration.
 
+The migration is now applied to the hosted project. Its privilege matrix is
+verified: `PUBLIC`, `anon`, and `authenticated` cannot execute the sensitive
+reservation mutation, while `service_role` can. This is database evidence only,
+not a live AssemblyAI or ElevenLabs request.
+
 The public response exposes only safe operational metadata: the caller's
 remaining day/month units, reset times, reserved units, unit type, and effective
 transcription concurrency. It does not expose user IDs, reservation IDs, or
@@ -66,11 +71,13 @@ precise project-wide remaining budgets.
 
 ## Deployment gate
 
-Set `FINALTAB_VOICE_DURABLE_QUOTA=supabase`, configure the server-only
-`SUPABASE_SECRET_KEY`, and apply the committed migration before deploying these
-routes. Code fails closed before a provider call if any prerequisite is absent.
-Applying the migration and making live provider calls are separate release
-actions; this document does not claim that either has occurred.
+Set `FINALTAB_VOICE_DURABLE_QUOTA=supabase` and keep the configured
+`SUPABASE_SECRET_KEY` server-only when deploying these routes. The committed
+spend-reservation migration is applied; the separate post-promotion cutover
+`20260811074500` is not. Code fails closed before a provider call if any
+prerequisite is absent. A production microphone/readback lifecycle probe is
+still pending, so this document does not claim that either provider path is
+live.
 
 Provider contracts used by this policy:
 

@@ -1,9 +1,9 @@
 # DoraHacks submission copy — final media pending
 
 **Do not submit this draft yet.** V2 deployment, one value-moving V2 settlement,
-and the 19-table production Supabase baseline are proven. The baseline durable
-minute quota and sensitive provider variables are also configured. Four additive
-Supabase migrations, the post-promotion financial cutover, Privy dashboard
+and the 29-table production Supabase additive schema are proven. Durable minute
+quota/spend-reservation controls and sensitive provider variables are also
+configured. The post-promotion financial cutover, Privy dashboard
 configuration, final deployment/provider probe,
 unified nine-tool MCP capture, final video, public video URL, and DoraHacks
 confirmation are still pending. Current truth lives in
@@ -34,7 +34,7 @@ Infrastructure**
 |---|---|
 | Blockchain, Web3, DeFi, Onchain | An exact-source-matched V2 contract on Base Sepolia, EIP-3009 and full-plan consent, atomic testnet-USDC execution, KeeperHub orchestration, and independent event verification. A deliberately minimal one-atomic-unit V2 run is retained with exact event and balance proof. |
 | AI Agents, MCP, Autonomous Agents | Exactly nine authenticated production MCP tools let external agents allocate, net, prepare, simulate, orchestrate, and verify. The first-party workspace adds a fixed, attested four-stage review before Freeze. Autonomy is bounded: every debtor signs externally and a permitted human wallet signs a short-lived broadcast approval before value can move. |
-| Infrastructure | OpenAPI, discovery metadata, a KeeperHub workflow package, scoped authentication, a shared durable UI/REST/MCP submission journal, fail-closed proof tooling, and a provisioned London Supabase schema make the rail reusable from other clients and agent systems. The verified hosted state remains the four-migration, 19-table baseline; four additive migrations, the post-promotion cutover, and cross-device release probe remain pending. |
+| Infrastructure | OpenAPI, discovery metadata, a KeeperHub workflow package, scoped authentication, a shared durable UI/REST/MCP submission journal, fail-closed proof tooling, and a provisioned London Supabase schema make the rail reusable from other clients and agent systems. The hosted baseline plus five ordered additive migrations are verified at 29/29 public RLS tables with server-only sensitive mutation RPCs; the post-promotion cutover and cross-device release probe remain pending. |
 
 ## Description
 
@@ -87,7 +87,7 @@ and ElevenLabs can read back a short confirmation. Voice never allocates,
 signs, or submits by itself. Permanent provider keys remain server-side. This
 branch is locally verified. Supabase now provides an authenticated-only durable
 quota guard fixed at 8 transcription sessions and 20 readbacks per user per
-minute, and both provider keys are stored as sensitive Vercel Production
+minute plus service-role-only spend reservations, and both provider keys are stored as sensitive Vercel Production
 variables. The capability must not be described as live until the newer release
 is deployed and its microphone, `Begin`/`Termination`, readback, quota, and text
 fallback paths pass a real provider probe.
@@ -134,18 +134,19 @@ that distinction visible.
 ## Supabase production infrastructure
 
 `finaltab-production` is active in London (`eu-west-2`) on the free plan under
-project ref `yoavihmldqbkuxinrsih`. Four migrations are applied remotely.
-Verification found 19/19 tables with RLS enabled, 45 policies, no anonymous
-table grants, and indexes covering 34/34 foreign keys. The voice quota table
+project ref `yoavihmldqbkuxinrsih`. The four baseline migrations plus ordered
+additive migrations `20260811052236`, `20260811060000`, `20260811064822`,
+`20260811073000`, and `20260811074000` are applied remotely. Verification found
+29/29 public tables with RLS enabled. Sensitive new mutation RPCs deny `PUBLIC`,
+`anon`, and `authenticated` and allow `service_role`; database advisors report
+no errors, and the unindexed-FK warning is cleared. The voice quota table
 revokes direct anonymous and authenticated grants; its
 `consume_voice_quota(text)` RPC is denied to anonymous callers and available
 only to authenticated users. Public deployment
 configuration is prepared, but durable cross-device application behavior is
-not claimed until the final release is deployed and live-probed. Additive
-migrations `20260811052236`, `20260811064822`, `20260811073000`, and
-`20260811074000` exist in source but are not applied. Post-promotion migration
-`20260811074500` must follow a successful candidate probe. All table, policy,
-grant, and index counts must be re-measured after the ordered rollout.
+not claimed until the final release is deployed and live-probed. Post-promotion
+migration `20260811074500` is not applied and must follow a successful candidate
+promotion; legacy-write and old-quota-RPC denial must then be probed.
 
 Supabase Auth is the canonical account/RLS identity. The distinct sign-in and
 create-account routes, strict callback, and branded `/auth/complete` page are
@@ -196,11 +197,13 @@ current production source.
 - V2 value-moving rail through KeeperHub: live-proven at execution
   `3hmlqi36zweiwg6fc5o2u`, tx `0x7a6fb760…a789`, block `45327128`, with verified
   dual signatures, receipt, exact V2 event binding, and conserved balances.
-- Supabase production infrastructure: provisioned and schema-verified; email
+- Supabase production infrastructure: additive schema provisioned and verified;
+  all 29 public tables have RLS, sensitive mutation RPCs are service-role-only,
+  advisor errors are zero, and the unindexed-FK warning is cleared; email
   auth/signups are enabled with confirmation and the production Site URL plus
   exact `/auth/callback` are configured. Final application deployment and
-  cross-device behavior probe remain pending. The four additive migrations and
-  post-promotion cutover are unapplied; HMAC provenance, tenant isolation,
+  cross-device behavior probe remain pending. The post-promotion cutover is
+  unapplied; HMAC provenance, tenant isolation,
   shared-journal crash recovery, and legacy-write denial still require probes.
 - Privy bridge: code-complete and fail-closed; dashboard/JWKS/domain/identity
   token/verifier configuration and live subject-pairing tests remain pending.

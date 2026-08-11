@@ -15,9 +15,11 @@
 - HyperFrames 0.7.105 check: pass; runtime 0, layout 0, motion 0, WCAG AA contrast 73/73
 - Visual evidence: `proof-output/finaltab-winner/snapshots/` and `proof-output/finaltab-winner/proof-snapshots/`
 
-The current voice, captions, and timing are review references only. After the
-four additive migrations and post-promotion cutover, Privy configuration, redesigned product, authentication,
-security/deployment probes, and real captures are approved, regenerate
+The current voice, captions, and timing are review references only. The five
+ordered additive migrations (`52236`, `60000`, `64822`, `73000`, `74000`) are
+applied and schema-verified; that is not an application-flow probe. After
+candidate promotion, the still-unapplied `74500` cutover, Privy configuration,
+redesigned product, authentication, security/deployment probes, and real captures are approved, regenerate
 ElevenLabs narration, alignment, baked captions, external captions, and scene
 timing before the final 4K contact-sheet review. No final render was produced.
 
@@ -33,8 +35,9 @@ The source deliberately uses obvious capture plates. They are not reconstructed 
 6. `assets/capture/C07-developer-mcp-surface.png`
 7. `assets/capture/C08-real-mcp-v2-run.mp4`
 
-Final capture work must happen only after the ordered migration rollout, final
-product/auth/Privy/security deployment probes, and public-link checks. A live
+Final capture work must happen only after the final
+product/auth/Privy/security deployment probes, post-promotion cutover checks,
+and public-link checks. A live
 authenticated list must contain exactly nine production tools. C08 must be a
 real named MCP client with the human approval pause and the exact call
 `settlement_status({ executionId, settlementId, ledgerHash })`; the retained

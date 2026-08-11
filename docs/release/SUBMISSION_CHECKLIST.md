@@ -1,8 +1,8 @@
 # KeeperHub Agents Onchain — pre-submission checklist
 
-**Current state:** the one-atomic-unit V2 rail settlement, 19-table Supabase
-baseline, durable minute quota, and sensitive provider configuration are proven.
-Four additive Supabase migrations and the post-promotion cutover, Privy dashboard setup, final deploy/provider probe,
+**Current state:** the one-atomic-unit V2 rail settlement, 29-table RLS Supabase
+additive schema, durable voice quotas/spend reservations, and sensitive provider
+configuration are proven. The post-promotion cutover, Privy dashboard setup, final deploy/provider probe,
 unified nine-tool production MCP capture, final 4K/60 V2 video and public URL,
 and human form submission remain
 blocking. Main commit `b084497` is the clean baseline: both GitHub CI jobs were
@@ -95,10 +95,14 @@ Historical V1 settlements at `0xCcf6…7e64`, including execution
 
 - [x] Entrant approved organization `xjpjpoxicyvmdfzmrdkk`, London `eu-west-2`,
       and free plan with verified monthly cost `0` before creation.
-- [x] `finaltab-production` (`yoavihmldqbkuxinrsih`) is `ACTIVE_HEALTHY` and four
-      migrations are applied remotely.
-- [x] Schema verification found 19/19 tables with RLS, 45 policies, no
-      anonymous table grants, and index coverage for 34/34 foreign keys.
+- [x] `finaltab-production` (`yoavihmldqbkuxinrsih`) is `ACTIVE_HEALTHY`; the four
+      baseline migrations and five ordered additive migrations are applied.
+- [x] Additive order is `20260811052236`, `20260811060000`, `20260811064822`,
+      `20260811073000`, then `20260811074000`.
+- [x] Schema verification found 29/29 public tables with RLS. Sensitive new
+      mutation RPCs deny `PUBLIC`, `anon`, and `authenticated` and allow
+      `service_role`; advisors report no errors, and the unindexed-FK warning is
+      cleared.
 - [x] Public production configuration points to the verified project; no
       secret/service-role value is exposed in browser configuration.
 - [ ] The newer release is deployed and Supabase auth/persistence is probed
@@ -107,13 +111,12 @@ Historical V1 settlements at `0xCcf6…7e64`, including execution
       those behaviors pass a live browser check.
 
 Until the live-behavior boxes pass, FINALTab may describe the provisioned
-baseline project and verified schema, but not the unapplied agent tables or
-deployed cross-device behavior.
+project and verified additive schema, but not deployed cross-device or provider
+behavior.
 
-- [ ] Apply additive migrations `20260811052236`, `20260811064822`,
-      `20260811073000`, and `20260811074000` individually and in order; then
-      remeasure RLS, policies, grants, and foreign-key indexes rather than
-      copying 19/45/34.
+- [x] Apply additive migrations `20260811052236`, `20260811060000`,
+      `20260811064822`, `20260811073000`, and `20260811074000` individually and
+      in order; remeasure RLS, RPC grants, advisors, and foreign-key indexes.
 - [ ] Deploy and probe the candidate before applying post-promotion migration
       `20260811074500`; then prove legacy direct financial writes and
       `consume_voice_quota(text)` execution are denied.
@@ -143,8 +146,8 @@ deployed cross-device behavior.
 - [x] Final local candidate passed 370 checks + 1 provider-gated vision skip,
       and the production build generated 33/33 pages.
 - [x] The baseline no-charge per-minute Supabase quota migration is applied remotely.
-- [ ] The additive daily/monthly spend-reservation migration `20260811064822`
-      is applied and its service-role-only boundary is probed.
+- [x] The additive daily/monthly spend-reservation migration `20260811064822`
+      is applied and its service-role-only database boundary is verified.
 - [x] `voice_quota_windows` has RLS enabled and direct anonymous/authenticated
       table grants revoked; `consume_voice_quota(text)` denies anonymous callers
       and is authenticated-only.
@@ -217,7 +220,7 @@ BASELINE_PROTECTED_PROBE=13/13
 SUPABASE_PROJECT_REF=yoavihmldqbkuxinrsih
 SUPABASE_REGION=eu-west-2
 SUPABASE_PLAN=free
-SUPABASE_SCHEMA_STATE=PROVISIONED_BASELINE_19_RLS_TABLES_45_POLICIES_34_OF_34_FKS_INDEXED_AGENT_MIGRATION_PENDING
+SUPABASE_SCHEMA_STATE=ADDITIVE_APPLIED_29_OF_29_PUBLIC_TABLES_RLS_SENSITIVE_MUTATION_RPCS_SERVICE_ROLE_ONLY_NO_ADVISOR_ERRORS_UNINDEXED_FK_WARNING_CLEARED
 SUPABASE_APP_PROBE=PENDING_FINAL_DEPLOY
 VOICE_DURABLE_QUOTA=PROVISIONED_SUPABASE_AUTHENTICATED_ONLY_8_STT_20_READBACK_PER_USER_PER_MINUTE
 VOICE_PROVIDER_SECRETS=CONFIGURED_SENSITIVE_VERCEL_PRODUCTION
@@ -231,7 +234,8 @@ V2_LEDGER_HASH=0x1581eb7f56485ff4d2a684a832fc8d085b9b0e5d8540c85e2d550e8f7b0cb91
 V2_MCP_HUMAN_APPROVAL_TRACE=PENDING
 PRIVY_PRODUCTION_STATE=PENDING_DASHBOARD_JWKS_DOMAIN_IDENTITY_TOKEN_VERIFIER_SETUP
 BRANDED_INBOUND_EMAIL=PENDING_VERIFIED_DOMAIN_AND_CUSTOM_SMTP_OR_SEND_EMAIL_HOOK
-AGENT_CONTROL_MIGRATION=PENDING
+AGENT_CONTROL_MIGRATION=APPLIED
+FINANCIAL_TRUTH_CUTOVER=PENDING_POST_PROMOTION
 V2_VIDEO_URL=PENDING
 ONBOARDING_PR=https://github.com/KeeperHub/cli/pull/95
 ```

@@ -1,7 +1,8 @@
 # FINALTab capture manifest
 
-**State:** composition source and verified chain-proof overlay are built; agent
-migration, Privy configuration, final production probes, and real browser,
+**State:** composition source and verified chain-proof overlay are built; the
+ordered additive Supabase schema is applied and verified, while Privy
+configuration, final production probes, and real browser,
 wallet, MCP-client, and explorer captures remain open. Current ElevenLabs
 audio/captions are a provisional script pass and must be regenerated after
 approved captures. No final render exists.

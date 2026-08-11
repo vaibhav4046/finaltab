@@ -1,8 +1,11 @@
 # Settlement agent control plane
 
-Status: implemented in the application and migration source; additive migrations
-`52236`, `73000`, and `74000` have not been applied to production yet, and
-post-promotion cutover `74500` must follow a successful candidate probe.
+Status: implemented in source and applied at the database layer through ordered
+migrations `52236`, `60000`, `73000`, and `74000`. All affected public tables
+have RLS, sensitive mutation RPCs are service-role-only, and `60000` clears the
+agent-event composite-FK index warning. The application flows still require a
+candidate deployment probe; post-promotion cutover `74500` is not applied and
+must follow a successful promotion.
 
 ## Product boundary
 
@@ -24,11 +27,16 @@ Only Base Sepolia is enabled. There is no Solana or mainnet adapter claim.
 ## Persistence and provenance
 
 Migration `20260811052236_settlement_agent_control_plane.sql` creates owner- and
-tab-scoped run, event and audit-memory tables with RLS. Authenticated clients can
+tab-scoped run, event and audit-memory tables with RLS; migration
+`20260811060000_cover_agent_event_composite_fk.sql` covers the remaining
+composite foreign-key path. Authenticated clients can
 select their rows, and can delete their own audit memory, but cannot directly
-insert or update evidence tables. Narrow security-definer RPCs enforce
-`auth.uid()`, tab edit access, fixed stage order, bounded JSON and durable domain
-references.
+insert or update evidence tables. Sensitive narrow security-definer mutation
+RPCs deny `PUBLIC`, `anon`, and `authenticated`, allow `service_role`, and
+enforce the supplied verified user identity, tab edit access, fixed stage order,
+bounded JSON, and durable domain references. This privilege matrix and the
+29/29-public-table RLS state are hosted schema facts; they are not a live
+application-flow probe.
 
 RPC reachability alone is not treated as server provenance. The Next.js server
 signs each run, event and memory envelope with

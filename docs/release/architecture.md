@@ -10,15 +10,17 @@
 > Old address and `confirm: true` references below are preserved V1 history.
 > Current overrides: the V2 rail moved one atomic unit through KeeperHub
 > execution `3hmlqi36zweiwg6fc5o2u`, and Supabase project
-> `yoavihmldqbkuxinrsih` is provisioned at the verified 19/19-RLS-table baseline
-> plus an authenticated-only durable voice quota. The current source has exactly
+> `yoavihmldqbkuxinrsih` has the baseline plus additive
+> `52236`/`60000`/`64822`/`73000`/`74000` applied: 29/29 public tables use RLS,
+> sensitive mutation RPCs are service-role-only, advisors report no errors, and
+> the unindexed-FK warning is cleared. The current source has exactly
 > nine MCP tools, external-wallet dual signing, and a mandatory attested
 > four-stage first-party review before Freeze. UI, REST, and MCP submissions use
 > one durable journal in source; accepted recovery skips simulation and execute,
 > while prepared recovery reuses its successful simulation and deterministic
-> idempotency key under a bounded approval expiry. Additive migrations
-> `52236`/`64822`/`73000`/`74000` and post-promotion cutover `74500` are not
-> applied; Privy is code-complete but dashboard/JWKS/domain/identity-token/
+> idempotency key under a bounded approval expiry. Post-promotion cutover
+> `74500` is not applied; the applied schema is not a live-flow probe. Privy is
+> code-complete but dashboard/JWKS/domain/identity-token/
 > verifier configuration is still fail-closed. The final application/provider
 > probe remains open; do not rewrite the archived V1 rows below as current facts.
 

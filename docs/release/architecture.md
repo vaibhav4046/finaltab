@@ -8,6 +8,19 @@
 > `0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB`. See
 > [../integrations/mcp.md](../integrations/mcp.md) and [status.md](status.md).
 > Old address and `confirm: true` references below are preserved V1 history.
+> Current overrides: the V2 rail moved one atomic unit through KeeperHub
+> execution `3hmlqi36zweiwg6fc5o2u`, and Supabase project
+> `yoavihmldqbkuxinrsih` is provisioned at the verified 19/19-RLS-table baseline
+> plus an authenticated-only durable voice quota. The current source has exactly
+> nine MCP tools, external-wallet dual signing, and a mandatory attested
+> four-stage first-party review before Freeze. UI, REST, and MCP submissions use
+> one durable journal in source; accepted recovery skips simulation and execute,
+> while prepared recovery reuses its successful simulation and deterministic
+> idempotency key under a bounded approval expiry. Additive migrations
+> `52236`/`64822`/`73000`/`74000` and post-promotion cutover `74500` are not
+> applied; Privy is code-complete but dashboard/JWKS/domain/identity-token/
+> verifier configuration is still fail-closed. The final application/provider
+> probe remains open; do not rewrite the archived V1 rows below as current facts.
 
 **Gate 0 Inventory — 2026-08-10**
 
@@ -131,7 +144,7 @@ is stale.
 | All tests passing | pnpm test + hardhat test | ✓ 201 + 11 = 212 tests, 1 skipped (measured 2026-08-10) |
 | LLM fallback cascade | 12 tests driving the real router with each SDK mocked at the module boundary | ⚠️ Cascade FIXTURE_PROVEN; only the Groq leg has ever contacted a real API |
 
-## Known Blockers (measured, not assumed)
+## Historical V1 blockers (measured on 2026-08-10)
 
 1. **Supabase Persistence**: Schema in `supabase/migrations/` but **not applied** — no project credentials. There is no server-side audit trail, no idempotency, and nothing is durable. The app is stateless per session; device-local state plus the KeeperHub transaction are the only sources of truth.
 2. **Historical V1 deployment gas**: Superseded. V1 was deployed at `0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64`. Current V2 deployment proof is recorded separately in `evidence/v2-deployment-2026-08-11T01-08-17-421Z.json`.
@@ -141,7 +154,7 @@ is stale.
 
 The "Sign Button Silent Failure" listed here in a prior revision was **disproven** by live browser testing — the button works. The real defect in that area was a React crash on the Simulate path (untyped `res.json()` flowing into `string` state), now fixed and locked by 20 tests in `apps/web/test/apiText.test.ts`.
 
-## Deployment Readiness
+## Historical V1 deployment readiness
 
 **Production (finaltab.vercel.app)**
 - Live as of last commit

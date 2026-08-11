@@ -1,0 +1,9 @@
+{"id":"voice_001","type":"voice","path":"assets/audio/voice/scene-01.mp3","source":"existing","description":"scene 01","provenance":{"provider":"local","adopted":true}}
+{"id":"voice_002","type":"voice","path":"assets/audio/voice/scene-02.mp3","source":"existing","description":"scene 02","provenance":{"provider":"local","adopted":true}}
+{"id":"voice_003","type":"voice","path":"assets/audio/voice/scene-03.mp3","source":"existing","description":"scene 03","provenance":{"provider":"local","adopted":true}}
+{"id":"voice_004","type":"voice","path":"assets/audio/voice/scene-04.mp3","source":"existing","description":"scene 04","provenance":{"provider":"local","adopted":true}}
+{"id":"voice_005","type":"voice","path":"assets/audio/voice/scene-05.mp3","source":"existing","description":"scene 05","provenance":{"provider":"local","adopted":true}}
+{"id":"voice_006","type":"voice","path":"assets/audio/voice/scene-06.mp3","source":"existing","description":"scene 06","provenance":{"provider":"local","adopted":true}}
+{"id":"voice_007","type":"voice","path":"assets/audio/voice/scene-07.mp3","source":"existing","description":"scene 07","provenance":{"provider":"local","adopted":true}}
+{"id":"voice_008","type":"voice","path":"assets/audio/voice/scene-08.mp3","source":"existing","description":"scene 08","provenance":{"provider":"local","adopted":true}}
+{"id":"voice_009","type":"voice","path":"assets/audio/voice/scene-09.mp3","source":"existing","description":"scene 09","provenance":{"provider":"local","adopted":true}}

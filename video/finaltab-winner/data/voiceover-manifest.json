@@ -1,0 +1,96 @@
+{
+  "generatedAt": "2026-08-11T03:07:24.141Z",
+  "status": "provisional-script-pass",
+  "regenerateAfterApprovedCaptures": true,
+  "purpose": "Checksum-retained timing reference only; not approved for final render.",
+  "deliveryTarget": "3840x2160 at 60 fps",
+  "scriptUpdateRequired": "Add the verified account return and bounded four-stage first-party review after production probes; keep the MCP surface at exactly nine tools.",
+  "provider": "ElevenLabs",
+  "model": "eleven_multilingual_v2",
+  "voiceId": "JBFqnCBsd6RMkjVDRZzb",
+  "outputFormat": "mp3_44100_128",
+  "source": "video/finaltab-winner/SCRIPT.md",
+  "scenes": [
+    {
+      "scene": 1,
+      "text": "A shared bill should end with everyone certain—and no one chasing screenshots.",
+      "audio": "scene-01.mp3",
+      "alignment": "scene-01-alignment.json",
+      "durationSeconds": 4.644,
+      "bytes": 75276,
+      "sha256": "ece154589c3332e7de7734d40a78be330aee5120e09aa06ccf877aeed4376156"
+    },
+    {
+      "scene": 2,
+      "text": "FINALTab turns a receipt into a deterministic ledger, binds each debtor's USDC pull to the whole payout plan, then sends the exact call through KeeperHub.",
+      "audio": "scene-02.mp3",
+      "alignment": "scene-02-alignment.json",
+      "durationSeconds": 9.706,
+      "bytes": 156360,
+      "sha256": "972d6e0422edfbcc56fffd6bab8b86b086d86be6ae4501275cc8592ce60ef006"
+    },
+    {
+      "scene": 3,
+      "text": "Scan a crowded receipt. Correct any extraction. Invite the table. Describe who had what. FINALTab reconciles every line—tax, tip, and service included—to the cent, across the whole table.",
+      "audio": "scene-03.mp3",
+      "alignment": "scene-03-alignment.json",
+      "durationSeconds": 12.353,
+      "bytes": 198574,
+      "sha256": "71b5a31159a8cc69af457fa74dcd7db66c0ba2bbef663fb27180d391fb15afe5"
+    },
+    {
+      "scene": 4,
+      "text": "The graph collapses many obligations into a small, deterministic transfer set. Freeze once, and the ledger hash, settlement ID, debits, payouts, chain, and contract become one immutable plan.",
+      "audio": "scene-04.mp3",
+      "alignment": "scene-04-alignment.json",
+      "durationSeconds": 11.703,
+      "bytes": 188125,
+      "sha256": "30f94ace8e808005b680dbcebe20da40b4ea21f4ec71d61f0c67dad8ba6f8561"
+    },
+    {
+      "scene": 5,
+      "text": "Each debtor signs twice: Circle authorizes their exact USDC pull; FINALTab binds consent to the complete payout plan. KeeperHub then simulates. A revert never broadcasts.",
+      "audio": "scene-05.mp3",
+      "alignment": "scene-05-alignment.json",
+      "durationSeconds": 11.656,
+      "bytes": 187707,
+      "sha256": "b25f02fb6b77b176a803158eae9161920b1205d9c23843289b8d0cabae873af0"
+    },
+    {
+      "scene": 6,
+      "text": "After simulation and a final human signature, KeeperHub submits. Green appears when its receipt matches an independent Base Sepolia RPC check.",
+      "audio": "scene-06.mp3",
+      "alignment": "scene-06-alignment.json",
+      "durationSeconds": 8.916,
+      "bytes": 143822,
+      "sha256": "8adc55a55f504fd07158f584c5403c0ae346a89f1549f81e6830f124716d1cd8"
+    },
+    {
+      "scene": 7,
+      "text": "Agents use the same safety rail through nine production MCP tools. FINALTab never holds wallet keys.",
+      "audio": "scene-07.mp3",
+      "alignment": "scene-07-alignment.json",
+      "durationSeconds": 6.362,
+      "bytes": 102862,
+      "sha256": "64f0d04d20ea23f19cca887c06a356457a801f402a836066f8ae7ef7f0ae4976"
+    },
+    {
+      "scene": 8,
+      "text": "The agent allocates, prepares the V2 plan, and returns debtor typed data. It simulates, gets a short-lived human signature, then submits. Status receives execution ID, settlement ID, and ledger hash. Only the indexed event becomes VERIFIED_SETTLED.",
+      "audio": "scene-08.mp3",
+      "alignment": "scene-08-alignment.json",
+      "durationSeconds": 17.647,
+      "bytes": 283420,
+      "sha256": "c85d752490b99f0f7c9142f807bdef457fcff3e887ae7d6bd04225fadcfbbb2d"
+    },
+    {
+      "scene": 9,
+      "text": "FINALTab: KeeperHub executes. Anyone verifies.",
+      "audio": "scene-09.mp3",
+      "alignment": "scene-09-alignment.json",
+      "durationSeconds": 3.437,
+      "bytes": 56050,
+      "sha256": "23685cd4542f7acfce6f7c2f39cfbbbe46d865fde789c339820f273be0d71680"
+    }
+  ]
+}

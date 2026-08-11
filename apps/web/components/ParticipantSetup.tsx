@@ -5,14 +5,10 @@ import { connectWallet, switchToBaseSepolia } from "@/lib/wallet";
 import type { Person } from "@/lib/types";
 import { CloudCollaborationPanel } from "./CloudCollaborationPanel";
 
-export type SettlementMode = "live" | "demo";
-
 interface ParticipantSetupProps {
-  mode: SettlementMode;
   people: Person[];
   locked: boolean;
   cloudTabId?: string | null;
-  onMode: (mode: SettlementMode) => void;
   onPeople: (people: Person[]) => void;
 }
 
@@ -23,7 +19,7 @@ function participantId(name: string) {
   return `${slug}-${crypto.randomUUID().slice(0, 8)}`;
 }
 
-export function ParticipantSetup({ mode, people, locked, cloudTabId, onMode, onPeople }: ParticipantSetupProps) {
+export function ParticipantSetup({ people, locked, cloudTabId, onPeople }: ParticipantSetupProps) {
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [busy, setBusy] = useState(false);
@@ -50,13 +46,17 @@ export function ParticipantSetup({ mode, people, locked, cloudTabId, onMode, onP
   };
 
   const connectAndAdd = async () => {
+    if (!name.trim()) {
+      setError("Enter the participant's name before connecting their wallet.");
+      return;
+    }
     setBusy(true);
     setError(null);
     try {
       const account = await connectWallet();
       if (!account) throw new Error("No wallet account was approved.");
       if (!(await switchToBaseSepolia())) throw new Error("Switch the wallet to Base Sepolia first.");
-      add(name.trim() || `Person ${people.length + 1}`, account.address);
+      add(name, account.address);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Wallet connection failed.");
     } finally {
@@ -68,114 +68,101 @@ export function ParticipantSetup({ mode, people, locked, cloudTabId, onMode, onP
     <>
       {cloudTabId ? <CloudCollaborationPanel tabId={cloudTabId} locked={locked} onWalletParticipants={onPeople} /> : null}
       <section className="mb-4 rounded-2xl border border-edge bg-panel p-4" aria-labelledby="participants-title">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-signal">Tab setup</p>
-          <h2 id="participants-title" className="mt-1 text-lg font-semibold text-paper">Who is at the table?</h2>
-          <p className="mt-1 max-w-2xl text-sm text-fog">
-            Live mode uses participant wallets and collects each debtor’s signatures. Demo mode is a clearly labelled testnet tour with throwaway keys.
-          </p>
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-signal">Tab setup</p>
+            <h2 id="participants-title" className="mt-1 text-lg font-semibold text-paper">Who is at the table?</h2>
+            <p className="mt-1 max-w-2xl text-sm text-fog">
+              Add the real participant wallets. Each debtor must connect the exact address listed here and approve both the USDC pull and complete payout plan.
+            </p>
+          </div>
+          <span className="rounded-full border border-signal/30 bg-signal/10 px-3 py-1.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-signal">
+            External wallets only
+          </span>
         </div>
-        <div className="grid grid-cols-2 rounded-xl border border-edge bg-panel-2 p-1" role="group" aria-label="Settlement mode">
-          {(["live", "demo"] as const).map((value) => (
-            <button
-              key={value}
-              type="button"
-              disabled={locked}
-              aria-pressed={mode === value}
-              onClick={() => onMode(value)}
-              className={`min-h-11 rounded-lg px-4 font-mono text-xs font-semibold uppercase tracking-wider ${
-                mode === value ? "bg-paper text-ink" : "text-fog hover:text-paper"
-              }`}
-            >
-              {value}
-            </button>
-          ))}
-        </div>
-      </div>
 
-      <ul className="mt-4 grid gap-2 md:grid-cols-2 xl:grid-cols-3">
-        {people.map((person, index) => (
-          <li key={person.id} className="min-w-0 rounded-xl border border-edge-soft bg-panel-2 p-3">
-            <div className="flex items-start justify-between gap-2">
-              <div className="min-w-0">
-                <p className="font-medium text-paper">{person.name}</p>
-                <p className="mt-1 truncate font-mono text-xs text-fog" title={person.address}>{person.address}</p>
+        <ul className="mt-4 grid gap-2 md:grid-cols-2 xl:grid-cols-3">
+          {people.map((person, index) => (
+            <li key={person.id} className="min-w-0 rounded-xl border border-edge-soft bg-panel-2 p-3">
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="font-medium text-paper">{person.name}</p>
+                  <p className="mt-1 truncate font-mono text-xs text-fog" title={person.address}>{person.address}</p>
+                </div>
+                <span className="rounded-full bg-signal/10 px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-signal">
+                  wallet
+                </span>
               </div>
-              <span className={`rounded-full px-2 py-1 font-mono text-[10px] uppercase tracking-wider ${person.demoPrivateKey ? "bg-warn/10 text-warn" : "bg-signal/10 text-signal"}`}>
-                {person.demoPrivateKey ? "demo key" : "wallet"}
-              </span>
-            </div>
-            {mode === "live" ? (
               <div className="mt-3 flex gap-2">
                 <label className="sr-only" htmlFor={`participant-name-${person.id}`}>Participant {index + 1} name</label>
                 <input
                   id={`participant-name-${person.id}`}
                   value={person.name}
-                  disabled={locked}
+                  disabled={locked || Boolean(cloudTabId)}
                   onChange={(event) => onPeople(people.map((item) => item.id === person.id ? { ...item, name: event.target.value } : item))}
                   className="min-h-11 min-w-0 flex-1 rounded-lg border border-edge bg-panel px-3 text-base text-paper outline-none focus-visible:ring-2 focus-visible:ring-signal"
                 />
-                <button
-                  type="button"
-                  disabled={locked || people.length <= 2}
-                  onClick={() => onPeople(people.filter((item) => item.id !== person.id))}
-                  className="min-h-11 rounded-lg border border-coral/30 px-3 text-sm text-coral disabled:opacity-40"
-                  aria-label={`Remove ${person.name}`}
-                >
-                  Remove
-                </button>
+                {!cloudTabId ? (
+                  <button
+                    type="button"
+                    disabled={locked}
+                    onClick={() => onPeople(people.filter((item) => item.id !== person.id))}
+                    className="min-h-11 rounded-lg border border-coral/30 px-3 text-sm text-coral disabled:opacity-40"
+                    aria-label={`Remove ${person.name}`}
+                  >
+                    Remove
+                  </button>
+                ) : null}
               </div>
-            ) : null}
-          </li>
-        ))}
-      </ul>
+            </li>
+          ))}
+        </ul>
 
-      {mode === "live" && !cloudTabId ? (
-        <div className="mt-4 rounded-xl border border-edge-soft p-3">
-          <div className="grid gap-2 lg:grid-cols-[1fr_2fr_auto_auto]">
-            <label className="text-sm text-fog">Name
-              <input
-                value={name}
-                onChange={(event) => setName(event.target.value)}
-                placeholder={`Person ${people.length + 1}`}
+        {!cloudTabId ? (
+          <div className="mt-4 rounded-xl border border-edge-soft p-3">
+            <div className="grid gap-2 lg:grid-cols-[1fr_2fr_auto_auto]">
+              <label className="text-sm text-fog">Name
+                <input
+                  value={name}
+                  onChange={(event) => setName(event.target.value)}
+                  placeholder="Participant name"
+                  disabled={locked}
+                  className="mt-1 min-h-11 w-full rounded-lg border border-edge bg-panel-2 px-3 text-base text-paper outline-none focus-visible:ring-2 focus-visible:ring-signal"
+                />
+              </label>
+              <label className="text-sm text-fog">Wallet address
+                <input
+                  value={address}
+                  onChange={(event) => setAddress(event.target.value)}
+                  placeholder="0x…"
+                  spellCheck={false}
+                  disabled={locked}
+                  className="mt-1 min-h-11 w-full rounded-lg border border-edge bg-panel-2 px-3 font-mono text-sm text-paper outline-none focus-visible:ring-2 focus-visible:ring-signal"
+                />
+              </label>
+              <button
+                type="button"
                 disabled={locked}
-                className="mt-1 min-h-11 w-full rounded-lg border border-edge bg-panel-2 px-3 text-base text-paper outline-none focus-visible:ring-2 focus-visible:ring-signal"
-              />
-            </label>
-            <label className="text-sm text-fog">Wallet address
-              <input
-                value={address}
-                onChange={(event) => setAddress(event.target.value)}
-                placeholder="0x…"
-                spellCheck={false}
-                disabled={locked}
-                className="mt-1 min-h-11 w-full rounded-lg border border-edge bg-panel-2 px-3 font-mono text-sm text-paper outline-none focus-visible:ring-2 focus-visible:ring-signal"
-              />
-            </label>
-            <button
-              type="button"
-              disabled={locked}
-              onClick={() => add(name, address)}
-              className="mt-6 min-h-11 rounded-lg border border-edge px-4 text-sm font-medium text-paper hover:border-signal"
-            >
-              Add wallet
-            </button>
-            <button
-              type="button"
-              disabled={locked || busy}
-              onClick={() => void connectAndAdd()}
-              className="mt-6 min-h-11 rounded-lg bg-signal px-4 text-sm font-semibold text-ink disabled:opacity-50"
-            >
-              {busy ? "Connecting…" : "Use connected wallet"}
-            </button>
+                onClick={() => add(name, address)}
+                className="mt-6 min-h-11 rounded-lg border border-edge px-4 text-sm font-medium text-paper hover:border-signal"
+              >
+                Add wallet
+              </button>
+              <button
+                type="button"
+                disabled={locked || busy}
+                onClick={() => void connectAndAdd()}
+                className="mt-6 min-h-11 rounded-lg bg-signal px-4 text-sm font-semibold text-ink disabled:opacity-50"
+              >
+                {busy ? "Connecting…" : "Use connected wallet"}
+              </button>
+            </div>
+            <p className="mt-2 text-xs text-fog">
+              Adding an address does not authorize spending. At settlement, each debtor must connect that exact wallet and sign both the USDC pull and the complete payout plan.
+            </p>
           </div>
-          <p className="mt-2 text-xs text-fog">
-            Adding an address does not authorize spending. At settlement, each debtor must connect that exact wallet and sign both the USDC pull and the complete payout plan.
-          </p>
-        </div>
-      ) : null}
-      {error ? <p className="mt-3 text-sm text-coral" role="alert">{error}</p> : null}
+        ) : null}
+        {error ? <p className="mt-3 text-sm text-coral" role="alert">{error}</p> : null}
       </section>
     </>
   );

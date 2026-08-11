@@ -1,8 +1,8 @@
 # USER ACTION REQUIRED
 
-Everything in this file needs a human. Each row is here because it requires a
-credential, a funded key, a destructive git operation, or an account action that
-must not be taken autonomously — not because it was too hard to finish.
+The active rows in this file need a human. The previously authorized V2
+one-atomic-unit settlement and free Supabase provisioning are retained below as
+resolved audit records, not repeated requests.
 
 Nothing below is a code defect. The code paths for all of these exist and are
 tested; they are gated on inputs only a human can supply.
@@ -10,11 +10,24 @@ tested; they are gated on inputs only a human can supply.
 | # | Action | Why it needs you | Severity | Blocks |
 |---|---|---|---|---|
 | 1 | Purge a deployer private key from **unreachable** objects in your local `.git` | Deleting git objects is irreversible | Low | Local disk hygiene. Not reachable from any commit, so not exposed by clone or push |
-| 2 | Execute and retain an authenticated external-wallet V2 USDC settlement | Requires funded testnet wallets and human signatures | High | Current product proof and video |
-| 3 | Create a Supabase project and fill 4 env vars | Requires an account you own | Medium | Persistence across sessions |
 | 4 | Optionally publish V2 source on BaseScan | Sourcify exact match is already proven; BaseScan requires its own account/API flow | Low | BaseScan-native readability only |
 | 5 | Render/upload the V2 video and submit to DoraHacks | Account and publication actions | High | Submission itself |
 | 6 | Rotate the Alchemy API key | Rotating a credential is never autonomous | Medium | Nothing functional — the repo no longer needs it |
+| 7 | Sign in to the Privy developer dashboard and complete the documented free configuration | The dashboard currently stops at account login; app/JWKS/domain/identity-token settings cannot be configured anonymously | High | Live Privy identity bridge |
+| 8 | Provide a verified sender domain and configure custom SMTP or a Send Email Hook | Supabase default mail cannot prove the requested branded inbound email | Medium | Branded authentication email; the branded return page already exists |
+
+## Resolved with explicit authorization on 2026-08-11
+
+- V2 value proof: KeeperHub execution `3hmlqi36zweiwg6fc5o2u`, tx
+  `0x7a6fb760f691954a41c71d5d508629c58aa09207bba0de4eaf164f097c59a789`,
+  block `45327128`, exactly `1` atomic USDC, with verified receipt, exact V2
+  event binding, and conserved balances. Do not rebroadcast it.
+- Supabase: `finaltab-production` (`yoavihmldqbkuxinrsih`), London `eu-west-2`,
+  free plan, four migrations applied; 19/19 RLS tables, 45 policies, no anonymous
+  table grants, and 34/34 foreign keys indexed. Additive migrations `52236`,
+  `64822`, `73000`, and `74000`, plus post-promotion cutover `74500`, are
+  committed locally but unapplied. Final application deployment and
+  cross-device behavior remain separate release gates.
 
 ---
 
@@ -150,23 +163,23 @@ mocked receipt.
 
 ---
 
-## 3. Supabase project
+## 3. Supabase project — resolved infrastructure, behavior probe pending
 
-The production tenancy and approval migration is complete at
-`supabase/migrations/20260811003158_production_tenancy_and_approvals.sql` and
-has not been applied to a hosted project.
+`finaltab-production` is active under project ref `yoavihmldqbkuxinrsih` in
+London (`eu-west-2`) on the free plan. Four migrations are applied remotely.
+Schema verification found 19/19 tables with RLS, 45 policies, no anonymous
+table grants, and 34/34 foreign keys indexed. Public production configuration
+is prepared without exposing a service-role value.
 
-Create a free project, then fill in `apps/web/.env.local`:
+The remaining action is a final deployment plus multi-identity browser probe.
+Until that passes, describe the project and schema as provisioned, but do not
+claim that cloud tabs, invitations, approvals, history, or cross-device resume
+have been exercised live.
 
-- `SUPABASE_URL`
-- `SUPABASE_SECRET_KEY` (server-only — must **not** carry a `NEXT_PUBLIC_` prefix)
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-
-Then run the migration. Until then cloud tabs, invitations, approval history,
-and cross-device resume stay unavailable. Local draft editing still works, but
-receipt extraction, simulation, and submission require an authenticated session
-or a correctly scoped API token; persistence is not an authentication bypass.
+Migration `20260811052236_settlement_agent_control_plane.sql` is present in the
+working tree but is not yet applied. It must be installed and its RLS, grants,
+indexes, HMAC provenance, stale-review invalidation, and tenant isolation must be
+rechecked before the agent control plane is called production-live.
 
 ---
 
@@ -190,7 +203,6 @@ Explicitly outside autonomous scope, per the operating constraints for this work
 
 - Submit the entry on DoraHacks.
 - Publish/open the KeeperHub CLI PR.
-- Execute and retain one authenticated external-wallet V2 USDC settlement.
 - Render and upload the new V2 agent/MCP video from that same proof package,
   then record its real public URL in `docs/submission.md`.
 

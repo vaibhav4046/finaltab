@@ -2,15 +2,28 @@ import { afterEach, describe, expect, it } from "vitest";
 import {
   ApiPayloadTooLargeError,
   apiAccessInternals,
+  authorizeApiRequest,
   readJsonBodyWithLimit,
+  requestPrincipal,
   type ApiPrincipal,
 } from "@/lib/server/apiAccess";
 
-const original = process.env.FINALTAB_API_TOKENS_JSON;
+const ENV_KEYS = [
+  "FINALTAB_API_TOKENS_JSON",
+  "NEXT_PUBLIC_SUPABASE_URL",
+  "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+  "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+  "NODE_ENV",
+] as const;
+const original = Object.fromEntries(ENV_KEYS.map((key) => [key, process.env[key]]));
+const mutableEnv = process.env as Record<string, string | undefined>;
 
 afterEach(() => {
-  if (original === undefined) delete process.env.FINALTAB_API_TOKENS_JSON;
-  else process.env.FINALTAB_API_TOKENS_JSON = original;
+  for (const key of ENV_KEYS) {
+    const value = original[key];
+    if (value === undefined) delete mutableEnv[key];
+    else mutableEnv[key] = value;
+  }
 });
 
 describe("scoped API tokens", () => {
@@ -88,6 +101,41 @@ describe("Supabase session scope defaults", () => {
     expect(apiAccessInternals.principalHasRequiredScope(session, options)).toBe(true);
     expect(apiAccessInternals.principalHasRequiredScope(bearerJwt, options)).toBe(false);
     expect(apiAccessInternals.principalHasRequiredScope(bearerToken, options)).toBe(false);
+  });
+});
+
+describe("protected API authentication", () => {
+  it("does not invent a privileged principal for unauthenticated local development", async () => {
+    delete process.env.FINALTAB_API_TOKENS_JSON;
+    delete process.env.NEXT_PUBLIC_SUPABASE_URL;
+    delete process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+    delete process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    mutableEnv.NODE_ENV = "development";
+    const request = new Request("http://localhost:3017/api/settle/execute", {
+      method: "POST",
+      headers: { origin: "http://localhost:3017" },
+    });
+
+    await expect(requestPrincipal(request)).resolves.toBeNull();
+    const result = await authorizeApiRequest(request, { scope: "settlements:submit" });
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.response.status).toBe(401);
+      await expect(result.response.json()).resolves.toMatchObject({ error: "AUTH_REQUIRED" });
+    }
+  });
+
+  it("does not accept a Privy-shaped bearer as a Supabase or scoped-token principal", async () => {
+    delete process.env.FINALTAB_API_TOKENS_JSON;
+    delete process.env.NEXT_PUBLIC_SUPABASE_URL;
+    delete process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+    delete process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    const privyLikeToken = `${"a".repeat(30)}.${"b".repeat(30)}.${"c".repeat(30)}`;
+    const request = new Request("https://finaltab.test/api/settle/execute", {
+      headers: { authorization: `Bearer ${privyLikeToken}` },
+    });
+
+    await expect(requestPrincipal(request)).resolves.toBeNull();
   });
 });
 

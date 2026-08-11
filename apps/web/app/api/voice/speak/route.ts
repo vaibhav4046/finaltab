@@ -1,5 +1,11 @@
 import { ApiPayloadTooLargeError, authorizeApiRequest, readJsonBodyWithLimit, withAccessHeaders } from "@/lib/server/apiAccess";
 import { streamElevenLabsSpeech, VoiceProviderError, VoiceSpeechBodySchema } from "@/lib/server/voice";
+import {
+  reserveDurableVoiceBudget,
+  VoiceQuotaError,
+  voiceQuotaRetryAfterSeconds,
+  withVoiceQuotaHeaders,
+} from "@/lib/server/voiceQuota";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -27,6 +33,40 @@ export async function POST(request: Request): Promise<Response> {
     return secured(Response.json({ error: "INVALID_VOICE_TEXT" }, { status: 400 }));
   }
 
+  let quota;
+  try {
+    // JavaScript string length counts UTF-16 code units, which is never lower
+    // than the normalized Unicode code-point count. It is therefore a safe,
+    // conservative reservation for provider character usage.
+    quota = await reserveDurableVoiceBudget(access.principal, "readback", text.length);
+  } catch (error) {
+    if (error instanceof VoiceQuotaError) {
+      return secured(Response.json(
+        {
+          error: error.code === "SESSION_REQUIRED" ? "VOICE_SESSION_REQUIRED" : "VOICE_BUDGET_UNAVAILABLE",
+          message: error.code === "SESSION_REQUIRED"
+            ? "Voice readback requires a signed-in Supabase user."
+            : "Durable voice budgets are unavailable; no provider request was made.",
+        },
+        { status: error.httpStatus },
+      ));
+    }
+    return secured(Response.json(
+      { error: "VOICE_BUDGET_UNAVAILABLE", message: "Durable voice budgets are unavailable; no provider request was made." },
+      { status: 503 },
+    ));
+  }
+  if (!quota.allowed) {
+    const error = quota.reason === "minute_limit"
+      ? "VOICE_RATE_LIMITED"
+      : "VOICE_BUDGET_EXHAUSTED";
+    const response = Response.json(
+      { error, reason: quota.reason, resetsAt: quota.retryAt },
+      { status: 429, headers: { "retry-after": String(voiceQuotaRetryAfterSeconds(quota.retryAt)) } },
+    );
+    return secured(withVoiceQuotaHeaders(response, quota));
+  }
+
   try {
     const upstream = await streamElevenLabsSpeech(text);
     const headers = new Headers({
@@ -37,17 +77,23 @@ export async function POST(request: Request): Promise<Response> {
     });
     const contentLength = upstream.headers.get("content-length");
     if (contentLength && /^\d+$/.test(contentLength)) headers.set("content-length", contentLength);
-    return secured(new Response(upstream.body, { status: 200, headers }));
+    return secured(withVoiceQuotaHeaders(new Response(upstream.body, { status: 200, headers }), quota));
   } catch (error) {
     if (error instanceof VoiceProviderError) {
       const message = error.code === "NOT_CONFIGURED"
         ? "ElevenLabs readback is not configured on the server."
         : "ElevenLabs could not generate the spoken readback.";
-      return secured(Response.json({ error: error.code, message }, { status: error.httpStatus }));
+      return secured(withVoiceQuotaHeaders(
+        Response.json({ error: error.code, message }, { status: error.httpStatus }),
+        quota,
+      ));
     }
-    return secured(Response.json(
-      { error: "UPSTREAM_UNAVAILABLE", message: "ElevenLabs could not generate the spoken readback." },
-      { status: 502 },
+    return secured(withVoiceQuotaHeaders(
+      Response.json(
+        { error: "UPSTREAM_UNAVAILABLE", message: "ElevenLabs could not generate the spoken readback." },
+        { status: 502 },
+      ),
+      quota,
     ));
   }
 }

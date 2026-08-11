@@ -5,9 +5,12 @@
   "scripts": {
     "dev": "npx --yes hyperframes@0.7.105 preview",
     "check": "npx --yes hyperframes@0.7.105 check",
+    "check:source": "node verify-video-gates.mjs --allow-placeholders && npx --yes hyperframes@0.7.105 check",
+    "gate:render": "node verify-video-gates.mjs",
     "voice": "node generate-voiceover.mjs",
     "captions": "node build-captions.mjs",
     "render": "npx --yes hyperframes@0.7.105 render",
+    "render:final": "node verify-video-gates.mjs && npx --yes hyperframes@0.7.105 render --fps 60 --resolution landscape-4k --quality high --strict-all --no-best-effort --skill product-launch-video -o ../../proof-output/finaltab-winner/finaltab-winner-96s-4k.mp4",
     "publish": "npx --yes hyperframes@0.7.105 publish"
   }
 }

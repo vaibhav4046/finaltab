@@ -28,15 +28,34 @@ it does not document a native third-party application or iframe manifest.
 Voice is an application convenience, not part of KeeperHub execution or proof.
 When the corresponding server configuration is present, AssemblyAI supplies
 live streaming speech-to-text and ElevenLabs supplies a short spoken readback.
+Both paid routes require a signed-in Supabase user: either the same-origin
+browser cookie session or a validated Supabase access JWT. A scoped opaque
+FINALTab (`ft_...`) bearer is intentionally insufficient even when it has the
+  nominal route scope, because it does not represent a verified Supabase user.
 `POST /api/voice/token` exposes only a short-lived AssemblyAI redemption
 credential and constrained WebSocket settings; `POST /api/voice/speak` streams
 the ElevenLabs response from the route, while the current browser client buffers
 the short MP3 before playback. Both permanent provider keys remain server-only.
 
+The production provider variables are stored as sensitive Vercel values. The
+candidate Supabase guard preserves the applied authenticated per-minute limits
+(8 transcription requests and 20 readbacks); pending migration `64822` adds atomic UTC-day/month user and project spend
+  budgets through the service-role-only
+  `reserve_voice_budget(uuid, text, integer)`. The route passes only the exact
+  Supabase user ID it already verified; browsers cannot invoke the reservation
+  RPC directly. AssemblyAI reserves its
+full 180-second maximum before token mint and holds a 240-second, 1-user/
+4-project concurrency lease; ElevenLabs reserves 1–600 input characters before
+generation. All backing tables are RLS-protected with direct anonymous and
+authenticated access revoked. Safe budget and request headers survive subsequent
+provider errors. If the store is unavailable, the provider is not called. See
+[voice.md](voice.md) for exact cap semantics. These are code/configuration facts;
+live provider paths remain unclaimed until the final deploy/probe passes.
+
 The routes and OpenAPI contract describe configuration-gated capability; they do
 not claim that either provider is enabled on any currently deployed origin. The
-prerecorded product-demo narration is a separate asset generated with ElevenLabs
-only. AssemblyAI is used for interactive transcription, not demo narration.
+prerecorded product-film narration is a separate asset generated with ElevenLabs
+only. AssemblyAI is used for interactive transcription, not film narration.
 
 Authoritative references:
 
@@ -67,9 +86,19 @@ transaction hash or contract address. It accepts the execution ID plus the expec
 
 The observer is replay-safe because it is read-only. It neither broadcasts nor
 changes a settlement. Keep its returned observation in the caller's audit log.
-Durable FINALTab audit persistence remains dependent on applying the Supabase
-migrations and configuring a project; the observer does not claim persistence
-when that infrastructure is absent.
+The Supabase production project and its four applied migrations are provisioned
+and schema-verified at the 19-table baseline. Additive migrations `52236`,
+`64822`, `73000`, and `74000` plus post-promotion cutover `74500` remain
+unapplied. The observer still does not claim durable application behavior until
+the newer release is deployed and its callback/audit path is live-probed.
+
+Value-moving first-party UI, REST, and MCP calls are separate from this read-only
+observer and converge on the pending `74000` durable journal. A durably accepted
+retry returns its recorded execution without another simulation or execute; a
+prepared recovery reuses the stored successful simulation and deterministic
+KeeperHub idempotency key under a bounded approval expiry. New first-party work
+also requires current database approvals and a valid wallet approval at the
+final pre-broadcast gate.
 
 ## Configure a deployment
 
@@ -159,9 +188,11 @@ iframe support remains deliberately undeclared.
   publish the workflow.
 - A post-deploy live check that the web/MCP deployment is configured for the
   proven V2 address and version; V1 is not accepted.
-- One retained authenticated external-wallet V2 USDC settlement before the
-  integration is described as settlement-proven.
+- A redacted production MCP/status capture bound to the retained V2 settlement;
+  the live one-atomic-unit run proves the rail but did not exercise the MCP human
+  broadcast-challenge path.
 - Production `kh_` and scoped FINALTab credentials, entered server-side/by the
   KeeperHub owner and never committed.
-- Supabase provisioning if durable callback audit rows are required.
+- A post-deploy Supabase callback/audit persistence probe if durable callback
+  rows are claimed.
 - KeeperHub approval and a fixed parent origin for any iframe embedding.

@@ -1,15 +1,15 @@
 ---
-format: 1920x1080
+format: 3840x2160
 duration: 96s
 message: "FINALTab turns a messy shared bill into one consent-bound, KeeperHub-executed, independently verifiable onchain settlement, with the same safe path exposed to agents through MCP."
-arc: Outcome hook -> architecture -> complex product demo -> consent boundary -> KeeperHub proof -> MCP climax -> CTA
+arc: Outcome hook -> architecture -> authenticated product -> attested review -> consent boundary -> KeeperHub proof -> MCP climax -> CTA
 audience: KeeperHub hackathon judges, agent builders, and bounty reviewers
 mode: autonomous
 workflow: product-launch-video
 fps: 60
 music: restrained analog pulse with tactile paper percussion and a controlled proof-climax lift
 captions: baked word-timed captions plus external SRT
-truth_status: preproduction; V2 deployment proven, V2 value-moving settlement capture pending
+truth_status: source composition built; one-atomic-unit V2 KeeperHub settlement and independent RPC proof verified; current narration provisional; Privy/ordered migration/deployment probes and final real product/MCP captures pending
 ---
 
 # FINALTab winner film
@@ -29,7 +29,7 @@ This video tells KeeperHub judges that FINALTab is not a staged bill splitter: i
 
 ## Frame 1 — The tab can actually close
 
-- scene: Receipt-edge FINALTab mark assembles around an outcome-first promise, then holds
+- scene: The text-only FINALTab wordmark resolves above an animated receipt-rule underline and an outcome-first promise, then holds
 - voiceover: "A shared bill should end with everyone certain—and no one chasing screenshots."
 - duration: 6s
 - poster: 5.4s
@@ -40,9 +40,9 @@ This video tells KeeperHub judges that FINALTab is not a staged bill splitter: i
 - persuasion: Outcome framing + friction removal
 - beat: relief + certainty
 - blueprint: logo-assemble-lockup (Adapt)
-- asset_candidates: none — custom vector receipt edge, settlement rails, and FINALTab wordmark
-- focal: generated FINALTab receipt-edge mark
-- roles: receipt-edge mark = cutout; outcome line = supporting; night field = background
+- asset_candidates: none — text-only FINALTab wordmark, receipt rule, and settlement rails
+- focal: generated FINALTab text wordmark
+- roles: text wordmark = cutout; receipt rule and outcome line = supporting; night field = background
 - sfx: paper tear, restrained low impact
 - evidence_refs: P01
 
@@ -50,13 +50,17 @@ narrativeRole: Land the human outcome before mentioning blockchain, agents, or i
 
 keyMessage: A shared bill should end in a state everyone can trust.
 
-Adapt: keep the blueprint's assembled-lockup signature move; replace generic logo fragments with a receipt edge and two converging settlement rails.
+Adapt: keep the blueprint's assembled-lockup signature move; resolve the text
+wordmark first, then the receipt-rule underline and two converging settlement
+rails. No symbol logo appears.
 
 Scene 1 (0.0–1.2s): night field only; a warm receipt rule self-draws across the upper third with an **SVG self-draw** (`svg-path-draw`) — centered, three depth layers, caption band clear.
 
 Scene 2 (1.2–3.7s): “A shared bill” and “everyone certain” reveal phrase by phrase in editorial display type via **per-word staggered reveal** (`dynamic-content-sequencing`); a crossed-out screenshot stack arrives only on “no one chasing screenshots” — asymmetric 60/40, primary copy dominates by 3:1.
 
-Scene 3 (3.7–5.2s): the receipt rule folds into the FINALTab mark while two mono settlement rails converge beneath it using **card morph-anchor** (`card-morph-anchor`) — the assembly is the signature move.
+Scene 3 (3.7–5.2s): the receipt rule seats beneath the FINALTab text while two
+mono settlement rails converge using **card morph-anchor**
+(`card-morph-anchor`)—the wordmark remains the only logo.
 
 Scene 4 (5.2–6.0s): hold the resolved lockup and outcome line completely still; one soft paper-grain pass is finite, not looping.
 
@@ -96,9 +100,9 @@ Scene 4 (5.9–7.8s): the exact calldata packet moves to a KeeperHub station wit
 
 Scene 5 (7.8–10.0s): an independent Base Sepolia RPC station checks the exact indexed event. A small evidence chip reads `V2 CONTRACT DEPLOYED VIA KEEPERHUB`, address `0x7b58791c...cCDB`, block `45321107`, and `SOURCIFY EXACT MATCH`; directly beneath it, the locked label reads `CONTRACT DEPLOYMENT · NOT A SETTLEMENT`. Hold for the final 0.8s.
 
-## Frame 3 — A real table, not three demo names
+## Frame 3 — A real authenticated table
 
-- scene: Real product flow scans, corrects, invites, allocates, and reconciles a complex shared receipt
+- scene: Real account return and durable-tab flow scans, corrects, invites, allocates, and reconciles a complex shared receipt
 - voiceover: "Scan a crowded receipt. Correct any extraction. Invite the table. Describe who had what. FINALTab reconciles every line—tax, tip, and service included—to the cent, across the whole table."
 - duration: 15s
 - poster: 14.2s
@@ -109,24 +113,24 @@ Scene 5 (7.8–10.0s): an independent Base Sepolia RPC station checks the exact 
 - persuasion: Show-don't-tell proof
 - beat: confidence + ease
 - blueprint: device-surface-showcase (Adapt)
-- asset_candidates: [capture gate C03] assets/capture/C03-complex-product-flow.mp4 — pending real 1920x1080 browser capture after production deploy
+- asset_candidates: [capture gate C03] assets/capture/C03-complex-product-flow.mp4 — pending real 3840x2160 browser capture after auth/security/production probes
 - focal: assets/capture/C03-complex-product-flow.mp4 (PENDING)
 - roles: C03-complex-product-flow = cutout; editorial cue rail = supporting; night ledger field = background
 - sfx: shutter-soft, receipt tick, allocation taps
 - evidence_refs: E04, E05
 - capture_gate: G-PRODUCT-FINAL
 
-narrativeRole: Replace the old fixed Vee/Hem/Ravi demo impression with a flexible, editable, multi-user workflow.
+narrativeRole: Establish a real signed-in, durable multi-user workflow whose names and wallets come only from user input.
 
 keyMessage: FINALTab handles messy, real-world bill details and arbitrary participants while keeping arithmetic exact.
 
 Adapt: keep the blueprint's held-surface signature; use one real FINALTab window and motivated focus locks instead of a decorative device mockup.
 
-Scene 1 (0.0–2.5s): real receipt-consent and upload surface fills the top 83 percent; focus locks to the incoming crowded receipt only as “Scan” is spoken — 70/30 editorial framing, product window is primary.
+Scene 1 (0.0–2.5s): the branded `/auth/complete` return resolves into a newly created durable tab, then the real receipt-consent/upload surface fills the frame. Show this only after the Supabase flow is live-probed; show the linked Privy identity only if its dashboard/JWKS/domain/token configuration also passes.
 
 Scene 2 (2.5–5.2s): an intentionally imperfect extracted line is edited in the real UI on “Correct any extraction”; arithmetic warning clears only after the correction is confirmed. Use a **cursor click + ripple** (`cursor-click-ripple`) only if the capture contains the actual interaction.
 
-Scene 3 (5.2–7.6s): participant setup reveals a payer and at least four additional named wallets, then an expiring invite is created on “Invite the table.” Any cloud claim stays hidden unless production Supabase is configured and the invite works in a logged-out verification pass.
+Scene 3 (5.2–7.6s): participant setup reveals a payer and at least four additional names and external wallet addresses entered by the user, then an expiring invite is created on “Invite the table.” The receipt itself must not invent names. Any cloud claim stays hidden unless the final multi-identity production probe passes.
 
 Scene 4 (7.6–10.4s): natural-language allocation is entered and the real product maps items to people on “Describe who had what” — focus-lock alternates between instruction and affected rows, no unreadable full-page paste.
 
@@ -136,7 +140,7 @@ Scene 6 (13.5–15.0s): `SUM = RECEIPT TOTAL` and `RECONCILED TO THE CENT` resol
 
 ## Frame 4 — Freeze means freeze
 
-- scene: A dense debt graph nets down, then the UI freezes a V2 ledger and exposes the complete plan binding
+- scene: A dense debt graph nets down, four bounded review stages attest the current inputs, then the UI freezes a V2 ledger and exposes the complete plan binding
 - voiceover: "The graph collapses many obligations into a small, deterministic transfer set. Freeze once, and the ledger hash, settlement ID, debits, payouts, chain, and contract become one immutable plan."
 - duration: 13s
 - poster: 12.2s
@@ -151,10 +155,10 @@ Scene 6 (13.5–15.0s): `SUM = RECEIPT TOTAL` and `RECONCILED TO THE CENT` resol
 - focal: assets/capture/C04-net-freeze-bind.mp4 (PENDING)
 - roles: C04-net-freeze-bind = cutout; plan-binding labels = supporting; canonical ledger grid = background
 - sfx: graph ticks, single latch, low hash decode
-- evidence_refs: E02, E04
+- evidence_refs: E02, E04, E10
 - capture_gate: G-PRODUCT-FINAL
 
-narrativeRole: Turn a complex social graph into a small exact plan, then show what can no longer change.
+narrativeRole: Turn a complex social graph into a reviewed exact plan, prove that edits invalidate the review, then show what can no longer change.
 
 keyMessage: Every debtor approves a plan that commits to all debits and payouts on the intended chain and contract.
 
@@ -164,11 +168,11 @@ Scene 1 (0.0–2.8s): a wide debt graph fills the frame with obligations arrivin
 
 Scene 2 (2.8–5.5s): paths redraw into the deterministic netted transfer set using **SVG self-draw** (`svg-path-draw`); removed edges dim and remaining amounts seat into a compact mono list.
 
-Scene 3 (5.5–7.5s): the camera travels to the real Freeze control; one actual press triggers a tactile **button press** (`press-release-spring`) and the entire surface latches.
+Scene 3 (5.5–7.5s): the fixed review rail resolves in order—extraction validation, allocation arithmetic, consent risk, and proof preflight. Stage four is honestly `SETTLEMENT_NOT_SUBMITTED · SKIPPED`; bounded audit memory is shown without any self-evolving claim.
 
-Scene 4 (7.5–10.8s): `ledgerHash` and `settlementId` decode first, followed on their spoken cues by debits and payouts; the list stays above the caption band.
+Scene 4 (7.5–10.8s): an upstream edit briefly invalidates the review, then the corrected fresh run unlocks the real Freeze control. One actual press latches the durable receipt UUID, `ledgerHash`, and `settlementId`; debits and payouts follow above the caption band.
 
-Scene 5 (10.8–13.0s): chain `84532`, V2 contract `0x7b58791c...cCDB`, and plan hash connect into one outlined plan capsule. The camera stops; the capsule holds without breathing.
+Scene 5 (10.8–13.0s): chain `84532`, V2 contract `0x7b58791c...cCDB`, and plan hash connect into one outlined plan capsule. The camera stops; the capsule holds without breathing. The review is a first-party Freeze gate, not a claimed tenth MCP tool.
 
 ## Frame 5 — Two signatures, then simulate
 
@@ -219,11 +223,11 @@ Scene 5 (9.9–12.0s): a measured failure insert shows an actual invalid/reverti
 - persuasion: Verifiable evidence + risk reversal
 - beat: trust + triumph
 - blueprint: transcript-scroll-artifact-reveal (Adapt)
-- asset_candidates: [capture gate C06] assets/capture/C06-v2-keeperhub-proof.mp4 — MISSING until a fresh value-moving V2 run exists; [capture gate C06B] assets/capture/C06-v2-proof-capsule.png — MISSING until the same run is independently verified
+- asset_candidates: [capture gate C06] assets/capture/C06-v2-keeperhub-proof.mp4 — MISSING recorded chronology; [capture gate C06B] assets/capture/C06-v2-proof-capsule.png — MISSING capture; the generated overlay is populated from verified data/release-proof.json
 - focal: assets/capture/C06-v2-proof-capsule.png (PENDING)
 - roles: C06-v2-keeperhub-proof = supporting; C06-v2-proof-capsule = cutout; proof grid = background
 - sfx: approval click, transaction rail, proof stamp
-- evidence_refs: E07-PENDING
+- evidence_refs: E07
 - capture_gate: G-V2-VALUE-MOVE
 - forbidden_substitute: docs/release/evidence/v2-deployment-2026-08-11T01-08-17-421Z.json
 
@@ -275,7 +279,7 @@ Scene 3 (3.0–5.1s): row two reveals `allocate_receipt`, `prepare_receipt_settl
 
 Scene 4 (5.1–6.4s): row three reveals `create_broadcast_approval_challenge`, `submit_signed_settlement`, `settlement_status`. A side label reads `EXTERNAL WALLET SIGNATURES · NO USER KEYS HELD`.
 
-Scene 5 (6.4–7.0s): hold the complete three-by-three map. A quiet footer states `3 demo_* tools · testnet-only · disabled by default`; those tools never join the production grid.
+Scene 5 (6.4–7.0s): hold the complete three-by-three map. A quiet footer states `EXACTLY 9 · EXTERNAL WALLETS · BASE SEPOLIA`; any retired fixed-wallet name fails the capture.
 
 ## Frame 8 — The agent earns the green
 
@@ -290,11 +294,11 @@ Scene 5 (6.4–7.0s): hold the complete three-by-three map. A quiet footer state
 - persuasion: End-to-end agent proof + explicit human control
 - beat: awe + trust + triumph
 - blueprint: prompt-type-submit-generate (Adapt)
-- asset_candidates: [capture gate C08] assets/capture/C08-real-mcp-v2-run.mp4 — MISSING until an authenticated real client completes the same fresh V2 settlement; [trace gate] proof-output/v2/<run-id>/mcp-trace.jsonl — MISSING and never embedded raw
+- asset_candidates: [capture gate C08] assets/capture/C08-real-mcp-v2-run.mp4 — MISSING until an authenticated real client records a same-run V2 chronology; [trace gate] redacted MCP trace — MISSING and never embedded raw; the underlying settlement proof is not a substitute for this client capture
 - focal: assets/capture/C08-real-mcp-v2-run.mp4 (PENDING)
 - roles: C08-real-mcp-v2-run = cutout; redacted public trace overlays = supporting; dark command field = background
 - sfx: tool-call ticks, approval pause, KeeperHub submit rail, proof resolve
-- evidence_refs: E03, E06, E07-PENDING
+- evidence_refs: E03, E06, E07
 - capture_gate: G-MCP-V2-SAME-RUN
 - screen_text_lock: "settlement_status({ executionId, settlementId, ledgerHash })"
 
@@ -314,7 +318,7 @@ Scene 4 (7.4–9.2s): `simulate_signed_settlement` resolves `simulated: true`, `
 
 Scene 5 (9.2–11.3s): `create_broadcast_approval_challenge` returns exact message, approval ID, and expiry. The real human wallet personal-signs it; the agent visibly pauses until that out-of-band action completes.
 
-Scene 6 (11.3–13.6s): `submit_signed_settlement` re-simulates and KeeperHub accepts one idempotent atomic call. The real public `executionId` lands beside the same `settlementId` and `ledgerHash`.
+Scene 6 (11.3–13.6s): for fresh work, `submit_signed_settlement` records the successful simulation in the shared durable journal and KeeperHub accepts one deterministic-idempotency atomic call. An accepted recovery must be shown skipping simulation and execution; a prepared recovery reuses its recorded successful simulation under the bounded approval expiry. The real public `executionId` lands beside the same `settlementId` and `ledgerHash`.
 
 Scene 7 (13.6–16.1s): show the exact input line at full legibility: `settlement_status({ executionId, settlementId, ledgerHash })`. Each argument fills from the same run; no placeholder survives capture.
 
@@ -346,7 +350,7 @@ keyMessage: The product, code, MCP endpoint, KeeperHub surface, and exact transa
 
 Adapt: keep the blueprint's calm card chain; use short claim cards and terminate on a held lockup with no animated exit.
 
-Scene 1 (0.0–1.3s): `FINALTab` and the receipt-edge mark resolve on a near-still night field.
+Scene 1 (0.0–1.3s): the text-only `FINALTab` wordmark and receipt-rule underline resolve on a near-still night field.
 
 Scene 2 (1.3–3.7s): “ONE TABLE”, “ONE PLAN”, and “ONE PROOF” arrive one phrase at a time via restrained **hard-cut word swaps** (`discrete-text-sequence`). The live product, GitHub, MCP endpoint, KeeperHub integration URL, and fresh V2 settlement transaction appear as small but legible mono lines.
 

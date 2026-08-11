@@ -17,7 +17,7 @@ export interface ApiPrincipal {
   subject: string;
   name: string;
   scopes: ReadonlySet<ApiScope>;
-  source: "session" | "bearer-jwt" | "bearer-token" | "development";
+  source: "session" | "bearer-jwt" | "bearer-token";
   rateKey: string;
 }
 
@@ -180,21 +180,9 @@ export async function requestPrincipal(request: Request): Promise<ApiPrincipal |
   }
 
   const { configured, user } = await authenticatedUser();
-  if (!configured || !user) {
-    if (process.env.NODE_ENV !== "production") {
-      const origin = request.headers.get("origin");
-      if (!origin || origin === new URL(request.url).origin) {
-        return {
-          subject: "local-development",
-          name: "Local development",
-          scopes: new Set(VALID_SCOPES),
-          source: "development",
-          rateKey: sha256("local-development"),
-        };
-      }
-    }
-    return null;
-  }
+  // Development is not an authentication mechanism. Local callers must use a
+  // real Supabase session or an explicitly configured, least-privilege token.
+  if (!configured || !user) return null;
   return {
     subject: user.id,
     name: user.email ?? "Supabase user",
@@ -288,7 +276,7 @@ export async function authorizeApiRequest(
   }
 
   if (
-    (principal.source === "session" || principal.source === "development") &&
+    principal.source === "session" &&
     options.requireSameOriginForSession !== false
   ) {
     const origin = request.headers.get("origin");

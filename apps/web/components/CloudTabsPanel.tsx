@@ -30,8 +30,14 @@ export function CloudTabsPanel() {
   const load = useCallback(async () => {
     setMessage(null);
     try {
-      const sessionResponse = await fetch("/api/session", { cache: "no-store" });
-      const session = await sessionResponse.json() as { configured: boolean; authenticated: boolean };
+      const [sessionResponse, response] = await Promise.all([
+        fetch("/api/session", { cache: "no-store" }),
+        fetch("/api/tabs", { cache: "no-store" }),
+      ]);
+      const [session, body] = await Promise.all([
+        sessionResponse.json() as Promise<{ configured: boolean; authenticated: boolean }>,
+        response.json() as Promise<ListResponse>,
+      ]);
       if (!session.configured) {
         setAvailability("disabled");
         return;
@@ -40,8 +46,6 @@ export function CloudTabsPanel() {
         setAvailability("signed-out");
         return;
       }
-      const response = await fetch("/api/tabs", { cache: "no-store" });
-      const body = await response.json() as ListResponse;
       if (!response.ok || !body.tabs) throw new Error(body.message ?? "Could not load cloud tabs.");
       setTabs(body.tabs);
       setAvailability("ready");
@@ -123,7 +127,7 @@ export function CloudTabsPanel() {
             <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-warn/10 text-warn"><CloudOff size={20} aria-hidden="true" /></span>
             <div>
               <h3 className="font-semibold text-txt">Cloud collaboration is disabled</h3>
-              <p className="mt-2 text-sm leading-6 text-muted">No Supabase credentials are present, so FINALTab keeps using device-local history. It will not claim a draft, invite, or approval was saved remotely.</p>
+              <p className="mt-2 text-sm leading-6 text-muted">No Supabase credentials are present, so no durable workspace is available. FINALTab will not open or claim a saved draft, invite, approval, agent run, or proof.</p>
               <Link href="/auth" className="touch-target mt-3 inline-flex items-center gap-2 rounded-lg px-1 text-sm font-semibold text-warn">View account setup <ArrowRight size={15} aria-hidden="true" /></Link>
             </div>
           </div>
@@ -133,7 +137,7 @@ export function CloudTabsPanel() {
       {availability === "signed-out" ? (
         <div className="mt-5 rounded-2xl border border-quiet bg-surface-1 p-5">
           <h3 className="font-semibold text-txt">Sign in to resume shared tabs</h3>
-          <p className="mt-2 text-sm text-muted">The local workspace remains available; cloud history is private to your account.</p>
+          <p className="mt-2 text-sm text-muted">No durable workspace is available until your Supabase account is authenticated. Shared history remains private to that account.</p>
           <Link href="/auth?next=%2Fapp" className="touch-target mt-4 inline-flex items-center gap-2 rounded-xl bg-signal px-5 text-sm font-semibold text-ink">Sign in <ArrowRight size={16} aria-hidden="true" /></Link>
         </div>
       ) : null}

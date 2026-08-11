@@ -4,13 +4,92 @@ test("landing page presents the product, proof, and MCP entry points", async ({ 
   const response = await page.goto("/");
 
   expect(response?.ok()).toBeTruthy();
-  await expect(page).toHaveTitle(/FINALTab/i);
-  await expect(page.getByText(/Receipt.*consent.*landed proof/)).toBeVisible();
-  await expect(page.getByText("Real KeeperHub V2 deployment", { exact: true })).toBeVisible();
+  await expect(page).toHaveTitle("FINALTab — receipt to verified testnet settlement");
+  await expect(page.getByText(/receipt.*consent.*KeeperHub.*exact proof/i)).toBeVisible();
+  await expect(page.getByText("KeeperHub V2 live", { exact: true })).toBeVisible();
   await expect(page.getByRole("link", { name: /MCP developer guide/i })).toBeVisible();
+  await expect(page.getByText(/\b(?:Vee|Hem|Ravi|Mara|Noah|Priya)\b|demo_/i)).toHaveCount(0);
+  await expect(page.locator("[data-finaltab-mark]")).toHaveCount(0);
 });
 
-test("developer page publishes the authenticated MCP v2 production and demo boundaries", async ({ page }) => {
+test("landing disables ambient motion when reduced motion is requested", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+
+  const motion = await page.evaluate(() => ({
+    scrollBehavior: getComputedStyle(document.documentElement).scrollBehavior,
+    tickerAnimation: getComputedStyle(document.querySelector(".evidence-marquee-track")!).animationName,
+    scanDisplay: getComputedStyle(document.querySelector(".scan-window")!, "::after").display,
+  }));
+
+  expect(motion).toEqual({
+    scrollBehavior: "auto",
+    tickerAnimation: "none",
+    scanDisplay: "none",
+  });
+});
+
+test("nonce CSP hydrates the interactive landing at mobile, desktop, and 4K widths", async ({ browser }) => {
+  for (const viewport of [
+    { width: 390, height: 844 },
+    { width: 1440, height: 1000 },
+    { width: 3840, height: 2160 },
+  ]) {
+    const context = await browser.newContext({ viewport });
+    const page = await context.newPage();
+    const consoleErrors: string[] = [];
+    const pageErrors: string[] = [];
+    page.on("console", (message) => {
+      if (message.type() === "error") consoleErrors.push(message.text());
+    });
+    page.on("pageerror", (error) => pageErrors.push(error.message));
+
+    const response = await page.goto("/", { waitUntil: "networkidle" });
+    expect(response?.headers()["content-security-policy"]).toContain("'strict-dynamic'");
+    await expect(page.locator("h1")).toHaveCSS("opacity", "1");
+
+    const proofStage = page.getByRole("button", { name: /Match exact proof/i });
+    await proofStage.click();
+    await expect(proofStage).toHaveAttribute("aria-pressed", "true");
+    await expect(page.getByText("Fail closed on any mismatch", { exact: true })).toBeVisible();
+
+    const browserState = await page.evaluate(() => ({
+      allScriptsHaveNonce: [...document.scripts].every((script) => Boolean(script.nonce)),
+      overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    }));
+    expect(browserState).toEqual({ allScriptsHaveNonce: true, overflow: 0 });
+    expect(pageErrors).toEqual([]);
+    expect(consoleErrors.filter((message) => /content security policy|refused to execute|hydration|uncaught/i.test(message))).toEqual([]);
+    await context.close();
+  }
+});
+
+test("favicon and manifest use the transparent FT vector", async ({ request }) => {
+  const iconResponse = await request.get("/icon.svg");
+  expect(iconResponse.ok()).toBeTruthy();
+  const icon = await iconResponse.text();
+  expect(icon).toContain("viewBox=\"0 0 512 512\"");
+  expect(icon).not.toMatch(/<rect\b/i);
+  expect(icon).not.toMatch(/<svg[^>]+(?:fill|style)=/i);
+
+  const manifestResponse = await request.get("/manifest.webmanifest");
+  expect(manifestResponse.ok()).toBeTruthy();
+  const manifest = await manifestResponse.json();
+  expect(manifest.icons).toEqual([
+    { src: "/icon.svg", sizes: "any", type: "image/svg+xml", purpose: "any" },
+    { src: "/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
+    { src: "/icon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },
+    { src: "/icon-maskable.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+  ]);
+
+  for (const path of ["/icon-192.png", "/icon-512.png", "/icon-maskable.png"]) {
+    const response = await request.get(path);
+    expect(response.ok()).toBeTruthy();
+    expect(response.headers()["content-type"]).toContain("image/png");
+  }
+});
+
+test("developer page publishes only the authenticated MCP v2 production surface", async ({ page }) => {
   await page.goto("/developers");
 
   await expect(
@@ -32,10 +111,7 @@ test("developer page publishes the authenticated MCP v2 production and demo boun
     await expect(productionManifest.getByText(tool, { exact: true })).toBeVisible();
   }
 
-  const demoManifest = page.getByTestId("mcp-demo-tools");
-  for (const tool of ["demo_get_balances", "demo_prepare_settlement", "demo_settle_tab"]) {
-    await expect(demoManifest.getByText(tool, { exact: true })).toBeVisible();
-  }
+  await expect(page.getByText(/demo_(?:get_balances|prepare_settlement|settle_tab)|\b(?:Vee|Hem|Ravi)\b/i)).toHaveCount(0);
 
   await expect(page.getByText(/confirm: true.*not accepted/i)).toBeVisible();
   await expect(page.getByTestId("codex-mcp-config")).toContainText("bearer_token_env_var");
@@ -44,39 +120,16 @@ test("developer page publishes the authenticated MCP v2 production and demo boun
   await expect(page.getByTestId("mcp-curl-example")).toContainText("Authorization: Bearer ${FINALTAB_MCP_TOKEN}");
 });
 
-test("reference proof requires a live execution lookup", async ({ page }) => {
-  await page.goto("/app/proof");
-
-  await expect(page.getByRole("heading", { name: "Open a settlement capsule" })).toBeVisible();
-  const executionInput = page.getByRole("textbox", { name: "KeeperHub execution ID" });
-  const settlementInput = page.getByRole("textbox", { name: "Frozen settlement ID" });
-  const ledgerInput = page.getByRole("textbox", { name: "Frozen ledger hash" });
-  await expect(executionInput).toBeVisible();
-  await expect(settlementInput).toBeVisible();
-  await expect(ledgerInput).toBeVisible();
-  await expect(page.getByText(/both indexed V2 plan identifiers must match/i)).toBeVisible();
-
-  const executionId = "xasakw5nfxkh2s0fh4stn";
-  const settlementId = `0x${"00".repeat(32)}`;
-  const ledgerHash = `0x${"11".repeat(32)}`;
-  await executionInput.fill(executionId);
-  await settlementInput.fill(settlementId);
-  await ledgerInput.fill(ledgerHash);
-  await page.getByRole("button", { name: "Verify now" }).click();
-
-  await expect(page.getByRole("heading", { name: "Check the execution or try again" })).toBeVisible();
-  await expect(page.getByText(/No success is implied/i)).toBeVisible();
-  await expect(page.getByRole("textbox", { name: "KeeperHub execution ID" })).toHaveValue(executionId);
-  await expect(page.getByRole("textbox", { name: "Frozen settlement ID" })).toHaveValue(settlementId);
-  await expect(page.getByRole("textbox", { name: "Frozen ledger hash" })).toHaveValue(ledgerHash);
+test("protected workspace pages never fall back to a demo identity", async ({ page }) => {
+  for (const path of ["/app/proof", "/app/tab"]) {
+    await page.goto(path);
+    await expect(page).toHaveURL(/\/auth\?error=(?:cloud-not-configured|session-required)&next=/);
+    await expect(page.getByRole("heading", { name: /One real account.*verified provisioning bridge/i })).toBeVisible();
+    await expect(page.getByText(/local profile|choose.*sigil/i)).toHaveCount(0);
+  }
 });
 
-test("settlement workspace starts at an explicit receipt-consent boundary", async ({ page }) => {
-  await page.goto("/app/tab");
-
-  await expect(page.getByText(/Base Sepolia.*USDC.*KeeperHub execution/)).toBeVisible();
-  const upload = page.getByRole("button", { name: /Take photo, drop, or browse/i });
-  await expect(upload).toBeDisabled();
-  await page.getByRole("checkbox", { name: /I consent to this image/i }).check();
-  await expect(upload).toBeEnabled();
+test("retired synthetic reliability route is not a product surface", async ({ request }) => {
+  const response = await request.get("/lab");
+  expect(response.status()).toBe(404);
 });

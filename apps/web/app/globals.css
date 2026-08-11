@@ -175,47 +175,6 @@ button:disabled {
   to { transform: scaleY(1); opacity: 1; }
 }
 
-[data-finaltab-mark] .mark-receipt {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: mark-receipt-arrive 420ms var(--ease-out-soft) both;
-}
-
-[data-finaltab-mark] .mark-route {
-  stroke-dasharray: 24;
-  stroke-dashoffset: 24;
-  animation: mark-route-arrive 480ms var(--ease-out-soft) 180ms both;
-}
-
-[data-finaltab-mark] .mark-route-back {
-  animation-delay: 300ms;
-}
-
-[data-finaltab-mark] .mark-node {
-  opacity: 0;
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: mark-node-arrive 240ms var(--ease-out-soft) 510ms both;
-}
-
-[data-finaltab-mark] .mark-node-last {
-  animation-delay: 620ms;
-}
-
-@keyframes mark-receipt-arrive {
-  from { opacity: 0; transform: scale(0.82) translateY(1px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
-}
-
-@keyframes mark-route-arrive {
-  to { stroke-dashoffset: 0; }
-}
-
-@keyframes mark-node-arrive {
-  from { opacity: 0; transform: scale(0.3); }
-  to { opacity: 1; transform: scale(1); }
-}
-
 .scan-window {
   position: relative;
   overflow: hidden;
@@ -300,13 +259,7 @@ button:disabled {
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .verified-pulse,
-  .route-progress,
-  [data-finaltab-mark] .mark-receipt,
-  [data-finaltab-mark] .mark-route,
-  [data-finaltab-mark] .mark-node { animation: none; }
-  [data-finaltab-mark] .mark-route { stroke-dashoffset: 0; }
-  [data-finaltab-mark] .mark-receipt,
-  [data-finaltab-mark] .mark-node { opacity: 1; transform: none; }
+  .route-progress { animation: none; }
   .scan-window::after {
     display: none;
     animation: none;
@@ -335,4 +288,254 @@ button:disabled {
 
 .safe-bottom {
   padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Public-site palette: proof moves from electric blue to acid green on carbon. */
+.marketing-shell,
+.public-header,
+.app-shell {
+  --color-canvas: #050706;
+  --color-surface-1: #0a0d0b;
+  --color-surface-2: #111711;
+  --color-quiet: #344238;
+  --color-quiet-soft: #182018;
+  --color-paper: #f2f5e9;
+  --color-paper-dim: #d9decf;
+  --color-ink: #050706;
+  --color-ink-soft: #384039;
+  --color-signal: #c8ff3d;
+  --color-signal-dim: #a5dc2d;
+  --color-verified: #b8ff5c;
+  --color-info: #45afff;
+  --color-txt: #f4f8f1;
+  --color-muted: #b7c0b8;
+  --color-faint: #7e8b82;
+}
+
+.marketing-shell ::selection,
+.public-header ::selection,
+.app-shell ::selection {
+  background: #c8ff3d;
+  color: #050706;
+}
+
+.marketing-shell :focus-visible,
+.public-header :focus-visible,
+.app-shell :focus-visible {
+  outline-color: #c8ff3d;
+}
+
+.marketing-hero {
+  background:
+    radial-gradient(circle at 78% 8%, rgba(69, 175, 255, 0.075), transparent 25rem),
+    radial-gradient(circle at 18% -10%, rgba(200, 255, 61, 0.11), transparent 31rem),
+    linear-gradient(180deg, #070a08 0%, #050706 68%);
+}
+
+.marketing-hero::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 8%, #45afff 42%, #c8ff3d 66%, transparent 92%);
+  opacity: 0.72;
+  pointer-events: none;
+}
+
+.marketing-shell .atmosphere::before {
+  background:
+    linear-gradient(118deg, rgba(200, 255, 61, 0.045), transparent 34%),
+    linear-gradient(298deg, rgba(69, 175, 255, 0.04), transparent 28%);
+}
+
+.marketing-shell .ledger-register {
+  background-image:
+    linear-gradient(
+      90deg,
+      transparent 0,
+      transparent 8%,
+      rgba(200, 255, 61, 0.105) 8%,
+      rgba(200, 255, 61, 0.105) calc(8% + 1px),
+      transparent calc(8% + 1px),
+      transparent 70%,
+      rgba(69, 175, 255, 0.07) 70%,
+      rgba(69, 175, 255, 0.07) calc(70% + 1px),
+      transparent calc(70% + 1px)
+    ),
+    repeating-linear-gradient(
+      180deg,
+      transparent 0,
+      transparent 43px,
+      rgba(126, 139, 130, 0.075) 43px,
+      rgba(126, 139, 130, 0.075) 44px
+    );
+}
+
+.marketing-shell .scan-window::after {
+  background: linear-gradient(90deg, transparent, #45afff 24%, #c8ff3d 76%, transparent);
+  box-shadow: 0 0 20px rgba(200, 255, 61, 0.28);
+}
+
+.marketing-shell .surface-shadow {
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 34px 74px -52px rgba(0, 0, 0, 0.98);
+}
+
+.hero-ledger-stage {
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 30px 90px -52px rgba(69, 175, 255, 0.24),
+    0 46px 110px -68px rgba(200, 255, 61, 0.28);
+}
+
+.proof-gradient-text {
+  color: #c8ff3d;
+  background: linear-gradient(92deg, #45afff 0%, #c8ff3d 72%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.proof-beacon {
+  position: relative;
+  display: inline-block;
+  width: 0.625rem;
+  height: 0.625rem;
+  flex: 0 0 auto;
+}
+
+.proof-beacon > span {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+}
+
+.proof-beacon > span:first-child {
+  background: #45afff;
+  animation: proof-beacon-blue 220ms var(--ease-out-soft) 140ms both;
+}
+
+.proof-beacon > span:last-child {
+  background: #c8ff3d;
+  box-shadow: 0 0 0 4px rgba(200, 255, 61, 0.1);
+  animation: proof-beacon-green 220ms var(--ease-out-soft) 140ms both;
+}
+
+@keyframes proof-beacon-blue {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(0.7); }
+}
+
+@keyframes proof-beacon-green {
+  from { opacity: 0; transform: scale(0.7); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.proof-transit-line {
+  background: linear-gradient(180deg, #45afff 0%, #45afff 58%, #c8ff3d 100%);
+  opacity: 0.56;
+}
+
+.evidence-marquee {
+  position: relative;
+  overflow: hidden;
+  background: #080b09;
+}
+
+.evidence-marquee::before,
+.evidence-marquee::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  inset-block: 0;
+  width: clamp(2rem, 8vw, 8rem);
+  pointer-events: none;
+}
+
+.evidence-marquee::before {
+  left: 0;
+  background: linear-gradient(90deg, #050706, transparent);
+}
+
+.evidence-marquee::after {
+  right: 0;
+  background: linear-gradient(270deg, #050706, transparent);
+}
+
+.evidence-marquee-track {
+  display: flex;
+  width: max-content;
+  min-height: 3.25rem;
+  align-items: center;
+  animation: evidence-drift 18s linear infinite;
+  will-change: transform;
+}
+
+.evidence-marquee-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-inline: 1.35rem;
+  color: #b7c0b8;
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.7rem;
+  font-weight: 650;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+@keyframes evidence-drift {
+  to { transform: translate3d(-50%, 0, 0); }
+}
+
+@media (max-width: 639px) {
+  .marketing-nav nav {
+    border-radius: 0.875rem;
+  }
+
+  .proof-gradient-text {
+    background: none;
+    -webkit-text-fill-color: currentColor;
+  }
+}
+
+@media (min-width: 2200px) {
+  .marketing-shell .max-w-7xl,
+  .app-shell .max-w-7xl {
+    max-width: 112rem;
+  }
+
+  .app-shell .settlement-room-shell {
+    max-width: 128rem;
+    padding-inline: 2rem;
+  }
+
+  .marketing-shell .max-w-5xl,
+  .public-header .max-w-5xl {
+    max-width: 96rem;
+  }
+
+  .marketing-hero h1 {
+    max-width: 100rem;
+    font-size: 11.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .proof-beacon > span:first-child {
+    display: none;
+  }
+
+  .proof-beacon > span:last-child {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .evidence-marquee-track {
+    animation: none;
+    will-change: auto;
+  }
 }

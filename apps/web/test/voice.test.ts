@@ -7,6 +7,7 @@ import {
   voiceCapabilitySnapshot,
   voiceInternals,
 } from "@/lib/server/voice";
+import { VOICE_STT_RESERVATION_SECONDS } from "@/lib/server/voiceQuota";
 
 const KEYS = ["ASSEMBLYAI_API_KEY", "ELEVENLABS_API_KEY", "ELEVENLABS_VOICE_ID"] as const;
 const before = Object.fromEntries(KEYS.map((key) => [key, process.env[key]]));
@@ -40,7 +41,7 @@ describe("AssemblyAI temporary streaming sessions", () => {
     const tokenUrl = new URL(String(input));
     expect(`${tokenUrl.origin}${tokenUrl.pathname}`).toBe(voiceInternals.assemblyTokenEndpoint);
     expect(tokenUrl.searchParams.get("expires_in_seconds")).toBe("60");
-    expect(tokenUrl.searchParams.get("max_session_duration_seconds")).toBe("600");
+    expect(tokenUrl.searchParams.get("max_session_duration_seconds")).toBe("180");
     expect(init?.method).toBe("GET");
     expect(new Headers(init?.headers).get("authorization")).toBe(permanentKey);
     expect(new Headers(init?.headers).get("authorization")).not.toContain("Bearer");
@@ -58,13 +59,14 @@ describe("AssemblyAI temporary streaming sessions", () => {
     expect(session).toMatchObject({
       token: temporaryToken,
       expiresInSeconds: 60,
-      maxSessionDurationSeconds: 600,
+      maxSessionDurationSeconds: 180,
       sampleRate: 16_000,
       encoding: "pcm_s16le",
       languageDetection: true,
     });
     expect(JSON.stringify(session)).not.toContain(permanentKey);
     expect(session.websocketUrl).not.toContain(temporaryToken);
+    expect(session.maxSessionDurationSeconds).toBe(VOICE_STT_RESERVATION_SECONDS);
   });
 
   it("fails closed on missing configuration and malformed provider data", async () => {
@@ -92,7 +94,7 @@ describe("ElevenLabs low-latency readback", () => {
       });
     });
 
-    const response = await streamElevenLabsSpeech("Vee is owed eighteen dollars.", fetchMock);
+    const response = await streamElevenLabsSpeech("The settlement is ready for review.", fetchMock);
 
     const [input, init] = fetchMock.mock.calls[0]!;
     const url = new URL(String(input));
@@ -100,7 +102,7 @@ describe("ElevenLabs low-latency readback", () => {
     expect(url.searchParams.get("output_format")).toBe("mp3_44100_128");
     expect(new Headers(init?.headers).get("xi-api-key")).toBe(permanentKey);
     expect(JSON.parse(String(init?.body))).toMatchObject({
-      text: "Vee is owed eighteen dollars.",
+      text: "The settlement is ready for review.",
       model_id: "eleven_flash_v2_5",
       apply_text_normalization: "auto",
     });

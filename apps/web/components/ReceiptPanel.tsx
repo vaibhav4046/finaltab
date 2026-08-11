@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import {
   ParsedReceiptSchema,
   checkReceiptArithmetic,
@@ -120,6 +120,7 @@ export function ReceiptPanel({ receipt, onReceipt, locked = false }: ReceiptPane
         onReceipt({
           receipt: parsed,
           attempts: json.attempts ?? 1,
+          provider: typeof json.provider === "string" ? json.provider : undefined,
           arithmeticIssues: Array.isArray(json.arithmeticIssues) ? json.arithmeticIssues : [],
           // The full image has served its purpose and is deliberately released.
           imageDataUrl: "",
@@ -294,10 +295,13 @@ export function ReceiptPanel({ receipt, onReceipt, locked = false }: ReceiptPane
 }
 
 function ReceiptPaper({ receipt, currency }: { receipt: ParsedReceipt; currency: string }) {
+  const reduceMotion = useReducedMotion();
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
+      initial={reduceMotion ? false : { opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
+      transition={reduceMotion ? { duration: 0 } : undefined}
       className="receipt-paper relative mx-auto max-w-sm px-5 pb-6 pt-5 text-ink"
     >
       <div className="text-center">
@@ -367,7 +371,7 @@ function ReceiptEditor({
             <label className="block text-sm text-fog">Description
               <input className={`${inputClass} mt-1 w-full`} value={item.description} onChange={(event) => patchItem(index, { description: event.target.value })} />
             </label>
-            <div className="mt-2 grid grid-cols-[1fr_1.3fr_auto] gap-2">
+            <div className="mt-2 grid gap-2 sm:grid-cols-[1fr_1.3fr_auto]">
               <label className="text-sm text-fog">Qty
                 <input type="number" min={1} max={999} className={`${inputClass} mt-1 w-full`} value={item.quantity} onChange={(event) => patchItem(index, { quantity: Math.max(1, Number(event.target.value) || 1) })} />
               </label>
@@ -379,7 +383,7 @@ function ReceiptEditor({
                 aria-label={`Delete item ${index + 1}`}
                 disabled={draft.items.length === 1}
                 onClick={() => onDraft(recalculate({ ...draft, items: draft.items.filter((_, itemIndex) => itemIndex !== index) }))}
-                className="mt-6 min-h-11 rounded-lg border border-coral/40 px-3 text-coral disabled:opacity-40"
+                className="min-h-11 rounded-lg border border-coral/40 px-3 text-coral disabled:opacity-40 sm:mt-6"
               >
                 Delete
               </button>

@@ -4,8 +4,10 @@ export {
   extractJsonObject,
   isRetryableGroqError,
   DEFAULT_GROQ_MODEL,
+  type GroqCompletionResult,
   type GroqClientOptions,
   type GroqMessage,
+  type GroqTokenUsage,
 } from "./groqClient.js";
 export { extractReceiptWithFallback, type ExtractReceiptResult } from "./fallbackRouter.js";
 export { analyzeImageQuality, type ImageQualityResult } from "./imageQuality.js";

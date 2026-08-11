@@ -1,0 +1,254 @@
+{
+  "status": "provisional-regenerate-after-approved-production-captures",
+  "durationSeconds": 96,
+  "maxLineLength": 42,
+  "cues": [
+    {
+      "scene": 1,
+      "start": 0.65,
+      "end": 3.324,
+      "lines": [
+        "A shared bill should end with everyone",
+        "certain—"
+      ]
+    },
+    {
+      "scene": 1,
+      "start": 3.344,
+      "end": 5.3340000000000005,
+      "lines": [
+        "and no one chasing screenshots."
+      ]
+    },
+    {
+      "scene": 2,
+      "start": 6.2,
+      "end": 9.282,
+      "lines": [
+        "FINALTab turns a receipt into a",
+        "deterministic ledger,"
+      ]
+    },
+    {
+      "scene": 2,
+      "start": 9.544,
+      "end": 13.032,
+      "lines": [
+        "binds each debtor's USDC pull to the whole",
+        "payout plan,"
+      ]
+    },
+    {
+      "scene": 2,
+      "start": 13.398,
+      "end": 15.945999999999998,
+      "lines": [
+        "then sends the exact call through",
+        "KeeperHub."
+      ]
+    },
+    {
+      "scene": 3,
+      "start": 16.4,
+      "end": 19.388999999999996,
+      "lines": [
+        "Scan a crowded receipt. Correct any",
+        "extraction."
+      ]
+    },
+    {
+      "scene": 3,
+      "start": 19.546,
+      "end": 22.128999999999998,
+      "lines": [
+        "Invite the table. Describe who had what."
+      ]
+    },
+    {
+      "scene": 3,
+      "start": 22.448999999999998,
+      "end": 24.645999999999997,
+      "lines": [
+        "FINALTab reconciles every line—"
+      ]
+    },
+    {
+      "scene": 3,
+      "start": 24.665999999999997,
+      "end": 26.758999999999997,
+      "lines": [
+        "tax, tip, and service included—"
+      ]
+    },
+    {
+      "scene": 3,
+      "start": 26.778999999999996,
+      "end": 28.793,
+      "lines": [
+        "to the cent, across the whole table."
+      ]
+    },
+    {
+      "scene": 4,
+      "start": 31.4,
+      "end": 33.449,
+      "lines": [
+        "The graph collapses many obligations"
+      ]
+    },
+    {
+      "scene": 4,
+      "start": 33.467,
+      "end": 35.875,
+      "lines": [
+        "into a small, deterministic transfer set."
+      ]
+    },
+    {
+      "scene": 4,
+      "start": 36.241,
+      "end": 39.056,
+      "lines": [
+        "Freeze once, and the ledger hash,",
+        "settlement ID,"
+      ]
+    },
+    {
+      "scene": 4,
+      "start": 39.086,
+      "end": 43.142999999999994,
+      "lines": [
+        "debits, payouts, chain, and contract",
+        "become one immutable plan."
+      ]
+    },
+    {
+      "scene": 5,
+      "start": 44.2,
+      "end": 45.842,
+      "lines": [
+        "Each debtor signs twice:"
+      ]
+    },
+    {
+      "scene": 5,
+      "start": 46.023,
+      "end": 48.861000000000004,
+      "lines": [
+        "Circle authorizes their exact USDC pull;"
+      ]
+    },
+    {
+      "scene": 5,
+      "start": 49.123000000000005,
+      "end": 52.054,
+      "lines": [
+        "FINALTab binds consent to the complete",
+        "payout plan."
+      ]
+    },
+    {
+      "scene": 5,
+      "start": 52.315000000000005,
+      "end": 55.896,
+      "lines": [
+        "KeeperHub then simulates. A revert never",
+        "broadcasts."
+      ]
+    },
+    {
+      "scene": 6,
+      "start": 56.35,
+      "end": 60.047000000000004,
+      "lines": [
+        "After simulation and a final human",
+        "signature, KeeperHub submits."
+      ]
+    },
+    {
+      "scene": 6,
+      "start": 60.483000000000004,
+      "end": 62.439,
+      "lines": [
+        "Green appears when its receipt matches"
+      ]
+    },
+    {
+      "scene": 6,
+      "start": 62.457,
+      "end": 65.30600000000001,
+      "lines": [
+        "an independent Base Sepolia RPC check."
+      ]
+    },
+    {
+      "scene": 7,
+      "start": 66.25,
+      "end": 70.052,
+      "lines": [
+        "Agents use the same safety rail through",
+        "nine production MCP tools."
+      ]
+    },
+    {
+      "scene": 7,
+      "start": 70.372,
+      "end": 72.652,
+      "lines": [
+        "FINALTab never holds wallet keys."
+      ]
+    },
+    {
+      "scene": 8,
+      "start": 73.15,
+      "end": 75.90700000000001,
+      "lines": [
+        "The agent allocates, prepares the V2 plan,"
+      ]
+    },
+    {
+      "scene": 8,
+      "start": 75.983,
+      "end": 77.90400000000001,
+      "lines": [
+        "and returns debtor typed data."
+      ]
+    },
+    {
+      "scene": 8,
+      "start": 78.421,
+      "end": 82.33900000000001,
+      "lines": [
+        "It simulates, gets a short-lived human",
+        "signature, then submits."
+      ]
+    },
+    {
+      "scene": 8,
+      "start": 82.85600000000001,
+      "end": 87.50500000000001,
+      "lines": [
+        "Status receives execution ID, settlement",
+        "ID, and ledger hash."
+      ]
+    },
+    {
+      "scene": 8,
+      "start": 87.825,
+      "end": 90.837,
+      "lines": [
+        "Only the indexed event becomes",
+        "VERIFIED_SETTLED."
+      ]
+    },
+    {
+      "scene": 9,
+      "start": 91.05,
+      "end": 94.527,
+      "lines": [
+        "FINALTab: KeeperHub executes. Anyone",
+        "verifies."
+      ]
+    }
+  ]
+}

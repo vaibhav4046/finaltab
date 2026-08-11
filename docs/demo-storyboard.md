@@ -1,33 +1,36 @@
-# FINALTab V2 product video storyboard — proof pending
+# FINALTab V2 product video storyboard — value proof retained, render pending
 
 This is a recording plan, not evidence. Target timing is editorial guidance and
 must never be copied into submission metadata. The final duration, checksum,
 and public URL remain **PENDING** until a completed render is measured.
 
-The canonical video must use one authenticated external-wallet V2 settlement
-and the matching trace defined in
-[release/MCP_TRACE_SPEC.md](release/MCP_TRACE_SPEC.md). If that settlement does
-not exist, do not manufacture a green state or substitute the historical V1
-transaction without an explicit “historical V1” label.
+The canonical video must anchor its onchain proof in the retained V2 settlement
+and follow the trace discipline in
+[release/MCP_TRACE_SPEC.md](release/MCP_TRACE_SPEC.md). The value run used an
+explicitly authorized simulate-then-single-broadcast runner, not the production
+MCP human-approval route. Show the authenticated MCP tools and status proof as
+a separate, clearly labelled product surface; do not fabricate an MCP broadcast
+or substitute the historical V1 transaction without an explicit “historical
+V1” label.
 
 ## Creative spine
 
-Target: roughly 100–120 seconds, premium dark ledger aesthetic, decisive pacing,
-captions that work without audio, and narration synchronized to visible state.
+Target: 96 seconds, 3840×2160 at 60 fps, premium carbon/acid/blue ledger
+aesthetic, decisive pacing, captions that work without audio, and narration
+synchronized to visible state. Real captures begin only after the final
+production/auth/security probe.
 
 | Target | Beat | Required on-screen truth |
 |---|---|---|
-| 0:00–0:06 | Logo reveal | FINALTab mark, “Receipt → consent → landed proof” |
-| 0:06–0:16 | Problem | Shared receipt, fragmented IOUs, risk of an agent broadcasting without human consent |
-| 0:16–0:28 | Architecture | Model interprets; deterministic engine reconciles; wallets consent; KeeperHub executes; RPC verifies |
-| 0:28–0:43 | Product use case | Upload/allocate a complex receipt; shares reconcile exactly; debt graph nets deterministically |
-| 0:43–0:54 | Freeze and V2 | Ledger hash plus full-plan hash; V2 address `0x7b58791c…cCDB`; dual signature model |
-| 0:54–1:10 | Authenticated MCP | Real client initializes with a redacted scoped token, lists current tools, calls `allocate_receipt` and `prepare_receipt_settlement` |
-| 1:10–1:25 | External wallets | Debtors sign USDC `ReceiveWithAuthorization` and FINALTab `SettlementConsent`; no server-held user keys |
-| 1:25–1:38 | Safety boundary | `simulate_signed_settlement`, then short-lived broadcast challenge; human wallet reviews and `personal_sign`s it |
-| 1:38–1:52 | KeeperHub execution | `submit_signed_settlement`, execution ID, poll, verified successful receipt; no long dead wait |
-| 1:52–2:02 | Independent proof | Base Sepolia tx, block, V2 `SettlementExecuted` event, exact balance deltas, conservation |
-| 2:02–2:10 | Close | Sourcify exact-match deployment proof, reusable KeeperHub/MCP integration, repository and video URL |
+| 0:00–0:06 | Wordmark reveal | Text-only FINALTab lockup, “Receipt → consent → landed proof” |
+| 0:06–0:16 | Architecture | Model interprets; deterministic engine reconciles; bounded review agents attest; wallets consent; KeeperHub executes; RPC verifies |
+| 0:16–0:31 | Real product | Create/sign in, branded return, durable tab, complex receipt correction, caller-entered names/wallets, exact allocation |
+| 0:31–0:44 | Review and Freeze | Four fixed review stages; bounded audit memory; stale edit invalidation; durable receipt UUID; immutable V2 hashes |
+| 0:44–0:56 | External wallets | Debtors sign `ReceiveWithAuthorization` and `SettlementConsent`; exact simulation passes; a real revert does not broadcast |
+| 0:56–1:06 | KeeperHub proof | Human approval, KeeperHub receipt, independent exact-event and balance proof; retained run boundary visible |
+| 1:06–1:13 | Nine-tool surface | Authenticated live `tools/list` shows exactly the current three-by-three production grid |
+| 1:13–1:31 | MCP climax | Real named client prepares, pauses for wallet actions, simulates, obtains human approval, submits, and verifies with all three proof IDs |
+| 1:31–1:36 | Close | Product, source, MCP, KeeperHub workflow, Sourcify, and transaction links |
 
 ## Scene requirements
 
@@ -48,9 +51,12 @@ decides when value moves.
 
 ### 2. Show the current MCP tools, not the V1 surface
 
-The production story uses:
+The production story uses exactly these nine tools:
 
 ```text
+split_equal
+split_weighted
+net_debts
 allocate_receipt
 prepare_receipt_settlement
 simulate_signed_settlement
@@ -63,11 +69,18 @@ The token must be present for the real request but fully redacted from the
 screen and trace. Do not show `get_balances`, `prepare_settlement`,
 `settle_tab(confirm: true)`, or “seven tools” as the current flow.
 
-The three `demo_*` tools may appear only in a clearly labelled appendix or
-failure-mode beat explaining that fixed-wallet fixtures are disabled by
-default. They must not masquerade as the product workflow.
+Any retired fixed-wallet tool name means the wrong deployment was captured and
+fails the release gate.
 
-### 3. Consent must be visible and accurate
+### 3. First-party review must be visible and bounded
+
+Before the product's Freeze action, show the current attested run pass receipt
+validation, allocation arithmetic, consent risk, and proof preflight. Stage four
+is honestly skipped before submission. An upstream edit must visibly invalidate
+the review. Describe memory only as bounded, expiring, user-deletable audit
+memory; never call it self-evolving or imply that it rewrites policy/code.
+
+### 4. Consent must be visible and accurate
 
 Show both debtor typed-data requests and the separate broadcast approval:
 
@@ -80,11 +93,13 @@ The voiceover should say “wallet-signed approval,” not “confirm true.” N
 show private keys, seed phrases, raw bearer tokens, or secret-bearing browser
 panels.
 
-### 4. Proof must be from the same run
+### 5. Proof must be from the same run
 
-The video, redacted MCP JSONL, KeeperHub execution ID, transaction hash, block,
-V2 event, and before/after balances must share one `runId`. A V2 deployment tx
-is useful architecture proof but cannot stand in for the product settlement.
+The video, redacted status/proof capture, KeeperHub execution ID, transaction
+hash, block, V2 event, and before/after balances must refer to the same retained
+run. A V2 deployment tx is useful architecture proof but cannot stand in for
+the product settlement. Do not imply that a later read-only MCP status call was
+the original broadcaster.
 
 Current deployment proof that may be shown accurately:
 
@@ -94,8 +109,19 @@ Current deployment proof that may be shown accurately:
 - block: `45321107`;
 - Sourcify: exact creation/runtime match, ID `43497805`.
 
-The V2 settlement execution and transaction remain **PENDING** and must be
-inserted only after the run exists.
+Current V2 settlement proof that must be shown accurately:
+
+- KeeperHub execution: `3hmlqi36zweiwg6fc5o2u`;
+- transaction: `0x7a6fb760f691954a41c71d5d508629c58aa09207bba0de4eaf164f097c59a789`;
+- block: `45327128`;
+- amount: `1` USDC atomic unit (`0.000001` USDC);
+- settlement ID: `0x8b670800d9856a90baa7492adefaf06ae86ac345d053db3dc7f01b065aadb9db`;
+- ledger hash: `0x1581eb7f56485ff4d2a684a832fc8d085b9b0e5d8540c85e2d550e8f7b0cb91e`;
+- balances: debtor `-1`, creditor `+1`, contract retained `0`, conservation
+  delta `0`.
+
+Source:
+[release/evidence/v2-live-settlement-2026-08-11T04-28-59-530Z.json](release/evidence/v2-live-settlement-2026-08-11T04-28-59-530Z.json).
 
 ## Voice and edit gate
 
@@ -107,6 +133,8 @@ inserted only after the run exists.
 - [ ] Music never masks narration; SFX reinforce state transitions rather than
       implying success early.
 - [ ] Final file passes manual frame review and secret scan.
+- [ ] Final measured master is 3840×2160 at 60 fps; 1080p plates are references,
+      not the submitted master.
 
 ## Historical V1 appendix — not current footage
 

@@ -1,13 +1,11 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import {
   allocateMcpReceipt,
   broadcastApprovalMessage,
   createBroadcastApprovalChallenge,
-  isDemoMoneyEnabled,
   mcpScopesForPayload,
   prepareMcpReceiptSettlement,
-  requiredMcpV2Contract,
   verifyBroadcastApproval,
   type McpReceiptAllocationInput,
 } from "../lib/server/mcpSettlement";
@@ -170,9 +168,7 @@ describe("MCP human broadcast approval", () => {
   });
 });
 
-describe("MCP request scope and demo gates", () => {
-  afterEach(() => vi.unstubAllEnvs());
-
+describe("MCP request scopes", () => {
   it("requires every scope in a JSON-RPC batch and treats unknown tools as submit", () => {
     expect(mcpScopesForPayload([
       { jsonrpc: "2.0", method: "tools/list", id: 1 },
@@ -185,17 +181,5 @@ describe("MCP request scope and demo gates", () => {
       params: { name: "not_a_real_tool" },
       id: 1,
     })).toEqual(["settlements:submit"]);
-  });
-
-  it("keeps test-key money tools off unless both explicit V2 gates are set", () => {
-    vi.stubEnv("FINALTAB_ENABLE_DEMO_MONEY_TOOLS", "true");
-    vi.stubEnv("FINALTAB_SETTLEMENT_CONTRACT_VERSION", "1");
-    expect(isDemoMoneyEnabled()).toBe(false);
-    expect(() => requiredMcpV2Contract()).toThrow(/VERSION=2/);
-
-    vi.stubEnv("FINALTAB_SETTLEMENT_CONTRACT_VERSION", "2");
-    vi.stubEnv("NEXT_PUBLIC_SETTLEMENT_CONTRACT", CONTRACT);
-    expect(isDemoMoneyEnabled()).toBe(true);
-    expect(requiredMcpV2Contract()).toBe(CONTRACT);
   });
 });

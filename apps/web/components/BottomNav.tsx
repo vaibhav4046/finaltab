@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FileCheck2, FlaskConical, House, ScanLine, UserRound } from "lucide-react";
+import { Bot, FileCheck2, House, ScanLine, UserRound } from "lucide-react";
 
 interface NavItem {
   href: string;
@@ -13,9 +13,9 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { href: "/app", label: "Home", icon: <House size={20} aria-hidden="true" /> },
   { href: "/app/tab", label: "Settle", icon: <ScanLine size={20} aria-hidden="true" /> },
+  { href: "/app/agents", label: "Agents", icon: <Bot size={20} aria-hidden="true" /> },
   { href: "/app/proof", label: "Proof", icon: <FileCheck2 size={20} aria-hidden="true" /> },
-  { href: "/lab", label: "Lab", icon: <FlaskConical size={20} aria-hidden="true" /> },
-  { href: "/auth", label: "Profile", icon: <UserRound size={20} aria-hidden="true" /> },
+  { href: "/auth", label: "Account", icon: <UserRound size={20} aria-hidden="true" /> },
 ];
 
 export function BottomNav() {

@@ -10,12 +10,30 @@
 > **Current V2 override (2026-08-11):** V2 is deployed at
 > `0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB` through KeeperHub execution
 > `xasakw5nfxkh2s0fh4stn`, tx `0x904ec881…e8f`, block `45321107`, with a
-> verified receipt and Sourcify exact-match ID `43497805`. A V2 USDC settlement
-> and V2 video are still pending. Main commit `b084497` is the current clean
+> verified receipt and Sourcify exact-match ID `43497805`. A separate V2 run
+> moved one atomic unit of USDC through KeeperHub execution
+> `3hmlqi36zweiwg6fc5o2u`, tx `0x7a6fb760…a789`, block `45327128`, with verified
+> dual signatures, exact event binding, and conserved balances. The V2 video is
+> still pending. Main commit `b084497` is the last deployed clean
 > release baseline: 284 passing + 1 env-gated skip, two green GitHub CI jobs, a
-> 24-route production build, Playwright 8/8, and a 13/13 protected probe against
-> both the immutable Vercel deployment and public alias. Supabase remains
-> unprovisioned. Every “end-to-end” or `confirm: true` statement below describes
+> 24-page production build, Playwright 8/8, and a 13/13 protected probe against
+> both the immutable Vercel deployment and public alias. Supabase project
+> `yoavihmldqbkuxinrsih` is provisioned in London on the free plan; 19/19 tables
+> use RLS, 45 policies are present, no anonymous table grants remain, and 34/34
+> foreign keys are indexed. The authenticated-only durable voice quota and
+> sensitive provider configuration are ready. The current local candidate has
+> exactly nine production MCP tools, external-wallet signing, and a mandatory
+> attested four-stage first-party review before Freeze. Its final suite is 370
+> passing with one provider-gated vision skip and a 33/33-page production build.
+> UI, REST, and MCP value submissions share one durable journal in source: an
+> accepted retry skips simulation and execution, while prepared recovery reuses
+> the stored successful simulation and deterministic idempotency key under a
+> bounded approval expiry. Additive migrations `52236`, `64822`, `73000`, and
+> `74000` plus post-promotion cutover `74500` are not applied to the four-migration,
+> 19-table hosted baseline;
+> Privy dashboard/JWKS/domain/identity-token/verifier configuration, final
+> application/provider probes, real captures, and the 4K/60 render remain open.
+> Every “end-to-end” or `confirm: true` statement below describes
 > the historical V1 system only.
 
 Every line here is either measured in this repo or measured against Base Sepolia.
@@ -81,7 +99,7 @@ simulation — was already proven, most of it live.
 | KeeperHub CLI contribution | `LIVE_PROVEN` (as *open*) | PR [#95](https://github.com/KeeperHub/cli/pull/95) — **open, not merged**. It will not be called merged until GitHub says merged |
 | Web app deployed | `LIVE_PROVEN` | https://finaltab.vercel.app |
 | MetaMask wallet connect | `NOT_STARTED` (live) | `apps/web/lib/wallet.ts` implements `eth_requestAccounts` for real, but it has never been exercised against an installed wallet. Demo path uses generated keys |
-| Supabase persistence | `NOT_STARTED` | Schema written at `supabase/migrations/0001_init.sql`, applied nowhere. App is stateless per session |
+| Historical V1 Supabase persistence | `NOT_STARTED` | At the time of this archived V1 measurement, only `supabase/migrations/0001_init.sql` existed and it was applied nowhere. Current provisioning is recorded in the override above. |
 
 ---
 

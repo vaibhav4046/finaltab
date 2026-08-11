@@ -5,13 +5,13 @@ export interface Person {
   id: string;
   name: string;
   address: `0x${string}`;
-  /** present only for local demo signers — never for real wallets */
-  demoPrivateKey?: `0x${string}`;
 }
 
 export interface ReceiptState {
   receipt: ParsedReceipt;
   attempts: number;
+  /** Provider reported by the server extraction route; absent for manual imports. */
+  provider?: string;
   arithmeticIssues: string[];
   imageDataUrl: string;
   /** Set only after a human confirms the editable extraction and arithmetic passes. */
@@ -30,6 +30,8 @@ export interface SettlementEligibility {
 
 export interface AllocationState {
   proposal: AllocationProposal;
+  /** Exact bounded instruction that produced the proposal. */
+  instruction: string;
   /** fiat minor units consumed per participant (payer included), sums to receipt total */
   shares: Array<{ id: string; fiatMinor: string }>;
   /** debts toward the payer in USDC minor units — empty when settlement is ineligible */

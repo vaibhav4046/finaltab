@@ -1,4 +1,4 @@
-# Scaling FINALTab: from hackathon demo to product
+# Scaling FINALTab: from hackathon release to settlement infrastructure
 
 Honest feasibility research. Every claim below is tagged:
 
@@ -14,25 +14,28 @@ is just a new way to get a receipt or a debt graph into the same engine.
 
 ## 1. MCP distribution — ship the engine to every agent
 
-**Current V2 state: implemented and test-covered; live value-moving proof is
-pending.** The MCP server now requires scoped authentication and supports
+**Current V2 state: implemented, test-covered, and value-proven at the rail;
+the unified production MCP capture is pending.** The MCP server requires scoped authentication and supports
 arbitrary caller participants with external debtor-wallet signatures. Its
 production sequence is `allocate_receipt → prepare_receipt_settlement →
 simulate_signed_settlement → create_broadcast_approval_challenge → human
-personal_sign → submit_signed_settlement → settlement_status`. Three
-fixed-wallet `demo_*` tools are disabled by default. `confirm: true` is not a V2
-approval mechanism.
+personal_sign → submit_signed_settlement → settlement_status`. Exactly nine
+production tools remain in source; the fixed-wallet path has been removed.
+`confirm: true` is not a V2 approval mechanism.
 
-The V2 contract is deployed and source-matched exactly, but no retained V2 USDC
-settlement proves this current loop yet. Do not promote this section to
-`LIVE_PROVEN` until that receipt, event, and balance proof exists.
+The V2 contract is deployed and source-matched exactly. KeeperHub execution
+`3hmlqi36zweiwg6fc5o2u` moved one atomic unit of Base Sepolia USDC in tx
+`0x7a6fb760…a789` at block `45327128`; the retained manifest proves the dual
+signatures, exact V2 event binding, and conserved balances. That explicitly
+authorized standalone runner did not exercise the production MCP short-lived
+human approval boundary, so the complete MCP loop remains a capture/deploy gate.
 
-The production surface itself was live-probed at main commit `b084497`: 13/13
-protected checks passed against both the immutable Vercel deployment and
-`finaltab.vercel.app`. Anonymous MCP access returned 401, authenticated
-initialization negotiated MCP 2.0.0, the server listed exactly 9 production and
-3 explicitly gated demo tools, arbitrary-participant V2 plan preparation used
-the exact Base Sepolia contract, and the demo value-moving tool stayed disabled.
+The superseded production baseline at main commit `b084497` passed 13/13
+protected checks against both the immutable Vercel deployment and
+`finaltab.vercel.app`: anonymous access returned 401, authenticated
+initialization negotiated MCP 2.0.0, arbitrary-participant V2 plan preparation
+used the exact Base Sepolia contract, and proof binding failed closed. The new
+exactly-nine-tool source still needs its own authenticated live recheck.
 
 ### Historical V1 evidence — preserved
 
@@ -175,14 +178,26 @@ Mainnet honestly:
 The fail-closed verifier is the part that scales *because* it is conservative:
 at 10 tabs or 10 million, "a bare tx hash is never proof" is the same check.
 
-## 6. Per-user accounts (SHIPPED honest version, upgrade path defined)
+## 6. Per-user accounts and bounded review agents
 
-Today `/auth` is device-local identity: a profile and tab history in
-`localStorage`, labelled as exactly that in the UI — no fake cloud, no invented
-accounts. The upgrade path is Supabase (auth + Postgres row-level security), at
-which point tab history, group membership, and Splitwise/bank links attach to a
-real user id. The `Profile`/`TabRecord` shapes in `lib/identity.ts` were designed
-to survive that migration unchanged.
+The London Supabase project has four applied migrations and a verified baseline
+of 19/19 tables under RLS, 45 policies, no anonymous table grants, and 34/34
+foreign keys indexed. Four additive migrations are committed locally but not
+yet applied: agent control (`52236`), voice spend reservations (`64822`), the
+first-party settlement flow (`73000`), and the shared UI/REST/MCP submission
+journal (`74000`). Post-promotion cutover `74500` then revokes legacy direct
+financial writes and the old quota RPC. The agent migration adds fixed four-stage
+review runs, provenance events, and bounded, expiring, user-deletable audit
+memory. That memory cannot rewrite code, policy, prompts, or authorization and
+must not be marketed as self-evolving.
+
+Supabase Auth remains the canonical RLS identity. The Privy bridge is
+code-complete and fail-closed, but its dashboard app, Supabase JWKS connection,
+allowed domains, identity-token setting, app ID, and verification key are not
+configured. The branded return page is implemented; branded inbound email still
+requires a verified sender domain and custom SMTP or a Send Email Hook. Until
+the migration, Privy setup, and multi-identity browser probe pass, product copy
+must distinguish verified backend infrastructure from live behavior.
 
 ## Priority order (opinionated)
 

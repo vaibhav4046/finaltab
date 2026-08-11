@@ -18,6 +18,7 @@ proof-output/
 .claude/
 
 .vercel
+supabase/.temp/
 
 # Harness/authoring artifacts — not part of the product, never published
 CLAUDE-EXTENSION-SETUP.md

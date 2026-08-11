@@ -18,24 +18,16 @@ import {
 import { keeperHubClient, keeperHubDetail } from "@/lib/server/clients";
 import { SettleBodySchema, type SettleBody } from "@/lib/server/settlement";
 import {
-  AGENT_SIGNERS,
-  agentChainSnapshot,
-  formatUsdcMinor,
-  prepareAgentSettlement,
-  resolveAgentSigners,
-  signPreparedTransfers,
-  type AgentSignerId,
-} from "@/lib/server/agentSettlement";
-import {
   allocateMcpReceipt,
   createBroadcastApprovalChallenge,
-  isDemoMoneyEnabled,
   mcpScopesForPayload,
   prepareMcpReceiptSettlement,
   requiredMcpV2Contract,
   type SignedBroadcastApproval,
 } from "@/lib/server/mcpSettlement";
 import {
+  assertDurableSettlementObservationAccess,
+  persistDurableSettlementObservation,
   simulateSignedSettlement,
   submitApprovedSettlement,
 } from "@/lib/server/settlementSubmission";
@@ -131,13 +123,6 @@ const approvalArtifact = z.object({
   signature,
 });
 
-const agentId = z.enum(["vee", "hem", "ravi"]);
-const agentDebts = z.array(z.object({
-  debtor: agentId.describe("Who owes"),
-  creditor: agentId.describe("Who is owed"),
-  amountUsd: amount.describe("What debtor owes creditor in USD, e.g. \"4.20\""),
-})).min(1).max(20);
-
 const LOCAL_READ_ANNOTATIONS = {
   readOnlyHint: true,
   destructiveHint: false,
@@ -196,42 +181,6 @@ function allocationOutput(allocation: ReturnType<typeof allocateMcpReceipt>) {
 
 function parseSignedSettlement(value: unknown): SettleBody {
   return SettleBodySchema.parse(value);
-}
-
-function requireDemoSigners() {
-  if (!isDemoMoneyEnabled()) {
-    return {
-      accounts: null,
-      signers: null,
-      failure: fail(
-        "testnet demo money tools are disabled. They require both " +
-        "FINALTAB_ENABLE_DEMO_MONEY_TOOLS=true and FINALTAB_SETTLEMENT_CONTRACT_VERSION=2.",
-      ),
-    };
-  }
-  const { accounts, status } = resolveAgentSigners();
-  if (!accounts) {
-    return {
-      accounts: null,
-      signers: null,
-      failure: fail(
-        `testnet demo signer keys unavailable: ${AGENT_SIGNERS.map((item) => `${item.id}=${status[item.id]}`).join(", ")}`,
-      ),
-    };
-  }
-  const signers = AGENT_SIGNERS.map((item) => ({
-    id: item.id,
-    name: item.name,
-    address: accounts.get(item.id)!.address,
-  }));
-  return { accounts, signers, failure: null };
-}
-
-function demoAddressMap(signers: Array<{ id: string; address: `0x${string}` }>) {
-  return Object.fromEntries(signers.map((signer) => [signer.id, signer.address])) as Record<
-    AgentSignerId,
-    `0x${string}`
-  >;
 }
 
 const handler = createMcpHandler(
@@ -461,7 +410,7 @@ const handler = createMcpHandler(
         title: "Submit an approved, externally signed V2 settlement",
         annotations: VALUE_WRITE_ANNOTATIONS,
         description:
-          "Value-moving tool. Requires externally produced debtor signatures plus a fresh wallet-signed human approval artifact. Revalidates the full V2 plan, re-simulates immediately, then submits one idempotent atomic call through KeeperHub.",
+          "Value-moving tool. Requires externally produced debtor signatures plus a fresh wallet-signed human approval artifact. New plans are simulated and durably prepared before one idempotent KeeperHub call; a prepared crash-recovery retry reuses that stored successful simulation so an onchain AlreadySettled result cannot hide the original execution.",
         inputSchema: {
           signedSettlement,
           approval: approvalArtifact,
@@ -485,6 +434,7 @@ const handler = createMcpHandler(
             approval: submitted.verifiedApproval,
             simulation: { success: submitted.simulation.success, wouldRevert: submitted.simulation.wouldRevert },
             accepted: submitted.accepted,
+            durableReplay: submitted.durableReplay,
             proofCapability: submitted.proofCapability,
             next: `Poll settlement_status with executionId \"${submitted.accepted.executionId}\", settlementId \"${body.settlementId}\", and ledgerHash \"${body.ledgerHash}\" until the final verdict is VERIFIED_SETTLED.`,
           });
@@ -511,10 +461,17 @@ const handler = createMcpHandler(
         },
       },
       async ({ executionId, settlementId, ledgerHash }) => {
-        const { client, blockedReason } = keeperHubClient();
-        if (!client) return fail(`blocked: ${blockedReason}`);
         try {
           const contractAddress = requiredMcpV2Contract();
+          await assertDurableSettlementObservationAccess({
+            executionId,
+            principalSubject: currentPrincipal().subject,
+            contractAddress,
+            settlementId: settlementId as `0x${string}`,
+            ledgerHash: ledgerHash as `0x${string}`,
+          });
+          const { client, blockedReason } = keeperHubClient();
+          if (!client) return fail(`blocked: ${blockedReason}`);
           const { body } = await client.getStatus(executionId);
           const keeperHubVerdict = classifyExecution(body);
           const independentProof = await verifyExecutionOnchain(body, {
@@ -529,139 +486,34 @@ const handler = createMcpHandler(
                 receipts: keeperHubVerdict.receipts,
               }
             : keeperHubVerdict;
-          return ok({ verdict, keeperHubVerdict, independentProof, status: body });
+          const durability = await persistDurableSettlementObservation({
+            executionId,
+            principalSubject: currentPrincipal().subject,
+            contractAddress,
+            settlementId: settlementId as `0x${string}`,
+            ledgerHash: ledgerHash as `0x${string}`,
+            status: body,
+            verdict,
+            independent: independentProof,
+          });
+          return ok({ verdict, keeperHubVerdict, independentProof, status: body, durability });
         } catch (error) {
           return fail(errorMessage(error, "status fetch failed"));
         }
       },
     );
 
-    server.registerTool(
-      "demo_get_balances",
-      {
-        title: "TESTNET DEMO: read fixed wallet balances",
-        annotations: NETWORK_READ_ANNOTATIONS,
-        description:
-          "Optional Base Sepolia demo-only tool for the named Vee/Hem/Ravi test wallets. Disabled unless explicitly enabled; it is not the production user-wallet path.",
-        inputSchema: {},
-      },
-      async () => {
-        const { signers, failure } = requireDemoSigners();
-        if (failure) return failure;
-        try {
-          const contract = requiredMcpV2Contract();
-          return ok({ ...(await agentChainSnapshot(signers!, contract)) });
-        } catch (error) {
-          return fail(errorMessage(error, "chain read failed"));
-        }
-      },
-    );
-
-    server.registerTool(
-      "demo_prepare_settlement",
-      {
-        title: "TESTNET DEMO: prepare fixed-wallet settlement",
-        annotations: LOCAL_READ_ANNOTATIONS,
-        description:
-          "Optional Vee/Hem/Ravi testnet fixture. Disabled by default in production. Real users should call prepare_receipt_settlement and sign in their own wallets.",
-        inputSchema: {
-          debts: agentDebts,
-          receiptRef: z.string().min(1).max(200).optional(),
-        },
-      },
-      async ({ debts, receiptRef }) => {
-        const { signers, failure } = requireDemoSigners();
-        if (failure) return failure;
-        try {
-          const contract = requiredMcpV2Contract();
-          const prepared = prepareAgentSettlement(debts, demoAddressMap(signers!), contract, receiptRef);
-          const demoApprover = process.env.FINALTAB_DEMO_APPROVER_ADDRESS ?? null;
-          return ok({
-            demoOnly: true,
-            broadcast: false,
-            settlementId: prepared.settlementId,
-            ledgerHash: prepared.ledgerHash,
-            receiptRef: prepared.receiptRef,
-            debits: prepared.debits,
-            payouts: prepared.payouts,
-            requiredBroadcastApprover: demoApprover,
-            next:
-              "Call create_broadcast_approval_challenge with requiredBroadcastApprover, have that operator personal-sign it, then call demo_settle_tab.",
-          });
-        } catch (error) {
-          return fail(errorMessage(error, "demo preparation failed"));
-        }
-      },
-    );
-
-    server.registerTool(
-      "demo_settle_tab",
-      {
-        title: "TESTNET DEMO: approved fixed-wallet settlement",
-        annotations: VALUE_WRITE_ANNOTATIONS,
-        description:
-          "Optional value-moving Base Sepolia fixture using server-held throwaway test keys. Disabled by default and still requires a configured human operator's signed approval artifact; never use for real users.",
-        inputSchema: {
-          debts: agentDebts,
-          receiptRef: z.string().min(1).max(200).optional(),
-          approval: approvalArtifact,
-        },
-      },
-      async ({ debts, receiptRef, approval }) => {
-        const { accounts, signers, failure } = requireDemoSigners();
-        if (failure) return failure;
-        try {
-          const contract = requiredMcpV2Contract();
-          const demoApprover = process.env.FINALTAB_DEMO_APPROVER_ADDRESS;
-          if (!demoApprover || !/^0x[0-9a-fA-F]{40}$/.test(demoApprover)) {
-            return fail("FINALTAB_DEMO_APPROVER_ADDRESS must name the human demo operator wallet.");
-          }
-          const prepared = prepareAgentSettlement(debts, demoAddressMap(signers!), contract, receiptRef);
-          const signed = await signPreparedTransfers(prepared, accounts!, contract);
-          const body = parseSignedSettlement({
-            settlementId: prepared.settlementId,
-            ledgerHash: prepared.ledgerHash,
-            transfers: signed,
-            payouts: prepared.payouts,
-          });
-          const submitted = await submitApprovedSettlement({
-            signedSettlement: body,
-            approval: approval as SignedBroadcastApproval,
-            principalSubject: currentPrincipal().subject,
-            allowedApprovers: [demoApprover],
-          });
-          return ok({
-            demoOnly: true,
-            broadcast: true,
-            executionId: submitted.accepted.executionId,
-            settlementId: body.settlementId,
-            ledgerHash: body.ledgerHash,
-            approval: submitted.verifiedApproval,
-            proofCapability: submitted.proofCapability,
-            debits: prepared.debits.map((debit) => ({ debtor: debit.fromId, usdc: formatUsdcMinor(debit.value) })),
-            payouts: prepared.payouts.map((payout) => ({ creditor: payout.creditor, usdc: formatUsdcMinor(payout.value) })),
-            accepted: submitted.accepted,
-          });
-        } catch (error) {
-          if (error instanceof SimulationRevertError) {
-            return fail(`simulation reverted; nothing was broadcast. ${error.message}`);
-          }
-          return fail(errorMessage(error, "demo settlement failed"));
-        }
-      },
-    );
   },
   {
     serverInfo: { name: "finaltab", version: "2.0.0" },
     instructions:
       "FINALTab v2 is an authenticated MCP receipt-to-proof service for Base Sepolia; V1 and unversioned contracts fail closed. " +
       "submit_signed_settlement is the only production value-moving tool. It requires settlements:submit scope, externally produced V2 debtor signatures, " +
-      "a short-lived exact-plan human approval artifact, immediate simulation, and KeeperHub idempotency. Approval retries are allowed until expiry; the V2 settlement identity prevents duplicate settlement. The server never holds arbitrary users' keys. " +
+      "a short-lived exact-plan human approval artifact, a durable pre-broadcast intent, simulation for new plans, and KeeperHub idempotency. Prepared crash-recovery retries reuse the stored successful simulation and require a still-valid or freshly re-signed approval. The V2 settlement identity prevents duplicate settlement. The server never holds arbitrary users' keys. " +
       "VERIFIED_SETTLED additionally requires independent Base Sepolia RPC proof. Deterministic tools: split_equal, split_weighted, net_debts. " +
       "Production journey: allocate_receipt -> prepare_receipt_settlement -> have every debtor wallet sign both returned typed-data payloads -> " +
       "simulate_signed_settlement -> create_broadcast_approval_challenge -> show its exact message to a human and obtain personal_sign -> " +
-      "submit_signed_settlement -> settlement_status. " +
-      "demo_* tools are explicitly testnet-only, disabled by default, and are not the production user-wallet workflow.",
+      "submit_signed_settlement -> settlement_status.",
   },
 );
 

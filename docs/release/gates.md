@@ -6,10 +6,19 @@
 > `0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB`, KeeperHub deployment execution
 > `xasakw5nfxkh2s0fh4stn`, tx `0x904ec881…e8f`, block `45321107`, Sourcify exact
 > match `43497805`. Main commit `b084497` supersedes the archived CI numbers:
-> 284 passing + 1 env-gated skip, two green GitHub CI jobs, a 24-route build,
+> 284 passing + 1 env-gated skip, two green GitHub CI jobs, a 24-page build,
 > Playwright 8/8, and a 13/13 protected probe on both immutable and public
-> Vercel URLs. V2 USDC settlement, Supabase provisioning, and video remain
-> pending. Use [status.md](status.md) and [SUBMISSION_CHECKLIST.md](SUBMISSION_CHECKLIST.md).
+> Vercel URLs. Current V2 additions: KeeperHub execution
+> `3hmlqi36zweiwg6fc5o2u` moved one atomic unit of USDC in tx
+> `0x7a6fb760…a789` at block `45327128`, with exact event/balance proof; Supabase
+> project `yoavihmldqbkuxinrsih` is provisioned and schema-verified at the
+> four-migration, 19-table baseline. The current local candidate reports 370 passing + 1
+> provider-gated vision skip and a 33/33-page build; it exposes exactly nine
+> production MCP tools and requires an attested four-stage review before
+> first-party Freeze. Additive migrations `52236`/`64822`/`73000`/`74000` and
+> post-promotion cutover `74500`, Privy configuration, final
+> deploy/provider probe, unified MCP capture, and 4K/60 video remain pending. Use
+> [status.md](status.md) and [SUBMISSION_CHECKLIST.md](SUBMISSION_CHECKLIST.md).
 
 Every row was run on **2026-08-10**. Gates 1–16 were measured against a clean tree at commit
 `b258ec3` and re-measured unchanged against the tree this commit publishes; gates 17–18 were added by

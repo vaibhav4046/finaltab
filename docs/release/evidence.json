@@ -5,7 +5,7 @@
     "state UNPROVEN or BLOCKED, the project says so publicly rather than implying otherwise.",
     "Prose counterpart: docs/release/truth-snapshot.md.",
     "Claims measured on 2026-08-10 below are historical V1 evidence unless explicitly scoped otherwise.",
-    "Current V2 deployment proof is recorded in currentRelease and the separate v2-deployment manifest."
+    "Current V2 deployment and value-moving proof are recorded in currentRelease and their separate manifests."
   ],
   "generatedAt": "2026-08-11",
   "scope": "Current V2 release plus explicitly archived V1 evidence",
@@ -15,12 +15,13 @@
   "currentRelease": {
     "protocol": "V2",
     "measuredAt": "2026-08-11",
-    "sourceCommit": "b084497bf883dbf4f1d7123203e9866679d99b67",
+    "deployedBaselineCommit": "b084497bf883dbf4f1d7123203e9866679d99b67",
+    "candidateCommit": null,
     "releaseBaseline": {
       "state": "LIVE_PROVEN",
       "githubCiJobs": "2/2 green",
       "tests": "284 passing, 1 env-gated live-provider check skipped",
-      "productionBuildRoutes": 24,
+      "productionBuildPages": 24,
       "playwright": "8/8 passing",
       "protectedProbe": {
         "result": "13/13 passing",
@@ -32,18 +33,28 @@
     },
     "localCandidate": {
       "state": "LOCAL_PROVEN",
-      "tests": "302 passing, 1 env-gated live-provider check skipped",
-      "productionBuildRoutes": 26,
-      "playwright": "8/8 passing",
+      "tests": {
+        "contracts": 27,
+        "engine": 60,
+        "keeperhub": 35,
+        "flightRecorder": 7,
+        "vision": "34 passing, 1 provider-gated skip",
+        "web": 207,
+        "total": "370 passing, 1 provider-gated skip"
+      },
+      "productionBuildPages": "33/33",
+      "playwright": "14/14 passing across desktop and Pixel 7",
       "voice": {
         "productMode": "AssemblyAI live STT plus buffered ElevenLabs readback",
-        "demoNarration": "ElevenLabs only",
+        "productFilmNarration": "ElevenLabs only; current clips and alignment are provisional",
         "narrationClipsDecoded": 9,
         "captionCues": 29,
         "captionTrackEndSeconds": 94.53,
-        "deploymentState": "BLOCKED_PENDING_DURABLE_QUOTA_TERMS_PROVIDER_CONFIG_AND_LIVE_PROBE"
+        "durableQuota": "Supabase authenticated-only; 8 transcription sessions and 20 readbacks per user per minute",
+        "providerSecrets": "Stored as sensitive Vercel Production variables; values not recorded",
+        "deploymentState": "CONFIGURED_PENDING_FINAL_DEPLOY_AND_LIVE_PROVIDER_PROBE"
       },
-      "caveat": "Local working-tree evidence only. The public b084497 deployment does not contain or prove this candidate."
+      "caveat": "Local working-tree evidence only. The public b084497 deployment does not contain or prove this candidate; final CI, provider, and deployment probes are pending."
     },
     "deployment": {
       "state": "LIVE_PROVEN",
@@ -62,25 +73,133 @@
       "manifest": "docs/release/evidence/v2-deployment-2026-08-11T01-08-17-421Z.json"
     },
     "mcp": {
-      "state": "LIVE_PROVEN_AT_BASELINE",
+      "state": "SOURCE_AND_TEST_PROVEN_LIVE_RECHECK_PENDING",
       "authentication": "scoped bearer token",
       "walletModel": "external debtor wallets plus a wallet-signed short-lived broadcast approval",
       "productionTools": 9,
-      "gatedDemoTools": 3,
-      "protectedProbe": "Unauthenticated 401; MCP 2.0.0; exact V2 plan for arbitrary participants; cent-perfect calculation; proof binding; demo submit disabled.",
+      "retiredFixedWalletToolsInCurrentSource": 0,
+      "durableSubmissionJournal": {
+        "state": "SOURCE_AND_TEST_PROVEN_MIGRATION_PENDING",
+        "channels": ["first-party UI", "REST", "MCP"],
+        "acceptedReplay": "returns the durable execution without simulation or execution",
+        "preparedRecovery": "reuses the stored successful simulation and deterministic idempotency key under a bounded persisted approval expiry",
+        "freshFirstPartyFinalGates": ["current database approvals", "wallet-signed approval"]
+      },
+      "deployedBaselineProbe": "The superseded b084497 deployment passed unauthenticated rejection, MCP 2.0.0, arbitrary-participant planning, cent-perfect calculation, and proof binding. It does not prove the current nine-tool deployment.",
       "legacyConfirmFlagAccepted": false,
-      "demoMoneyToolsEnabledByDefault": false
+      "liveNineToolListRechecked": false
     },
     "usdcSettlement": {
-      "state": "PENDING",
-      "reason": "No retained value-moving V2 execution, transaction, event, or balance proof exists yet."
+      "state": "LIVE_PROVEN",
+      "measuredAt": "2026-08-11T04:29:05.895Z",
+      "contractVersion": 2,
+      "contract": "0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB",
+      "keeperHubExecutionId": "3hmlqi36zweiwg6fc5o2u",
+      "transactionHash": "0x7a6fb760f691954a41c71d5d508629c58aa09207bba0de4eaf164f097c59a789",
+      "blockNumber": 45327128,
+      "amountAtomic": "1",
+      "amountUsdc": "0.000001",
+      "settlementId": "0x8b670800d9856a90baa7492adefaf06ae86ac345d053db3dc7f01b065aadb9db",
+      "ledgerHash": "0x1581eb7f56485ff4d2a684a832fc8d085b9b0e5d8540c85e2d550e8f7b0cb91e",
+      "keeperHubReceiptVerified": true,
+      "independentRpcVerified": true,
+      "exactV2EventBinding": true,
+      "eip3009SignatureVerified": true,
+      "fullPlanConsentVerified": true,
+      "balanceConservationVerified": true,
+      "retainedContractUsdcAtomic": "0",
+      "manifest": "docs/release/evidence/v2-live-settlement-2026-08-11T04-28-59-530Z.json",
+      "caveat": "Explicitly authorized disposable Base Sepolia signer material was used by a simulate-then-single-broadcast runner. This proves the V2 contract/KeeperHub rail, not the production MCP human broadcast-challenge path."
     },
     "supabase": {
-      "state": "NOT_PROVISIONED",
-      "reason": "Migration exists, but no approved and verified production project or cross-device persistence evidence exists."
+      "state": "LIVE_PROVEN_INFRASTRUCTURE",
+      "measuredAt": "2026-08-11",
+      "projectName": "finaltab-production",
+      "projectRef": "yoavihmldqbkuxinrsih",
+      "organizationId": "xjpjpoxicyvmdfzmrdkk",
+      "region": "eu-west-2",
+      "regionLabel": "London",
+      "plan": "free",
+      "monthlyCost": 0,
+      "health": "ACTIVE_HEALTHY",
+      "postgresVersion": "17.6.1.155",
+      "migrationsApplied": [
+        "0001_init",
+        "20260811003158_production_tenancy_and_approvals",
+        "20260811042501_add_foreign_key_indexes",
+        "20260811043428_durable_voice_quotas"
+      ],
+      "migrationsPending": [
+        "20260811052236_settlement_agent_control_plane",
+        "20260811064822_voice_spend_reservations",
+        "20260811073000_durable_first_party_settlement_flow",
+        "20260811074000_durable_submission_intents",
+        "20260811074500_financial_truth_post_promotion_cutover"
+      ],
+      "tables": 19,
+      "tablesWithRls": 19,
+      "policies": 45,
+      "anonymousTableGrants": 0,
+      "foreignKeysCoveredByIndexes": "34/34",
+      "auth": {
+        "emailProviderEnabled": true,
+        "newUserSignupsEnabled": true,
+        "emailConfirmationRequired": true,
+        "siteUrl": "https://finaltab.vercel.app",
+        "redirectUrls": [
+          "https://finaltab.vercel.app/auth/callback"
+        ],
+        "liveEmailDeliveryProbed": false
+      },
+      "voiceQuota": {
+        "table": "voice_quota_windows",
+        "rlsEnabled": true,
+        "directAnonymousGrant": false,
+        "directAuthenticatedGrant": false,
+        "consumerRpc": "consume_voice_quota(text)",
+        "anonymousRpcAccess": false,
+        "authenticatedRpcAccess": true,
+        "transcriptionSessionsPerUserPerMinute": 8,
+        "readbacksPerUserPerMinute": 20
+      },
+      "publicProductionConfigurationPrepared": true,
+      "sensitiveVoiceProviderVariablesConfigured": true,
+      "finalApplicationDeploymentProbed": false,
+      "caveat": "Project, four-migration 19-table baseline schema, durable per-minute voice quota, and sensitive provider configuration are proven. Four additive migrations and the post-promotion cutover are not applied. Cross-device application, shared-journal durability, spend budgets, and live provider behavior remain unclaimed until the ordered rollout is deployed and probed."
+    },
+    "identity": {
+      "canonicalAccount": "Supabase Auth / auth.uid()",
+      "signInCreateAccountCallback": "SOURCE_IMPLEMENTED",
+      "brandedReturnPage": "SOURCE_IMPLEMENTED",
+      "privyBridge": "FAIL_CLOSED_NOT_CONFIGURED",
+      "privyPending": [
+        "production app",
+        "Supabase JWKS custom auth",
+        "exact allowed domain",
+        "identity tokens",
+        "app ID",
+        "verification key",
+        "live subject-pair probe"
+      ],
+      "brandedInboundEmail": "PENDING_VERIFIED_DOMAIN_AND_CUSTOM_SMTP_OR_SEND_EMAIL_HOOK"
+    },
+    "agentControl": {
+      "state": "SOURCE_AND_TEST_PROVEN_MIGRATION_PENDING",
+      "stages": 4,
+      "firstPartyFreezeRequiresCurrentAttestedReview": true,
+      "upstreamEditsInvalidateReview": true,
+      "durableReceiptUuidRequired": true,
+      "memory": "bounded expiring user-deletable audit memory; cannot modify code, policy, prompts, or authorization",
+      "chainAdapter": "base-sepolia",
+      "solanaAdapter": false,
+      "migration": "20260811052236_settlement_agent_control_plane",
+      "migrationApplied": false
     },
     "video": {
       "state": "PENDING",
+      "target": "3840x2160 at 60 fps",
+      "captures": "PENDING_POST_DEPLOY_PROBE",
+      "narration": "PROVISIONAL_REGENERATE_AFTER_APPROVED_CAPTURES",
       "publicUrl": null,
       "measuredMetadata": null
     }
@@ -98,6 +217,7 @@
     {
       "id": "tests.total",
       "claim": "212 tests pass and 1 is skipped",
+      "scope": "V1_HISTORICAL",
       "state": "LIVE_PROVEN",
       "measuredAt": "2026-08-10",
       "value": {
@@ -216,6 +336,7 @@
     {
       "id": "signing.demoKeys",
       "claim": "Debtors produce valid EIP-3009 receiveWithAuthorization signatures",
+      "scope": "V1_HISTORICAL",
       "state": "LIVE_PROVEN",
       "value": "Sign button exercised in a real browser session against the running app; produces valid signatures",
       "caveat": "Demo keys only. A prior revision of the docs called this a silent-failure blocker; live testing disproved that."
@@ -223,6 +344,7 @@
     {
       "id": "demo.keyPersistence",
       "claim": "Demo debtor addresses can be made stable across reloads so a funded testnet address survives",
+      "scope": "V1_HISTORICAL",
       "state": "LIVE_PROVEN",
       "measuredAt": "2026-08-10",
       "value": "With NEXT_PUBLIC_FINALTAB_PERSIST_DEMO_KEYS=1 the three demo addresses are byte-identical across a browser reload; with the flag unset they rotate on every load and nothing is written to localStorage. Both branches exercised in a real browser session against the running dev server.",
@@ -233,6 +355,7 @@
     {
       "id": "signing.realWallet",
       "claim": "A real wallet can sign the settlement",
+      "scope": "V1_HISTORICAL",
       "state": "UNPROVEN",
       "value": null,
       "caveat": "The MetaMask eth_signTypedData_v4 path is stubbed and has never been exercised end to end."
@@ -240,6 +363,7 @@
     {
       "id": "consent.signatureCount",
       "claim": "Settlement requires two explicit typed signatures per debtor",
+      "scope": "V1_HISTORICAL",
       "state": "FIXTURE_PROVEN",
       "value": "FINALTab plan consent plus the USDC receiveWithAuthorization signature. The UI does not claim single-signature settlement.",
       "caveat": "Verified in the demo-key flow, not against a real wallet. The receiveWithAuthorization leg has since been exercised live: four Base Sepolia settlements executed with per-debtor signatures the deployed contract validated on-chain."
@@ -262,6 +386,7 @@
     {
       "id": "app.errorRendering",
       "claim": "A failed API call renders an honest error instead of crashing",
+      "scope": "V1_HISTORICAL",
       "state": "LIVE_PROVEN",
       "measuredAt": "2026-08-10",
       "value": "An untyped await res.json() flowed into string-typed state and React threw 'Objects are not valid as a React child', white-screening the app on the Simulate path. 11 call sites now route through apps/web/lib/apiText.ts, locked by 20 tests.",
@@ -269,14 +394,75 @@
     },
     {
       "id": "persistence.supabase",
-      "claim": "Sessions and history persist",
-      "state": "NOT_APPLIED",
-      "value": null,
-      "caveat": "Schema is written. No credentials exist, the schema has never been applied, and nothing is persisted. The app is stateless per session. Docs previously listed this as a working feature; that was wrong and has been corrected."
+      "claim": "The production Supabase persistence infrastructure is provisioned and schema-verified",
+      "state": "LIVE_PROVEN",
+      "measuredAt": "2026-08-11",
+      "value": {
+        "projectName": "finaltab-production",
+        "projectRef": "yoavihmldqbkuxinrsih",
+        "organizationId": "xjpjpoxicyvmdfzmrdkk",
+        "region": "eu-west-2",
+        "plan": "free",
+        "monthlyCost": 0,
+        "tables": 19,
+        "tablesWithRls": 19,
+        "policies": 45,
+        "anonymousTableGrants": 0,
+        "foreignKeysCoveredByIndexes": "34/34",
+        "voiceQuotaRpc": "consume_voice_quota(text), authenticated-only",
+        "voiceQuotaLimits": "8 transcription sessions and 20 readbacks per user per minute"
+      },
+      "method": "Supabase project creation and health check; committed migrations applied in order; schema, RLS, policy, grant, and foreign-key index queries run against the hosted project.",
+      "caveat": "This proves infrastructure and schema state, not cross-device application behavior. The newer web release still needs deployment and a live multi-identity/browser probe."
+    },
+    {
+      "id": "voice.productionConfiguration",
+      "claim": "The hybrid voice path has a durable no-charge quota guard and sensitive production provider configuration",
+      "state": "LIVE_PROVEN",
+      "measuredAt": "2026-08-11",
+      "value": {
+        "quotaBackend": "Supabase",
+        "quotaMigration": "20260811043428_durable_voice_quotas",
+        "table": "voice_quota_windows",
+        "tableRls": true,
+        "directAnonymousTableGrant": false,
+        "directAuthenticatedTableGrant": false,
+        "rpc": "consume_voice_quota(text)",
+        "rpcAnonymousAccess": false,
+        "rpcAuthenticatedAccess": true,
+        "transcriptionSessionsPerUserPerMinute": 8,
+        "readbacksPerUserPerMinute": 20,
+        "assemblyAiProductionVariable": "CONFIGURED_SENSITIVE",
+        "elevenLabsProductionVariable": "CONFIGURED_SENSITIVE"
+      },
+      "method": "Committed migration applied to the hosted Supabase project; database grants and function access verified; provider keys added through Vercel sensitive Production environment storage without recording their values.",
+      "caveat": "Configuration is proven, but the newer release has not been deployed and neither provider lifecycle has been live-probed from the production browser."
+    },
+    {
+      "id": "settle.v2.onchain",
+      "claim": "FinalTabBatchSettlementV2 moved one atomic unit of testnet USDC through KeeperHub and conserved balances",
+      "state": "LIVE_PROVEN",
+      "measuredAt": "2026-08-11T04:29:05.895Z",
+      "value": {
+        "keeperHubExecutionId": "3hmlqi36zweiwg6fc5o2u",
+        "transactionHash": "0x7a6fb760f691954a41c71d5d508629c58aa09207bba0de4eaf164f097c59a789",
+        "blockNumber": 45327128,
+        "settlementId": "0x8b670800d9856a90baa7492adefaf06ae86ac345d053db3dc7f01b065aadb9db",
+        "ledgerHash": "0x1581eb7f56485ff4d2a684a832fc8d085b9b0e5d8540c85e2d550e8f7b0cb91e",
+        "amountAtomic": "1",
+        "amountUsdc": "0.000001",
+        "debtorDeltaAtomic": "-1",
+        "creditorDeltaAtomic": "1",
+        "contractRetainedAtomic": "0",
+        "conservationDeltaAtomic": "0"
+      },
+      "method": "KeeperHub authenticated simulation followed by exactly one broadcast; terminal receipt verified; independent Base Sepolia RPC receipt, exact SettlementExecuted/PullExecuted/PayoutExecuted event binding, nonce state, and pre/post balances checked. Manifest: docs/release/evidence/v2-live-settlement-2026-08-11T04-28-59-530Z.json.",
+      "caveat": "The run used explicitly authorized disposable Base Sepolia signer material and did not exercise the production MCP short-lived human broadcast challenge. No mainnet or production-volume claim is made."
     },
     {
       "id": "video.master",
       "claim": "A demo video exists, recorded against the real app",
+      "scope": "V1_HISTORICAL",
       "state": "LIVE_PROVEN",
       "measuredAt": "2026-08-10",
       "value": {
@@ -342,6 +528,6 @@
     "Publishing the CLI pull request",
     "Rotating credentials or rewriting git history",
     "Broadcasting any value-bearing mainnet transaction",
-    "Funding any mainnet account (testnet demo-signer funding was explicitly user-authorized)"
+    "Funding any mainnet account (the archived V1 signer funding was explicitly user-authorized)"
   ]
 }

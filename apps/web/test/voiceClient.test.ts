@@ -11,9 +11,9 @@ import {
 const ticket = {
   token: "temporary-browser-token-long-enough",
   expiresInSeconds: 60,
-  maxSessionDurationSeconds: 600,
+  maxSessionDurationSeconds: 180,
   websocketUrl:
-    "wss://streaming.eu.assemblyai.com/v3/ws?sample_rate=16000&encoding=pcm_s16le&speech_model=universal-3-5-pro&mode=balanced&language_detection=true&voice_focus=far-field&keyterms_prompt=%5B%22FINALTab%22%2C%22KeeperHub%22%2C%22EIP-3009%22%5D",
+    "wss://streaming.eu.assemblyai.com/v3/ws?sample_rate=16000&encoding=pcm_s16le&speech_model=universal-3-5-pro&mode=balanced&language_detection=true&voice_focus=far-field&prompt=Shared+expense+allocation&keyterms_prompt=%5B%22FINALTab%22%2C%22KeeperHub%22%2C%22EIP-3009%22%5D&include_partial_turns=true",
   sampleRate: 16000,
   encoding: "pcm_s16le" as const,
   model: "universal-3-5-pro",
@@ -21,6 +21,7 @@ const ticket = {
   mode: "balanced" as const,
   languageDetection: true,
   keyterms: ["FINALTab", "KeeperHub", "EIP-3009"],
+  voiceFocus: "far-field" as const,
 };
 
 describe("voice client session boundary", () => {
@@ -37,6 +38,9 @@ describe("voice client session boundary", () => {
     );
     expect(() => parseVoiceSessionTicket({ ...ticket, websocketUrl: `${ticket.websocketUrl}&token=preloaded` })).toThrow(
       "approved AssemblyAI EU",
+    );
+    expect(() => parseVoiceSessionTicket({ ...ticket, maxSessionDurationSeconds: 600 })).toThrow(
+      "maximum session duration",
     );
   });
 
@@ -56,11 +60,11 @@ describe("voice client session boundary", () => {
   it("prints finalized turns in order and keeps the current partial last", () => {
     const turns = new Map([
       [2, "shared the naan."],
-      [0, "Vee had the daal,"],
-      [1, "Hem and Ravi"],
+      [0, "The first participant had the daal,"],
+      [1, "two others"],
     ]);
-    expect(composeVoiceTranscript(turns, "Ravi had dessert")).toBe(
-      "Vee had the daal, Hem and Ravi shared the naan. Ravi had dessert",
+    expect(composeVoiceTranscript(turns, "the final participant had dessert")).toBe(
+      "The first participant had the daal, two others shared the naan. the final participant had dessert",
     );
   });
 
@@ -69,45 +73,37 @@ describe("voice client session boundary", () => {
       type: "Begin",
       id: "session-123",
       configuration: {
-        speech_model: ticket.model,
+        model: ticket.model,
         mode: ticket.mode,
-        sample_rate: ticket.sampleRate,
-        encoding: ticket.encoding,
         api_version: ticket.apiVersion,
+        voice_focus: ticket.voiceFocus,
       },
     };
     expect(validateVoiceBeginMessage(begin, ticket)).toEqual({
       id: "session-123",
       configuration: {
-        speechModel: ticket.model,
+        model: ticket.model,
         mode: ticket.mode,
-        sampleRate: 16_000,
-        encoding: ticket.encoding,
         apiVersion: ticket.apiVersion,
+        voiceFocus: ticket.voiceFocus,
       },
     });
-    expect(validateVoiceBeginMessage({
-      ...begin,
-      configuration: { ...begin.configuration, encoding: undefined },
-    }, ticket).configuration.encoding).toBeNull();
   });
 
   it.each([
-    ["speech_model", "different-model", "speech model"],
+    ["model", "different-model", "speech model"],
     ["mode", "max_accuracy", "streaming mode"],
-    ["sample_rate", 48_000, "sample rate"],
-    ["encoding", "pcm_mulaw", "audio encoding"],
     ["api_version", "different-version", "streaming API version"],
+    ["voice_focus", "near-field", "Voice Focus"],
   ])("fails closed when Begin.configuration.%s differs", (field, value, message) => {
     expect(() => validateVoiceBeginMessage({
       type: "Begin",
       id: "session-123",
       configuration: {
-        speech_model: ticket.model,
+        model: ticket.model,
         mode: ticket.mode,
-        sample_rate: ticket.sampleRate,
-        encoding: ticket.encoding,
         api_version: ticket.apiVersion,
+        voice_focus: ticket.voiceFocus,
         [field]: value,
       },
     }, ticket)).toThrow(message);
@@ -116,6 +112,6 @@ describe("voice client session boundary", () => {
   it("keeps audio frames at exactly 50 ms and schedules shutdown before the provider cap", () => {
     expect(voiceChunkSampleCount(16_000)).toBe(800);
     expect(voiceChunkSampleCount(48_000)).toBe(2_400);
-    expect(voiceSessionStopDelayMs(600)).toBe(585_000);
+    expect(voiceSessionStopDelayMs(180)).toBe(165_000);
   });
 });

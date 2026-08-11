@@ -4,9 +4,18 @@ Nothing here is faked in the app: blocked paths render as blocked, unproven stat
 
 ## CURRENT V2 BLOCKERS — 2026-08-11
 
-- Execute and retain one authenticated external-wallet V2 USDC settlement.
+- Apply and verify additive migrations `52236` (agent control), `64822` (voice
+  spend reservations), `73000` (first-party flow), and `74000` (shared
+  UI/REST/MCP submission journal), then promote and apply `74500` to revoke
+  legacy writes. The hosted schema remains at the verified four-migration,
+  19-table baseline until then.
+- Complete the Privy dashboard/JWKS/domain/identity-token/verifier setup and
+  live-probe subject pairing. Configure a verified-domain SMTP provider or Send
+  Email Hook separately before claiming branded inbound email.
+- Deploy the current exactly-nine-tool MCP/product release; probe auth,
+  multi-identity persistence, review invalidation, voice, and the live tool list.
 - Bind the V2 MCP trace, KeeperHub receipt, independent V2 event/balance proof,
-  and final video to the same run.
+  and final 4K/60 product video to one truthful evidence package.
 - Upload that video and complete the human DoraHacks form.
 
 V2 deployment itself is resolved: contract
@@ -36,7 +45,10 @@ maintained in [release/status.md](release/status.md).
 
 ### Historical V1 ElevenLabs voiceover — DONE
 
-- Key provided; 8 scene mp3s generated to `proof-output/voiceover/` (gitignored). Storyboard in [demo-storyboard.md](demo-storyboard.md).
+- Key provided; 8 scene mp3s generated to `proof-output/voiceover/` (gitignored).
+  The superseded V1 recording plan is retained in
+  [DEMO_VIDEO_INSTRUCTIONS.md](release/DEMO_VIDEO_INSTRUCTIONS.md); the current
+  [demo-storyboard.md](demo-storyboard.md) is the V2 nine-scene capture contract.
 
 ### Historical V1 live executeSettlement — RESOLVED 2026-08-10 (VERIFIED_SETTLED)
 
@@ -121,11 +133,21 @@ rewrite is a destructive, irreversible choice, so it sits in
 [user-actions.md](release/user-actions.md#1-deployer-private-key-committed-to-git-history)
 rather than being done autonomously.
 
-### 2. Hosted Supabase project state
+### 2. Hosted Supabase project state — infrastructure resolved 2026-08-11
 
-- Production tenancy/approval migration complete at `supabase/migrations/20260811003158_production_tenancy_and_approvals.sql`, not applied to a hosted project.
-- Fix: create a free Supabase project, fill `SUPABASE_URL` + `SUPABASE_SECRET_KEY` (+ the two `NEXT_PUBLIC_*` values) in `apps/web/.env.local`, run the migration.
-- Until then cloud tabs, invitations, approval history, and cross-device resume are unavailable. Local draft editing remains available, while provider extraction and money APIs still require an authenticated session or correctly scoped token.
+- `finaltab-production` (`yoavihmldqbkuxinrsih`) is active in London
+  (`eu-west-2`) on the free plan, with verified monthly cost `0`.
+- Four migrations are applied. Verification found 19/19 tables with
+  RLS, 45 policies, no anonymous table grants, and 34/34 foreign keys covered
+  by indexes. The durable voice quota table has no direct anonymous or
+  authenticated grants; its consumer RPC is authenticated-only.
+- Additive migrations `20260811052236`, `20260811064822`, `20260811073000`, and
+  `20260811074000` are committed in source but not yet applied. Post-promotion
+  cutover `20260811074500` must follow the candidate probe. Recount RLS,
+  policies, grants, and indexes after the ordered rollout.
+- Remaining release gate: deploy the newer application and live-probe auth,
+  invitations, approvals, durable history, and cross-device resume with more
+  than one identity. Provisioning alone does not prove those browser behaviors.
 
 ## Pre-existing upstream noise (not ours, disclosed)
 

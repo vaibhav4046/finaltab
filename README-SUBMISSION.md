@@ -10,9 +10,16 @@ claims previously drifted across several documents, including conflicting
   [docs/release/SUBMISSION_CHECKLIST.md](docs/release/SUBMISSION_CHECKLIST.md)
 - Evidence labels: [docs/release/truth-snapshot.md](docs/release/truth-snapshot.md)
 
-Current gates: **V2 USDC settlement proof, final video/public URL, verified
-Supabase provisioning, durably guarded production voice, and human submission
-are pending**. Main commit
+Current gates: **four additive Supabase migrations plus the post-promotion
+financial cutover, Privy dashboard setup, final
+deployment/provider probe, unified nine-tool MCP capture, final 4K/60 video and
+public URL, and human submission are pending**. The V2
+one-atomic-unit settlement, Supabase provisioning, durable per-minute voice quota, and
+sensitive provider configuration are now proven. Main commit
 `b084497` has a green two-job CI baseline and a 13/13 protected production
 probe; newer submission commits must preserve those gates. The V2 deployment
 transaction alone does not satisfy the product-settlement proof gate.
+
+The final local suite is 370 passing with one provider-gated vision check
+skipped, and the production build generated 33/33 pages. These figures must be
+reproduced from the submitted commit before they become release evidence.

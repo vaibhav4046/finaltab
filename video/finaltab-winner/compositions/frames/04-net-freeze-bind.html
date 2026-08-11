@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8"/><title>FINALTab — Net, freeze, bind capture slot</title></head>
+<body>
+<template>
+  <style>
+    @font-face{font-family:Fraunces;src:url("assets/fonts/Fraunces-Variable.ttf") format("truetype");font-weight:100 900}
+    @font-face{font-family:GeistMono;src:url("assets/fonts/GeistMono-Regular.woff2") format("woff2");font-weight:400}
+    @font-face{font-family:GeistMono;src:url("assets/fonts/GeistMono-Bold.woff2") format("woff2");font-weight:700}
+    #root{position:absolute;inset:0;width:3840px;height:2160px;overflow:hidden;color:#F4EEE2;background:transparent}
+    .clip{position:absolute;inset:0;overflow:hidden}.ground{background:#0B0F12}
+    .scene{width:50%;height:50%;transform:scale(2);transform-origin:0 0;padding:62px 96px 150px;box-sizing:border-box}
+    .head small{display:block;font:700 18px/1 GeistMono,monospace;letter-spacing:.16em;color:#FF936A;margin-bottom:12px}.head h2{margin:0;font:600 58px/1 Fraunces,Georgia,serif;letter-spacing:-.03em}
+    .plate{position:absolute;left:96px;top:205px;width:1120px;height:655px;border-radius:26px;overflow:hidden;border:1px solid rgba(145,160,168,.25)}
+    .plate img{width:100%;height:100%;object-fit:cover;object-position:left center}
+    .focus{position:absolute;left:460px;top:0;width:3px;height:100%;background:#FF936A;box-shadow:0 0 24px rgba(255,147,106,.55)}
+    .review{position:absolute;z-index:2;left:24px;right:24px;bottom:24px;min-height:176px;border:1px solid rgba(255,147,106,.52);border-radius:16px;background:rgba(11,15,18,.96);padding:16px 18px;box-sizing:border-box}.review-title{display:flex;justify-content:space-between;gap:20px;font:700 13px/1.2 GeistMono,monospace;color:#FF936A;letter-spacing:.1em}.review-title em{font-style:normal;color:#91A0A8}.review-stages{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}.review-stage{border:1px solid rgba(183,245,216,.35);border-radius:8px;padding:10px;font:700 12px/1.25 GeistMono,monospace;color:#B7F5D8}.review-stage.skipped{border-color:rgba(145,160,168,.36);color:#91A0A8}.stale{margin-top:12px;font:700 12px/1.25 GeistMono,monospace;color:#F4EEE2;letter-spacing:.04em}.stale b{color:#FF936A}
+    .plan{position:absolute;right:96px;top:205px;width:545px;height:655px;border:1px solid rgba(145,160,168,.32);border-radius:26px;padding:34px;box-sizing:border-box;background:#0F1519}
+    .plan .kicker{font:700 16px/1 GeistMono,monospace;color:#FF936A;letter-spacing:.13em}.plan h3{font:600 42px/1 Fraunces,Georgia,serif;margin:17px 0 26px}
+    .row{border-top:1px solid rgba(145,160,168,.24);padding:18px 0}.row span{display:block;font:700 14px/1 GeistMono,monospace;color:#91A0A8;letter-spacing:.12em;margin-bottom:9px}.row b{display:block;font:400 19px/1.4 GeistMono,monospace;color:#F4EEE2;overflow-wrap:anywhere}
+    .bind{display:flex;align-items:center;gap:11px;margin-top:20px;font:700 15px/1.25 GeistMono,monospace;color:#F4EEE2}.bind i{width:10px;height:10px;border:2px solid #FF936A;border-radius:50%}
+    .truth{position:absolute;left:96px;bottom:132px;font:700 15px/1 GeistMono,monospace;letter-spacing:.12em;color:#91A0A8}
+  </style>
+  <div id="root" data-composition-id="finaltab-net-freeze-bind" data-start="0" data-width="3840" data-height="2160" data-duration="13">
+    <section id="f04-ground" class="clip ground" data-start="0" data-duration="13" data-track-index="0"></section>
+    <section id="f04-scene" class="clip scene" data-start="0" data-duration="13" data-track-index="1">
+      <div id="f04-head" class="head"><small>04 · ATTESTED AGENT REVIEW + NETTING</small><h2>Attest the inputs. Then freeze.</h2></div>
+      <div id="f04-plate" class="plate"><img src="assets/capture-slots/C04-net-freeze-bind.svg" alt="C04 attested review, net, and freeze product capture slot"/><div id="f04-focus" class="focus"></div><div id="f04-review" class="review"><div class="review-title">CAPTURE CONTRACT · CURRENT INPUT ATTESTATION <em>4 ORDERED STAGES</em></div><div class="review-stages"><div id="f04-stage-1" class="review-stage">01 · EXTRACTION<br/>VALIDATED</div><div id="f04-stage-2" class="review-stage">02 · ALLOCATION<br/>ARITHMETIC</div><div id="f04-stage-3" class="review-stage">03 · CONSENT<br/>RISK</div><div id="f04-stage-4" class="review-stage skipped">04 · PROOF PREFLIGHT<br/>SKIPPED BEFORE SUBMISSION</div></div><div id="f04-stale" class="stale"><b>UPSTREAM EDIT</b> → REVIEW INVALIDATED → FRESH ATTESTED RUN REQUIRED</div></div></div>
+      <aside id="f04-plan" class="plan">
+        <div class="kicker">VERIFIED RELEASE DATA OVERLAY · NOT UI</div><h3>One immutable frozen plan</h3>
+        <div id="f04-row-1" class="row"><span>LEDGER HASH</span><b>0x1581eb7f56485ff4d2a684a832fc8d085b9b0e5d8540c85e2d550e8f7b0cb91e</b></div>
+        <div id="f04-row-2" class="row"><span>SETTLEMENT ID</span><b>0x8b670800d9856a90baa7492adefaf06ae86ac345d053db3dc7f01b065aadb9db</b></div>
+        <div id="f04-row-3" class="row"><span>CHAIN · CONTRACT</span><b>84532 · 0x7b58791c…cCDB</b></div>
+        <div id="f04-bind" class="bind"><i></i>1 ATOMIC TRANSFER · 1 ATOMIC UNIT</div>
+      </aside>
+      <div id="f04-truth" class="truth">CAPTURE SLOT C04 · PRODUCT CHRONOLOGY STILL REQUIRED</div>
+    </section>
+  </div>
+  <script>
+    window.__timelines=window.__timelines||{};
+    const tl=gsap.timeline({paused:true});
+    tl.fromTo("#f04-head",{opacity:0,y:18},{opacity:1,y:0,duration:.5,ease:"power3.out"},.15);
+    tl.fromTo("#f04-plate",{opacity:0,x:-36},{opacity:1,x:0,duration:.65,ease:"power3.out"},.52);
+    tl.fromTo("#f04-plan",{opacity:0,x:40},{opacity:1,x:0,duration:.65,ease:"power3.out"},.78);
+    tl.fromTo("#f04-focus",{scaleY:0,transformOrigin:"50% 0%"},{scaleY:1,duration:2.6,ease:"power2.inOut"},1.4);
+    tl.fromTo("#f04-review",{opacity:0,y:22},{opacity:1,y:0,duration:.48,ease:"power3.out"},2.45);
+    tl.fromTo("#f04-stage-1, #f04-stage-2, #f04-stage-3, #f04-stage-4",{opacity:.18,y:8},{opacity:1,y:0,duration:.34,stagger:.18,ease:"power3.out"},2.95);
+    tl.fromTo("#f04-stale",{opacity:0},{opacity:1,duration:.35,ease:"sine.out"},4.05);
+    tl.fromTo("#f04-row-1",{opacity:.18,y:14},{opacity:1,y:0,duration:.48,ease:"power3.out"},4.7);
+    tl.fromTo("#f04-row-2",{opacity:.18,y:14},{opacity:1,y:0,duration:.48,ease:"power3.out"},6.25);
+    tl.fromTo("#f04-row-3",{opacity:.18,y:14},{opacity:1,y:0,duration:.48,ease:"power3.out"},7.85);
+    tl.fromTo("#f04-bind",{opacity:0,scale:.95},{opacity:1,scale:1,duration:.52,ease:"back.out(1.5)"},9.25);
+    tl.fromTo("#f04-truth",{opacity:0},{opacity:1,duration:.35,ease:"sine.out"},10.05);
+    window.__timelines["finaltab-net-freeze-bind"]=tl;
+  </script>
+</template>
+</body>
+</html>

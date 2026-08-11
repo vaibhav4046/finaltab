@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8"/><title>FINALTab — Dual consent and simulation capture slot</title></head>
+<body>
+<template>
+  <style>
+    @font-face{font-family:Fraunces;src:url("assets/fonts/Fraunces-Variable.ttf") format("truetype");font-weight:100 900}
+    @font-face{font-family:GeistMono;src:url("assets/fonts/GeistMono-Regular.woff2") format("woff2");font-weight:400}
+    @font-face{font-family:GeistMono;src:url("assets/fonts/GeistMono-Bold.woff2") format("woff2");font-weight:700}
+    #root{position:absolute;inset:0;width:3840px;height:2160px;overflow:hidden;color:#F4EEE2;background:transparent}
+    .clip{position:absolute;inset:0;overflow:hidden}.ground{background:#0B0F12}
+    .scene{width:50%;height:50%;transform:scale(2);transform-origin:0 0;padding:62px 96px 150px;box-sizing:border-box}
+    .head{display:flex;justify-content:space-between;align-items:flex-end}.head small{display:block;font:700 18px/1 GeistMono,monospace;letter-spacing:.16em;color:#FF936A;margin-bottom:12px}.head h2{margin:0;font:600 58px/1 Fraunces,Georgia,serif;letter-spacing:-.03em}.head .note{max-width:510px;text-align:right;font:700 15px/1.45 GeistMono,monospace;color:#91A0A8}
+    .plate{position:absolute;left:96px;right:96px;top:205px;height:550px;border-radius:26px;overflow:hidden;border:1px solid rgba(145,160,168,.26)}.plate img{width:100%;height:100%;object-fit:cover}
+    .signature{position:absolute;top:690px;width:600px;height:165px;border:1px solid rgba(145,160,168,.32);border-radius:20px;background:#0F1519;padding:25px 28px;box-sizing:border-box}.signature small{font:700 15px/1 GeistMono,monospace;color:#FF936A;letter-spacing:.12em}.signature h3{font:600 29px/1 Fraunces,Georgia,serif;margin:15px 0 10px}.signature p{font:400 17px/1.35 GeistMono,monospace;color:#91A0A8;margin:0}.sig-a{left:180px}.sig-b{left:820px}
+    .sim{position:absolute;right:180px;top:690px;width:470px;height:165px;border:1px dashed #FF936A;border-radius:20px;padding:25px 28px;box-sizing:border-box;background:#0B0F12}.sim b{font:700 17px/1 GeistMono,monospace;color:#FF936A}.sim p{margin:13px 0 0;font:400 17px/1.4 GeistMono,monospace;color:#91A0A8}
+    .truth{position:absolute;left:96px;bottom:132px;font:700 15px/1 GeistMono,monospace;letter-spacing:.12em;color:#91A0A8}
+  </style>
+  <div id="root" data-composition-id="finaltab-dual-consent-simulate" data-start="0" data-width="3840" data-height="2160" data-duration="12">
+    <section id="f05-ground" class="clip ground" data-start="0" data-duration="12" data-track-index="0"></section>
+    <section id="f05-scene" class="clip scene" data-start="0" data-duration="12" data-track-index="1">
+      <div id="f05-head" class="head"><div><small>05 · EXTERNAL-WALLET CONSENT BOUNDARY</small><h2>Every debtor signs twice.</h2></div><div class="note">External participant wallets sign. FINALTab holds no user keys. The final take must contain real public-key recoveries and separate simulation requests.</div></div>
+      <div id="f05-plate" class="plate"><img src="assets/capture-slots/C05-dual-consent-simulate.svg" alt="C05 dual consent and simulation capture slot"/></div>
+      <article id="f05-sig-a" class="signature sig-a"><small>EIP-3009 · CIRCLE</small><h3>ReceiveWithAuthorization</h3><p>Binds the exact USDC pull, nonce, validity window, and recipient.</p></article>
+      <article id="f05-sig-b" class="signature sig-b"><small>EIP-712 · FINALTAB V2</small><h3>SettlementConsent</h3><p>Binds the ledger hash and complete debits + payouts plan.</p></article>
+      <article id="f05-sim" class="sim"><b>CAPTURE BOTH REAL OUTCOMES</b><p>PASS · broadcast:false<br/>REVERT · WOULD REVERT · NOT BROADCAST</p></article>
+      <div id="f05-truth" class="truth">CAPTURE SLOT C05 · NO SUCCESS CLAIM IS MADE BY THIS PLACEHOLDER</div>
+    </section>
+  </div>
+  <script>
+    window.__timelines=window.__timelines||{};
+    const tl=gsap.timeline({paused:true});
+    tl.fromTo("#f05-head",{opacity:0,y:18},{opacity:1,y:0,duration:.5,ease:"power3.out"},.16);
+    tl.fromTo("#f05-plate",{opacity:0,scale:1.025},{opacity:1,scale:1,duration:.68,ease:"expo.out"},.58);
+    tl.fromTo("#f05-sig-a",{opacity:0,y:26},{opacity:1,y:0,duration:.5,ease:"power3.out"},2.15);
+    tl.fromTo("#f05-sig-b",{opacity:0,y:26},{opacity:1,y:0,duration:.5,ease:"power3.out"},4.1);
+    tl.fromTo("#f05-sim",{opacity:0,scale:.94},{opacity:1,scale:1,duration:.52,ease:"back.out(1.6)"},6.35);
+    tl.fromTo("#f05-truth",{opacity:0},{opacity:1,duration:.35,ease:"sine.out"},8.25);
+    window.__timelines["finaltab-dual-consent-simulate"]=tl;
+  </script>
+</template>
+</body>
+</html>

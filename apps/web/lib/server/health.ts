@@ -1,5 +1,6 @@
 import "server-only";
 
+import { privyServerConfig } from "@/lib/privy/server";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { proofCapabilityConfigured } from "@/lib/server/proofCapability";
 import { voiceCapabilitySnapshot } from "@/lib/server/voice";
@@ -16,8 +17,20 @@ export function healthSnapshot() {
     keeperHub: process.env.KEEPERHUB_API_KEY?.startsWith("kh_") === true,
     vision: Boolean(process.env.GROQ_API_KEY || process.env.CLAUDE_API_KEY || process.env.OPENAI_API_KEY),
     webSessionAuth: isSupabaseConfigured(),
+    walletOwnershipLink:
+      isSupabaseConfigured() && Boolean(process.env.SUPABASE_SECRET_KEY?.trim()),
+    settlementPersistence:
+      isSupabaseConfigured() && Boolean(process.env.SUPABASE_SECRET_KEY?.trim()),
+    privyIdentityBridge: isSupabaseConfigured() && Boolean(privyServerConfig()),
     mcpAuth: isSupabaseConfigured() || Boolean(process.env.FINALTAB_API_TOKENS_JSON),
     shareableProof: proofCapabilityConfigured(),
+    settlementAgentAttestation:
+      isSupabaseConfigured() &&
+      (process.env.FINALTAB_AGENT_ATTESTATION_SECRET?.trim().length ?? 0) >= 32,
+    voiceQuota:
+      process.env.FINALTAB_VOICE_DURABLE_QUOTA === "supabase" &&
+      isSupabaseConfigured() &&
+      Boolean(process.env.SUPABASE_SECRET_KEY?.trim()),
   };
   return {
     status: Object.values(checks).every(Boolean) ? "ready" : "degraded",
@@ -29,6 +42,13 @@ export function healthSnapshot() {
       // by a post-deploy provider + browser probe, never inferred from a key.
       voiceTranscriptionConfigured: voice.transcription,
       voiceReadbackConfigured: voice.readback,
+      voiceDurableQuotaConfigured: checks.voiceQuota,
+      // This is configuration readiness only. Live readiness additionally
+      // requires Privy dashboard custom auth, identity tokens and allowed URLs.
+      privyIdentityBridgeConfigured: checks.privyIdentityBridge,
+      walletOwnershipLinkConfigured: checks.walletOwnershipLink,
+      settlementPersistenceConfigured: checks.settlementPersistence,
+      settlementAgentAttestationConfigured: checks.settlementAgentAttestation,
     },
     commit: process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 12) ?? null,
   } as const;

@@ -20,14 +20,8 @@ const PRODUCTION_TOOLS: ToolDescription[] = [
   { name: "prepare_receipt_settlement", scope: "settlements:prepare", what: "Freeze the V2 plan and return both typed-data payloads each debtor signs in their own wallet." },
   { name: "simulate_signed_settlement", scope: "settlements:prepare", what: "Validate the externally signed V2 payload and simulate the exact KeeperHub call. No broadcast." },
   { name: "create_broadcast_approval_challenge", scope: "settlements:prepare", what: "Create a short-lived EIP-191 approval message bound to the principal and exact plan; retries are valid until expiry." },
-  { name: "submit_signed_settlement", scope: "settlements:submit", what: "Verify human approval, re-simulate, and submit one idempotent atomic V2 call through KeeperHub." },
+  { name: "submit_signed_settlement", scope: "settlements:submit", what: "Journal new work before one idempotent KeeperHub call; accepted retries skip simulation and execution." },
   { name: "settlement_status", scope: "settlements:read", what: "Combine KeeperHub proof with an independent Base Sepolia receipt and exact V2 settlementId + ledgerHash check." },
-];
-
-const DEMO_TOOLS: ToolDescription[] = [
-  { name: "demo_get_balances", scope: "settlements:read", what: "Read the three fixed Base Sepolia fixture wallets. Disabled by default." },
-  { name: "demo_prepare_settlement", scope: "settlements:prepare", what: "Prepare the fixed Vee/Hem/Ravi test fixture. Never the production user path." },
-  { name: "demo_settle_tab", scope: "settlements:submit", what: "Move fixture testnet USDC only after a configured human operator signs an approval artifact." },
 ];
 
 const JOURNEY = [
@@ -36,18 +30,18 @@ const JOURNEY = [
   ["03", "Wallet-sign", "Each debtor signs USDC pull + FINALTab full-plan consent."],
   ["04", "Simulate", "KeeperHub proves the exact call will not revert."],
   ["05", "Human approve", "A reviewed EIP-191 artifact binds principal, plan, ID, and expiry."],
-  ["06", "Submit", "Re-simulate, then broadcast one idempotent atomic call."],
+  ["06", "Submit", "Journal first; new work broadcasts once. Accepted retries only replay the durable result."],
   ["07", "Prove", "KeeperHub receipt + independent RPC + exact V2 plan binding, or UNPROVEN."],
 ] as const;
 
 const HTTP_ROUTES: Array<{ route: string; what: string }> = [
   { route: "POST /api/vision/extract", what: "Receipt image → structured lines; authenticated, size-bounded, Zod-validated, arithmetic-checked." },
   { route: "POST /api/vision/allocate", what: "Natural-language proposal → deterministic reconciliation. The model never decides the final cents." },
-  { route: "POST /api/voice/token", what: "Configuration-gated AssemblyAI live-STT bootstrap; receipts:write, no request body, short-lived browser credential only." },
-  { route: "POST /api/voice/speak", what: "Configuration-gated ElevenLabs MP3 readback; tabs:read, 2,048-byte body cap, 1-600 normalized characters." },
+  { route: "POST /api/voice/token", what: "Supabase user session/JWT only; receipts:write, atomic 180-second reservation, 8/min, 1-user/4-project concurrency." },
+  { route: "POST /api/voice/speak", what: "Supabase user session/JWT only; tabs:read, atomic 1-600-character reservation, 20/min, 2,048-byte body cap." },
   { route: "POST /api/settle/simulate", what: "Server-side KeeperHub simulation of a caller-signed V2 payload." },
   { route: "POST /api/settle/approval", what: "Create the principal + exact-plan EIP-191 challenge a debtor wallet must sign." },
-  { route: "POST /api/settle/execute", what: "Verify the short-lived approval, re-simulate, then submit the frozen V2 batch through KeeperHub." },
+  { route: "POST /api/settle/execute", what: "Use the shared durable journal; new work simulates and submits once, while accepted retries never execute again." },
   { route: "GET /api/settle/status/:id", what: "Fail-closed status with KeeperHub and independent Base Sepolia verification." },
   { route: "POST /api/mcp", what: "Authenticated MCP Streamable HTTP endpoint (JSON-RPC over HTTPS)." },
 ];
@@ -113,7 +107,7 @@ function ToolManifest({ tools, testId }: { tools: ToolDescription[]; testId?: st
 
 export default function DevelopersPage() {
   return (
-    <div className="min-h-screen bg-canvas text-txt">
+    <div className="marketing-shell min-h-screen bg-canvas text-txt">
       <PublicHeader active="developers" />
 
       <main className="atmosphere mx-auto max-w-5xl px-4 pb-24 pt-14 sm:px-6">
@@ -158,16 +152,13 @@ export default function DevelopersPage() {
             </div>
           </div>
 
-          <div className="mt-4 rounded-lg border border-warn/35 bg-warn/5 p-5">
-            <p className="font-mono text-[11px] uppercase tracking-wider text-warn">Testnet fixture · off by default</p>
+          <div className="mt-4 rounded-lg border border-signal/30 bg-signal/5 p-5">
+            <p className="font-mono text-[11px] uppercase tracking-wider text-signal">Production manifest only</p>
             <p className="mt-2 max-w-3xl text-xs leading-relaxed text-muted">
-              The fixed Vee/Hem/Ravi path is retained only for controlled Base Sepolia demonstrations.
-              It requires an explicit server feature flag, a V2 contract gate, scoped auth, and a
-              configured human operator approval. It is not the production workflow.
+              The public agent surface contains the nine authenticated tools above. Value movement still
+              requires debtor-wallet consent, scoped authorization, KeeperHub simulation, and an exact-plan
+              human approval artifact before any broadcast.
             </p>
-            <div className="mt-4">
-              <ToolManifest tools={DEMO_TOOLS} testId="mcp-demo-tools" />
-            </div>
           </div>
         </section>
 
@@ -201,6 +192,16 @@ export default function DevelopersPage() {
                 KeeperHub idempotency and V2 settlement state prevent duplicate settlement.
               </p>
             </div>
+          </div>
+          <div className="mt-4 rounded-lg border border-info/30 bg-info/5 p-5">
+            <p className="font-mono text-[11px] uppercase tracking-wider text-info">Durable crash recovery</p>
+            <p className="mt-2 text-xs leading-relaxed text-muted">
+              First-party UI, REST, and MCP submissions share one server-authored journal. A durably accepted retry
+              returns the recorded execution without another simulation or KeeperHub execute call. A prepared retry
+              reuses its stored successful simulation and deterministic idempotency key while the persisted approval
+              lease remains bounded. Fresh first-party work still needs current database approvals and a valid wallet
+              approval at the final pre-broadcast gate.
+            </p>
           </div>
           <div className="mt-4 rounded-lg border border-quiet bg-surface-1 p-5">
             <p className="font-mono text-[11px] uppercase tracking-wider text-faint">Safe local token bootstrap</p>
@@ -304,7 +305,7 @@ export default function DevelopersPage() {
             ))}
           </div>
           <p className="mt-4 font-mono text-[11px] leading-relaxed text-faint">
-            Provider secrets stay server-side. Missing providers and missing V2 configuration fail closed; they never fall back to fake success.
+            Provider secrets stay server-side. Missing providers and missing V2 configuration fail closed; they never synthesize success.
           </p>
         </section>
 
@@ -317,7 +318,7 @@ export default function DevelopersPage() {
               <p className="text-sm font-semibold text-paper">AssemblyAI · live speech-to-text</p>
               <p className="mt-2 text-xs leading-relaxed text-muted">
                 When AssemblyAI is configured on the server, FINALTab mints a short-lived redemption
-                credential and returns constrained EU streaming settings for interactive transcription.
+                credential and returns constrained EU streaming settings for at most 180 seconds of transcription.
                 The permanent provider key never enters the browser, OpenAPI response, or repository.
               </p>
             </div>
@@ -325,14 +326,18 @@ export default function DevelopersPage() {
               <p className="text-sm font-semibold text-paper">ElevenLabs · spoken readback</p>
               <p className="mt-2 text-xs leading-relaxed text-muted">
                 When ElevenLabs is configured on the server, FINALTab returns a short uncached MP3
-                confirmation that the current browser client buffers before playback. This interactive readback is distinct from the product-demo narration:
-                the prerecorded demo voiceover uses ElevenLabs only, not AssemblyAI.
+                confirmation that the current browser client buffers before playback. This interactive readback is distinct from the product-video narration:
+                the prerecorded video voiceover uses ElevenLabs only, not AssemblyAI.
               </p>
             </div>
           </div>
           <p className="mt-4 rounded-md border border-warn/30 bg-warn/5 px-4 py-3 text-xs leading-relaxed text-muted">
-            These routes fail closed when provider configuration is absent. Their presence in source or
-            OpenAPI does not claim that either provider is enabled on the currently deployed site.
+            Paid voice requires a signed-in Supabase user through a same-origin cookie session or validated
+            Supabase bearer JWT; opaque FINALTab API tokens are deliberately rejected. Before a provider boundary,
+            The pending service-role migration atomically enforces per-user and project UTC-day/month spend budgets alongside the applied fixed-minute limits
+            (8 transcription requests, 20 readbacks), and 1-user/4-project transcription concurrency. Storage and missing
+            provider configuration fail closed before any success is reported. Presence in source or OpenAPI does not claim
+            that either provider is enabled on the currently deployed site.
           </p>
         </section>
 

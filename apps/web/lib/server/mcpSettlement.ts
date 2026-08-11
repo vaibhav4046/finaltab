@@ -454,9 +454,6 @@ const TOOL_SCOPE: Readonly<Record<string, ApiScope>> = {
   create_broadcast_approval_challenge: "settlements:prepare",
   submit_signed_settlement: "settlements:submit",
   settlement_status: "settlements:read",
-  demo_get_balances: "settlements:read",
-  demo_prepare_settlement: "settlements:prepare",
-  demo_settle_tab: "settlements:submit",
 };
 
 /** Map JSON-RPC batches to every scope they can exercise; unknown tools fail closed to submit. */
@@ -480,11 +477,6 @@ export function mcpScopesForPayload(payload: unknown): ApiScope[] {
     scopes.add(typeof name === "string" ? (TOOL_SCOPE[name] ?? "settlements:submit") : "settlements:submit");
   }
   return [...scopes].sort();
-}
-
-export function isDemoMoneyEnabled(): boolean {
-  return process.env.FINALTAB_ENABLE_DEMO_MONEY_TOOLS === "true" &&
-    process.env.FINALTAB_SETTLEMENT_CONTRACT_VERSION === "2";
 }
 
 /** MCP money tools refuse an unversioned address so V1 can never be called accidentally. */

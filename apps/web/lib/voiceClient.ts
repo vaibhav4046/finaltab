@@ -1,3 +1,5 @@
+import { VOICE_STT_RESERVATION_SECONDS } from "@/lib/voicePolicy";
+
 export interface VoiceSessionTicket {
   token: string;
   expiresInSeconds: number;
@@ -10,16 +12,16 @@ export interface VoiceSessionTicket {
   mode: "min_latency" | "balanced" | "max_accuracy";
   languageDetection: boolean;
   keyterms: string[];
+  voiceFocus: "near-field" | "far-field";
 }
 
 export interface ValidatedVoiceBegin {
   id: string;
   configuration: {
-    speechModel: string;
+    model: string;
     mode: VoiceSessionTicket["mode"];
-    sampleRate: number;
-    encoding: VoiceSessionTicket["encoding"] | null;
     apiVersion: string;
+    voiceFocus: VoiceSessionTicket["voiceFocus"];
   };
 }
 
@@ -65,6 +67,7 @@ export function parseVoiceSessionTicket(value: unknown): VoiceSessionTicket {
   const mode = value.mode;
   const languageDetection = value.languageDetection;
   const rawKeyterms = value.keyterms;
+  const voiceFocus = value.voiceFocus;
 
   if (token.length < 20 || token.length > 8_192) {
     throw new Error("Voice service returned an invalid temporary token.");
@@ -74,8 +77,7 @@ export function parseVoiceSessionTicket(value: unknown): VoiceSessionTicket {
   }
   if (
     !Number.isInteger(maxSessionDurationSeconds) ||
-    Number(maxSessionDurationSeconds) < 60 ||
-    Number(maxSessionDurationSeconds) > 10_800
+    Number(maxSessionDurationSeconds) !== VOICE_STT_RESERVATION_SECONDS
   ) {
     throw new Error("Voice service returned an invalid maximum session duration.");
   }
@@ -89,12 +91,40 @@ export function parseVoiceSessionTicket(value: unknown): VoiceSessionTicket {
   if (typeof languageDetection !== "boolean") {
     throw new Error("Voice service returned an invalid language setting.");
   }
+  if (voiceFocus !== "near-field" && voiceFocus !== "far-field") {
+    throw new Error("Voice service returned an unsupported Voice Focus mode.");
+  }
   if (
     !Array.isArray(rawKeyterms) ||
     rawKeyterms.length > 100 ||
     rawKeyterms.some((term) => typeof term !== "string" || term.trim().length === 0 || term.length > 50)
   ) {
     throw new Error("Voice service returned invalid recognition keyterms.");
+  }
+
+  const model = requiredString(value.model, "speech model");
+  const apiVersion = requiredString(value.apiVersion, "streaming API version");
+  const keyterms = rawKeyterms.map((term) => term.trim()).filter(Boolean).slice(0, 100);
+  let configuredKeyterms: unknown;
+  try {
+    configuredKeyterms = JSON.parse(parsedUrl.searchParams.get("keyterms_prompt") ?? "null");
+  } catch {
+    throw new Error("Voice service returned an invalid keyterms configuration.");
+  }
+  if (
+    parsedUrl.searchParams.get("sample_rate") !== String(sampleRate) ||
+    parsedUrl.searchParams.get("encoding") !== encoding ||
+    parsedUrl.searchParams.get("speech_model") !== model ||
+    parsedUrl.searchParams.get("mode") !== mode ||
+    parsedUrl.searchParams.get("language_detection") !== String(languageDetection) ||
+    parsedUrl.searchParams.get("voice_focus") !== voiceFocus ||
+    parsedUrl.searchParams.get("include_partial_turns") !== "true" ||
+    !Array.isArray(configuredKeyterms) ||
+    configuredKeyterms.length !== keyterms.length ||
+    configuredKeyterms.some((term, index) => term !== keyterms[index]) ||
+    !(parsedUrl.searchParams.get("prompt")?.trim())
+  ) {
+    throw new Error("Voice service returned streaming settings that do not match its signed session ticket.");
   }
 
   return {
@@ -104,11 +134,12 @@ export function parseVoiceSessionTicket(value: unknown): VoiceSessionTicket {
     websocketUrl,
     sampleRate: Number(sampleRate),
     encoding,
-    model: requiredString(value.model, "speech model"),
-    apiVersion: requiredString(value.apiVersion, "streaming API version"),
+    model,
+    apiVersion,
     mode,
     languageDetection,
-    keyterms: rawKeyterms.map((term) => term.trim()).filter(Boolean).slice(0, 100),
+    keyterms,
+    voiceFocus,
   };
 }
 
@@ -122,36 +153,35 @@ export function validateVoiceBeginMessage(value: unknown, ticket: VoiceSessionTi
   }
 
   const configuration = value.configuration;
-  const speechModel = requiredString(configuration.speech_model, "applied speech model");
+  // AssemblyAI's current Begin contract echoes this field as `model`, not the
+  // `speech_model` query-parameter name. Sample rate and encoding are not
+  // echoed in Begin, so those are verified against the server-owned URL when
+  // the ticket is parsed rather than hallucinated as provider response fields.
+  const model = requiredString(configuration.model, "applied speech model");
   const mode = requiredString(configuration.mode, "applied streaming mode");
   const apiVersion = requiredString(configuration.api_version, "applied streaming API version");
-  const sampleRate = configuration.sample_rate;
-  const encoding = configuration.encoding;
+  const voiceFocus = requiredString(configuration.voice_focus, "applied Voice Focus mode");
 
-  if (speechModel !== ticket.model) {
+  if (model !== ticket.model) {
     throw new Error("AssemblyAI applied a different speech model than the server approved.");
   }
   if (mode !== ticket.mode) {
     throw new Error("AssemblyAI applied a different streaming mode than the server approved.");
   }
-  if (!Number.isInteger(sampleRate) || Number(sampleRate) !== ticket.sampleRate) {
-    throw new Error("AssemblyAI applied a different audio sample rate than the server approved.");
-  }
-  if (encoding !== undefined && encoding !== null && encoding !== ticket.encoding) {
-    throw new Error("AssemblyAI applied a different audio encoding than the server approved.");
-  }
   if (apiVersion !== ticket.apiVersion) {
     throw new Error("AssemblyAI applied a different streaming API version than the server approved.");
+  }
+  if (voiceFocus !== ticket.voiceFocus) {
+    throw new Error("AssemblyAI applied a different Voice Focus mode than the server approved.");
   }
 
   return {
     id,
     configuration: {
-      speechModel,
+      model,
       mode: ticket.mode,
-      sampleRate: Number(sampleRate),
-      encoding: encoding === ticket.encoding ? encoding : null,
       apiVersion,
+      voiceFocus: ticket.voiceFocus,
     },
   };
 }

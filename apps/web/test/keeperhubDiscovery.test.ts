@@ -95,6 +95,27 @@ describe("KeeperHub integration discovery", () => {
     expect(token.operationId).toBe("createVoiceTranscriptionSession");
     expect(token["x-finaltab-required-scope"]).toBe("receipts:write");
     expect(token["x-finaltab-configuration-gated"]).toBe(true);
+    expect(token["x-finaltab-authenticated-user-required"]).toBe(true);
+    expect(token["x-finaltab-accepted-authentication"]).toEqual([
+      "same-origin-supabase-cookie-session",
+      "supabase-bearer-jwt",
+    ]);
+    expect(token["x-finaltab-opaque-bearer-accepted"]).toBe(false);
+    expect(token["x-finaltab-durable-quota"]).toMatchObject({
+      backend: "supabase-postgres-rpc",
+      identity: "route-verified-supabase-user-id",
+      databaseExecutionRole: "service_role_only",
+      limit: 8,
+      capability: "transcription",
+    });
+    expect(token["x-finaltab-durable-budget"]).toMatchObject({
+      reservation: "before-provider-token-mint",
+      unit: "seconds",
+      reservedPerRequest: 180,
+      user: { daily: 720, monthly: 3600 },
+      project: { daily: 3600, monthly: 18000 },
+      concurrency: { user: 1, project: 4, leaseSeconds: 240 },
+    });
     expect("requestBody" in token).toBe(false);
     expect(token.responses["200"].content["application/json"].schema.$ref).toBe(
       "#/components/schemas/voiceStreamingSession",
@@ -104,11 +125,30 @@ describe("KeeperHub integration discovery", () => {
       "not the permanent provider API key",
     );
     expect(openapi.components.schemas.voiceStreamingSession.properties.websocketUrl.pattern).toBe("^wss://");
+    expect(openapi.components.schemas.voiceStreamingSession.properties.maxSessionDurationSeconds.const).toBe(180);
     expect(token.responses["501"].description).toContain("not configured");
+    expect(token.responses["403"].description).toContain("opaque FINALTab API tokens");
+    expect(token.responses["503"].description).toContain("Durable budget storage");
+    expect(token.responses["502"].headers).toHaveProperty("x-voice-ratelimit-remaining");
+    expect(token.responses["502"].headers).toHaveProperty("x-voice-budget-reserved-units");
 
     expect(speak.operationId).toBe("streamVoiceReadback");
     expect(speak["x-finaltab-required-scope"]).toBe("tabs:read");
     expect(speak["x-finaltab-configuration-gated"]).toBe(true);
+    expect(speak["x-finaltab-authenticated-user-required"]).toBe(true);
+    expect(speak["x-finaltab-opaque-bearer-accepted"]).toBe(false);
+    expect(speak["x-finaltab-durable-quota"]).toMatchObject({
+      identity: "route-verified-supabase-user-id",
+      databaseExecutionRole: "service_role_only",
+      limit: 20,
+      capability: "readback",
+    });
+    expect(speak["x-finaltab-durable-budget"]).toMatchObject({
+      reservation: "before-provider-request",
+      unit: "characters",
+      user: { daily: 2400, monthly: 12000 },
+      project: { daily: 12000, monthly: 60000 },
+    });
     expect(speak.requestBody.content["application/json"].schema.$ref).toBe(
       "#/components/schemas/voiceSpeakRequest",
     );
@@ -128,8 +168,21 @@ describe("KeeperHub integration discovery", () => {
     expect(speak.responses["501"].description).toContain("not configured");
     expect(openapi["x-finaltab-voice"]).toMatchObject({
       configurationGated: true,
+      authentication: {
+        requiredIdentity: "supabase-auth-uid",
+        opaqueFinalTabBearerAccepted: false,
+      },
+      durableQuota: {
+        backend: "supabase-postgres-rpc",
+        function: "reserve_voice_budget(uuid, text, integer)",
+        identity: "route-verified-supabase-user-id",
+        databaseExecutionRole: "service_role_only",
+        limitsPerMinute: { transcriptionSessions: 8, readbacks: 20 },
+        assemblyAIConcurrency: { user: 1, project: 4, leaseSeconds: 240 },
+        failClosedBeforeProvider: true,
+      },
       permanentProviderKeys: "server-only",
-      demoNarrationProvider: "ElevenLabs-only",
+      submissionNarrationProvider: "ElevenLabs-only",
       deploymentAvailability: "configuration-dependent-not-asserted",
     });
   });

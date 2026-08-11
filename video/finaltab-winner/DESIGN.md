@@ -32,8 +32,8 @@ The serif voice is human and material; the mono voice is cryptographic and audit
 
 ## Layout
 
-- 1920×1080 landscape, 60 fps final render
-- 96 px outer safety margin; captions remain inside the bottom 120 px safe zone
+- Native 3840×2160 landscape composition and final master at 60 fps
+- 192 px outer safety margin; captions remain inside the bottom 240 px safe zone
 - Two focal points and at least three visual layers per scene
 - Product footage is framed as evidence, not decoration: legible at hero moments, with precise callouts rather than fake cursor theatrics
 - Addresses and numbers use tabular figures and never shrink below 20 px

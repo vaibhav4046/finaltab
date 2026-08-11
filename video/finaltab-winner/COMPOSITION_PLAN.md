@@ -1,18 +1,19 @@
 # FINALTab HyperFrames composition plan
 
-**Phase:** preproduction. No composition HTML, voice audio, browser capture, preview, or render is authorized by this package.
-**Timeline lock:** 96.0 seconds at 1920×1080 and 60 fps = 5,760 output frames.
+**Phase:** source composition complete and statically verified. Agent/Privy/deployment probes, final real captures, regenerated audio, and render remain gated.
+**Timeline lock:** 96.0 seconds on a native 3840×2160 composition at 60 fps = 5,760 output frames.
 **Workflow:** `product-launch-video`, autonomous plan/build flow; rendering remains user-gated.
 
 ## Current project state
 
 - `BRIEF.md`, `DESIGN.md`, `STORYBOARD.md`, `SCRIPT.md`, `CAPTIONS.srt`, `CAPTURE_MANIFEST.md`, and `EVIDENCE_MAP.md` are the preproduction source of truth.
 - The scaffold's Figma cursor/logo assets and three Figma example compositions were unrelated example content and have been removed.
-- The scaffold `index.html` was also unrelated Figma demo content and has been removed. This is intentional: `npm run check` is not a meaningful gate until the real frame compositions and assembled index exist.
+- `index.html` now assembles nine modular frame compositions, nine checksum-retained provisional ElevenLabs voice clips, provisional alignment-derived captions, and deterministic receipt-edge transition masks. The voice/caption package must be regenerated after approved captures.
+- Current product truth: exactly nine production MCP tools; external-wallet dual signatures; first-party Freeze requires a current attested four-stage review; audit memory is bounded rather than self-evolving; Base Sepolia is the only chain adapter.
 - `hyperframes.json`, `meta.json`, and the pinned project `package.json` remain for reproducibility.
-- `frame.md` does not yet exist. Before frame construction, translate the locked Ledger Noir roles in `DESIGN.md` into the selected HyperFrames frame preset/remix output; do not silently fall back to the scaffold's Inter/purple Figma style.
+- `frame.md` now locks the local Fraunces + Geist Mono Ledger Noir system. Direct HyperFrames lint/check pass; contact sheets are retained under `proof-output/finaltab-winner/`.
 
-## Future file layout
+## Current file layout
 
 ```text
 video/finaltab-winner/
@@ -68,7 +69,7 @@ Duration arithmetic: `6 + 10 + 15 + 13 + 12 + 10 + 7 + 18 + 5 = 96.0 seconds`. A
 
 ## Composition contract
 
-- Future `index.html` is the standalone root: `data-composition-id="finaltab-winner"`, `data-start="0"`, `data-duration="96"`, `data-width="1920"`, `data-height="1080"`.
+- `index.html` is the standalone native 3840×2160 composition: `data-composition-id="finaltab-winner"`, `data-start="0"`, `data-duration="96"`, `data-width="3840"`, `data-height="2160"`, `data-fps="60"`. Final output must retain `--resolution landscape-4k --fps 60`.
 - Each frame is a sub-composition in a `<template>` whose inner composition ID exactly matches the host and the `window.__timelines` key.
 - Every timed host/clip carries `class="clip"`, `data-start`, `data-duration`, and a non-conflicting `data-track-index`.
 - All full-bleed grounds live on full-duration child clips, never on a composition root. The assembled root paints the shared night canvas.
@@ -140,8 +141,9 @@ Pre-build validation must reject:
 
 ### 01 — Outcome lockup
 
-- Rebuild the custom FINALTab mark from the app's receipt/rail geometry as local SVG.
-- No screenshot or generic Figma mark.
+- Use the text-only FINALTab wordmark from the product surface. A seek-safe SVG
+  receipt rule may animate beneath it, but there is no separate symbol logo.
+- No screenshot, legacy mark, or generic Figma logo.
 - Preserve the 0.8-second still hold at the end.
 
 ### 02 — Architecture rail
@@ -155,6 +157,13 @@ Pre-build validation must reject:
 - Use the real capture as the base plate; reconstruct only the one UI element that must animate independently or remain readable during a focus lock.
 - Do not rebuild the entire product surface in HTML.
 - All callouts must name visible state, not add unsupported state.
+- Frame 3 may show the branded auth return, linked Privy identity, durable tab,
+  or cross-device invite only after their respective production probes pass.
+  Participant names and wallet addresses must be visibly user-entered, never
+  inferred from a receipt that does not contain them.
+- Frame 4 must show the four fixed review stages, honest pre-submission proof
+  skip, stale-review invalidation after an edit, and a fresh attested run before
+  Freeze binds the durable receipt UUID. Memory is labelled bounded audit memory.
 - Frame 5 contains both a real passed simulation and a separately real revert capture; label them clearly so chronology cannot be misread.
 
 ### 06 — KeeperHub proof
@@ -165,7 +174,8 @@ Pre-build validation must reject:
 
 ### 07 — MCP tool map
 
-- Build exactly nine production cells from live `tools/list`; keep the three `demo_*` names in a separate subdued footer.
+- Build exactly nine production cells from live `tools/list`; any retired
+  fixed-wallet name means the wrong deployment was captured and blocks render.
 - Value-moving `submit_signed_settlement` uses the human-action accent, not proof green.
 
 ### 08 — MCP climax
@@ -193,7 +203,9 @@ Pre-build validation must reject:
 
 ## Build and verification order
 
-1. Close the product/security/release gates outside this video project.
+1. Apply/verify the ordered additive migrations and post-promotion cutover,
+   configure/probe Privy, and close the final
+   product/security/deployment gates outside this video project.
 2. Complete C03–C08 captures and the same-run proof package in `CAPTURE_MANIFEST.md`.
 3. Populate and validate `data/release-proof.json`; run a whole-repo secret scan before staging any capture.
 4. Produce `frame.md` from the locked design system.
@@ -203,7 +215,9 @@ Pre-build validation must reject:
 8. Run `hyperframes lint` and `hyperframes check`; stop on any error.
 9. Snapshot every frame midpoint plus every cut at cut minus 0.1 seconds and cut plus 0.2 seconds. Inspect the contact sheet and all proof/hash/tool-call text at original resolution.
 10. Open preview and ask the required user gate: preview changes or render.
-11. Render only after approval; then measure duration, streams, resolution, frame rate, byte size, and SHA-256 rather than copying expected metadata.
+11. Render only after approval with `--resolution landscape-4k --fps 60`; then
+    measure duration, streams, 3840×2160 resolution, frame rate, byte size, and
+    SHA-256 rather than copying expected metadata.
 
 ## Snapshot schedule
 
@@ -213,4 +227,4 @@ Pre-build validation must reject:
 
 ## Final acceptance
 
-The project is render-ready only when the 96-second timeline is intact, every capture/evidence gate passes, there are no unresolved placeholders, the MCP status call visibly has all three exact arguments, the three proof frames reconcile to one fresh V2 run, baked and external captions derive from the same ElevenLabs alignment, all HyperFrames checks pass, snapshots are manually inspected, and the user explicitly approves render.
+The project is render-ready only when the 96-second timeline is intact, every capture/evidence gate passes, there are no unresolved placeholders, the MCP status call visibly has all three exact arguments, the three proof frames reconcile to one V2 evidence package, narration and baked/external captions have been regenerated against the approved captures from one final ElevenLabs alignment, `data/voiceover-manifest.json` is marked `approved-final-capture-sync`, all HyperFrames checks pass, snapshots are manually inspected, and the user explicitly approves the 3840×2160/60 master render.

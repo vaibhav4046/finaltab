@@ -12,17 +12,24 @@ current V2 contract, MCP flow, settlement, or video.
 
 ## Verdict
 
-**V2 deployment and the protected production surface are proven; V2 settlement
-and the submission package are not complete yet.** `FinalTabBatchSettlementV2`
-was deployed through KeeperHub on Base Sepolia and its creation and runtime
-source are an exact Sourcify match. Main commit `b084497` passed both GitHub CI
-jobs and a 13/13 protected release probe against the immutable Vercel deployment
-and public alias. No V2 testnet-USDC settlement receipt, final V2 video, public
-video URL, provisioned Supabase project, or DoraHacks confirmation is currently
-retained. The hybrid AssemblyAI/ElevenLabs voice path is locally verified but
-not deployed: Vercel requires human acceptance of the Upstash Marketplace
-terms before its durable paid-provider quota can be provisioned. Those remain
-blocking.
+**V2 deployment, a value-moving V2 settlement, and Supabase provisioning are
+proven; the submission package is not complete yet.**
+`FinalTabBatchSettlementV2` was deployed through KeeperHub on Base Sepolia and
+its creation and runtime source are an exact Sourcify match. A separate,
+explicitly authorized one-atomic-unit run completed through KeeperHub and was
+independently verified on Base Sepolia. `finaltab-production` is active in
+London on Supabase's free plan; its four applied migrations produced the
+verified 19-table schema baseline. Additive migrations `52236`, `64822`, `73000`,
+and `74000` plus the post-promotion `74500` cutover are not yet applied. Main commit `b084497` passed both
+GitHub CI jobs and a 13/13 protected release probe against the then-current
+immutable Vercel deployment and public alias. The newer application release,
+unified nine-tool MCP capture, Privy dashboard configuration, final V2 video,
+public video URL, and DoraHacks confirmation are not yet retained. The hybrid
+AssemblyAI/ElevenLabs voice path is locally
+verified but not deployed. Its Supabase-backed durable quota guard is applied
+and both provider keys are stored as sensitive Vercel Production variables;
+the deployed provider lifecycle and quota behavior still require a live probe.
+Those remaining release steps are blocking.
 
 ## Current V2 proof
 
@@ -34,25 +41,33 @@ blocking.
 | V2 contract | `LIVE_PROVEN` | [`0x7b58791c…cCDB`](https://sepolia.basescan.org/address/0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB) |
 | KeeperHub V2 deployment | `LIVE_PROVEN` | execution `xasakw5nfxkh2s0fh4stn`; [tx `0x904ec881…e8f`](https://sepolia.basescan.org/tx/0x904ec881ef7c2ec7375c20887b4181cf58224b44162d837743fa869b0a598e8f); block `45321107`; verified receipt |
 | V2 source | `LIVE_PROVEN` | Sourcify exact creation/runtime match, match ID `43497805`; [repository entry](https://repo.sourcify.dev/84532/0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB) |
-| Authenticated MCP V2 surface | `LIVE_PROVEN AT b084497` | Unauthenticated 401; MCP 2.0.0; exactly 9 production + 3 gated demo tools; arbitrary participants; exact V2 plan; fail-closed proof and demo gates |
-| Clean release baseline | `PROVEN AT b084497` | 284 passing + 1 env-gated skip; both GitHub CI jobs green; 24-route build; Playwright 8/8 |
-| Hybrid voice branch candidate | `LOCAL_PROVEN; DEPLOYMENT BLOCKED` | AssemblyAI temp-token STT + buffered ElevenLabs readback; 302 passing + 1 env-gated skip; 26-route build; Playwright 8/8; no provider keys or live voice probe claimed |
-| V2 USDC settlement | `BLOCKING — PENDING PROOF` | No retained V2 settlement execution ID, transaction, balance delta, or `SettlementExecuted` proof yet |
+| Authenticated MCP V2 surface | `SOURCE/TEST PROVEN; LIVE RECHECK PENDING` | Current source exposes exactly nine scoped production tools with arbitrary participants, external signatures, exact V2 plan binding, and fail-closed proof. The superseded `b084497` deployment passed auth/calculation/plan/proof probes, but does not prove the retired-tool cleanup. |
+| Clean release baseline | `PROVEN AT b084497` | 284 passing + 1 env-gated skip; both GitHub CI jobs green; 24 generated pages; Playwright 8/8 |
+| Final local candidate | `LOCAL_PROVEN; CI/DEPLOY PENDING` | 370 passing + 1 provider-gated vision skip; production build generated 33/33 pages. No full production/browser/provider claim is inferred. |
+| Hybrid voice candidate | `CONFIGURED; DEPLOY/PROBE PENDING` | AssemblyAI temp-token STT + buffered ElevenLabs readback; sensitive provider variables and the baseline per-minute quota are configured; spend-reservation migration and live provider lifecycle probe pending |
+| Settlement durability | `SOURCE/TEST PROVEN; MIGRATIONS PENDING` | Fixed four-stage review; first-party Freeze requires a current HMAC-attested run; UI/REST/MCP share a durable submission journal; accepted recovery skips simulation/execute; prepared recovery reuses its stored successful simulation and deterministic idempotency key under a bounded approval expiry |
+| Supabase + Privy identity | `SUPABASE BASELINE PROVEN; PRIVY FAIL-CLOSED` | Supabase is canonical RLS identity; sign-in/create-account/callback and branded return page implemented. Privy app/JWKS/domain/identity-token/verifier setup and live subject-pairing remain pending; branded inbound email needs verified-domain SMTP or Send Email Hook. |
+| V2 USDC settlement rail | `LIVE_PROVEN` | KeeperHub `3hmlqi36zweiwg6fc5o2u`; [tx `0x7a6fb760…a789`](https://sepolia.basescan.org/tx/0x7a6fb760f691954a41c71d5d508629c58aa09207bba0de4eaf164f097c59a789); block `45327128`; 1 atomic USDC; exact V2 event binding and balance conservation |
 | V2 video | `BLOCKING — PENDING RENDER` | No truthful duration, checksum, or public URL yet |
-| Supabase persistence | `BLOCKING — NOT PROVISIONED` | Migration exists; no verified project, credentials, or cross-device persistence |
+| Supabase infrastructure | `LIVE_PROVEN BASELINE; MIGRATION/APP PROBE PENDING` | `finaltab-production`, ref `yoavihmldqbkuxinrsih`, London `eu-west-2`, free plan; four applied migrations; 19/19 tables with RLS, 45 policies, no anon table grants, 34/34 FKs indexed; additive `52236`/`64822`/`73000`/`74000` and post-promotion `74500` pending; final deployed behavior not yet probed |
 | DoraHacks entry | `BLOCKING — PENDING HUMAN SUBMISSION` | Live page checked 2026-08-11; deadline 2026-08-13 12:00 UTC+2; confirmation not retained |
 | KeeperHub onboarding contribution | `PROVEN; ENTRY ROUTE AMBIGUOUS` | [PR #95](https://github.com/KeeperHub/cli/pull/95) was open and not merged when last checked; live Bounties tab currently contradicts the detail-page bounty copy |
 
 The V2 deployment evidence is retained at
 [evidence/v2-deployment-2026-08-11T01-08-17-421Z.json](evidence/v2-deployment-2026-08-11T01-08-17-421Z.json).
-It proves deployment, bytecode, domain separation, and source matching. It does
-**not** prove a V2 USDC settlement.
+It proves deployment, bytecode, domain separation, and source matching. The
+separate settlement manifest at
+[evidence/v2-live-settlement-2026-08-11T04-28-59-530Z.json](evidence/v2-live-settlement-2026-08-11T04-28-59-530Z.json)
+proves the one-atomic-unit value run. It records KeeperHub simulation and
+execution, verified dual signatures, one successful receipt, exact V2 event
+binding, independent RPC verification, debtor `-1` / creditor `+1` / contract
+`0`, and conservation delta `0`. The run used explicitly authorized disposable
+Base Sepolia signer material; it is not a production MCP human-approval trace.
 
 ## MCP V2 truth
 
-The current source registers nine production tools and three `demo_*` tools.
-Production requests require a scoped bearer token. The value-moving production
-flow is:
+The current source registers exactly nine production tools. Production requests
+require a scoped bearer token. The value-moving production flow is:
 
 ```text
 allocate_receipt
@@ -66,10 +81,16 @@ allocate_receipt
 ```
 
 `confirm: true` is a historical V1 convention, not a V2 approval boundary.
-FINALTab does not hold arbitrary user wallet keys. The fixed Vee/Hem/Ravi tools
-are explicitly `demo_*`, testnet-only, and disabled unless
-`FINALTAB_ENABLE_DEMO_MONEY_TOOLS=true`; even then, broadcasting requires a
-configured human demo approver.
+FINALTab does not hold arbitrary user wallet keys. Fixed-wallet money tools and
+their server-held signer path are absent from the current production source.
+
+The first-party UI, REST execute endpoint, and MCP submit tool converge on one
+service-authored durable journal. Accepted replay returns its persisted
+execution without another simulation or execute call. Prepared recovery reuses
+the stored successful simulation and deterministic KeeperHub idempotency key
+under the persisted approval expiry. A fresh first-party attempt still requires
+current database participant approvals and rechecks the wallet approval at the
+final pre-broadcast gate.
 
 ## Historical V1 evidence — preserved, not current
 
@@ -91,34 +112,40 @@ The old `212 passed, 1 skipped` result is a historical 2026-08-10 V1 baseline.
 Main commit
 [`b084497`](https://github.com/vaibhav4046/finaltab/commit/b084497bf883dbf4f1d7123203e9866679d99b67)
 measured **284 passing, 1 env-gated live-provider check skipped**. Its GitHub
-quality and browser jobs were green, the production build emitted 24 routes,
+  quality and browser jobs were green, the production build generated 24 pages,
 and Playwright passed 8/8 journeys. A protected probe then passed 13/13 on both
 the immutable deployment and public alias. Treat this as the last proven
 baseline and rerun every gate for a newer submission commit.
 
-The current local voice/category candidate measures **302 passing checks with 1
-env-gated live-provider check skipped**, a 26-route production build, and 8/8
-Playwright journeys. Nine ElevenLabs narration clips decoded successfully in
-headless Edge, and 29 provider-aligned caption cues end at 94.53 seconds inside
-the 96-second edit plan. These are local candidate facts, not production or
-final-render claims.
+The final local candidate measures **370 passing checks with 1 provider-gated
+vision check skipped**, and its production build generated **33/33 pages**.
+Existing ElevenLabs narration clips and caption timings are provisional review
+references and must be regenerated after approved production captures. These are
+local candidate facts, not production-provider or final-render claims.
 
 ## Remaining disclosure
 
-- V2 settlement proof is pending.
+- The V2 rail is value-proven with a deliberately minimal `0.000001` USDC run;
+  the unified production MCP human-approval trace is still pending.
 - The production V2 MCP endpoint and scopes passed the redacted protected probe
   at `b084497`; any newer deployment must be re-probed before promotion.
-- Demo money tools are disabled by default and are not the user-wallet product.
-- Supabase migrations and production credentials must be checked before any
-  persistence or cross-device claim.
+- The current MCP source contains exactly nine production tools; the new live
+  deployment and authenticated tool list are not yet re-probed.
+- Supabase's four-migration, 19-table baseline is provisioned and
+  schema-verified; additive migrations `52236`, `64822`, `73000`, and `74000`
+  plus post-promotion cutover `74500` are unapplied and the newer application release
+  must still be deployed and live-probed before any cross-device behavior claim.
 - Groq has historical live evidence; other model-provider fallback legs should
   remain described according to their current measured state.
 - Sourcify exact matching is proven. BaseScan source verification is not
   claimed unless BaseScan itself reports it.
-- AssemblyAI and ElevenLabs remain configuration-gated. Accept the Upstash
-  Marketplace terms, provision the bounded durable quota, add provider secrets
-  server-side, and run real microphone/readback lifecycle probes before calling
-  hybrid voice live.
+- AssemblyAI and ElevenLabs remain deployment-gated. Their sensitive Production
+  variables and Supabase durable quotas are configured, but real
+  microphone/readback/quota lifecycle probes must pass before calling hybrid
+  voice live.
+- Privy remains deliberately unavailable until dashboard/JWKS/domain/identity
+  token/verifier configuration and subject-pairing tests pass. Branded inbound
+  email remains pending verified-domain SMTP or a Send Email Hook.
 
 ## Judge-readiness strategy
 
@@ -153,14 +180,24 @@ August 17 through August 19. Do not replace this with a countdown estimate.
 
 1. Preserve the `b084497` clean CI and 13/13 protected deployment baseline on
    the final submission commit.
-2. Execute one authenticated, external-wallet V2 settlement through KeeperHub.
-3. Retain its redacted MCP trace, KeeperHub receipt, independent RPC proof,
-   exact indexed V2 plan binding, and participant balance deltas.
-4. Provision and verify Supabase before claiming durable or cross-device state.
-5. Accept the Upstash terms, provision the durable voice quota, configure both
-   server-only provider keys, and retain a post-deploy voice lifecycle probe.
-6. Render and review the V2 video from that same proof package.
-7. Upload the video, record its real public URL and measured metadata, and
+2. Preserve the retained V2 settlement manifest and its exact KeeperHub/chain
+   identifiers; do not rebroadcast it.
+3. Apply and verify additive migrations `52236`, `64822`, `73000`, and `74000`,
+   configure server-only secrets, and probe stale-review rejection, tenant
+   isolation, cross-channel journaling, and crash recovery. Apply `74500` only
+   after promotion, then prove legacy writes and the old quota RPC are denied.
+4. Complete and probe the Privy dashboard/JWKS/domain/identity-token/verifier
+   configuration; keep branded inbound email unclaimed until SMTP/domain setup.
+5. Capture a redacted production MCP trace that references the proven run
+   without implying the standalone runner exercised the human approval route.
+6. Deploy and live-probe the provisioned Supabase-backed release before
+   claiming durable or cross-device behavior.
+7. Deploy the Supabase-guarded voice release and retain a real
+   microphone/readback/quota lifecycle probe; durable quotas and sensitive
+   provider variables are already configured.
+8. Capture the real product and nine-tool MCP flow, regenerate ElevenLabs voice
+   and captions, then render and review the 3840×2160/60 V2 video.
+9. Upload the video, record its real public URL and measured metadata, and
    replace every `PENDING` marker.
-8. Recheck PR state, submit the required links before the verified
+10. Recheck PR state, submit the required links before the verified
    deadline, and retain confirmation.

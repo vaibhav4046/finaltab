@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8"/><title>FINALTab — Outcome lockup</title></head>
+<body>
+<template>
+  <style>
+    @font-face{font-family:Fraunces;src:url("assets/fonts/Fraunces-Variable.ttf") format("truetype");font-weight:100 900}
+    @font-face{font-family:GeistMono;src:url("assets/fonts/GeistMono-Regular.woff2") format("woff2");font-weight:400}
+    @font-face{font-family:GeistMono;src:url("assets/fonts/GeistMono-Bold.woff2") format("woff2");font-weight:700}
+    #root{position:absolute;inset:0;width:3840px;height:2160px;overflow:hidden;color:#F4EEE2;background:transparent}
+    .clip{position:absolute;inset:0;overflow:hidden}
+    .ground{background:#0B0F12}
+    .ground:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(145,160,168,.035) 1px,transparent 1px),linear-gradient(rgba(145,160,168,.025) 1px,transparent 1px);background-size:96px 96px}
+    .scene{width:50%;height:50%;transform:scale(2);transform-origin:0 0;display:grid;place-items:center;padding:80px 96px 170px;box-sizing:border-box}
+    .eyebrow{position:absolute;top:70px;left:96px;font:700 19px/1 GeistMono,monospace;letter-spacing:.16em;color:#91A0A8}
+    .lockup{position:relative;display:flex;flex-direction:column;align-items:center;gap:28px;transform-origin:50% 52%}
+    .receipt-mark{width:730px;height:254px;overflow:visible}
+    .receipt-paper{fill:#F4EEE2}
+    .receipt-ink{fill:none;stroke:#0B0F12;stroke-width:6;stroke-linecap:round;stroke-linejoin:round}
+    .receipt-accent{fill:none;stroke:#FF936A;stroke-width:7;stroke-linecap:round}
+    .wordmark{font:600 148px/.84 Fraunces,Georgia,serif;letter-spacing:-.055em}
+    .wordmark .tab{color:#FF936A}
+    .promise{max-width:1100px;text-align:center;font:400 27px/1.45 GeistMono,monospace;color:#91A0A8;letter-spacing:.01em}
+    .rail{display:flex;align-items:center;gap:14px;margin-top:18px}
+    .rail span{border:1px solid rgba(145,160,168,.38);border-radius:999px;padding:10px 15px;font:700 16px/1 GeistMono,monospace;letter-spacing:.08em;color:#91A0A8}
+    .rail i{width:34px;height:1px;background:#FF936A;display:block}
+  </style>
+  <div id="root" data-composition-id="finaltab-outcome-lockup" data-start="0" data-width="3840" data-height="2160" data-duration="6">
+    <section id="f01-ground" class="clip ground" data-start="0" data-duration="6" data-track-index="0"></section>
+    <section id="f01-scene" class="clip scene" data-start="0" data-duration="6" data-track-index="1">
+      <div id="f01-eyebrow" class="eyebrow">01 · OUTCOME / BASE SEPOLIA</div>
+      <div id="f01-lockup" class="lockup">
+        <svg class="receipt-mark" viewBox="0 0 730 254" role="img" aria-label="FINALTab receipt mark">
+          <path class="receipt-paper" d="M86 24h558v169l-26 22-26-22-26 22-26-22-26 22-26-22-26 22-26-22-26 22-26-22-26 22-26-22-26 22-26-22-26 22-26-22-26 22-26-22V24z"/>
+          <path id="f01-receipt-stroke" class="receipt-ink" pathLength="100" d="M147 86h138M147 116h260M147 146h194M444 86h116M486 116h74M419 146h141"/>
+          <path id="f01-settlement-rail" class="receipt-accent" pathLength="100" d="M205 193H350c42 0 46 35 83 35h112"/>
+          <circle id="f01-rail-node-a" cx="205" cy="193" r="11" fill="#FF936A"/>
+          <circle id="f01-rail-node-b" cx="545" cy="228" r="11" fill="#FF936A"/>
+        </svg>
+        <div id="f01-wordmark" class="wordmark">FINAL<span class="tab">Tab</span></div>
+        <div id="f01-promise" class="promise">A shared bill ends as one consent-bound plan—executed through KeeperHub and independently verifiable.</div>
+        <div id="f01-rail" class="rail"><span>RECEIPT</span><i></i><span>CONSENT</span><i></i><span>EXECUTE</span><i></i><span>PROVE</span></div>
+      </div>
+    </section>
+  </div>
+  <script>
+    window.__timelines=window.__timelines||{};
+    const tl=gsap.timeline({paused:true});
+    tl.fromTo("#f01-eyebrow",{opacity:0,x:-24},{opacity:1,x:0,duration:.48,ease:"power3.out"},.18);
+    tl.fromTo("#f01-lockup",{opacity:0,scale:.94,y:22},{opacity:1,scale:1,y:0,duration:.72,ease:"expo.out"},.42);
+    tl.fromTo("#f01-receipt-stroke",{strokeDasharray:100,strokeDashoffset:100},{strokeDashoffset:0,duration:1.15,ease:"power2.inOut"},.72);
+    tl.fromTo("#f01-settlement-rail",{strokeDasharray:100,strokeDashoffset:100},{strokeDashoffset:0,duration:1.25,ease:"power2.inOut"},1.42);
+    tl.fromTo("#f01-rail-node-a, #f01-rail-node-b",{scale:0,transformOrigin:"50% 50%"},{scale:1,duration:.44,stagger:.18,ease:"back.out(1.8)"},2.28);
+    tl.fromTo("#f01-wordmark",{opacity:0,y:32},{opacity:1,y:0,duration:.7,ease:"power3.out"},2.18);
+    tl.fromTo("#f01-promise",{opacity:0,y:18},{opacity:1,y:0,duration:.58,ease:"sine.out"},3.05);
+    tl.fromTo("#f01-rail span, #f01-rail i",{opacity:0,scaleX:.65},{opacity:1,scaleX:1,duration:.42,stagger:.09,ease:"power3.out"},3.58);
+    window.__timelines["finaltab-outcome-lockup"]=tl;
+  </script>
+</template>
+</body>
+</html>

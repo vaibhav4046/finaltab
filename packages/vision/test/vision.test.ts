@@ -188,4 +188,39 @@ describe("proposeAllocation", () => {
     expect(res.attempts).toBe(2);
     expect(res.proposal.payerId).toBe("p1");
   });
+
+  it("retains provider-reported usage across schema retries", async () => {
+    let call = 0;
+    const fetchImpl = (async () => {
+      call += 1;
+      const content = call === 1 ? JSON.stringify({ allocations: "invalid" }) : JSON.stringify(validProposal);
+      return new Response(JSON.stringify({
+        model: "usage-test-model",
+        choices: [{ message: { content } }],
+        usage: { prompt_tokens: 10, completion_tokens: 5, total_tokens: 15 },
+      }), { status: 200 });
+    }) as typeof fetch;
+    const res = await proposeAllocation(new GroqClient({ apiKey: "gsk_test", fetchImpl }), {
+      receipt,
+      participants,
+      payerId: "p1",
+      instruction: "x",
+    });
+    expect(res.attempts).toBe(2);
+    expect(res.model).toBe("usage-test-model");
+    expect(res.usage).toEqual({ promptTokens: 20, completionTokens: 10, totalTokens: 30 });
+  });
+});
+
+describe("Groq request bounds", () => {
+  it("sets a provider-side completion token cap", async () => {
+    let requestBody: Record<string, unknown> | null = null;
+    const fetchImpl = (async (_url: string | URL | Request, init?: RequestInit) => {
+      requestBody = JSON.parse(String(init?.body)) as Record<string, unknown>;
+      return new Response(JSON.stringify({ choices: [{ message: { content: "{}" } }] }), { status: 200 });
+    }) as typeof fetch;
+    await new GroqClient({ apiKey: "gsk_test", fetchImpl, maxCompletionTokens: 999999 })
+      .completeJson([{ role: "user", content: "bounded" }]);
+    expect(requestBody).toMatchObject({ max_completion_tokens: 8192 });
+  });
 });

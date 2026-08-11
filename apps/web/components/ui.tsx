@@ -95,7 +95,10 @@ export function Spinner() {
 
 export function ErrorNote({ message }: { message: string }) {
   return (
-    <p className="mt-2 rounded-md border border-coral/30 bg-coral/5 px-3 py-2 font-mono text-[11px] leading-relaxed text-coral">
+    <p
+      className="mt-2 rounded-md border border-coral/30 bg-coral/5 px-3 py-2 font-mono text-[11px] leading-relaxed text-coral"
+      role="alert"
+    >
       {message}
     </p>
   );
@@ -103,7 +106,7 @@ export function ErrorNote({ message }: { message: string }) {
 
 export function BlockedNote({ message }: { message: string }) {
   return (
-    <div className="mt-2 rounded-md border border-amber/30 bg-amber/5 px-3 py-2">
+    <div className="mt-2 rounded-md border border-amber/30 bg-amber/5 px-3 py-2" role="status" aria-live="polite">
       <p className="font-mono text-[10px] uppercase tracking-wider text-amber">Blocked — honest state</p>
       <p className="mt-1 font-mono text-[11px] leading-relaxed text-paper-dim">{message}</p>
     </div>

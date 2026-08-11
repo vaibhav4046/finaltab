@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8"/><title>FINALTab — Proof CTA</title></head>
+<body>
+<template>
+  <style>
+    @font-face{font-family:Fraunces;src:url("assets/fonts/Fraunces-Variable.ttf") format("truetype");font-weight:100 900}
+    @font-face{font-family:GeistMono;src:url("assets/fonts/GeistMono-Regular.woff2") format("woff2");font-weight:400}
+    @font-face{font-family:GeistMono;src:url("assets/fonts/GeistMono-Bold.woff2") format("woff2");font-weight:700}
+    #root{position:absolute;inset:0;width:3840px;height:2160px;overflow:hidden;color:#F4EEE2;background:transparent}
+    .clip{position:absolute;inset:0;overflow:hidden}.ground{background:#0B0F12}
+    .scene{width:50%;height:50%;transform:scale(2);transform-origin:0 0;padding:84px 96px 150px;box-sizing:border-box;display:grid;grid-template-columns:740px 1fr;gap:86px;align-items:center}
+    .brand{align-self:center}.mark{width:118px;height:88px;background:#F4EEE2;clip-path:polygon(0 0,100% 0,100% 78%,87% 100%,74% 78%,61% 100%,48% 78%,35% 100%,22% 78%,9% 100%,0 78%);position:relative;margin-bottom:26px}.mark:before,.mark:after{content:"";position:absolute;left:22px;right:22px;height:6px;border-radius:99px;background:#0B0F12}.mark:before{top:26px}.mark:after{top:46px;width:46px}.brand h2{margin:0;font:600 128px/.85 Fraunces,Georgia,serif;letter-spacing:-.055em}.brand h2 span{color:#FF936A}.brand p{margin:30px 0 0;font:400 24px/1.5 GeistMono,monospace;color:#91A0A8;max-width:620px}
+    .proof{border-left:1px solid rgba(145,160,168,.3);padding-left:56px}.claim{display:flex;gap:18px;margin-bottom:34px}.claim b{border:1px solid rgba(244,238,226,.35);border-radius:999px;padding:12px 16px;font:700 16px/1 GeistMono,monospace;color:#F4EEE2}.verified{display:inline-flex;border:2px solid #B7F5D8;border-radius:12px;padding:14px 18px;font:700 19px/1 GeistMono,monospace;color:#B7F5D8;letter-spacing:.05em;margin-bottom:28px}.line{padding:14px 0;border-top:1px solid rgba(145,160,168,.22);font:400 19px/1.36 GeistMono,monospace;color:#91A0A8}.line b{display:block;color:#F4EEE2;font-weight:700;margin-bottom:5px}.line.tx b{color:#B7F5D8}.fine{margin-top:20px;font:700 14px/1.35 GeistMono,monospace;color:#91A0A8}
+  </style>
+  <div id="root" data-composition-id="finaltab-proof-cta" data-start="0" data-width="3840" data-height="2160" data-duration="5">
+    <section id="f09-ground" class="clip ground" data-start="0" data-duration="5" data-track-index="0"></section>
+    <section id="f09-scene" class="clip scene" data-start="0" data-duration="5" data-track-index="1">
+      <div id="f09-brand" class="brand"><div class="mark"></div><h2>FINAL<span>Tab</span></h2><p>KeeperHub executes.<br/>Anyone verifies.</p></div>
+      <div id="f09-proof" class="proof"><div class="claim"><b>ONE TABLE</b><b>ONE PLAN</b><b>ONE PROOF</b></div><div class="verified">VERIFIED_SETTLED · BASE SEPOLIA · 1 ATOMIC UNIT</div><div class="line"><b>LIVE PRODUCT · MCP</b>finaltab.vercel.app · finaltab.vercel.app/api/mcp</div><div class="line"><b>OPEN SOURCE · KEEPERHUB WORKFLOW</b>github.com/vaibhav4046/finaltab · /integrations/keeperhub/workflow</div><div class="line tx"><b>PUBLIC TRANSACTION · BLOCK 45327128</b>0x7a6fb760f691954a41c71d5d508629c58aa09207bba0de4eaf164f097c59a789</div><div class="fine">Contract 0x7b58791c…cCDB · settlement 0x8b6708…aadb9db · ledger 0x1581eb…b0cb91e</div></div>
+    </section>
+  </div>
+  <script>
+    window.__timelines=window.__timelines||{};
+    const tl=gsap.timeline({paused:true});
+    tl.fromTo("#f09-brand",{opacity:0,scale:.95,y:18},{opacity:1,scale:1,y:0,duration:.64,ease:"power3.out"},.16);
+    tl.fromTo("#f09-proof",{opacity:0,x:32},{opacity:1,x:0,duration:.64,ease:"power3.out"},.52);
+    window.__timelines["finaltab-proof-cta"]=tl;
+  </script>
+</template>
+</body>
+</html>

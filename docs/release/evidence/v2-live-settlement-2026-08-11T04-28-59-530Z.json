@@ -1,0 +1,291 @@
+{
+  "tool": "finaltab-v2-one-atomic-keeperhub-settlement",
+  "version": 1,
+  "startedAt": "2026-08-11T04:28:59.530Z",
+  "mode": "SIMULATE_THEN_SINGLE_BROADCAST",
+  "result": "VERIFIED_SETTLED",
+  "scope": {
+    "chain": "Base Sepolia",
+    "chainId": 84532,
+    "token": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+    "tokenDecimals": 6,
+    "settlementContract": "0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB",
+    "contractVersion": 2,
+    "debtor": "0x07918AB993d701e286cD2f3AF65ab7502B25550B",
+    "creditor": "0x8edD1eB1e3522a1e9D6db7ce82Ad5F2ADB59192c",
+    "amountAtomic": "1",
+    "amountUsdc": "0.000001",
+    "pullCount": 1,
+    "payoutCount": 1
+  },
+  "plan": {
+    "runId": "06a41159-2332-4fd3-91fc-486ae137d405",
+    "ledgerCommitment": {
+      "schema": "finaltab-ledger-commitment-v2",
+      "purpose": "keeperhub-one-atomic-v2-proof",
+      "runId": "06a41159-2332-4fd3-91fc-486ae137d405",
+      "chainId": 84532,
+      "token": "0x036cbd53842c5426634e7929541ec2318f3dcf7e",
+      "settlementContract": "0x7b58791cebd9a82f8ee4e4cf87e7ad1b64a3ccdb",
+      "transfers": [
+        {
+          "from": "0x07918ab993d701e286cd2f3af65ab7502b25550b",
+          "to": "0x8edd1eb1e3522a1e9d6db7ce82ad5f2adb59192c",
+          "value": "1"
+        }
+      ]
+    },
+    "ledgerCanonicalJson": "{\"schema\":\"finaltab-ledger-commitment-v2\",\"purpose\":\"keeperhub-one-atomic-v2-proof\",\"runId\":\"06a41159-2332-4fd3-91fc-486ae137d405\",\"chainId\":84532,\"token\":\"0x036cbd53842c5426634e7929541ec2318f3dcf7e\",\"settlementContract\":\"0x7b58791cebd9a82f8ee4e4cf87e7ad1b64a3ccdb\",\"transfers\":[{\"from\":\"0x07918ab993d701e286cd2f3af65ab7502b25550b\",\"to\":\"0x8edd1eb1e3522a1e9d6db7ce82ad5f2adb59192c\",\"value\":\"1\"}]}",
+    "ledgerHash": "0x1581eb7f56485ff4d2a684a832fc8d085b9b0e5d8540c85e2d550e8f7b0cb91e",
+    "settlementId": "0x8b670800d9856a90baa7492adefaf06ae86ac345d053db3dc7f01b065aadb9db",
+    "debitsHash": "0x5c78d245799a16937f2fbef05a69cb1ff5b0127a81321ee384cd70e0273a3145",
+    "payoutsHash": "0x106cf57f55672ea0331b938f6f1467c05d5d432af4d388a56e5de08ba5b78c9b",
+    "authorizationNonce": "0x487d7fd236a0a88a5b79cd1eb815ae632005b9f9d4b09e4e5beb1794b57314d7",
+    "totalDebitsAtomic": "1",
+    "totalPayoutsAtomic": "1",
+    "conserved": true
+  },
+  "preflight": {
+    "verifiedAtBlock": 45327126,
+    "rpcChainId": 84532,
+    "contractCodeBytes": 6367,
+    "contractCodeHash": "0x4b8eaae22838d6cd0bd81e4c10bdfd276fc9b030df863fc28364a101dd7b91b2",
+    "tokenCodeBytes": 1798,
+    "tokenCodeHash": "0xedc5281a85c0efecd49999a1ef668390c59b88702f2d4a07029d7f5d63059d6c",
+    "immutableUsdc": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+    "contractDomainSeparator": "0xea0f9ad58cfe8d2403d03d252b1f4fcd8d8f86533223478dbb8ee7abe3833099",
+    "expectedContractDomainSeparator": "0xea0f9ad58cfe8d2403d03d252b1f4fcd8d8f86533223478dbb8ee7abe3833099",
+    "usdcDomainSeparator": "0x71f17a3b2ff373b803d70a5a07c046c1a2bc8e89c09ef722fcb047abe94c9818",
+    "expectedUsdcDomainSeparator": "0x71f17a3b2ff373b803d70a5a07c046c1a2bc8e89c09ef722fcb047abe94c9818",
+    "debtorBalanceAtomic": "10540000",
+    "creditorBalanceAtomic": "22120000",
+    "contractBalanceAtomic": "0",
+    "priorSettlementExecuted": false,
+    "priorAuthorizationUsed": false,
+    "onchainPlanHash": "0x8b670800d9856a90baa7492adefaf06ae86ac345d053db3dc7f01b065aadb9db",
+    "onchainAuthorizationNonce": "0x487d7fd236a0a88a5b79cd1eb815ae632005b9f9d4b09e4e5beb1794b57314d7",
+    "onchainConsentDigest": "0xaba1f99b3c5c34a1deb1b17ecc96bddc755841b8db3272a3735260c0d8147eb3",
+    "signerAddressMatched": true
+  },
+  "signatureChecks": {
+    "receiveWithAuthorization": {
+      "digest": "0x5971952249a3c2c792b79a7590ef7a69b962dff33be9af81e824d21e4087a852",
+      "recoveredSigner": "0x07918AB993d701e286cD2f3AF65ab7502B25550B",
+      "verified": true
+    },
+    "settlementConsent": {
+      "digest": "0xaba1f99b3c5c34a1deb1b17ecc96bddc755841b8db3272a3735260c0d8147eb3",
+      "recoveredSigner": "0x07918AB993d701e286cD2f3AF65ab7502B25550B",
+      "verified": true,
+      "digestMatchesContract": true
+    }
+  },
+  "call": {
+    "target": "0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB",
+    "chainId": 84532,
+    "function": "executeSettlement",
+    "selector": "0x11d6481c",
+    "calldataBytes": 644,
+    "calldataKeccak256": "0xe30a30a8d3c4452a37246558595cf6385648336b3e094a411c5767734601f728",
+    "arguments": {
+      "settlementId": "0x8b670800d9856a90baa7492adefaf06ae86ac345d053db3dc7f01b065aadb9db",
+      "ledgerHash": "0x1581eb7f56485ff4d2a684a832fc8d085b9b0e5d8540c85e2d550e8f7b0cb91e",
+      "pulls": [
+        {
+          "from": "0x07918AB993d701e286cD2f3AF65ab7502B25550B",
+          "to": "0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB",
+          "value": "1",
+          "validAfter": "0",
+          "validBefore": "1786426140",
+          "nonce": "0x487d7fd236a0a88a5b79cd1eb815ae632005b9f9d4b09e4e5beb1794b57314d7",
+          "receiveAuthorizationDigest": "0x5971952249a3c2c792b79a7590ef7a69b962dff33be9af81e824d21e4087a852",
+          "settlementConsentDigest": "0xaba1f99b3c5c34a1deb1b17ecc96bddc755841b8db3272a3735260c0d8147eb3",
+          "signaturesRetainedOnlyAfterNonceConsumption": true
+        }
+      ],
+      "payouts": [
+        {
+          "creditor": "0x8edD1eB1e3522a1e9D6db7ce82Ad5F2ADB59192c",
+          "value": "1"
+        }
+      ]
+    }
+  },
+  "keeperHub": {
+    "authenticatedOrganizationKey": true,
+    "baseSepoliaFound": true,
+    "baseSepoliaEnabled": true,
+    "simulation": {
+      "httpStatus": 200,
+      "success": true,
+      "wouldRevert": false,
+      "gasEstimate": "171950"
+    },
+    "executionId": "3hmlqi36zweiwg6fc5o2u",
+    "idempotentReplay": false,
+    "polls": 1,
+    "terminal": {
+      "executionId": "3hmlqi36zweiwg6fc5o2u",
+      "status": "completed",
+      "sponsored": true,
+      "transactionHash": "0x7a6fb760f691954a41c71d5d508629c58aa09207bba0de4eaf164f097c59a789",
+      "transactionLink": "https://sepolia.basescan.org/tx/0x7a6fb760f691954a41c71d5d508629c58aa09207bba0de4eaf164f097c59a789",
+      "receipts": [
+        {
+          "hash": "0x7a6fb760f691954a41c71d5d508629c58aa09207bba0de4eaf164f097c59a789",
+          "chainId": 84532,
+          "verified": true,
+          "receiptStatus": "success",
+          "blockNumber": 45327128,
+          "gasUsed": "168660",
+          "verifiedAt": "2026-08-11T04:29:05.210Z"
+        }
+      ],
+      "error": null
+    },
+    "verdict": {
+      "verdict": "VERIFIED_SETTLED",
+      "reason": "terminal success; every receipt chain-verified successful"
+    }
+  },
+  "onchain": {
+    "verified": true,
+    "source": "independent-base-sepolia-json-rpc",
+    "transactionHash": "0x7a6fb760f691954a41c71d5d508629c58aa09207bba0de4eaf164f097c59a789",
+    "receiptStatus": "success",
+    "blockNumber": 45327128,
+    "blockHash": "0x5f1f6fc798f4d34a11732834e2c6decac8dc5c5bc29006e9e872b8277248b783",
+    "blockTimestamp": "2026-08-11T04:29:04.000Z",
+    "confirmations": 2,
+    "gasUsed": "168660",
+    "events": {
+      "SettlementExecuted": {
+        "count": 1,
+        "settlementId": "0x8b670800d9856a90baa7492adefaf06ae86ac345d053db3dc7f01b065aadb9db",
+        "ledgerHash": "0x1581eb7f56485ff4d2a684a832fc8d085b9b0e5d8540c85e2d550e8f7b0cb91e",
+        "pullCount": "1",
+        "payoutCount": "1",
+        "totalAmountAtomic": "1"
+      },
+      "PullExecuted": {
+        "count": 1,
+        "settlementId": "0x8b670800d9856a90baa7492adefaf06ae86ac345d053db3dc7f01b065aadb9db",
+        "debtor": "0x07918AB993d701e286cD2f3AF65ab7502B25550B",
+        "valueAtomic": "1"
+      },
+      "PayoutExecuted": {
+        "count": 1,
+        "settlementId": "0x8b670800d9856a90baa7492adefaf06ae86ac345d053db3dc7f01b065aadb9db",
+        "creditor": "0x8edD1eB1e3522a1e9D6db7ce82Ad5F2ADB59192c",
+        "valueAtomic": "1"
+      },
+      "usdcTransfers": [
+        {
+          "from": "0x07918AB993d701e286cD2f3AF65ab7502B25550B",
+          "to": "0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB",
+          "valueAtomic": "1"
+        },
+        {
+          "from": "0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB",
+          "to": "0x8edD1eB1e3522a1e9D6db7ce82Ad5F2ADB59192c",
+          "valueAtomic": "1"
+        }
+      ]
+    },
+    "balances": {
+      "unit": "USDC atomic (6 decimals)",
+      "preBlock": 45327127,
+      "postBlock": 45327128,
+      "debtor": {
+        "address": "0x07918AB993d701e286cD2f3AF65ab7502B25550B",
+        "before": "10540000",
+        "after": "10539999",
+        "delta": "-1"
+      },
+      "creditor": {
+        "address": "0x8edD1eB1e3522a1e9D6db7ce82Ad5F2ADB59192c",
+        "before": "22120000",
+        "after": "22120001",
+        "delta": "1"
+      },
+      "contract": {
+        "address": "0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB",
+        "before": "0",
+        "after": "0",
+        "delta": "0",
+        "retainedAfterAtomic": "0"
+      },
+      "conservationDeltaAtomic": "0"
+    },
+    "state": {
+      "settlementExecuted": true,
+      "authorizationNonceConsumed": true
+    },
+    "explorer": "https://sepolia.basescan.org/tx/0x7a6fb760f691954a41c71d5d508629c58aa09207bba0de4eaf164f097c59a789"
+  },
+  "consumedSignatures": {
+    "receiveWithAuthorization": {
+      "domain": {
+        "name": "USDC",
+        "version": "2",
+        "chainId": 84532,
+        "verifyingContract": "0x036CbD53842c5426634e7929541eC2318f3dCF7e"
+      },
+      "primaryType": "ReceiveWithAuthorization",
+      "message": {
+        "from": "0x07918AB993d701e286cD2f3AF65ab7502B25550B",
+        "to": "0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB",
+        "value": "1",
+        "validAfter": "0",
+        "validBefore": "1786426140",
+        "nonce": "0x487d7fd236a0a88a5b79cd1eb815ae632005b9f9d4b09e4e5beb1794b57314d7"
+      },
+      "digest": "0x5971952249a3c2c792b79a7590ef7a69b962dff33be9af81e824d21e4087a852",
+      "signature": "0x660bde466ea9aba1007b69fc0402c91851417b331e76b4d9c144a699e229617057a90e300e205b84b01cbf168d7d71b65b86f8bd363eb45d772186579f72dc8e1b",
+      "v": 27,
+      "r": "0x660bde466ea9aba1007b69fc0402c91851417b331e76b4d9c144a699e2296170",
+      "s": "0x57a90e300e205b84b01cbf168d7d71b65b86f8bd363eb45d772186579f72dc8e",
+      "recoveredSigner": "0x07918AB993d701e286cD2f3AF65ab7502B25550B",
+      "verified": true
+    },
+    "settlementConsent": {
+      "domain": {
+        "name": "FINALTab Settlement",
+        "version": "2",
+        "chainId": 84532,
+        "verifyingContract": "0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB"
+      },
+      "primaryType": "SettlementConsent",
+      "message": {
+        "planHash": "0x8b670800d9856a90baa7492adefaf06ae86ac345d053db3dc7f01b065aadb9db",
+        "debtor": "0x07918AB993d701e286cD2f3AF65ab7502B25550B",
+        "value": "1",
+        "validAfter": "0",
+        "validBefore": "1786426140"
+      },
+      "digest": "0xaba1f99b3c5c34a1deb1b17ecc96bddc755841b8db3272a3735260c0d8147eb3",
+      "signature": "0xc147bfbf050247412d120ec5bb3a20cb07214f1d00274f0531aaf0ea9976717d5f4c9caaa9704735830c11c40e6094a1dfd655aefd619a6ab76353314ea93d411b",
+      "v": 27,
+      "r": "0xc147bfbf050247412d120ec5bb3a20cb07214f1d00274f0531aaf0ea9976717d",
+      "s": "0x5f4c9caaa9704735830c11c40e6094a1dfd655aefd619a6ab76353314ea93d41",
+      "recoveredSigner": "0x07918AB993d701e286cD2f3AF65ab7502B25550B",
+      "verified": true,
+      "digestMatchesContract": true
+    }
+  },
+  "finishedAt": "2026-08-11T04:29:05.895Z",
+  "proofSummary": {
+    "keeperHubExecutionId": "3hmlqi36zweiwg6fc5o2u",
+    "transactionHash": "0x7a6fb760f691954a41c71d5d508629c58aa09207bba0de4eaf164f097c59a789",
+    "blockNumber": 45327128,
+    "settlementId": "0x8b670800d9856a90baa7492adefaf06ae86ac345d053db3dc7f01b065aadb9db",
+    "ledgerHash": "0x1581eb7f56485ff4d2a684a832fc8d085b9b0e5d8540c85e2d550e8f7b0cb91e",
+    "exactV2EventBinding": true,
+    "eip3009SignatureVerified": true,
+    "fullPlanConsentVerified": true,
+    "amountAtomic": "1",
+    "balanceConservationVerified": true,
+    "retainedContractUsdcAtomic": "0",
+    "noAdditionalSettlementAuthorizedOrAttempted": true
+  }
+}

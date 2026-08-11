@@ -1,13 +1,13 @@
 import { AuthPanel } from "@/components/AuthPanel";
 
 export const metadata = {
-  title: "FINALTab — your identity",
+  title: "FINALTab - Account",
 };
 
 export default function AuthPage() {
   return (
-    <main className="min-h-screen">
+    <div className="min-h-screen">
       <AuthPanel />
-    </main>
+    </div>
   );
 }

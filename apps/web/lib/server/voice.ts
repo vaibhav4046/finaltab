@@ -1,11 +1,14 @@
 import "server-only";
 
 import { z } from "zod";
+import { VOICE_STT_RESERVATION_SECONDS } from "@/lib/voicePolicy";
 
 const ASSEMBLYAI_TOKEN_ENDPOINT = "https://streaming.eu.assemblyai.com/v3/token";
 const ASSEMBLYAI_WEBSOCKET_ENDPOINT = "wss://streaming.eu.assemblyai.com/v3/ws";
 const ASSEMBLYAI_TOKEN_REDEMPTION_SECONDS = 60;
-const ASSEMBLYAI_MAX_SESSION_SECONDS = 600;
+// Three minutes is enough for a complex receipt instruction while bounding
+// worst-case provider usage before the browser receives a temporary token.
+const ASSEMBLYAI_MAX_SESSION_SECONDS = VOICE_STT_RESERVATION_SECONDS;
 const ASSEMBLYAI_SAMPLE_RATE = 16_000;
 const ASSEMBLYAI_ENCODING = "pcm_s16le";
 const ASSEMBLYAI_MODEL = "universal-3-5-pro";

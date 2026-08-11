@@ -21,12 +21,17 @@ import {
   WalletCards,
   type LucideIcon,
 } from "lucide-react";
-import { FinalTabMark } from "./FinalTabMark";
 
 const TX = "0x904ec881ef7c2ec7375c20887b4181cf58224b44162d837743fa869b0a598e8f";
 const TX_SHORT = "0x904e…e8f";
 const EXECUTION_ID = "xasakw5nfxkh2s0fh4stn";
 const BASESCAN_TX = `https://sepolia.basescan.org/tx/${TX}`;
+const SETTLEMENT_TX = "0x7a6fb760f691954a41c71d5d508629c58aa09207bba0de4eaf164f097c59a789";
+const SETTLEMENT_TX_SHORT = "0x7a6f…a789";
+const SETTLEMENT_EXECUTION_ID = "3hmlqi36zweiwg6fc5o2u";
+const BASESCAN_SETTLEMENT_TX = `https://sepolia.basescan.org/tx/${SETTLEMENT_TX}`;
+const SETTLEMENT_ID_SHORT = "0x8b67…b9db";
+const LEDGER_HASH_SHORT = "0x1581…b91e";
 const CONTRACT = "0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB";
 const BASESCAN_CONTRACT = `https://sepolia.basescan.org/address/${CONTRACT}`;
 const MCP_URL = "https://finaltab.vercel.app/api/mcp";
@@ -47,12 +52,12 @@ const CATEGORY_EVIDENCE = [
   {
     marker: "01 / Rail",
     title: "V2 testnet settlement rail",
-    copy: "KeeperHub deployed the exact-source-matched V2 contract on Base Sepolia. It can settle USDC atomically; the fresh value-moving V2 proof remains a release gate.",
+    copy: "KeeperHub deployed the exact-source-matched V2 contract, then a separate one-atomic-unit run proved its dual-signature USDC rail with exact event and balance checks.",
   },
   {
     marker: "02 / Agent surface",
     title: "Nine authenticated production MCP tools",
-    copy: "Agents can allocate, net, freeze, simulate, prepare approval, submit, and verify. Three fixed-wallet demo tools stay separately named and gated.",
+    copy: "The authenticated production manifest covers allocation, netting, freezing, simulation, approval, submission, and exact settlement verification.",
   },
   {
     marker: "03 / Autonomy boundary",
@@ -87,7 +92,7 @@ const JOURNEY: JourneyStep[] = [
   {
     number: "02",
     title: "Confirm",
-    status: "Review in lab",
+    status: "Human review",
     copy: "Inspect every extracted line and the receipt total before allocating. Replace the photo when the result is wrong.",
     icon: CircleCheck,
     tone: "border-info/35 bg-info/10 text-info",
@@ -95,8 +100,8 @@ const JOURNEY: JourneyStep[] = [
   {
     number: "03",
     title: "Invite",
-    status: "Cloud scaffold",
-    copy: "Configure Supabase for expiring group links. Local draft editing remains available without it; provider extraction and money APIs require a session or scoped token.",
+    status: "Backend provisioned",
+    copy: "The London Supabase schema is provisioned with RLS and indexed relations. Cross-device behavior stays unclaimed until the final release passes its live browser probe.",
     icon: Users,
     tone: "border-quiet bg-surface-2 text-muted",
   },
@@ -104,15 +109,15 @@ const JOURNEY: JourneyStep[] = [
     number: "04",
     title: "Sign",
     status: "Debtor wallets",
-    copy: "Each debtor signs a USDC authorization and a V2 full-plan consent in their own wallet. Controlled demo signing stays visibly separate.",
+    copy: "Each debtor signs a USDC authorization and a V2 full-plan consent in their own wallet. The plan accepts only signer-provided wallet artifacts.",
     icon: Signature,
     tone: "border-warn/35 bg-warn/10 text-warn",
   },
   {
     number: "05",
     title: "Settle",
-    status: "Rail deployed · value proof gated",
-    copy: "KeeperHub simulation and atomic V2 submission are implemented. The fresh external-wallet USDC run remains a release proof gate.",
+    status: "Rail + value proof live",
+    copy: "KeeperHub simulated and executed one exact atomic V2 transfer; independent receipt, event, and balance checks verified the Base Sepolia result.",
     icon: ShieldCheck,
     tone: "border-verified/35 bg-verified/10 text-verified",
   },
@@ -140,21 +145,20 @@ const LEDGER_STAGES: Array<{
   { id: "proof", number: "04", label: "Match exact proof", short: "Fail closed", icon: ShieldCheck },
 ];
 
-function BrandMark({ compact = false }: { compact?: boolean }) {
-  return <FinalTabMark className={compact ? "h-8 w-8" : "h-9 w-9"} />;
-}
-
 function PublicNav() {
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-quiet-soft bg-canvas/88 backdrop-blur-xl">
+    <header className="marketing-nav pointer-events-none fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-5 sm:pt-4">
       <nav
-        className="mx-auto flex min-h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8"
+        className="pointer-events-auto mx-auto flex min-h-16 max-w-7xl items-center justify-between gap-4 rounded-2xl border border-quiet-soft bg-canvas/88 px-4 shadow-[0_16px_48px_rgba(0,0,0,0.34)] backdrop-blur-xl sm:px-5"
         aria-label="Primary navigation"
       >
         <Link href="/" className="touch-target flex items-center gap-3 rounded-lg" aria-label="FINALTab home">
-          <BrandMark compact />
-          <span className="text-[15px] font-semibold tracking-[-0.02em] text-txt">
+          <span className="text-[17px] font-semibold tracking-[-0.035em] text-txt">
             FINAL<span className="text-signal">Tab</span>
+          </span>
+          <span className="hidden items-center gap-1.5 border-l border-quiet-soft pl-3 font-mono text-[10px] uppercase tracking-[0.16em] text-faint sm:inline-flex">
+            <span className="proof-beacon" aria-hidden="true"><span /><span /></span>
+            testnet live
           </span>
         </Link>
 
@@ -175,10 +179,10 @@ function PublicNav() {
 
         <Link
           href="/app"
-          className="touch-target inline-flex items-center justify-center gap-2 rounded-xl bg-signal px-4 text-sm font-semibold text-ink transition-[transform,background-color] duration-200 hover:bg-[#ffa581] active:scale-[0.98]"
+          className="touch-target inline-flex items-center justify-center gap-2 rounded-xl bg-signal px-4 text-sm font-semibold text-ink transition-[transform,background-color] duration-200 hover:bg-signal-dim active:scale-[0.98]"
         >
-          <span className="hidden sm:inline">Open testnet lab</span>
-          <span className="sm:hidden">Open lab</span>
+          <span className="hidden sm:inline">Open settlement workspace</span>
+          <span className="sm:hidden">Open workspace</span>
           <ArrowRight size={16} aria-hidden="true" />
         </Link>
       </nav>
@@ -228,13 +232,13 @@ function ReceiptPreview() {
 function AmountTag({ x, y, children }: { x: number; y: number; children: string }) {
   return (
     <g transform={`translate(${x} ${y})`}>
-      <rect x="-48" y="-17" width="96" height="34" rx="9" fill="#11181d" stroke="#52636c" />
+      <rect x="-48" y="-17" width="96" height="34" rx="9" fill="#0a0d0b" stroke="#344238" />
       <text
         x="0"
         y="1"
         dominantBaseline="middle"
         textAnchor="middle"
-        fill="#f3f4ef"
+        fill="#f4f8f1"
         fontFamily="ui-monospace, monospace"
         fontSize="19"
         fontWeight="650"
@@ -252,20 +256,20 @@ function LedgerNode({ x, y, name, detail, payer = false }: { x: number; y: numbe
         width="132"
         height="72"
         rx="15"
-        fill={payer ? "#241c19" : "#172127"}
-        stroke={payer ? "#ff936a" : "#52636c"}
+        fill={payer ? "#11180b" : "#101511"}
+        stroke={payer ? "#c8ff3d" : "#344238"}
         strokeWidth="2"
       />
-      <circle cx="24" cy="25" r="9" fill={payer ? "#ff936a" : "#7bd9f2"} />
-      <text x="43" y="31" fill="#f3f4ef" fontFamily="ui-sans-serif, system-ui" fontSize="20" fontWeight="650">{name}</text>
-      <text x="17" y="56" fill="#bcc7cc" fontFamily="ui-monospace, monospace" fontSize="14">{detail}</text>
+      <circle cx="24" cy="25" r="9" fill={payer ? "#c8ff3d" : "#45afff"} />
+      <text x="43" y="31" fill="#f4f8f1" fontFamily="ui-sans-serif, system-ui" fontSize="20" fontWeight="650">{name}</text>
+      <text x="17" y="56" fill="#b7c0b8" fontFamily="ui-monospace, monospace" fontSize="14">{detail}</text>
     </g>
   );
 }
 
 function DebtGraph({ stage, reduceMotion }: { stage: "raw" | "netted"; reduceMotion: boolean | null }) {
   const raw = stage === "raw";
-  const routeInitial = reduceMotion ? false : { pathLength: 0, opacity: 0 };
+  const routeInitial = reduceMotion ? false : { opacity: 0 };
 
   return (
     <motion.svg
@@ -274,61 +278,61 @@ function DebtGraph({ stage, reduceMotion }: { stage: "raw" | "netted"; reduceMot
       className="h-auto w-full"
       role="img"
       aria-label={raw
-        ? "Raw debt graph. Noah owes Mara 18 dollars 40 cents and Priya 5 dollars 70 cents. Priya owes Mara 17 dollars 10 cents."
-        : "Netted transfer graph. Noah owes Mara 24 dollars 10 cents and Priya owes Mara 11 dollars 40 cents."}
+        ? "Raw debt graph. Guest 01 owes the payer 18 dollars 40 cents and Guest 02 5 dollars 70 cents. Guest 02 owes the payer 17 dollars 10 cents."
+        : "Netted transfer graph. Guest 01 owes the payer 24 dollars 10 cents and Guest 02 owes the payer 11 dollars 40 cents."}
       initial={reduceMotion ? false : { opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.2 }}
     >
       <defs>
         <marker id="ledger-arrow-signal" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
-          <path d="M0 0 10 5 0 10Z" fill="#ff936a" />
+          <path d="M0 0 10 5 0 10Z" fill="#c8ff3d" />
         </marker>
         <marker id="ledger-arrow-info" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
-          <path d="M0 0 10 5 0 10Z" fill="#7bd9f2" />
+          <path d="M0 0 10 5 0 10Z" fill="#45afff" />
         </marker>
       </defs>
 
-      <path d="M0 122H600M0 298H600" stroke="#223039" strokeWidth="1" strokeDasharray="4 8" />
-      <text x="16" y="112" fill="#91a0a8" fontFamily="ui-monospace, monospace" fontSize="13" letterSpacing="2">PAID</text>
-      <text x="16" y="324" fill="#91a0a8" fontFamily="ui-monospace, monospace" fontSize="13" letterSpacing="2">OWES</text>
+      <path d="M0 122H600M0 298H600" stroke="#182018" strokeWidth="1" strokeDasharray="4 8" />
+      <text x="16" y="112" fill="#7e8b82" fontFamily="ui-monospace, monospace" fontSize="13" letterSpacing="2">PAID</text>
+      <text x="16" y="324" fill="#7e8b82" fontFamily="ui-monospace, monospace" fontSize="13" letterSpacing="2">OWES</text>
 
       <motion.path
         d={raw ? "M184 251 C213 177 257 127 293 102" : "M184 251 C215 171 257 122 293 102"}
         fill="none"
-        stroke="#ff936a"
-        strokeWidth={raw ? 3 : 4.5}
-        strokeLinecap="round"
-        markerEnd="url(#ledger-arrow-signal)"
-        vectorEffect="non-scaling-stroke"
-        initial={routeInitial}
-        animate={{ pathLength: 1, opacity: 1 }}
-        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      />
-      <motion.path
-        d={raw ? "M468 251 C439 177 395 127 359 102" : "M468 251 C437 171 395 122 359 102"}
-        fill="none"
-        stroke={raw ? "#7bd9f2" : "#ff936a"}
+        stroke={raw ? "#45afff" : "#c8ff3d"}
         strokeWidth={raw ? 3 : 4.5}
         strokeLinecap="round"
         markerEnd={raw ? "url(#ledger-arrow-info)" : "url(#ledger-arrow-signal)"}
         vectorEffect="non-scaling-stroke"
         initial={routeInitial}
-        animate={{ pathLength: 1, opacity: 1 }}
-        transition={{ duration: 0.5, delay: reduceMotion ? 0 : 0.08, ease: [0.22, 1, 0.36, 1] }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+      />
+      <motion.path
+        d={raw ? "M468 251 C439 177 395 127 359 102" : "M468 251 C437 171 395 122 359 102"}
+        fill="none"
+        stroke={raw ? "#45afff" : "#c8ff3d"}
+        strokeWidth={raw ? 3 : 4.5}
+        strokeLinecap="round"
+        markerEnd={raw ? "url(#ledger-arrow-info)" : "url(#ledger-arrow-signal)"}
+        vectorEffect="non-scaling-stroke"
+        initial={routeInitial}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.2, delay: reduceMotion ? 0 : 0.04, ease: [0.22, 1, 0.36, 1] }}
       />
       {raw ? (
         <motion.path
           d="M199 293 C278 328 375 328 454 293"
           fill="none"
-          stroke="#7bd9f2"
+          stroke="#45afff"
           strokeWidth="3"
           strokeLinecap="round"
           markerEnd="url(#ledger-arrow-info)"
           vectorEffect="non-scaling-stroke"
           initial={routeInitial}
-          animate={{ pathLength: 1, opacity: 1 }}
-          transition={{ duration: 0.5, delay: reduceMotion ? 0 : 0.16, ease: [0.22, 1, 0.36, 1] }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.2, delay: reduceMotion ? 0 : 0.08, ease: [0.22, 1, 0.36, 1] }}
         />
       ) : null}
 
@@ -336,18 +340,18 @@ function DebtGraph({ stage, reduceMotion }: { stage: "raw" | "netted"; reduceMot
       <AmountTag x={raw ? 430 : 425} y={169}>{`$${raw ? "17.10" : "11.40"}`}</AmountTag>
       {raw ? <AmountTag x={326} y={314}>$5.70</AmountTag> : null}
 
-      <LedgerNode x={260} y={30} name="Mara" detail="paid $68.40" payer />
-      <LedgerNode x={65} y={244} name="Noah" detail={raw ? "raw debtor" : "owes $24.10"} />
-      <LedgerNode x={455} y={244} name="Priya" detail={raw ? "raw debtor" : "owes $11.40"} />
+      <LedgerNode x={260} y={30} name="Payer" detail="paid $68.40" payer />
+      <LedgerNode x={65} y={244} name="Guest 01" detail={raw ? "raw debtor" : "owes $24.10"} />
+      <LedgerNode x={455} y={244} name="Guest 02" detail={raw ? "raw debtor" : "owes $11.40"} />
     </motion.svg>
   );
 }
 
 function ReceiptMathVisual({ reduceMotion }: { reduceMotion: boolean | null }) {
   const shares = [
-    ["Mara", "$32.90", "48.1%"],
-    ["Noah", "$24.10", "35.2%"],
-    ["Priya", "$11.40", "16.7%"],
+    ["Payer", "$32.90", "48.1%"],
+    ["Guest 01", "$24.10", "35.2%"],
+    ["Guest 02", "$11.40", "16.7%"],
   ];
 
   return (
@@ -369,9 +373,10 @@ function ReceiptMathVisual({ reduceMotion }: { reduceMotion: boolean | null }) {
             <div className="mt-2 h-2 overflow-hidden rounded-full bg-surface-2">
               <motion.div
                 className="h-full rounded-full bg-signal"
-                initial={reduceMotion ? false : { width: 0 }}
-                animate={{ width }}
-                transition={{ duration: reduceMotion ? 0 : 0.45, ease: [0.22, 1, 0.36, 1] }}
+                style={{ width, transformOrigin: "left" }}
+                initial={reduceMotion ? false : { scaleX: 0, opacity: 0.35 }}
+                animate={{ scaleX: 1, opacity: 1 }}
+                transition={{ duration: reduceMotion ? 0 : 0.22, ease: [0.22, 1, 0.36, 1] }}
               />
             </div>
           </div>
@@ -427,7 +432,7 @@ const LEDGER_STAGE_COPY: Record<LedgerStage, { eyebrow: string; title: string; c
   netted: {
     eyebrow: "Conservation-safe netting",
     title: "Three obligations become two transfers.",
-    copy: "The route gets shorter, but nobody's net position changes. Noah still pays $24.10; Priya still pays $11.40; Mara receives $35.50.",
+    copy: "The route gets shorter, but every role's net position stays unchanged. Guest 01 pays $24.10; Guest 02 pays $11.40; the payer receives $35.50.",
   },
   proof: {
     eyebrow: "Exact-plan verifier",
@@ -439,17 +444,17 @@ const LEDGER_STAGE_COPY: Record<LedgerStage, { eyebrow: string; title: string; c
 const LEDGER_STAGE_ROWS: Record<LedgerStage, { title: string; rows: Array<[string, string]>; footer: string }> = {
   receipt: {
     title: "Participant shares",
-    rows: [["Mara", "$32.90"], ["Noah", "$24.10"], ["Priya", "$11.40"]],
+    rows: [["Payer", "$32.90"], ["Guest 01", "$24.10"], ["Guest 02", "$11.40"]],
     footer: "Shares sum to $68.40",
   },
   raw: {
     title: "Raw obligations",
-    rows: [["Noah → Mara", "$18.40"], ["Noah → Priya", "$5.70"], ["Priya → Mara", "$17.10"]],
+    rows: [["Guest 01 → Payer", "$18.40"], ["Guest 01 → Guest 02", "$5.70"], ["Guest 02 → Payer", "$17.10"]],
     footer: "3 visible obligations",
   },
   netted: {
     title: "Netted transfers",
-    rows: [["Noah → Mara", "$24.10"], ["Priya → Mara", "$11.40"]],
+    rows: [["Guest 01 → Payer", "$24.10"], ["Guest 02 → Payer", "$11.40"]],
     footer: "2 transfers · $35.50 moved",
   },
   proof: {
@@ -470,7 +475,7 @@ function LedgerWorkbench() {
       <div className="border-b border-quiet-soft bg-canvas/45 px-5 py-4 sm:px-7">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <p className="font-mono text-xs font-semibold uppercase tracking-[0.2em] text-faint">Interactive ledger anatomy</p>
-          <span className="rounded-full border border-quiet bg-surface-2 px-3 py-1 font-mono text-xs text-muted">Illustrative flow · no transaction claim</span>
+          <span className="rounded-full border border-quiet bg-surface-2 px-3 py-1 font-mono text-xs text-muted">Deterministic engine trace · no transaction claim</span>
         </div>
       </div>
 
@@ -510,7 +515,7 @@ function LedgerWorkbench() {
             key={stage}
             initial={reduceMotion ? false : { opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
             className="relative flex min-h-[360px] items-center"
           >
             {stage === "receipt" ? <ReceiptMathVisual reduceMotion={reduceMotion} /> : null}
@@ -551,24 +556,24 @@ function HeroProofRail() {
   ];
 
   return (
-    <div className="surface-shadow rounded-2xl border border-quiet-soft bg-surface-1/92 p-5 sm:p-6">
+    <div className="surface-shadow h-full rounded-2xl border border-quiet-soft bg-surface-1/92 p-5 sm:p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="font-mono text-xs uppercase tracking-[0.2em] text-faint">Deployment flight</p>
           <p className="mt-1 font-semibold text-txt">V2 via KeeperHub</p>
         </div>
         <span className="inline-flex min-h-8 items-center gap-2 rounded-full border border-verified/35 bg-verified/10 px-3 font-mono text-xs font-semibold uppercase tracking-wide text-verified">
-          <span className="h-2 w-2 rounded-full bg-verified" aria-hidden="true" /> verified
+          <span className="proof-beacon" aria-hidden="true"><span /><span /></span> verified
         </span>
       </div>
       <ol className="mt-6 space-y-0" aria-label="Verified V2 deployment progress">
         {steps.map(([label, detail], index) => (
           <li key={label} className="relative flex gap-3 pb-5 last:pb-0">
             {index < steps.length - 1 ? (
-              <span className="route-progress absolute left-[7px] top-4 h-full w-px bg-verified/45" aria-hidden="true" />
+              <span className="proof-transit-line absolute left-[7px] top-4 h-full w-px" aria-hidden="true" />
             ) : null}
-            <span className="relative z-10 mt-1 grid h-4 w-4 shrink-0 place-items-center rounded-full border border-verified bg-surface-1" aria-hidden="true">
-              <span className="h-1.5 w-1.5 rounded-full bg-verified" />
+            <span className={`relative z-10 mt-1 grid h-4 w-4 shrink-0 place-items-center rounded-full border bg-surface-1 ${index === steps.length - 1 ? "border-verified" : "border-info"}`} aria-hidden="true">
+              <span className={`h-1.5 w-1.5 rounded-full ${index === steps.length - 1 ? "bg-verified" : "bg-info"}`} />
             </span>
             <div className="min-w-0 flex-1 sm:flex sm:items-baseline sm:justify-between sm:gap-4">
               <span className="text-sm font-medium text-txt">{label}</span>
@@ -592,25 +597,25 @@ function HeroProofRail() {
 
 function CategoryProofDocket() {
   return (
-    <section className="border-b border-quiet-soft py-12 sm:py-16" aria-labelledby="category-proof-title">
+    <section className="border-b border-quiet-soft py-16 sm:py-24" aria-labelledby="category-proof-title">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="surface-shadow overflow-hidden rounded-2xl border border-quiet bg-surface-1">
+        <div className="surface-shadow overflow-hidden rounded-3xl border border-quiet bg-surface-1">
           <div className="grid lg:grid-cols-[0.86fr_1.14fr]">
-            <div className="border-b border-dashed border-quiet p-6 sm:p-8 lg:border-b-0 lg:border-r">
-              <p className="font-mono text-xs font-semibold uppercase tracking-[0.24em] text-signal">
+            <div className="border-b border-ink/15 bg-signal p-6 text-ink sm:p-8 lg:border-b-0 lg:border-r">
+              <p className="font-mono text-xs font-semibold uppercase tracking-[0.24em] text-ink/65">
                 Hackathon category docket
               </p>
-              <h2 id="category-proof-title" className="display-type mt-4 text-3xl leading-[1.08] text-txt sm:text-4xl">
+              <h2 id="category-proof-title" className="display-type mt-4 text-3xl leading-[1.08] text-ink sm:text-5xl">
                 Eight tracks. One auditable path.
               </h2>
-              <p className="mt-4 max-w-xl text-sm leading-6 text-muted">
+              <p className="mt-4 max-w-xl text-sm leading-6 text-ink/75">
                 Each category maps to a shipped surface or an explicitly labelled release gate—not a marketing inference.
               </p>
               <ul className="mt-6 flex flex-wrap gap-2" aria-label="Hackathon categories">
                 {HACKATHON_CATEGORIES.map((category) => (
                   <li
                     key={category}
-                    className="rounded-md border border-signal/30 bg-signal/10 px-2.5 py-1.5 font-mono text-xs font-semibold text-signal"
+                    className="rounded-md border border-ink/20 bg-ink/10 px-2.5 py-1.5 font-mono text-xs font-semibold text-ink"
                   >
                     {category}
                   </li>
@@ -620,7 +625,7 @@ function CategoryProofDocket() {
 
             <dl className="divide-y divide-quiet-soft">
               {CATEGORY_EVIDENCE.map((item) => (
-                <div key={item.marker} className="grid gap-2 px-6 py-5 sm:grid-cols-[10rem_1fr] sm:px-8">
+                <div key={item.marker} className="grid gap-2 px-6 py-5 transition-colors duration-200 hover:bg-surface-2 sm:grid-cols-[10rem_1fr] sm:px-8">
                   <dt className="font-mono text-xs font-semibold uppercase tracking-[0.16em] text-faint">{item.marker}</dt>
                   <dd>
                     <p className="text-sm font-semibold text-txt">{item.title}</p>
@@ -633,6 +638,33 @@ function CategoryProofDocket() {
         </div>
       </div>
     </section>
+  );
+}
+
+const EVIDENCE_TICKER = [
+  "Groq receipt vision",
+  "integer-minor-unit math",
+  "dual-wallet consent",
+  "KeeperHub execution",
+  "exact V2 event match",
+  "9 authenticated MCP tools",
+  "Base Sepolia",
+  "Supabase RLS",
+] as const;
+
+function EvidenceMarquee() {
+  return (
+    <div className="evidence-marquee border-b border-quiet-soft" aria-label="Live product evidence">
+      <div className="evidence-marquee-track" aria-hidden="true">
+        {[...EVIDENCE_TICKER, ...EVIDENCE_TICKER].map((item, index) => (
+          <span key={`${item}-${index}`} className="evidence-marquee-item">
+            <span className="h-1.5 w-1.5 rounded-full bg-signal" />
+            {item}
+          </span>
+        ))}
+      </div>
+      <span className="sr-only">{EVIDENCE_TICKER.join(", ")}</span>
+    </div>
   );
 }
 
@@ -651,62 +683,79 @@ export default function Landing() {
   const reveal = reduceMotion ? false : { opacity: 0, y: 18 };
 
   return (
-    <div className="min-h-dvh overflow-x-hidden bg-canvas text-txt">
+    <div className="marketing-shell min-h-dvh overflow-x-hidden bg-canvas text-txt">
       <a href="#main-content" className="skip-link">Skip to main content</a>
       <PublicNav />
 
       <div id="main-content" tabIndex={-1}>
-        <section className="atmosphere relative isolate overflow-hidden border-b border-quiet-soft pb-20 pt-28 sm:pb-28 sm:pt-36">
+        <section className="marketing-hero atmosphere relative isolate overflow-hidden border-b border-quiet-soft pb-16 pt-28 sm:pb-24 sm:pt-36">
           <div className="ledger-register ledger-register-hero absolute inset-0 -z-10" aria-hidden="true" />
-          <div className="mx-auto grid max-w-7xl items-center gap-14 px-4 sm:px-6 lg:grid-cols-[1.04fr_0.96fr] lg:px-8">
-            <motion.div initial={reveal} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}>
-              <div className="inline-flex min-h-9 items-center gap-2 rounded-full border border-quiet bg-surface-1 px-3.5 font-mono text-xs font-medium text-muted">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <motion.div initial={reveal} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}>
+              <div className="inline-flex min-h-9 items-center gap-2 rounded-full border border-quiet bg-surface-1/80 px-3.5 font-mono text-xs font-medium text-muted backdrop-blur-sm">
                 <Sparkles size={14} className="text-signal" aria-hidden="true" />
-                Receipt → consent → landed proof
+                receipt → consent → KeeperHub → exact proof
               </div>
-              <h1 className="display-type mt-7 max-w-[760px] text-[clamp(3.25rem,8vw,7rem)] leading-[0.88] text-txt">
-                Close the tab,
-                <span className="block text-signal">not the chat.</span>
+              <h1 className="display-type mt-7 max-w-[1180px] text-[clamp(4rem,10.4vw,9.2rem)] leading-[0.82] text-txt">
+                <span className="block">Close the tab.</span>
+                <span className="block">Prove the <em className="proof-gradient-text font-normal italic">settlement.</em></span>
               </h1>
-              <p className="mt-7 max-w-2xl text-lg leading-8 text-muted sm:text-xl">
-                FINALTab turns a receipt into an exact split, a frozen ledger and a KeeperHub-executed USDC settlement—with an honest testnet receipt at the end.
-              </p>
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <Link
-                  href="/app/tab"
-                  className="touch-target inline-flex items-center justify-center gap-2 rounded-xl bg-signal px-5 text-sm font-semibold text-ink transition-[transform,background-color] duration-200 hover:bg-[#ffa581] active:scale-[0.98]"
-                >
-                  Start a testnet settlement <ArrowRight size={17} aria-hidden="true" />
-                </Link>
-                <a
-                  href="#proof"
-                  className="touch-target inline-flex items-center justify-center gap-2 rounded-xl border border-quiet bg-surface-1 px-5 text-sm font-semibold text-txt transition-colors hover:border-info/50 hover:text-info"
-                >
-                  Inspect the live proof <FileCheck2 size={17} aria-hidden="true" />
-                </a>
+              <div className="mt-8 grid gap-8 border-t border-quiet-soft pt-7 lg:grid-cols-[minmax(0,0.78fr)_minmax(420px,1.22fr)] lg:items-end">
+                <p className="max-w-2xl text-lg leading-8 text-muted sm:text-xl">
+                  FINALTab turns a receipt into an exact split, a frozen ledger and a KeeperHub-executed USDC settlement—with an independently matched testnet receipt at the end.
+                </p>
+                <div>
+                  <div className="flex flex-col gap-3 sm:flex-row lg:justify-end">
+                    <Link
+                      href="/app/tab"
+                      className="touch-target inline-flex items-center justify-center gap-2 rounded-xl bg-signal px-5 text-sm font-semibold text-ink transition-[transform,background-color] duration-200 hover:bg-signal-dim active:scale-[0.98]"
+                    >
+                      Start a testnet settlement <ArrowRight size={17} aria-hidden="true" />
+                    </Link>
+                    <a
+                      href="#proof"
+                      className="touch-target inline-flex items-center justify-center gap-2 rounded-xl border border-quiet bg-surface-1/80 px-5 text-sm font-semibold text-txt transition-[transform,border-color,color] duration-200 hover:border-info/60 hover:text-info active:scale-[0.98]"
+                    >
+                      Inspect the live proof <FileCheck2 size={17} aria-hidden="true" />
+                    </a>
+                  </div>
+                  <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted lg:justify-end" aria-label="Product boundaries">
+                    <li className="inline-flex items-center gap-2"><Check size={15} className="text-verified" aria-hidden="true" /> KeeperHub V2 live</li>
+                    <li className="inline-flex items-center gap-2"><Check size={15} className="text-verified" aria-hidden="true" /> Cent-perfect math</li>
+                    <li className="inline-flex items-center gap-2"><KeyRound size={15} className="text-info" aria-hidden="true" /> Human-authorized value</li>
+                  </ul>
+                </div>
               </div>
-              <ul className="mt-7 flex flex-wrap gap-x-6 gap-y-3 text-sm text-muted" aria-label="Product boundaries">
-                <li className="inline-flex items-center gap-2"><Check size={15} className="text-verified" aria-hidden="true" /> Real KeeperHub V2 deployment</li>
-                <li className="inline-flex items-center gap-2"><Check size={15} className="text-verified" aria-hidden="true" /> Deterministic money math</li>
-                <li className="inline-flex items-center gap-2"><KeyRound size={15} className="text-info" aria-hidden="true" /> External-wallet V2 signing path</li>
-              </ul>
             </motion.div>
 
             <motion.div
               initial={reduceMotion ? false : { opacity: 0, x: 22 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.4, delay: reduceMotion ? 0 : 0.08, ease: [0.22, 1, 0.36, 1] }}
-              className="grid items-center gap-5 sm:grid-cols-[0.92fr_1.08fr] lg:grid-cols-1 xl:grid-cols-[0.92fr_1.08fr]"
+              transition={{ duration: 0.24, delay: reduceMotion ? 0 : 0.04, ease: [0.22, 1, 0.36, 1] }}
+              className="hero-ledger-stage mt-12 grid overflow-hidden rounded-3xl border border-quiet bg-surface-1/88 lg:grid-cols-[0.76fr_1.24fr]"
             >
-              <ReceiptPreview />
-              <HeroProofRail />
+              <div className="ledger-register relative border-b border-quiet-soft p-6 sm:p-8 lg:border-b-0 lg:border-r">
+                <div className="relative mb-6 flex items-center justify-between gap-4">
+                  <p className="font-mono text-xs font-semibold uppercase tracking-[0.2em] text-faint">01 / Receipt truth</p>
+                  <span className="font-mono text-xs text-signal">$68.40 exact</span>
+                </div>
+                <ReceiptPreview />
+              </div>
+              <div className="p-4 sm:p-6 lg:p-8">
+                <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+                  <p className="font-mono text-xs font-semibold uppercase tracking-[0.2em] text-faint">02 / Execution truth</p>
+                  <span className="font-mono text-xs text-info">blue = transit</span>
+                </div>
+                <HeroProofRail />
+              </div>
             </motion.div>
           </div>
         </section>
 
+        <EvidenceMarquee />
         <CategoryProofDocket />
 
-        <section id="journey" className="border-b border-quiet-soft py-20 sm:py-28">
+        <section id="journey" className="border-b border-quiet-soft bg-surface-1/30 py-20 sm:py-28">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <SectionHeading
               eyebrow="The settlement route"
@@ -719,7 +768,7 @@ export default function Landing() {
                 return (
                   <li
                     key={step.title}
-                    className="surface-shadow rounded-2xl border border-quiet-soft bg-surface-1 p-5 transition-[transform,border-color] duration-200 hover:-translate-y-1 hover:border-quiet"
+                    className="journey-card surface-shadow rounded-2xl border border-quiet-soft bg-surface-1 p-5 transition-[transform,border-color,background-color] duration-200 hover:-translate-y-1 hover:border-signal/35 hover:bg-surface-2"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <span className="grid h-11 w-11 place-items-center rounded-xl border border-quiet bg-surface-2 text-txt">
@@ -750,51 +799,84 @@ export default function Landing() {
           </div>
         </section>
 
-        <section id="proof" className="border-b border-quiet-soft py-20 sm:py-28">
-          <div className="mx-auto grid max-w-7xl items-start gap-12 px-4 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
+        <section id="proof" className="border-b border-quiet-soft bg-surface-1/25 py-20 sm:py-28">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <SectionHeading
-              eyebrow="Verified V2 deployment"
-              title="The secure settlement rail is live and source-matched."
-              copy="KeeperHub deployed V2 on Base Sepolia through a simulate-first CreateX execution. The 6,367-byte runtime matches the published source exactly; a fresh value-moving V2 proof remains a separate release gate."
+              eyebrow="Two independent proof boundaries"
+              title="Deployment provenance and value movement are separate proofs."
+              copy="KeeperHub first deployed the exact-source-matched V2 contract. A different execution then moved exactly one atomic unit of test USDC and passed independent event, balance, settlement-ID, and ledger-hash checks."
             />
-            <div className="surface-shadow overflow-hidden rounded-2xl border border-verified/30 bg-surface-1">
-              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-quiet-soft px-5 py-4 sm:px-6">
-                <div className="flex items-center gap-3">
-                  <span className="grid h-10 w-10 place-items-center rounded-full bg-verified/10 text-verified"><ShieldCheck size={20} aria-hidden="true" /></span>
-                  <div><p className="font-semibold text-txt">Verified V2 deployment</p><p className="text-sm text-muted">KeeperHub · Base Sepolia</p></div>
-                </div>
-                <span className="rounded-full border border-verified/30 bg-verified/10 px-3 py-1 font-mono text-xs font-semibold text-verified">SOURCE MATCHED</span>
-              </div>
-              <dl className="grid sm:grid-cols-2">
-                {[
-                  ["Execution", EXECUTION_ID],
-                  ["Transaction", TX_SHORT],
-                  ["Block", "45,321,107"],
-                  ["Runtime", "6,367 bytes"],
-                  ["Trigger", "KeeperHub · CreateX"],
-                  ["Source", "Sourcify exact match #43497805"],
-                ].map(([term, value]) => (
-                  <div key={term} className="border-b border-quiet-soft px-5 py-4 last:border-b-0 sm:border-r sm:px-6 sm:even:border-r-0">
-                    <dt className="font-mono text-xs uppercase tracking-wide text-faint">{term}</dt>
-                    <dd className="mt-1 break-all text-sm text-txt">{value}</dd>
+            <div className="mt-12 grid items-stretch gap-5 lg:grid-cols-2">
+              <article className="surface-shadow overflow-hidden rounded-3xl border border-verified/30 bg-surface-1" aria-labelledby="deployment-proof-title">
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-quiet-soft px-5 py-4 sm:px-6">
+                  <div className="flex items-center gap-3">
+                    <span className="grid h-10 w-10 place-items-center rounded-full bg-verified/10 text-verified"><ShieldCheck size={20} aria-hidden="true" /></span>
+                    <div><p id="deployment-proof-title" className="font-semibold text-txt">V2 contract deployment</p><p className="text-sm text-muted">KeeperHub · Base Sepolia</p></div>
                   </div>
-                ))}
-              </dl>
-              <div className="flex flex-col gap-3 p-5 sm:flex-row sm:p-6">
-                <a href={BASESCAN_TX} target="_blank" rel="noopener noreferrer" className="touch-target inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-verified px-4 text-sm font-semibold text-ink transition-opacity hover:opacity-90">
-                  Inspect deployment <ExternalLink size={16} aria-hidden="true" />
-                </a>
-                <a href={BASESCAN_CONTRACT} target="_blank" rel="noopener noreferrer" className="touch-target inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-quiet bg-surface-2 px-4 text-sm font-semibold text-txt transition-colors hover:border-info/50 hover:text-info">
-                  View contract <ExternalLink size={16} aria-hidden="true" />
-                </a>
-              </div>
+                  <span className="rounded-full border border-verified/30 bg-verified/10 px-3 py-1 font-mono text-xs font-semibold text-verified">SOURCE MATCHED</span>
+                </div>
+                <dl className="grid sm:grid-cols-2">
+                  {[
+                    ["Execution", EXECUTION_ID],
+                    ["Transaction", TX_SHORT],
+                    ["Block", "45,321,107"],
+                    ["Runtime", "6,367 bytes"],
+                    ["Trigger", "KeeperHub · CreateX"],
+                    ["Source", "Sourcify exact match #43497805"],
+                  ].map(([term, value]) => (
+                    <div key={term} className="border-b border-quiet-soft px-5 py-4 last:border-b-0 sm:border-r sm:px-6 sm:even:border-r-0">
+                      <dt className="font-mono text-xs uppercase tracking-wide text-faint">{term}</dt>
+                      <dd className="mt-1 break-all text-sm text-txt">{value}</dd>
+                    </div>
+                  ))}
+                </dl>
+                <div className="flex flex-col gap-3 p-5 sm:flex-row sm:p-6">
+                  <a href={BASESCAN_TX} target="_blank" rel="noopener noreferrer" className="touch-target inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-verified px-4 text-sm font-semibold text-ink transition-opacity hover:opacity-90">
+                    Inspect deployment <ExternalLink size={16} aria-hidden="true" />
+                  </a>
+                  <a href={BASESCAN_CONTRACT} target="_blank" rel="noopener noreferrer" className="touch-target inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-quiet bg-surface-2 px-4 text-sm font-semibold text-txt transition-colors hover:border-info/50 hover:text-info">
+                    View contract <ExternalLink size={16} aria-hidden="true" />
+                  </a>
+                </div>
+              </article>
+
+              <article className="surface-shadow overflow-hidden rounded-3xl border border-info/35 bg-surface-1" aria-labelledby="settlement-proof-title">
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-quiet-soft px-5 py-4 sm:px-6">
+                  <div className="flex items-center gap-3">
+                    <span className="grid h-10 w-10 place-items-center rounded-full bg-info/10 text-info"><FileCheck2 size={20} aria-hidden="true" /></span>
+                    <div><p id="settlement-proof-title" className="font-semibold text-txt">One-atomic-unit USDC settlement</p><p className="text-sm text-muted">KeeperHub V2 · separate execution</p></div>
+                  </div>
+                  <span className="rounded-full border border-info/35 bg-info/10 px-3 py-1 font-mono text-xs font-semibold text-info">VALUE VERIFIED</span>
+                </div>
+                <dl className="grid sm:grid-cols-2">
+                  {[
+                    ["Execution", SETTLEMENT_EXECUTION_ID],
+                    ["Transaction", SETTLEMENT_TX_SHORT],
+                    ["Block", "45,327,128"],
+                    ["Amount", "1 atomic USDC"],
+                    ["Settlement ID", SETTLEMENT_ID_SHORT],
+                    ["Ledger hash", LEDGER_HASH_SHORT],
+                  ].map(([term, value]) => (
+                    <div key={term} className="border-b border-quiet-soft px-5 py-4 last:border-b-0 sm:border-r sm:px-6 sm:even:border-r-0">
+                      <dt className="font-mono text-xs uppercase tracking-wide text-faint">{term}</dt>
+                      <dd className="mt-1 break-all text-sm text-txt">{value}</dd>
+                    </div>
+                  ))}
+                </dl>
+                <div className="p-5 sm:p-6">
+                  <a href={BASESCAN_SETTLEMENT_TX} target="_blank" rel="noopener noreferrer" className="touch-target inline-flex w-full items-center justify-center gap-2 rounded-xl bg-info px-4 text-sm font-semibold text-ink transition-opacity hover:opacity-90">
+                    Inspect value transfer <ExternalLink size={16} aria-hidden="true" />
+                  </a>
+                  <p className="mt-3 text-center text-xs leading-5 text-muted">Testnet value only. Deployment provenance is not presented as settlement proof.</p>
+                </div>
+              </article>
             </div>
           </div>
         </section>
 
         <section className="py-20 sm:py-28">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="surface-shadow relative overflow-hidden rounded-3xl border border-quiet bg-surface-1 p-6 sm:p-10 lg:p-12">
+            <div className="mcp-cta surface-shadow relative overflow-hidden rounded-3xl border border-signal/25 bg-surface-1 p-6 sm:p-10 lg:p-12">
               <div className="ledger-register absolute inset-0 opacity-60" aria-hidden="true" />
               <div className="relative grid gap-10 lg:grid-cols-[1fr_0.9fr] lg:items-end">
                 <div>
@@ -820,7 +902,7 @@ export default function Landing() {
                   <p><span className="text-info">compose</span> allocate_receipt · prepare_receipt_settlement</p>
                   <p><span className="text-warn">money</span> simulate · approve · submit</p>
                   <p><span className="text-verified">prove</span> settlement_status</p>
-                  <p className="mt-4 text-faint">Three fixed-wallet demo tools exist only behind an explicit testnet feature gate.</p>
+                  <p className="mt-4 text-faint">The public manifest exposes authenticated production tools only.</p>
                 </div>
               </div>
             </div>
@@ -831,13 +913,12 @@ export default function Landing() {
       <footer className="border-t border-quiet-soft py-10">
         <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
           <div className="flex items-center gap-3">
-            <BrandMark compact />
-            <div><p className="font-semibold text-txt">FINALTab</p><p className="text-sm text-muted">Testnet software built for the KeeperHub hackathon.</p></div>
+            <div><p className="text-lg font-semibold tracking-[-0.035em] text-txt">FINAL<span className="text-signal">Tab</span></p><p className="text-sm text-muted">Testnet software built for the KeeperHub hackathon.</p></div>
           </div>
           <nav className="flex flex-wrap gap-x-5 gap-y-2 text-sm" aria-label="Footer navigation">
             <Link href="/developers" className="touch-target inline-flex items-center text-muted hover:text-txt">Developers</Link>
             <Link href="/open-source" className="touch-target inline-flex items-center text-muted hover:text-txt">Open source</Link>
-            <Link href="/lab" className="touch-target inline-flex items-center text-muted hover:text-txt">Reliability lab</Link>
+            <Link href="/app/proof" className="touch-target inline-flex items-center text-muted hover:text-txt">Proofs</Link>
             <a href={REPO_URL} target="_blank" rel="noopener noreferrer" className="touch-target inline-flex items-center gap-1.5 text-muted hover:text-txt">GitHub <ExternalLink size={14} aria-hidden="true" /></a>
           </nav>
         </div>

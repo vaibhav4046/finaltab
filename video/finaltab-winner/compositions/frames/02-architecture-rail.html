@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8"/><title>FINALTab — Architecture rail</title></head>
+<body>
+<template>
+  <style>
+    @font-face{font-family:Fraunces;src:url("assets/fonts/Fraunces-Variable.ttf") format("truetype");font-weight:100 900}
+    @font-face{font-family:GeistMono;src:url("assets/fonts/GeistMono-Regular.woff2") format("woff2");font-weight:400}
+    @font-face{font-family:GeistMono;src:url("assets/fonts/GeistMono-Bold.woff2") format("woff2");font-weight:700}
+    #root{position:absolute;inset:0;width:3840px;height:2160px;overflow:hidden;color:#F4EEE2;background:transparent}
+    .clip{position:absolute;inset:0;overflow:hidden}.ground{background:#0B0F12}
+    .scene{width:50%;height:50%;transform:scale(2);transform-origin:0 0;padding:70px 0 150px;box-sizing:border-box}
+    .heading{position:absolute;left:96px;top:68px;z-index:3}
+    .heading small{display:block;font:700 18px/1 GeistMono,monospace;letter-spacing:.16em;color:#FF936A;margin-bottom:16px}
+    .heading h2{margin:0;font:600 64px/1.02 Fraunces,Georgia,serif;letter-spacing:-.035em}
+    .viewport{position:absolute;left:0;top:176px;width:100%;height:690px;overflow:hidden}
+    .world{position:absolute;left:0;top:0;width:5300px;height:690px;transform:translate3d(0,0,0)}
+    .backbone{position:absolute;left:940px;top:365px;width:3800px;height:2px;background:#91A0A8;opacity:.34;transform-origin:0 50%}
+    .station{position:absolute;top:140px;width:700px;height:420px;border-top:1px solid rgba(145,160,168,.45);padding:38px 40px;box-sizing:border-box}
+    .station:before{content:"";position:absolute;left:338px;top:218px;width:24px;height:24px;border:3px solid #FF936A;border-radius:50%;background:#0B0F12}
+    .station .num{font:700 18px/1 GeistMono,monospace;color:#FF936A;letter-spacing:.14em}
+    .station h3{margin:23px 0 18px;font:600 55px/1 Fraunces,Georgia,serif;letter-spacing:-.035em}
+    .station p{margin:0;width:610px;font:400 22px/1.48 GeistMono,monospace;color:#91A0A8}
+    .station .proofline{display:inline-flex;margin-top:24px;border:1px solid rgba(244,238,226,.4);padding:11px 14px;border-radius:10px;font:700 16px/1.25 GeistMono,monospace;color:#F4EEE2}
+    .s1{left:590px}.s2{left:1540px}.s3{left:2490px}.s4{left:3440px}.s5{left:4390px}
+    .progress{position:absolute;left:96px;right:96px;bottom:140px;height:4px;background:rgba(145,160,168,.16)}
+    .progress b{display:block;width:100%;height:100%;background:#FF936A;transform-origin:0 50%}
+    .counter{position:absolute;right:96px;top:96px;font:700 18px/1 GeistMono,monospace;color:#91A0A8;letter-spacing:.1em}
+  </style>
+  <div id="root" data-composition-id="finaltab-architecture-rail" data-start="0" data-width="3840" data-height="2160" data-duration="10">
+    <section id="f02-ground" class="clip ground" data-start="0" data-duration="10" data-track-index="0"></section>
+    <section id="f02-scene" class="clip scene" data-start="0" data-duration="10" data-track-index="1">
+      <div id="f02-heading" class="heading"><small>02 · ONE EXACT PLAN</small><h2>Receipt in. Public proof out.</h2></div>
+      <div class="counter">5 BOUNDARIES · 1 ATOMIC CALL</div>
+      <div class="viewport">
+        <div id="f02-world" class="world">
+          <div id="f02-backbone" class="backbone"></div>
+          <article id="f02-station-1" class="station s1"><div class="num">01 / EXTRACT</div><h3>Receipt</h3><p>Editable line items become integer minor units. Arithmetic stays inspectable.</p></article>
+          <article id="f02-station-2" class="station s2"><div class="num">02 / ALLOCATE</div><h3>Deterministic ledger</h3><p>Natural-language choices reconcile tax, tip, and service to the exact receipt total.</p></article>
+          <article id="f02-station-3" class="station s3"><div class="num">03 / CONSENT</div><h3>Two signatures</h3><p>Circle authorizes the pull. SettlementConsent binds the complete payout plan.</p></article>
+          <article id="f02-station-4" class="station s4"><div class="num">04 / EXECUTE</div><h3>KeeperHub</h3><p>Simulation first. Human broadcast approval. One idempotent V2 settlement call.</p><div class="proofline">CONTRACT DEPLOYMENT · NOT A SETTLEMENT</div></article>
+          <article id="f02-station-5" class="station s5"><div class="num">05 / VERIFY</div><h3>Independent Base RPC</h3><p>Receipt, indexed event, balance deltas, and conservation must agree exactly.</p></article>
+        </div>
+      </div>
+      <div class="progress"><b id="f02-progress"></b></div>
+    </section>
+  </div>
+  <script>
+    window.__timelines=window.__timelines||{};
+    const tl=gsap.timeline({paused:true});
+    tl.fromTo("#f02-heading",{opacity:0,y:22},{opacity:1,y:0,duration:.56,ease:"power3.out"},.15);
+    tl.fromTo("#f02-backbone",{scaleX:0},{scaleX:1,duration:8.2,ease:"none"},.55);
+    tl.fromTo("#f02-progress",{scaleX:0},{scaleX:1,duration:8.5,ease:"none"},.55);
+    tl.fromTo("#f02-station-1",{opacity:0,scale:.94},{opacity:1,scale:1,duration:.5,ease:"power3.out"},.55);
+    tl.to("#f02-world",{x:-950,duration:1.15,ease:"power3.inOut"},2.0);
+    tl.fromTo("#f02-station-2",{opacity:.3,scale:.94},{opacity:1,scale:1,duration:.44,ease:"power3.out"},2.85);
+    tl.to("#f02-world",{x:-1900,duration:1.15,ease:"power3.inOut"},3.75);
+    tl.fromTo("#f02-station-3",{opacity:.3,scale:.94},{opacity:1,scale:1,duration:.44,ease:"power3.out"},4.6);
+    tl.to("#f02-world",{x:-2850,duration:1.15,ease:"power3.inOut"},5.5);
+    tl.fromTo("#f02-station-4",{opacity:.3,scale:.94},{opacity:1,scale:1,duration:.44,ease:"power3.out"},6.35);
+    tl.to("#f02-world",{x:-3800,duration:1.15,ease:"power3.inOut"},7.25);
+    tl.fromTo("#f02-station-5",{opacity:.3,scale:.94},{opacity:1,scale:1,duration:.48,ease:"power3.out"},8.1);
+    window.__timelines["finaltab-architecture-rail"]=tl;
+  </script>
+</template>
+</body>
+</html>

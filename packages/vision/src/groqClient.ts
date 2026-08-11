@@ -27,6 +27,20 @@ export interface GroqClientOptions {
   fetchImpl?: typeof fetch;
   /** Per-request timeout in ms. */
   timeoutMs?: number;
+  /** Hard provider-side completion cap. Defaults to 4096 and cannot exceed 8192. */
+  maxCompletionTokens?: number;
+}
+
+export interface GroqTokenUsage {
+  promptTokens?: number;
+  completionTokens?: number;
+  totalTokens?: number;
+}
+
+export interface GroqCompletionResult {
+  content: string;
+  model: string;
+  usage: GroqTokenUsage;
 }
 
 export class GroqApiError extends Error {
@@ -48,6 +62,7 @@ export class GroqClient {
   private readonly model: string;
   private readonly fetchImpl: typeof fetch;
   private readonly timeoutMs: number;
+  private readonly maxCompletionTokens: number;
 
   constructor(opts: GroqClientOptions) {
     if (!opts.apiKey) throw new Error("GroqClient requires an apiKey (GROQ_API_KEY)");
@@ -56,6 +71,9 @@ export class GroqClient {
     this.model = opts.model ?? DEFAULT_GROQ_MODEL;
     this.fetchImpl = opts.fetchImpl ?? fetch;
     this.timeoutMs = opts.timeoutMs ?? 60000;
+    const requestedCompletionTokens = opts.maxCompletionTokens ?? 4096;
+    if (!Number.isFinite(requestedCompletionTokens)) throw new Error("maxCompletionTokens must be finite");
+    this.maxCompletionTokens = Math.max(256, Math.min(8192, Math.trunc(requestedCompletionTokens)));
   }
 
   /**
@@ -63,6 +81,16 @@ export class GroqClient {
    * response_format json_object + temperature 0 for deterministic-ish JSON.
    */
   async completeJson(messages: GroqMessage[]): Promise<string> {
+    return (await this.completeJsonWithMetadata(messages)).content;
+  }
+
+  /**
+   * Same completion contract with the provider-reported model and token usage.
+   * Callers that persist AI runs should use this method instead of estimating
+   * tokens from characters. Missing provider fields remain absent rather than
+   * being invented.
+   */
+  async completeJsonWithMetadata(messages: GroqMessage[]): Promise<GroqCompletionResult> {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), this.timeoutMs);
     let res: Response;
@@ -77,6 +105,7 @@ export class GroqClient {
           model: this.model,
           messages,
           temperature: 0,
+          max_completion_tokens: this.maxCompletionTokens,
           response_format: { type: "json_object" },
         }),
         signal: controller.signal,
@@ -100,12 +129,27 @@ export class GroqClient {
         body,
       );
     }
-    const content = (body as { choices?: Array<{ message?: { content?: string } }> })?.choices?.[0]?.message
-      ?.content;
+    const parsed = body as {
+      choices?: Array<{ message?: { content?: string } }>;
+      model?: unknown;
+      usage?: { prompt_tokens?: unknown; completion_tokens?: unknown; total_tokens?: unknown };
+    };
+    const content = parsed.choices?.[0]?.message?.content;
     if (typeof content !== "string" || content.length === 0) {
       throw new GroqApiError("Groq API returned no assistant content", res.status, body);
     }
-    return content;
+    const safeTokenCount = (value: unknown): number | undefined =>
+      typeof value === "number" && Number.isSafeInteger(value) && value >= 0 ? value : undefined;
+    const usage: GroqTokenUsage = {
+      promptTokens: safeTokenCount(parsed.usage?.prompt_tokens),
+      completionTokens: safeTokenCount(parsed.usage?.completion_tokens),
+      totalTokens: safeTokenCount(parsed.usage?.total_tokens),
+    };
+    return {
+      content,
+      model: typeof parsed.model === "string" && parsed.model.length > 0 ? parsed.model : this.model,
+      usage: Object.fromEntries(Object.entries(usage).filter(([, value]) => value !== undefined)),
+    };
   }
 }
 

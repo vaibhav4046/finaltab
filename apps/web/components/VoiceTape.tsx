@@ -106,7 +106,7 @@ export function VoiceTape({ disabled = false, instruction, readbackText, onUseTr
               <span className={voice.finalTranscript ? "ml-1 text-ink-soft" : "text-ink-soft"}>{voice.partialTranscript}</span>
             ) : null}
             {!voice.transcript ? (
-              <span className="text-ink-soft">Say who had what. Example: “Hem and Ravi shared the lamb.”</span>
+              <span className="text-ink-soft">Say who had what and how shared items, tax, service, or tip should be divided.</span>
             ) : null}
           </div>
 

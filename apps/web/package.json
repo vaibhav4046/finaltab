@@ -10,9 +10,13 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@farcaster/mini-app-solana": "1.0.0",
     "@finaltab/engine": "workspace:*",
     "@finaltab/keeperhub": "workspace:*",
     "@finaltab/vision": "workspace:*",
+    "@privy-io/node": "0.27.0",
+    "@privy-io/react-auth": "3.35.2",
+    "@stripe/crypto": "1.1.1",
     "@supabase/ssr": "0.12.4",
     "@supabase/supabase-js": "2.112.2",
     "framer-motion": "^11.15.0",

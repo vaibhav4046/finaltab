@@ -1,96 +1,130 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { AgentReviewLauncher, type AgentReviewGate } from "./AgentReviewLauncher";
+import { ExecutionRail } from "./ExecutionRail";
+import { ParticipantSetup } from "./ParticipantSetup";
 import { ReceiptPanel } from "./ReceiptPanel";
 import { SplitPanel } from "./SplitPanel";
-import { ExecutionRail } from "./ExecutionRail";
-import { FundingPanel } from "./FundingPanel";
-import { ParticipantSetup, type SettlementMode } from "./ParticipantSetup";
-import { parseFiat } from "@finaltab/engine";
-import { makeDemoPeople } from "@/lib/flow";
-import { recordTab } from "@/lib/identity";
-import type { Person, ReceiptState, AllocationState, ExecutionStage } from "@/lib/types";
+import { invalidateReviewedSettlement, reviewedSettlementInputKey } from "@/lib/reviewGate";
+import type { AllocationState, ExecutionStage, Person, ReceiptState } from "@/lib/types";
 
 export function Lab() {
-  // Demo signers are generated client-side only — render nothing address-
-  // dependent until after mount so SSR and client HTML agree.
-  const [people, setPeople] = useState<Person[] | null>(null);
-  const [mode, setMode] = useState<SettlementMode>("demo");
+  const router = useRouter();
+  const [people, setPeople] = useState<Person[]>([]);
   const [receipt, setReceipt] = useState<ReceiptState | null>(null);
-  const [receiptNonce, setReceiptNonce] = useState<string | null>(null);
-  const [payerId, setPayerId] = useState("vee");
+  const [payerId, setPayerId] = useState("");
   const [allocation, setAllocation] = useState<AllocationState | null>(null);
+  const [review, setReview] = useState<AgentReviewGate | null>(null);
   const [netted, setNetted] = useState<Array<{ debtor: string; creditor: string; usdcMinor: string }>>([]);
   const [stage, setStage] = useState<ExecutionStage>("idle");
   const [locked, setLocked] = useState(false);
   const [cloudTabId, setCloudTabId] = useState<string | null>(null);
+  const [queryReady, setQueryReady] = useState(false);
+  const [newTabTitle, setNewTabTitle] = useState("");
+  const [creatingTab, setCreatingTab] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
 
   useEffect(() => {
     const requestedTab = new URLSearchParams(window.location.search).get("tab");
-    if (requestedTab) {
-      setCloudTabId(requestedTab);
-      setMode("live");
-      setPeople([]);
-      setPayerId("");
-      return;
-    }
-    setPeople(makeDemoPeople());
+    if (requestedTab) setCloudTabId(requestedTab);
+    setQueryReady(true);
   }, []);
 
-  // The contract burns each settlementId forever, and settlementId derives from
-  // the canonical ledger (people + receiptId + amounts). A per-extraction nonce
-  // keeps the same dinner extracted twice from colliding with a burned id.
-  const receiptId = receipt
-    ? `receipt-${receipt.receipt.merchant.toLowerCase().replace(/[^a-z0-9]+/g, "-")}${receiptNonce ? `-${receiptNonce}` : ""}`
-    : null;
-
-  // Record tab history for the signed-in device profile. Same receipt id
-  // dedupes, so a DRAFT upgrades in place when the chain verdict arrives.
-  useEffect(() => {
-    if (!receipt || !allocation || !people || !receiptId) return;
-    const verdict =
-      stage === "verified" ? "VERIFIED_SETTLED" : stage === "failed" ? "FAILED" : "DRAFT";
-    recordTab({
-      id: receiptId,
-      merchant: receipt.receipt.merchant,
-      totalMinor: parseFiat(receipt.receipt.total).toString(),
-      currency: receipt.receipt.currency,
-      people: people.map((p) => p.name),
-      verdict,
-      at: new Date().toISOString(),
-    });
-  }, [receipt, allocation, people, stage, receiptId]);
-
-  if (!people) {
-    return (
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <p className="font-mono text-xs text-fog">generating demo signers…</p>
-      </div>
-    );
-  }
+  const createDurableTab = async () => {
+    const title = newTabTitle.trim();
+    if (!title || creatingTab) return;
+    setCreatingTab(true);
+    setCreateError(null);
+    try {
+      const response = await fetch("/api/tabs", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ title, currency: "USD" }),
+      });
+      const body = await response.json() as { tab?: { id?: string }; message?: string };
+      const tabId = body.tab?.id;
+      if (!response.ok || !tabId) throw new Error(body.message ?? "The durable tab could not be created.");
+      setCloudTabId(tabId);
+      router.replace(`/app/tab?tab=${encodeURIComponent(tabId)}`);
+    } catch (error) {
+      setCreateError(error instanceof Error ? error.message : "The durable tab could not be created.");
+    } finally {
+      setCreatingTab(false);
+    }
+  };
 
   const resetAfterParticipantChange = (next: Person[]) => {
     if (locked) return;
     setPeople(next);
     if (!next.some((person) => person.id === payerId)) setPayerId(next[0]?.id ?? "");
     setAllocation(null);
+    setReview(invalidateReviewedSettlement());
     setNetted([]);
     setStage("idle");
   };
 
-  const changeMode = (nextMode: SettlementMode) => {
-    if (locked || nextMode === mode) return;
-    setMode(nextMode);
-    const nextPeople = nextMode === "demo" ? makeDemoPeople() : [];
-    setPeople(nextPeople);
-    setPayerId(nextPeople[0]?.id ?? "");
-    setAllocation(null);
-    setNetted([]);
-    setStage("idle");
-  };
+  const reviewInputKey = reviewedSettlementInputKey({
+    tabId: cloudTabId,
+    people,
+    receipt,
+    payerParticipantId: payerId,
+    allocation,
+    netted,
+    currency: receipt?.receipt.currency ?? "",
+  });
+
+  if (!queryReady) {
+    return <div className="grid min-h-[55vh] place-items-center font-mono text-xs text-fog">Opening durable workspace…</div>;
+  }
+
+  if (!cloudTabId) {
+    return (
+      <div className="mx-auto grid min-h-[70vh] max-w-3xl place-items-center px-4 py-10 sm:px-6">
+        <section className="surface-shadow w-full overflow-hidden rounded-3xl border border-quiet-soft bg-surface-1" aria-labelledby="durable-tab-title">
+          <div className="border-b border-quiet-soft bg-surface-2/50 p-6 sm:p-8">
+            <p className="font-mono text-xs font-semibold uppercase tracking-[0.2em] text-signal">Durable settlement required</p>
+            <h1 id="durable-tab-title" className="mt-3 text-3xl font-semibold tracking-tight text-txt">Create the shared tab before touching money.</h1>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-muted">
+              Receipt state, participants, agent evidence, consent, and proof must belong to an authenticated Supabase tab. FINALTab will not open an unsaved settlement room.
+            </p>
+          </div>
+          <div className="p-6 sm:p-8">
+            <div className="grid gap-3 sm:grid-cols-[1fr_100px_auto] sm:items-end">
+              <label className="text-sm text-muted">Tab name
+                <input
+                  value={newTabTitle}
+                  onChange={(event) => setNewTabTitle(event.target.value)}
+                  maxLength={80}
+                  placeholder="Team dinner · 11 Aug"
+                  disabled={creatingTab}
+                  className="mt-1 min-h-11 w-full rounded-xl border border-quiet bg-surface-2 px-3 text-base text-txt outline-none focus-visible:ring-2 focus-visible:ring-signal"
+                />
+              </label>
+              <label className="text-sm text-muted">Currency
+                <input readOnly value="USD" className="mt-1 min-h-11 w-full rounded-xl border border-quiet bg-surface-2 px-3 font-mono text-sm text-txt" />
+              </label>
+              <button
+                type="button"
+                onClick={() => void createDurableTab()}
+                disabled={creatingTab || !newTabTitle.trim()}
+                className="touch-target rounded-xl bg-signal px-5 text-sm font-semibold text-ink disabled:opacity-45"
+              >
+                {creatingTab ? "Creating…" : "Create and open"}
+              </button>
+            </div>
+            {createError ? <p className="mt-3 text-sm text-coral" role="alert">{createError}</p> : null}
+            <p className="mt-4 text-xs leading-5 text-muted">Already have a tab? <Link href="/app" className="font-semibold text-info hover:text-txt">Open it from Shared tab history.</Link></p>
+          </div>
+        </section>
+      </div>
+    );
+  }
 
   return (
-    <div className="mx-auto max-w-[1400px] px-4 pb-10 md:px-6">
+    <div className="settlement-room-shell mx-auto max-w-[1400px] px-4 pb-10 md:px-6">
       <header className="flex flex-wrap items-baseline justify-between gap-2 py-6">
         <div>
           <p className="font-mono text-xs tracking-[0.25em] text-signal">SETTLEMENT ROOM</p>
@@ -104,11 +138,9 @@ export function Lab() {
       </header>
 
       <ParticipantSetup
-        mode={mode}
         people={people}
         locked={locked}
         cloudTabId={cloudTabId}
-        onMode={changeMode}
         onPeople={resetAfterParticipantChange}
       />
 
@@ -118,12 +150,8 @@ export function Lab() {
           onReceipt={(next) => {
             if (locked) return;
             setReceipt(next);
-            setReceiptNonce(
-              Array.from(crypto.getRandomValues(new Uint8Array(4)))
-                .map((b) => b.toString(16).padStart(2, "0"))
-                .join(""),
-            );
             setAllocation(null);
+            setReview(invalidateReviewedSettlement());
             setNetted([]);
             setStage("idle");
           }}
@@ -135,17 +163,23 @@ export function Lab() {
           allocation={allocation}
           payerId={payerId}
           locked={locked}
-          onPayer={setPayerId}
+          onPayer={(next) => {
+            setPayerId(next);
+            setReview(invalidateReviewedSettlement());
+          }}
           onAllocation={(next) => {
             setAllocation(next);
+            setReview(invalidateReviewedSettlement());
             setNetted([]);
           }}
           onNetted={setNetted}
         />
         <ExecutionRail
+          cloudTabId={cloudTabId}
           people={people}
           netted={netted}
-          receiptId={receiptId}
+          review={review}
+          reviewInputKey={reviewInputKey}
           currency={receipt?.receipt.currency ?? ""}
           stage={stage}
           onStage={setStage}
@@ -153,11 +187,16 @@ export function Lab() {
         />
       </div>
 
-      {mode === "demo" ? (
-        <div className="mt-4">
-          <FundingPanel people={people} />
-        </div>
-      ) : null}
+      <AgentReviewLauncher
+        cloudTabId={cloudTabId}
+        receipt={receipt}
+        allocation={allocation}
+        payerParticipantId={payerId}
+        reviewInputKey={reviewInputKey}
+        locked={locked}
+        review={review}
+        onReviewed={setReview}
+      />
     </div>
   );
 }

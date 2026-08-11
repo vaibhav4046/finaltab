@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { nettedTransfers, type Debt } from "@finaltab/engine";
 import { Panel, Badge, Button, ErrorNote, Spinner, BlockedNote, Mono } from "./ui";
 import { VoiceTape } from "./VoiceTape";
@@ -41,6 +41,7 @@ export function SplitPanel({
   onAllocation,
   onNetted,
 }: SplitPanelProps) {
+  const reduceMotion = useReducedMotion();
   const [instruction, setInstruction] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -120,6 +121,7 @@ export function SplitPanel({
       }
       onAllocation({
         proposal: json.proposal,
+        instruction,
         shares: json.shares,
         debts: json.debts,
         settlement: json.settlement,
@@ -174,7 +176,7 @@ export function SplitPanel({
                 type="button"
                 disabled={locked}
                 onClick={() => onPayer(p.id)}
-                className={`rounded-md border px-3 py-1.5 text-left transition-colors disabled:cursor-not-allowed ${
+                className={`min-h-11 rounded-md border px-3 py-1.5 text-left transition-colors disabled:cursor-not-allowed ${
                   p.id === payerId ? "border-lime/50 bg-lime/10" : "border-edge bg-panel-2 hover:border-fog"
                 }`}
               >
@@ -187,8 +189,8 @@ export function SplitPanel({
             ))}
           </div>
           <p className="mt-1.5 font-mono text-[9px] text-warn">
-            Addresses shown here define this tab. Demo wallets are labelled in setup; live wallets require
-            ownership verification and an individual signature from each debtor.
+            Addresses shown here define this tab. Each debtor must verify wallet ownership and approve the
+            exact settlement plan before funds can move.
           </p>
         </div>
 
@@ -200,7 +202,7 @@ export function SplitPanel({
             disabled={locked || busy}
             rows={3}
             className="w-full resize-none rounded-md border border-edge bg-panel-2 p-3 font-sans text-sm text-paper placeholder:text-fog-dim focus:border-lime/50 focus:outline-none disabled:opacity-60"
-            placeholder="e.g. Vee had the daal, Hem and Ravi shared the lamb, Ravi had two of the naan"
+            placeholder="Describe which participants shared each item and how tax, service, or tip should be divided."
           />
           <VoiceTape
             disabled={locked || busy}
@@ -314,11 +316,11 @@ export function SplitPanel({
                 {active.map((d) => (
                   <motion.div
                     key={`${showNetted ? "n" : "r"}-${d.debtor}-${d.creditor}`}
-                    layout
-                    initial={{ opacity: 0, x: -12 }}
+                    layout={!reduceMotion}
+                    initial={reduceMotion ? false : { opacity: 0, x: -12 }}
                     animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 12 }}
-                    transition={{ duration: 0.25 }}
+                    exit={reduceMotion ? undefined : { opacity: 0, x: 12 }}
+                    transition={{ duration: reduceMotion ? 0 : 0.25 }}
                     className="flex items-center justify-between rounded-md border border-edge bg-panel-2 px-3 py-2"
                   >
                     <span className="font-mono text-xs text-paper">

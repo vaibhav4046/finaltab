@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=3840, height=2160"/>
+  <title>FINALTab — KeeperHub winner film</title>
+  <script src="assets/vendor/gsap-3.14.2.min.js"></script>
+  <style>
+    @font-face{font-family:GeistMono;src:url("assets/fonts/GeistMono-Regular.woff2") format("woff2");font-weight:400}
+    @font-face{font-family:GeistMono;src:url("assets/fonts/GeistMono-Bold.woff2") format("woff2");font-weight:700}
+    html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0B0F12}
+    #root{position:relative;width:3840px;height:2160px;overflow:hidden;background:transparent;color:#F4EEE2}
+    .clip{position:absolute;inset:0;overflow:hidden}
+    .master-ground{background:#0B0F12}
+    .master-ground:after{content:"";position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 160px rgba(0,0,0,.38)}
+    .frame-slot{width:3840px;height:2160px}
+    .captions{pointer-events:none;z-index:50;width:50%;height:50%;transform:scale(2);transform-origin:0 0}
+    .caption-cue{position:absolute;left:50%;bottom:30px;transform:translateX(-50%);margin:0;min-width:760px;max-width:1380px;padding:10px 22px 11px;border-radius:10px;background:rgba(11,15,18,.92);box-shadow:0 0 0 1px rgba(145,160,168,.2);font:700 26px/1.25 GeistMono,monospace;letter-spacing:.005em;text-align:center;color:#F4EEE2;opacity:0}
+    .transition-wipe{z-index:40;pointer-events:none}
+    .wipe-paper{position:absolute;inset:-4% -5%;background:#F4EEE2;clip-path:polygon(3% 0,100% 0,100% 100%,3% 100%,0 94%,3% 88%,0 82%,3% 76%,0 70%,3% 64%,0 58%,3% 52%,0 46%,3% 40%,0 34%,3% 28%,0 22%,3% 16%,0 10%,3% 4%);transform:translate3d(-4100px,0,0)}
+    .wipe-paper:after{content:"";position:absolute;left:48%;top:0;width:4px;height:100%;background:#FF936A;opacity:.85}
+    .media-clip{display:none}
+  </style>
+</head>
+<body>
+  <div id="root" data-composition-id="finaltab-winner" data-start="0" data-width="3840" data-height="2160" data-fps="60" data-duration="96">
+    <section id="master-ground" class="clip master-ground" data-start="0" data-duration="96" data-track-index="0"></section>
+
+    <div id="host-f01" class="clip frame-slot" data-composition-id="finaltab-outcome-lockup" data-composition-src="compositions/frames/01-outcome-lockup.html" data-start="0" data-duration="6" data-track-index="10" data-width="3840" data-height="2160"></div>
+    <div id="host-f02" class="clip frame-slot" data-composition-id="finaltab-architecture-rail" data-composition-src="compositions/frames/02-architecture-rail.html" data-start="6" data-duration="10" data-track-index="10" data-width="3840" data-height="2160"></div>
+    <div id="host-f03" class="clip frame-slot" data-composition-id="finaltab-complex-product-flow" data-composition-src="compositions/frames/03-complex-product-flow.html" data-start="16" data-duration="15" data-track-index="10" data-width="3840" data-height="2160"></div>
+    <div id="host-f04" class="clip frame-slot" data-composition-id="finaltab-net-freeze-bind" data-composition-src="compositions/frames/04-net-freeze-bind.html" data-start="31" data-duration="13" data-track-index="10" data-width="3840" data-height="2160"></div>
+    <div id="host-f05" class="clip frame-slot" data-composition-id="finaltab-dual-consent-simulate" data-composition-src="compositions/frames/05-dual-consent-simulate.html" data-start="44" data-duration="12" data-track-index="10" data-width="3840" data-height="2160"></div>
+    <div id="host-f06" class="clip frame-slot" data-composition-id="finaltab-keeperhub-proof" data-composition-src="compositions/frames/06-keeperhub-proof.html" data-start="56" data-duration="10" data-track-index="10" data-width="3840" data-height="2160"></div>
+    <div id="host-f07" class="clip frame-slot" data-composition-id="finaltab-nine-mcp-tools" data-composition-src="compositions/frames/07-nine-mcp-tools.html" data-start="66" data-duration="7" data-track-index="10" data-width="3840" data-height="2160"></div>
+    <div id="host-f08" class="clip frame-slot" data-composition-id="finaltab-mcp-climax" data-composition-src="compositions/frames/08-mcp-climax.html" data-start="73" data-duration="18" data-track-index="10" data-width="3840" data-height="2160"></div>
+    <div id="host-f09" class="clip frame-slot" data-composition-id="finaltab-proof-cta" data-composition-src="compositions/frames/09-proof-cta.html" data-start="91" data-duration="5" data-track-index="10" data-width="3840" data-height="2160"></div>
+
+    <section id="transition-layer" class="clip transition-wipe" data-start="0" data-duration="96" data-track-index="15">
+      <div id="wipe-01-paper" class="wipe-paper"></div><div id="wipe-02-paper" class="wipe-paper"></div>
+      <div id="wipe-03-paper" class="wipe-paper"></div><div id="wipe-04-paper" class="wipe-paper"></div>
+      <div id="wipe-05-paper" class="wipe-paper"></div><div id="wipe-06-paper" class="wipe-paper"></div>
+      <div id="wipe-07-paper" class="wipe-paper"></div><div id="wipe-08-paper" class="wipe-paper"></div>
+    </section>
+
+    <section id="caption-layer" class="clip captions" data-start="0" data-duration="96" data-track-index="20">
+      <p id="cap-01" class="caption-cue">A shared bill should end with everyone<br/>certain—</p>
+      <p id="cap-02" class="caption-cue">and no one chasing screenshots.</p>
+      <p id="cap-03" class="caption-cue">FINALTab turns a receipt into a<br/>deterministic ledger,</p>
+      <p id="cap-04" class="caption-cue">binds each debtor's USDC pull to the whole<br/>payout plan,</p>
+      <p id="cap-05" class="caption-cue">then sends the exact call through<br/>KeeperHub.</p>
+      <p id="cap-06" class="caption-cue">Scan a crowded receipt. Correct any<br/>extraction.</p>
+      <p id="cap-07" class="caption-cue">Invite the table. Describe who had what.</p>
+      <p id="cap-08" class="caption-cue">FINALTab reconciles every line—</p>
+      <p id="cap-09" class="caption-cue">tax, tip, and service included—</p>
+      <p id="cap-10" class="caption-cue">to the cent, across the whole table.</p>
+      <p id="cap-11" class="caption-cue">The graph collapses many obligations</p>
+      <p id="cap-12" class="caption-cue">into a small, deterministic transfer set.</p>
+      <p id="cap-13" class="caption-cue">Freeze once, and the ledger hash,<br/>settlement ID,</p>
+      <p id="cap-14" class="caption-cue">debits, payouts, chain, and contract<br/>become one immutable plan.</p>
+      <p id="cap-15" class="caption-cue">Each debtor signs twice:</p>
+      <p id="cap-16" class="caption-cue">Circle authorizes their exact USDC pull;</p>
+      <p id="cap-17" class="caption-cue">FINALTab binds consent to the complete<br/>payout plan.</p>
+      <p id="cap-18" class="caption-cue">KeeperHub then simulates. A revert never<br/>broadcasts.</p>
+      <p id="cap-19" class="caption-cue">After simulation and a final human<br/>signature, KeeperHub submits.</p>
+      <p id="cap-20" class="caption-cue">Green appears when its receipt matches</p>
+      <p id="cap-21" class="caption-cue">an independent Base Sepolia RPC check.</p>
+      <p id="cap-22" class="caption-cue">Agents use the same safety rail through<br/>nine production MCP tools.</p>
+      <p id="cap-23" class="caption-cue">FINALTab never holds wallet keys.</p>
+      <p id="cap-24" class="caption-cue">The agent allocates, prepares the V2 plan,</p>
+      <p id="cap-25" class="caption-cue">and returns debtor typed data.</p>
+      <p id="cap-26" class="caption-cue">It simulates, gets a short-lived human<br/>signature, then submits.</p>
+      <p id="cap-27" class="caption-cue">Status receives execution ID, settlement<br/>ID, and ledger hash.</p>
+      <p id="cap-28" class="caption-cue">Only the indexed event becomes<br/>VERIFIED_SETTLED.</p>
+      <p id="cap-29" class="caption-cue">FINALTab: KeeperHub executes. Anyone<br/>verifies.</p>
+    </section>
+
+    <audio id="voice-01" class="clip media-clip" src="assets/audio/voice/scene-01.mp3" preload="auto" data-start="0.65" data-duration="4.644" data-track-index="30"></audio>
+    <audio id="voice-02" class="clip media-clip" src="assets/audio/voice/scene-02.mp3" preload="auto" data-start="6.2" data-duration="9.706" data-track-index="30"></audio>
+    <audio id="voice-03" class="clip media-clip" src="assets/audio/voice/scene-03.mp3" preload="auto" data-start="16.4" data-duration="12.353" data-track-index="30"></audio>
+    <audio id="voice-04" class="clip media-clip" src="assets/audio/voice/scene-04.mp3" preload="auto" data-start="31.4" data-duration="11.703" data-track-index="30"></audio>
+    <audio id="voice-05" class="clip media-clip" src="assets/audio/voice/scene-05.mp3" preload="auto" data-start="44.2" data-duration="11.656" data-track-index="30"></audio>
+    <audio id="voice-06" class="clip media-clip" src="assets/audio/voice/scene-06.mp3" preload="auto" data-start="56.35" data-duration="8.916" data-track-index="30"></audio>
+    <audio id="voice-07" class="clip media-clip" src="assets/audio/voice/scene-07.mp3" preload="auto" data-start="66.25" data-duration="6.362" data-track-index="30"></audio>
+    <audio id="voice-08" class="clip media-clip" src="assets/audio/voice/scene-08.mp3" preload="auto" data-start="73.15" data-duration="17.647" data-track-index="30"></audio>
+    <audio id="voice-09" class="clip media-clip" src="assets/audio/voice/scene-09.mp3" preload="auto" data-start="91.05" data-duration="3.437" data-track-index="30"></audio>
+  </div>
+  <script>
+    window.__timelines=window.__timelines||{};
+    const tl=gsap.timeline({paused:true});
+
+    tl.fromTo("#wipe-01-paper",{x:-4100},{x:0,duration:.25,ease:"power3.in"},5.75).to("#wipe-01-paper",{x:4100,duration:.25,ease:"power3.out"},6.0);
+    tl.fromTo("#wipe-02-paper",{x:-4100},{x:0,duration:.25,ease:"power3.in"},15.75).to("#wipe-02-paper",{x:4100,duration:.25,ease:"power3.out"},16.0);
+    tl.fromTo("#wipe-03-paper",{x:-4100},{x:0,duration:.25,ease:"power3.in"},30.75).to("#wipe-03-paper",{x:4100,duration:.25,ease:"power3.out"},31.0);
+    tl.fromTo("#wipe-04-paper",{x:-4100},{x:0,duration:.25,ease:"power3.in"},43.75).to("#wipe-04-paper",{x:4100,duration:.25,ease:"power3.out"},44.0);
+    tl.fromTo("#wipe-05-paper",{x:-4100},{x:0,duration:.25,ease:"power3.in"},55.75).to("#wipe-05-paper",{x:4100,duration:.25,ease:"power3.out"},56.0);
+    tl.fromTo("#wipe-06-paper",{x:-4100},{x:0,duration:.25,ease:"power3.in"},65.75).to("#wipe-06-paper",{x:4100,duration:.25,ease:"power3.out"},66.0);
+    tl.fromTo("#wipe-07-paper",{x:-4100},{x:0,duration:.25,ease:"power3.in"},72.75).to("#wipe-07-paper",{x:4100,duration:.25,ease:"power3.out"},73.0);
+    tl.fromTo("#wipe-08-paper",{x:-4100},{x:0,duration:.25,ease:"power3.in"},90.75).to("#wipe-08-paper",{x:4100,duration:.25,ease:"power3.out"},91.0);
+
+    tl.fromTo("#cap-01",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},.65).to("#cap-01",{opacity:0,duration:.14,ease:"sine.in"},3.184);
+    tl.fromTo("#cap-02",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},3.344).to("#cap-02",{opacity:0,duration:.14,ease:"sine.in"},5.194);
+    tl.fromTo("#cap-03",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},6.2).to("#cap-03",{opacity:0,duration:.14,ease:"sine.in"},9.142);
+    tl.fromTo("#cap-04",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},9.544).to("#cap-04",{opacity:0,duration:.14,ease:"sine.in"},12.892);
+    tl.fromTo("#cap-05",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},13.398).to("#cap-05",{opacity:0,duration:.14,ease:"sine.in"},15.806);
+    tl.fromTo("#cap-06",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},16.4).to("#cap-06",{opacity:0,duration:.14,ease:"sine.in"},19.249);
+    tl.fromTo("#cap-07",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},19.546).to("#cap-07",{opacity:0,duration:.14,ease:"sine.in"},21.989);
+    tl.fromTo("#cap-08",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},22.449).to("#cap-08",{opacity:0,duration:.14,ease:"sine.in"},24.506);
+    tl.fromTo("#cap-09",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},24.666).to("#cap-09",{opacity:0,duration:.14,ease:"sine.in"},26.619);
+    tl.fromTo("#cap-10",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},26.779).to("#cap-10",{opacity:0,duration:.14,ease:"sine.in"},28.653);
+    tl.fromTo("#cap-11",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},31.4).to("#cap-11",{opacity:0,duration:.14,ease:"sine.in"},33.309);
+    tl.fromTo("#cap-12",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},33.467).to("#cap-12",{opacity:0,duration:.14,ease:"sine.in"},35.735);
+    tl.fromTo("#cap-13",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},36.241).to("#cap-13",{opacity:0,duration:.14,ease:"sine.in"},38.916);
+    tl.fromTo("#cap-14",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},39.086).to("#cap-14",{opacity:0,duration:.14,ease:"sine.in"},43.003);
+    tl.fromTo("#cap-15",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},44.2).to("#cap-15",{opacity:0,duration:.14,ease:"sine.in"},45.702);
+    tl.fromTo("#cap-16",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},46.023).to("#cap-16",{opacity:0,duration:.14,ease:"sine.in"},48.721);
+    tl.fromTo("#cap-17",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},49.123).to("#cap-17",{opacity:0,duration:.14,ease:"sine.in"},51.914);
+    tl.fromTo("#cap-18",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},52.315).to("#cap-18",{opacity:0,duration:.14,ease:"sine.in"},55.756);
+    tl.fromTo("#cap-19",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},56.35).to("#cap-19",{opacity:0,duration:.14,ease:"sine.in"},59.907);
+    tl.fromTo("#cap-20",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},60.483).to("#cap-20",{opacity:0,duration:.14,ease:"sine.in"},62.299);
+    tl.fromTo("#cap-21",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},62.457).to("#cap-21",{opacity:0,duration:.14,ease:"sine.in"},65.166);
+    tl.fromTo("#cap-22",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},66.25).to("#cap-22",{opacity:0,duration:.14,ease:"sine.in"},69.912);
+    tl.fromTo("#cap-23",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},70.372).to("#cap-23",{opacity:0,duration:.14,ease:"sine.in"},72.512);
+    tl.fromTo("#cap-24",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},73.15).to("#cap-24",{opacity:0,duration:.14,ease:"sine.in"},75.767);
+    tl.fromTo("#cap-25",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},75.983).to("#cap-25",{opacity:0,duration:.14,ease:"sine.in"},77.764);
+    tl.fromTo("#cap-26",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},78.421).to("#cap-26",{opacity:0,duration:.14,ease:"sine.in"},82.199);
+    tl.fromTo("#cap-27",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},82.856).to("#cap-27",{opacity:0,duration:.14,ease:"sine.in"},87.365);
+    tl.fromTo("#cap-28",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},87.825).to("#cap-28",{opacity:0,duration:.14,ease:"sine.in"},90.697);
+    tl.fromTo("#cap-29",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},91.05).to("#cap-29",{opacity:0,duration:.14,ease:"sine.in"},94.387);
+    window.__timelines["finaltab-winner"]=tl;
+  </script>
+</body>
+</html>

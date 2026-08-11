@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
-import { readFile, writeFile } from "node:fs/promises";
-import { dirname, join, resolve } from "node:path";
+import { readFile, rename, unlink, writeFile } from "node:fs/promises";
+import { basename, dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const projectDir = dirname(fileURLToPath(import.meta.url));
@@ -10,6 +10,7 @@ const manifestPath = join(projectDir, "data", "voiceover-manifest.json");
 const sceneStarts = [0.65, 6.2, 16.4, 31.4, 44.2, 56.35, 66.25, 73.15, 91.05];
 const sceneEnds = [6, 16, 31, 44, 56, 66, 73, 91, 96];
 const maxLineLength = 42;
+let temporaryFileCounter = 0;
 const captionPhrases = [
   [
     "A shared bill should end with everyone certain—",
@@ -34,26 +35,26 @@ const captionPhrases = [
     "and the ledger, debits, payouts, chain, and contract become one immutable plan.",
   ],
   [
-    "The retained plan verifies two debtor signatures:",
-    "Circle authorized the exact USDC pull,",
-    "and FINALTab bound consent to the complete payout plan.",
-    "KeeperHub simulated before broadcast; consumed proof cannot move value again.",
+    "Circle permits the USDC pull;",
+    "FINALTab binds every payout.",
+    "KeeperHub simulates first.",
+    "Consumed proof cannot move again.",
   ],
   [
-    "With explicit operator authorization, KeeperHub submitted once.",
-    "Its terminal receipt and an independent Base Sepolia check",
-    "match the same transaction, settlement ID, and ledger hash.",
+    "KeeperHub submitted once with operator authorization.",
+    "Its receipt and Base Sepolia independently match",
+    "transaction, settlement ID, and ledger hash.",
   ],
   [
     "Agents use the same safety rail through nine production MCP tools.",
     "FINALTab never holds wallet keys.",
   ],
   [
-    "A real MCP client authenticates, lists all nine tools,",
+    "A real MCP client authenticates, lists nine tools,",
     "allocates the receipt, prepares V2 typed data,",
-    "and creates the short-lived approval challenge.",
-    "Then it stops: no wallet signature, no submit, no second value move.",
-    "A separate read-only panel verifies the retained settlement.",
+    "and creates an approval challenge.",
+    "Then it stops: no wallet signature, submit, or value move.",
+    "A read-only panel verifies the retained settlement.",
   ],
   ["FINALTab: KeeperHub executes. Anyone verifies."],
 ];
@@ -64,6 +65,27 @@ function invariant(value, message) {
 
 function sha256(value) {
   return createHash("sha256").update(value).digest("hex");
+}
+
+function canonicalSource(value) {
+  return value.replace(/\r\n?/gu, "\n");
+}
+
+async function writeAtomic(path, value) {
+  temporaryFileCounter += 1;
+  const expectedSha256 = sha256(value);
+  const temporaryPath = join(
+    dirname(path),
+    `.${basename(path)}.${process.pid}.${temporaryFileCounter}.tmp`,
+  );
+  try {
+    await writeFile(temporaryPath, value, { encoding: "utf8", flag: "wx" });
+    invariant(sha256(await readFile(temporaryPath)) === expectedSha256, `Temporary write hash differs: ${path}`);
+    await rename(temporaryPath, path);
+  } catch (error) {
+    await unlink(temporaryPath).catch(() => {});
+    throw error;
+  }
 }
 
 function canonicalText(value) {
@@ -120,7 +142,10 @@ invariant(scriptLines.length === 9, "SCRIPT.md must contain exactly nine indente
 const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
 invariant(Array.isArray(manifest.scenes) && manifest.scenes.length === 9, "Voiceover manifest must contain exactly nine scenes");
 invariant(Array.isArray(manifest.changedScenesPendingRegeneration) && manifest.changedScenesPendingRegeneration.length === 0, "Changed narration scenes are still pending regeneration");
-invariant(manifest.status === "generated-awaiting-caption-sync", "Voiceover manifest is not ready for caption sync");
+invariant(
+  manifest.status === "generated-awaiting-caption-sync" || manifest.status === "approved-final-capture-sync",
+  "Voiceover manifest is not ready for caption sync",
+);
 invariant(manifest.captureLockAcknowledged === true, "Canonical capture lock was not acknowledged during selective generation");
 
 const cues = [];
@@ -171,7 +196,7 @@ const cuePayload = {
   status: "approved-final-capture-sync",
   durationSeconds: 96,
   maxLineLength,
-  scriptSha256: sha256(script),
+  scriptSha256: sha256(canonicalSource(script)),
   cues,
 };
 const cueJson = `${JSON.stringify(cuePayload, null, 2)}\n`;
@@ -213,16 +238,17 @@ indexHtml = indexHtml.replace(
 invariant(indexHtml.includes('id="cap-01"') && indexHtml.includes(`id="cap-${String(cues.length).padStart(2, "0")}"`), "Failed to update baked captions");
 invariant(indexHtml.includes('id="voice-09"'), "Failed to update voice clips");
 
-await writeFile(join(projectDir, "CAPTIONS.srt"), srt, "utf8");
-await writeFile(join(projectDir, "CAPTIONS.vtt"), vtt, "utf8");
-await writeFile(join(projectDir, "data", "caption-cues.json"), `${JSON.stringify(cuePayload, null, 2)}\n`, "utf8");
-await writeFile(join(proofDir, "cue-sheet.json"), `${JSON.stringify(cuePayload, null, 2)}\n`, "utf8");
-await writeFile(join(projectDir, "index.html"), indexHtml, "utf8");
+await writeAtomic(join(projectDir, "CAPTIONS.srt"), srt);
+await writeAtomic(join(projectDir, "CAPTIONS.vtt"), vtt);
+await writeAtomic(join(projectDir, "data", "caption-cues.json"), `${JSON.stringify(cuePayload, null, 2)}\n`);
+await writeAtomic(join(proofDir, "cue-sheet.json"), `${JSON.stringify(cuePayload, null, 2)}\n`);
+await writeAtomic(join(projectDir, "index.html"), indexHtml);
 
 manifest.status = "approved-final-capture-sync";
 manifest.regenerateAfterApprovedCaptures = false;
 manifest.captionSyncRequired = false;
-manifest.scriptSha256 = sha256(script);
+manifest.purpose = "Scenes 3, 4, 5, 6, and 8 are the selected ElevenLabs Flash v2.5 MP3s from protected, expiring, fixed-scene Vercel release candidates. The ledger records one call per selected exact text plus four superseded over-budget attempts; scenes 1, 2, 7, and 9 retain their approved Multilingual v2 audio. Captions, timing, proof assets, and manifests are synchronized.";
+manifest.scriptSha256 = sha256(canonicalSource(script));
 manifest.captionAssets = {
   cueJsonSha256: sha256(`${JSON.stringify(cuePayload, null, 2)}\n`),
   srtSha256: sha256(srt),
@@ -230,6 +256,8 @@ manifest.captionAssets = {
   bakedIndexSha256: sha256(indexHtml),
 };
 const serializedManifest = `${JSON.stringify(manifest, null, 2)}\n`;
-await writeFile(manifestPath, serializedManifest, "utf8");
-await writeFile(join(proofDir, "manifest.json"), serializedManifest, "utf8");
+// The local manifest is the commit marker for the caption package. Keep it last
+// so any earlier failure leaves the previous valid commit marker and is rerunnable.
+await writeAtomic(join(proofDir, "manifest.json"), serializedManifest);
+await writeAtomic(manifestPath, serializedManifest);
 process.stdout.write(`Built and synchronized ${cues.length} aligned cues through ${cues.at(-1).end.toFixed(2)}s\n`);

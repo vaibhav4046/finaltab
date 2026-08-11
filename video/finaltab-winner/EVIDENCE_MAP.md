@@ -7,14 +7,14 @@
 | E01 | verified | `data/release-proof.json` | retained contract, execution, transaction, block, settlement ID, ledger hash, one-atomic-unit conservation |
 | E02 | verified, sanitize before display | `proof-output/v2-live-settlement-2026-08-11T04-28-59-530Z.json` | two public-key recoveries, successful pre-broadcast simulation, consumed settlement and nonce |
 | E03 | source-proven | production MCP implementation and Frame 7 canonical tool list | exactly nine tools, external-wallet boundary |
-| E04 | pending capture | C03 | real account return, scan/edit, user-entered participants, exact allocation |
-| E05 | pending capture | C04 | four-stage review, invalidation, fresh rerun, freeze |
-| E06 | pending capture | C07 | authenticated live `tools/list` |
-| E07 | pending capture | C08A | authenticated non-broadcast MCP sequence through challenge creation and stop |
-| E08 | pending capture | C08B | separate read-only retained status or public proof |
+| E04 | capture-locked | `assets/capture/C03-complex-product-flow.mp4` | real account return, scan/edit, user-entered participants, exact allocation |
+| E05 | capture-locked | `assets/capture/C04-net-freeze-bind.mp4` | four-stage review, invalidation, fresh rerun, freeze |
+| E06 | capture-locked | `assets/capture/C07-live-tools-list.png` | authenticated live `tools/list` |
+| E07 | capture-locked | `assets/capture/C08-mcp-nonbroadcast.mp4` | authenticated non-broadcast MCP sequence through challenge creation and stop |
+| E08 | capture-locked | `assets/capture/C08-retained-status.png` | separate read-only retained status or public proof |
 | E09 | verified public | Base Sepolia transaction `0x7a6fb7…59a789` | independent settlement event and block 45327128 |
 | E10 | source-locked | `data/audio-manifest.json` | local SFX license, hashes, cue times, no BGM |
-| E11 | pending sync | voice/caption manifests | selective ElevenLabs regeneration and caption alignment |
+| E11 | verified and synchronized | `data/narration-generation-ledger.json` + voice/caption manifests | retained Multilingual v2 package + five selected Flash v2.5 MP3s from three protected immutable deployment candidates + four explicitly superseded over-budget attempts + provider-free changed-scene alignment |
 
 ## Frame mapping
 

@@ -1,15 +1,19 @@
 {
-  "generatedAt": "2026-08-11T03:07:24.141Z",
-  "status": "pending-selective-regeneration",
-  "regenerateAfterApprovedCaptures": true,
-  "changedScenesPendingRegeneration": [3, 4, 5, 6, 8],
-  "unchangedScenesRetained": [1, 2, 7, 9],
-  "captionSyncRequired": true,
-  "purpose": "Old changed-scene clips are checksum-retained timing references only and are not referenced as approved narration.",
+  "generatedAt": "2026-08-11T18:21:36.342Z",
+  "status": "approved-final-capture-sync",
+  "regenerateAfterApprovedCaptures": false,
+  "changedScenesPendingRegeneration": [],
+  "unchangedScenesRetained": [
+    1,
+    2,
+    7,
+    9
+  ],
+  "captionSyncRequired": false,
+  "purpose": "Scenes 3, 4, 5, 6, and 8 are the selected ElevenLabs Flash v2.5 MP3s from protected, expiring, fixed-scene Vercel release candidates. The ledger records one call per selected exact text plus four superseded over-budget attempts; scenes 1, 2, 7, and 9 retain their approved Multilingual v2 audio. Captions, timing, proof assets, and manifests are synchronized.",
   "deliveryTarget": "3840x2160 at 60 fps",
-  "scriptUpdateRequired": "Regenerate only scenes 3, 4, 5, 6, and 8 after canonical captures are locked; then rebuild SRT, VTT, cue JSON, and baked captions from fresh alignment.",
   "provider": "ElevenLabs",
-  "model": "eleven_multilingual_v2",
+  "model": "mixed",
   "voiceId": "JBFqnCBsd6RMkjVDRZzb",
   "outputFormat": "mp3_44100_128",
   "source": "video/finaltab-winner/SCRIPT.md",
@@ -34,43 +38,75 @@
     },
     {
       "scene": 3,
-      "text": null,
-      "audioContentStatus": "retired-wording-timing-reference-only",
+      "text": "Sign in. Scan a crowded receipt. Correct the extraction. Add participants. Describe who had what. FINALTab reconciles every line—tax, tip, and service included—to the cent.",
       "audio": "scene-03.mp3",
       "alignment": "scene-03-alignment.json",
-      "durationSeconds": 12.353,
-      "bytes": 198574,
-      "sha256": "71b5a31159a8cc69af457fa74dcd7db66c0ba2bbef663fb27180d391fb15afe5"
+      "durationSeconds": 12.8,
+      "bytes": 204845,
+      "sha256": "51b1fb3e18bc9c61a91ed1ec6292a0de00002010cb5bfe27b2161f3012c27e93",
+      "provider": "ElevenLabs",
+      "model": "eleven_flash_v2_5",
+      "voiceId": "JBFqnCBsd6RMkjVDRZzb",
+      "outputFormat": "mp3_44100_128",
+      "generationRoute": "POST /api/internal/video-narration",
+      "generationDeploymentId": "dpl_Fuxjf39h4M8ocRird8SiSRK6nxeN",
+      "generationDeploymentUrl": "https://finaltab-7b88w394j-vaibhav4046s-projects.vercel.app",
+      "providerAlignmentAvailable": false,
+      "alignmentSource": "offline-faster-whisper-transcript-constrained"
     },
     {
       "scene": 4,
-      "text": null,
-      "audioContentStatus": "retired-wording-timing-reference-only",
+      "text": "A four-stage review attests the current inputs; any edit invalidates it. Freeze only after a fresh review, and the ledger, debits, payouts, chain, and contract become one immutable plan.",
       "audio": "scene-04.mp3",
       "alignment": "scene-04-alignment.json",
-      "durationSeconds": 11.703,
-      "bytes": 188125,
-      "sha256": "30f94ace8e808005b680dbcebe20da40b4ea21f4ec71d61f0c67dad8ba6f8561"
+      "durationSeconds": 12.564875,
+      "bytes": 201083,
+      "sha256": "833d2cc2cc60e19a367ebc0d6ecc257a222688364f4c8fb303f67261d150dcb1",
+      "provider": "ElevenLabs",
+      "model": "eleven_flash_v2_5",
+      "voiceId": "JBFqnCBsd6RMkjVDRZzb",
+      "outputFormat": "mp3_44100_128",
+      "generationRoute": "POST /api/internal/video-narration",
+      "generationDeploymentId": "dpl_Fuxjf39h4M8ocRird8SiSRK6nxeN",
+      "generationDeploymentUrl": "https://finaltab-7b88w394j-vaibhav4046s-projects.vercel.app",
+      "providerAlignmentAvailable": false,
+      "alignmentSource": "offline-faster-whisper-transcript-constrained"
     },
     {
       "scene": 5,
-      "text": null,
-      "audioContentStatus": "retired-wording-timing-reference-only",
+      "text": "Circle permits the USDC pull; FINALTab binds every payout. KeeperHub simulates first. Consumed proof cannot move again.",
       "audio": "scene-05.mp3",
       "alignment": "scene-05-alignment.json",
-      "durationSeconds": 11.656,
-      "bytes": 187707,
-      "sha256": "b25f02fb6b77b176a803158eae9161920b1205d9c23843289b8d0cabae873af0"
+      "durationSeconds": 9.221188,
+      "bytes": 147584,
+      "sha256": "93a853fc14bcc725a29f07ab056f6ea5da778ab1c31f9bf3ff64ca437a86fcb2",
+      "provider": "ElevenLabs",
+      "model": "eleven_flash_v2_5",
+      "voiceId": "JBFqnCBsd6RMkjVDRZzb",
+      "outputFormat": "mp3_44100_128",
+      "generationRoute": "POST /api/internal/video-narration",
+      "generationDeploymentId": "dpl_5aVre5mMDoB58DFQo7rbLqa3nztG",
+      "generationDeploymentUrl": "https://finaltab-14c2uklv9-vaibhav4046s-projects.vercel.app",
+      "providerAlignmentAvailable": false,
+      "alignmentSource": "offline-faster-whisper-transcript-constrained"
     },
     {
       "scene": 6,
-      "text": null,
-      "audioContentStatus": "retired-wording-timing-reference-only",
+      "text": "KeeperHub submitted once with operator authorization. Its receipt and Base Sepolia independently match transaction, settlement ID, and ledger hash.",
       "audio": "scene-06.mp3",
       "alignment": "scene-06-alignment.json",
-      "durationSeconds": 8.916,
-      "bytes": 143822,
-      "sha256": "8adc55a55f504fd07158f584c5403c0ae346a89f1549f81e6830f124716d1cd8"
+      "durationSeconds": 9.430188,
+      "bytes": 150928,
+      "sha256": "4ba2ce7aeadd6eadcda1860702b1300450d226b4f24438a85232f78a3ca99517",
+      "provider": "ElevenLabs",
+      "model": "eleven_flash_v2_5",
+      "voiceId": "JBFqnCBsd6RMkjVDRZzb",
+      "outputFormat": "mp3_44100_128",
+      "generationRoute": "POST /api/internal/video-narration",
+      "generationDeploymentId": "dpl_7gBR3AtNKDBwkduRbMknfgHdF45n",
+      "generationDeploymentUrl": "https://finaltab-9zf0x4a3b-vaibhav4046s-projects.vercel.app",
+      "providerAlignmentAvailable": false,
+      "alignmentSource": "offline-faster-whisper-transcript-constrained"
     },
     {
       "scene": 7,
@@ -83,13 +119,21 @@
     },
     {
       "scene": 8,
-      "text": null,
-      "audioContentStatus": "retired-wording-timing-reference-only",
+      "text": "A real MCP client authenticates, lists nine tools, allocates the receipt, prepares V2 typed data, and creates an approval challenge. Then it stops: no wallet signature, submit, or value move. A read-only panel verifies the retained settlement.",
       "audio": "scene-08.mp3",
       "alignment": "scene-08-alignment.json",
-      "durationSeconds": 17.647,
-      "bytes": 283420,
-      "sha256": "c85d752490b99f0f7c9142f807bdef457fcff3e887ae7d6bd04225fadcfbbb2d"
+      "durationSeconds": 17.632625,
+      "bytes": 282167,
+      "sha256": "dd820ba3f0289fb81bb15b849ccddf2697765298854835fef036347417e32430",
+      "provider": "ElevenLabs",
+      "model": "eleven_flash_v2_5",
+      "voiceId": "JBFqnCBsd6RMkjVDRZzb",
+      "outputFormat": "mp3_44100_128",
+      "generationRoute": "POST /api/internal/video-narration",
+      "generationDeploymentId": "dpl_7gBR3AtNKDBwkduRbMknfgHdF45n",
+      "generationDeploymentUrl": "https://finaltab-9zf0x4a3b-vaibhav4046s-projects.vercel.app",
+      "providerAlignmentAvailable": false,
+      "alignmentSource": "offline-faster-whisper-transcript-constrained"
     },
     {
       "scene": 9,
@@ -100,5 +144,139 @@
       "bytes": 56050,
       "sha256": "23685cd4542f7acfce6f7c2f39cfbbbe46d865fde789c339820f273be0d71680"
     }
-  ]
+  ],
+  "captureLockAcknowledged": true,
+  "captureLockApprovedAt": "2026-08-11T16:08:54.1573361Z",
+  "captureLockSha256": "8c15bc860e1b4fac35c7fd32f1725b8e297c01c5b13908f28df31164d91bc450",
+  "scriptSha256": "88a7daa7444bc32fb31254fbe7bed0a7279e6abbf5063c1d26a9b486d50e92b7",
+  "modelsByScene": {
+    "eleven_multilingual_v2": [
+      1,
+      2,
+      7,
+      9
+    ],
+    "eleven_flash_v2_5": [
+      3,
+      4,
+      5,
+      6,
+      8
+    ]
+  },
+  "retainedNarration": {
+    "scenes": [
+      1,
+      2,
+      7,
+      9
+    ],
+    "provider": "ElevenLabs",
+    "model": "eleven_multilingual_v2",
+    "voiceId": "JBFqnCBsd6RMkjVDRZzb",
+    "outputFormat": "mp3_44100_128",
+    "proofManifestPath": "proof-output/finaltab-winner/voiceover/retained-multilingual-v2-manifest.json",
+    "proofManifestSha256": "272b1178d2c47ba84c7b9968c628408207cbce3b0acf85f3ac3ad8621e9cffd1"
+  },
+  "voiceIdsByScene": {
+    "JBFqnCBsd6RMkjVDRZzb": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ]
+  },
+  "generationLedger": {
+    "path": "data/narration-generation-ledger.json",
+    "sha256": "a6c960dac714e0fa103ff0da622eb2c8590313b00f67fd4f762d7063ab168bd6"
+  },
+  "generationRoute": {
+    "scenes": [
+      3,
+      4,
+      5,
+      6,
+      8
+    ],
+    "method": "POST",
+    "path": "/api/internal/video-narration",
+    "endpointClass": "protected-expiring-fixed-scene-release",
+    "deployments": [
+      {
+        "deploymentId": "dpl_Fuxjf39h4M8ocRird8SiSRK6nxeN",
+        "deploymentUrl": "https://finaltab-7b88w394j-vaibhav4046s-projects.vercel.app",
+        "role": "initial-candidate",
+        "canonicalProductAliasPromoted": false
+      },
+      {
+        "deploymentId": "dpl_7gBR3AtNKDBwkduRbMknfgHdF45n",
+        "deploymentUrl": "https://finaltab-9zf0x4a3b-vaibhav4046s-projects.vercel.app",
+        "role": "duration-repair-candidate",
+        "canonicalProductAliasPromoted": false
+      },
+      {
+        "deploymentId": "dpl_5aVre5mMDoB58DFQo7rbLqa3nztG",
+        "deploymentUrl": "https://finaltab-14c2uklv9-vaibhav4046s-projects.vercel.app",
+        "role": "final-scene-5-duration-repair-candidate",
+        "canonicalProductAliasPromoted": false
+      }
+    ],
+    "canonicalProductAliasPromoted": false,
+    "callsPerFinalExactText": 1,
+    "selectedCalls": 5,
+    "supersededOverBudgetCalls": 4,
+    "totalProviderCalls": 9,
+    "generationLedgerPath": "data/narration-generation-ledger.json",
+    "generationLedgerSha256": "a6c960dac714e0fa103ff0da622eb2c8590313b00f67fd4f762d7063ab168bd6",
+    "implementation": "protected expiring fixed-scene Vercel release endpoint",
+    "providerImplementation": "apps/web/lib/server/voice.ts",
+    "providerSourceSha256": "d749e2cb33aa14a13a1a8ff7ea69aad12c25a703d795fb55f638d2cd7f541ecb",
+    "responseContentType": "audio/mpeg",
+    "applyTextNormalization": "auto",
+    "voiceSettingsOverride": false,
+    "providerAlignmentReturned": false
+  },
+  "alignmentSource": {
+    "scenes": [
+      3,
+      4,
+      5,
+      6,
+      8
+    ],
+    "method": "offline-faster-whisper-transcript-constrained",
+    "providerAlignmentAvailable": false,
+    "sceneAlignmentSha256": {
+      "3": "cfb09edbbf1f2f8fa878f22adb9ef8e323d56fcc77ed29200f09a9b8b0a76721",
+      "4": "af12aeab8b768108feb987a9c600edaa3b1c46cb3e11e3c1fa2721880a0b4cdd",
+      "5": "82a21abdc6f04d957b332ecfc5d622378777094959074536e7bb9832ae0feef7",
+      "6": "2a2919c663f9c85e194adb679c6beba89d1159ec0ac7765eb6aa9c50f340a2ef",
+      "8": "5529bfee89548daf747abe994c8f7dea5495660158ec3b5b2ed7683d1c17db85"
+    }
+  },
+  "proofVoicePackage": {
+    "directory": "proof-output/finaltab-winner/voiceover",
+    "changedScenes": [
+      3,
+      4,
+      5,
+      6,
+      8
+    ],
+    "changedSceneAssetsMirrored": true,
+    "retainedManifestPath": "proof-output/finaltab-winner/voiceover/retained-multilingual-v2-manifest.json",
+    "retainedManifestSha256": "272b1178d2c47ba84c7b9968c628408207cbce3b0acf85f3ac3ad8621e9cffd1"
+  },
+  "voiceSettingsSource": "Scenes 3, 4, 5, 6, and 8 use ElevenLabs defaults because the protected release endpoints called the shared provider helper without a voice_settings override; retained scenes keep their approved package.",
+  "captionAssets": {
+    "cueJsonSha256": "b08c4860d505aa882c09a0c1e8469180797eeeb61e0d79366396a8e3a99f794c",
+    "srtSha256": "456a3a7b3d1e1436fb62434ed031f7c73538c380451452396422a5a66d8f76f2",
+    "vttSha256": "68f429b9f662ea128e01c791830a9a02dadca897e699ad67c8adfc065fe2536e",
+    "bakedIndexSha256": "b3e875d3fc2093d43e893896320344d2882bf59d548566f9630c6a4109238094"
+  }
 }

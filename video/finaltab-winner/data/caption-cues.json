@@ -1,8 +1,8 @@
 {
-  "status": "pending-selective-voice-regeneration",
-  "changedScenesPendingAlignment": [3, 4, 5, 6, 8],
+  "status": "approved-final-capture-sync",
   "durationSeconds": 96,
   "maxLineLength": 42,
+  "scriptSha256": "88a7daa7444bc32fb31254fbe7bed0a7279e6abbf5063c1d26a9b486d50e92b7",
   "cues": [
     {
       "scene": 1,
@@ -51,40 +51,40 @@
     {
       "scene": 3,
       "start": 16.4,
-      "end": 19.388999999999996,
+      "end": 18.68,
       "lines": [
         "Sign in. Scan a crowded receipt."
       ]
     },
     {
       "scene": 3,
-      "start": 19.546,
-      "end": 22.128999999999998,
+      "start": 19.08,
+      "end": 21.36,
       "lines": [
         "Correct the extraction. Add participants."
       ]
     },
     {
       "scene": 3,
-      "start": 22.448999999999998,
-      "end": 24.645999999999997,
+      "start": 21.759999999999998,
+      "end": 26.099999999999998,
       "lines": [
-        "Describe who had what. FINALTab",
-        "reconciles every line—"
+        "Describe who had what. FINALTab reconciles",
+        "every line—"
       ]
     },
     {
       "scene": 3,
-      "start": 24.665999999999997,
-      "end": 26.758999999999997,
+      "start": 26.119999999999997,
+      "end": 28.196,
       "lines": [
         "tax, tip, and service included—"
       ]
     },
     {
       "scene": 3,
-      "start": 26.778999999999996,
-      "end": 28.793,
+      "start": 28.216,
+      "end": 29.019999999999996,
       "lines": [
         "to the cent."
       ]
@@ -92,96 +92,94 @@
     {
       "scene": 4,
       "start": 31.4,
-      "end": 33.449,
+      "end": 34.21,
       "lines": [
-        "A four-stage review attests the current"
+        "A four-stage review attests the current",
+        "inputs;"
       ]
     },
     {
       "scene": 4,
-      "start": 33.467,
-      "end": 35.875,
+      "start": 34.46,
+      "end": 36.39,
       "lines": [
-        "inputs; any edit invalidates it."
+        "any edit invalidates it."
       ]
     },
     {
       "scene": 4,
-      "start": 36.241,
-      "end": 39.056,
+      "start": 36.699999999999996,
+      "end": 38.79,
       "lines": [
-        "Freeze only after a fresh review, and the"
+        "Freeze only after a fresh review,"
       ]
     },
     {
       "scene": 4,
-      "start": 39.086,
-      "end": 43.142999999999994,
+      "start": 39.06,
+      "end": 43.82,
       "lines": [
-        "ledger, debits, payouts, chain, and",
-        "contract become one immutable plan."
+        "and the ledger, debits, payouts, chain,",
+        "and contract become one immutable plan."
       ]
     },
     {
       "scene": 5,
       "start": 44.2,
-      "end": 45.842,
+      "end": 46.53,
       "lines": [
-        "The retained plan verifies two debtor"
+        "Circle permits the USDC pull;"
       ]
     },
     {
       "scene": 5,
-      "start": 46.023,
-      "end": 48.861000000000004,
+      "start": 46.800000000000004,
+      "end": 49.06,
       "lines": [
-        "signatures: Circle authorized the exact",
-        "USDC pull,"
+        "FINALTab binds every payout."
       ]
     },
     {
       "scene": 5,
-      "start": 49.123000000000005,
-      "end": 52.054,
+      "start": 49.540000000000006,
+      "end": 51.02,
       "lines": [
-        "and FINALTab bound consent to the complete",
-        "payout plan."
+        "KeeperHub simulates first."
       ]
     },
     {
       "scene": 5,
-      "start": 52.315000000000005,
-      "end": 55.896,
+      "start": 51.36,
+      "end": 53.26,
       "lines": [
-        "KeeperHub simulated before broadcast;",
-        "consumed proof cannot move value again."
+        "Consumed proof cannot move again."
       ]
     },
     {
       "scene": 6,
       "start": 56.35,
-      "end": 60.047000000000004,
+      "end": 59.35,
       "lines": [
-        "With explicit operator authorization,",
-        "KeeperHub submitted once."
+        "KeeperHub submitted once with operator",
+        "authorization."
       ]
     },
     {
       "scene": 6,
-      "start": 60.483000000000004,
-      "end": 62.439,
+      "start": 59.83,
+      "end": 62.53,
       "lines": [
-        "Its terminal receipt and an independent",
-        "Base Sepolia check"
+        "Its receipt and Base Sepolia independently",
+        "match"
       ]
     },
     {
       "scene": 6,
-      "start": 62.457,
-      "end": 65.30600000000001,
+      "start": 62.550000000000004,
+      "end": 65.57000000000001,
       "lines": [
-        "match the same transaction, settlement",
-        "ID, and ledger hash."
+        "transaction, settlement ID, and ledger",
+        "hash."
       ]
     },
     {
@@ -204,16 +202,16 @@
     {
       "scene": 8,
       "start": 73.15,
-      "end": 75.90700000000001,
+      "end": 77.00000000000001,
       "lines": [
-        "A real MCP client authenticates, lists all",
+        "A real MCP client authenticates, lists",
         "nine tools,"
       ]
     },
     {
       "scene": 8,
-      "start": 75.983,
-      "end": 77.90400000000001,
+      "start": 77.27000000000001,
+      "end": 80.33000000000001,
       "lines": [
         "allocates the receipt, prepares V2 typed",
         "data,"
@@ -221,29 +219,28 @@
     },
     {
       "scene": 8,
-      "start": 78.421,
-      "end": 82.33900000000001,
+      "start": 80.61,
+      "end": 82.45000000000002,
       "lines": [
-        "and creates the short-lived approval",
-        "challenge. Then it stops:"
+        "and creates an approval challenge."
       ]
     },
     {
       "scene": 8,
-      "start": 82.85600000000001,
-      "end": 87.50500000000001,
+      "start": 82.89,
+      "end": 87.01,
       "lines": [
-        "no wallet signature, no submit, no second",
-        "value move."
+        "Then it stops: no wallet signature,",
+        "submit, or value move."
       ]
     },
     {
       "scene": 8,
-      "start": 87.825,
-      "end": 90.837,
+      "start": 87.51,
+      "end": 90.59000000000002,
       "lines": [
-        "A separate read-only panel verifies the",
-        "retained settlement."
+        "A read-only panel verifies the retained",
+        "settlement."
       ]
     },
     {
@@ -255,5 +252,6 @@
         "verifies."
       ]
     }
-  ]
+  ],
+  "sha256": "e62a8dedef4116685296f543ed5ed579dbb0d4b80b920c6f7e451826d88943cf"
 }

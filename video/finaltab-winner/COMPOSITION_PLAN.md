@@ -30,7 +30,7 @@
 | ---: | --- |
 | 0 | master ground |
 | 10 | frame subcompositions |
-| 15 | eight receipt-paper wipes |
+| 15 | eight carbon–blue–acid transit wipes |
 | 20 | baked captions |
 | 30 | nine scene narration clips |
 | 32 | transition whooshes |
@@ -43,7 +43,7 @@ No BGM track is present because no music source is approved.
 
 ## Transition and layout contract
 
-Eight 0.5-second receipt-paper wipes straddle the cuts at 6, 16, 31, 44, 56, 66, 73, and 91 seconds. The enhanced audit samples those transitions.
+Eight 0.5-second carbon–blue–acid transit wipes straddle the cuts at 6, 16, 31, 44, 56, 66, 73, and 91 seconds. The enhanced audit samples those transitions.
 
 Narrow annotations only:
 
@@ -56,16 +56,18 @@ No broad layout ignore is allowed.
 
 ## Audio and captions
 
-- Existing unchanged narration: scenes 1, 2, 7, 9.
-- Pending selective regeneration: scenes 3, 4, 5, 6, 8.
-- `generate-voiceover.mjs` refuses unchanged scenes and requires the explicit changed-scene set.
+- Retained narration: scenes 1, 2, 7, and 9 use the approved ElevenLabs Multilingual v2 MP3s and provider-native timing.
+- Changed narration: scenes 3, 4, 5, 6, and 8 use the selected Flash v2.5 MP3s generated with one call per selected exact text across three protected, expiring, fixed-scene Vercel release candidates, plus provider-free offline alignment. Four over-budget attempts are recorded as superseded, for nine provider calls total. The canonical product alias `finaltab.vercel.app` was never promoted to those candidates.
+- `data/narration-generation-ledger.json` is sanitized and credential-free; both the synchronizer and final gate bind it to the exact three deployment IDs, helper contract, voice, selected scene set, and MP3 byte/SHA values, and verify the superseded-attempt accounting.
+- `generate-voiceover.mjs` is a fail-closed retirement guard. No video-project command calls a narration provider or reads a provider key.
+- `npm run voice:check` validates the complete local package without writing; `npm run voice:sync` restores retained alignment files and writes the hybrid manifest without a network request.
 - `build-captions.mjs` consumes local alignment files and atomically updates SRT, VTT, cue JSON, baked caption HTML, voice clip durations, and hashes.
 - `data/audio-manifest.json` locks every local SFX byte/hash and cue.
 - SFX volumes are 0.12–0.24 under narration.
 
 ## Capture promotion
 
-Machine-readable contracts live in `data/capture-contracts.json`; approved capture hashes live in `data/capture-lock.json`. The source currently references build-time slots, so final render remains blocked.
+Machine-readable contracts live in `data/capture-contracts.json`; approved capture hashes live in `data/capture-lock.json`. All canonical capture assets are installed and the final gate rechecks every byte, resolution, frame rate, and minimum duration before render.
 
 ## Actual source layout
 
@@ -82,6 +84,7 @@ video/finaltab-winner/
     release-proof.json
     capture-contracts.json
     capture-lock.json
+    narration-generation-ledger.json
     voiceover-manifest.json
     caption-cues.json
     audio-manifest.json
@@ -92,7 +95,9 @@ video/finaltab-winner/
     fonts/
     vendor/
   compositions/frames/01..09
-  generate-voiceover.mjs
+  generate-voiceover.mjs  # retired, fail-closed provider guard
+  scripts/align-narration.py
+  scripts/sync-route-voice-manifest.mjs
   build-captions.mjs
   verify-video-gates.mjs
 ```

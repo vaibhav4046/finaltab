@@ -44,7 +44,7 @@ All times are absolute in the 96-second master. Frames 1–8 hold their final st
 ## Frame 5 — Retained signature and simulation evidence · 00:44–00:56
 
 - Experience: two verified public recoveries converge on one consumed plan.
-- Voice: “The retained plan verifies two debtor signatures: Circle authorized the exact USDC pull, and FINALTab bound consent to the complete payout plan. KeeperHub simulated before broadcast; consumed proof cannot move value again.”
+- Voice: “Circle permits the USDC pull; FINALTab binds every payout. KeeperHub simulates first. Consumed proof cannot move again.”
 - Capture C05 is a sanitized still derived from retained public evidence:
   - EIP-3009 recovery verified;
   - V2 SettlementConsent recovery verified and digest matches contract;
@@ -56,7 +56,7 @@ All times are absolute in the 96-second master. Frames 1–8 hold their final st
 ## Frame 6 — Retained two-witness proof · 00:56–00:66
 
 - Experience: KeeperHub and Base Sepolia independently converge on exact identifiers.
-- Voice: “With explicit operator authorization, KeeperHub submitted once. Its terminal receipt and an independent Base Sepolia check match the same transaction, settlement ID, and ledger hash.”
+- Voice: “KeeperHub submitted once with operator authorization. Its receipt and Base Sepolia independently match transaction, settlement ID, and ledger hash.”
 - Capture C06A: retained KeeperHub execution `3hmlqi36zweiwg6fc5o2u`, terminal success, settlement transaction.
 - Capture C06B: public chain proof for block `45327128`, settlement ID `0x8b6708…aadb9db`, ledger hash `0x1581eb…b0cb91e`.
 - Proof green appears only after both evidence sources agree.
@@ -82,7 +82,7 @@ All times are absolute in the 96-second master. Frames 1–8 hold their final st
 ## Frame 8 — Authenticated non-broadcast MCP climax · 00:73–00:91
 
 - Experience: the client earns trust by stopping.
-- Voice: “A real MCP client authenticates, lists all nine tools, allocates the receipt, prepares V2 typed data, and creates the short-lived approval challenge. Then it stops: no wallet signature, no submit, no second value move. A separate read-only panel verifies the retained settlement.”
+- Voice: “A real MCP client authenticates, lists nine tools, allocates the receipt, prepares V2 typed data, and creates an approval challenge. Then it stops: no wallet signature, submit, or value move. A read-only panel verifies the retained settlement.”
 - Capture C08A must show this order:
   1. `initialize` and authenticated `tools/list`;
   2. `allocate_receipt`;
@@ -106,4 +106,4 @@ All times are absolute in the 96-second master. Frames 1–8 hold their final st
 
 ## Caption contract
 
-Captions remain in the lower safe band, two lines maximum, 42 characters maximum per line. Final timing comes only from the selectively regenerated ElevenLabs alignment. `CAPTIONS.srt`, `CAPTIONS.vtt`, `data/caption-cues.json`, baked HTML, and voice hashes must agree before render.
+Captions remain in the lower safe band, two lines maximum, 42 characters maximum per line. Retained scenes use their approved provider-native timing; changed scenes use only the validated provider-free offline alignment for the five release-ledger-bound MP3s. `CAPTIONS.srt`, `CAPTIONS.vtt`, `data/caption-cues.json`, baked HTML, and voice hashes must agree before render.

@@ -8,17 +8,17 @@
   <style>
     @font-face{font-family:GeistMono;src:url("assets/fonts/GeistMono-Regular.woff2") format("woff2");font-weight:400}
     @font-face{font-family:GeistMono;src:url("assets/fonts/GeistMono-Bold.woff2") format("woff2");font-weight:700}
-    html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0B0F12}
-    #root{position:relative;width:3840px;height:2160px;overflow:hidden;background:transparent;color:#F4EEE2}
+    html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#050706}
+    #root{position:relative;width:3840px;height:2160px;overflow:hidden;background:transparent;color:#F4F8F1}
     .clip{position:absolute;inset:0;overflow:hidden}
-    .master-ground{background:#0B0F12}
+    .master-ground{background:#050706}
     .master-ground:after{content:"";position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 160px rgba(0,0,0,.38)}
     .frame-slot{width:3840px;height:2160px}
     .captions{pointer-events:none;z-index:50;width:50%;height:50%;transform:scale(2);transform-origin:0 0}
-    .caption-cue{position:absolute;left:50%;bottom:30px;transform:translateX(-50%);margin:0;min-width:760px;max-width:1380px;padding:10px 22px 11px;border-radius:10px;background:rgba(11,15,18,.92);box-shadow:0 0 0 1px rgba(145,160,168,.2);font:700 26px/1.25 GeistMono,monospace;letter-spacing:.005em;text-align:center;color:#F4EEE2;opacity:0}
+    .caption-cue{position:absolute;left:50%;bottom:30px;transform:translateX(-50%);margin:0;min-width:760px;max-width:1380px;padding:10px 22px 11px;border-radius:10px;background:rgba(5,7,6,.92);box-shadow:0 0 0 1px rgba(183,192,184,.2);font:700 26px/1.25 GeistMono,monospace;letter-spacing:.005em;text-align:center;color:#F4F8F1;opacity:0}
     .transition-wipe{z-index:40;pointer-events:none}
-    .wipe-paper{position:absolute;inset:-4% -5%;background:#F4EEE2;clip-path:polygon(3% 0,100% 0,100% 100%,3% 100%,0 94%,3% 88%,0 82%,3% 76%,0 70%,3% 64%,0 58%,3% 52%,0 46%,3% 40%,0 34%,3% 28%,0 22%,3% 16%,0 10%,3% 4%);transform:translate3d(-4100px,0,0)}
-    .wipe-paper:after{content:"";position:absolute;left:48%;top:0;width:4px;height:100%;background:#FF936A;opacity:.85}
+    .wipe-paper{position:absolute;inset:-4% -5%;background:linear-gradient(100deg,#050706 0 32%,#45AFFF 52%,#C8FF3D 68%,#050706 100%);clip-path:polygon(3% 0,100% 0,100% 100%,3% 100%,0 94%,3% 88%,0 82%,3% 76%,0 70%,3% 64%,0 58%,3% 52%,0 46%,3% 40%,0 34%,3% 28%,0 22%,3% 16%,0 10%,3% 4%);transform:translate3d(-4100px,0,0)}
+    .wipe-paper:after{content:"";position:absolute;left:48%;top:0;width:4px;height:100%;background:#C8FF3D;opacity:.9}
     .media-clip{display:none}
   </style>
 </head>
@@ -52,27 +52,27 @@
       <p id="cap-05" class="caption-cue">then sends the exact call through<br/>KeeperHub.</p>
       <p id="cap-06" class="caption-cue">Sign in. Scan a crowded receipt.</p>
       <p id="cap-07" class="caption-cue">Correct the extraction. Add participants.</p>
-      <p id="cap-08" class="caption-cue">Describe who had what. FINALTab<br/>reconciles every line—</p>
+      <p id="cap-08" class="caption-cue">Describe who had what. FINALTab reconciles<br/>every line—</p>
       <p id="cap-09" class="caption-cue">tax, tip, and service included—</p>
       <p id="cap-10" class="caption-cue">to the cent.</p>
-      <p id="cap-11" class="caption-cue">A four-stage review attests the current</p>
-      <p id="cap-12" class="caption-cue">inputs; any edit invalidates it.</p>
-      <p id="cap-13" class="caption-cue">Freeze only after a fresh review, and the</p>
-      <p id="cap-14" class="caption-cue">ledger, debits, payouts, chain, and<br/>contract become one immutable plan.</p>
-      <p id="cap-15" class="caption-cue">The retained plan verifies two debtor</p>
-      <p id="cap-16" class="caption-cue">signatures: Circle authorized the exact<br/>USDC pull,</p>
-      <p id="cap-17" class="caption-cue">and FINALTab bound consent to the complete<br/>payout plan.</p>
-      <p id="cap-18" class="caption-cue">KeeperHub simulated before broadcast;<br/>consumed proof cannot move value again.</p>
-      <p id="cap-19" class="caption-cue">With explicit operator authorization,<br/>KeeperHub submitted once.</p>
-      <p id="cap-20" class="caption-cue">Its terminal receipt and an independent<br/>Base Sepolia check</p>
-      <p id="cap-21" class="caption-cue">match the same transaction, settlement<br/>ID, and ledger hash.</p>
+      <p id="cap-11" class="caption-cue">A four-stage review attests the current<br/>inputs;</p>
+      <p id="cap-12" class="caption-cue">any edit invalidates it.</p>
+      <p id="cap-13" class="caption-cue">Freeze only after a fresh review,</p>
+      <p id="cap-14" class="caption-cue">and the ledger, debits, payouts, chain,<br/>and contract become one immutable plan.</p>
+      <p id="cap-15" class="caption-cue">Circle permits the USDC pull;</p>
+      <p id="cap-16" class="caption-cue">FINALTab binds every payout.</p>
+      <p id="cap-17" class="caption-cue">KeeperHub simulates first.</p>
+      <p id="cap-18" class="caption-cue">Consumed proof cannot move again.</p>
+      <p id="cap-19" class="caption-cue">KeeperHub submitted once with operator<br/>authorization.</p>
+      <p id="cap-20" class="caption-cue">Its receipt and Base Sepolia independently<br/>match</p>
+      <p id="cap-21" class="caption-cue">transaction, settlement ID, and ledger<br/>hash.</p>
       <p id="cap-22" class="caption-cue">Agents use the same safety rail through<br/>nine production MCP tools.</p>
       <p id="cap-23" class="caption-cue">FINALTab never holds wallet keys.</p>
-      <p id="cap-24" class="caption-cue">A real MCP client authenticates, lists all<br/>nine tools,</p>
+      <p id="cap-24" class="caption-cue">A real MCP client authenticates, lists<br/>nine tools,</p>
       <p id="cap-25" class="caption-cue">allocates the receipt, prepares V2 typed<br/>data,</p>
-      <p id="cap-26" class="caption-cue">and creates the short-lived approval<br/>challenge. Then it stops:</p>
-      <p id="cap-27" class="caption-cue">no wallet signature, no submit, no second<br/>value move.</p>
-      <p id="cap-28" class="caption-cue">A separate read-only panel verifies the<br/>retained settlement.</p>
+      <p id="cap-26" class="caption-cue">and creates an approval challenge.</p>
+      <p id="cap-27" class="caption-cue">Then it stops: no wallet signature,<br/>submit, or value move.</p>
+      <p id="cap-28" class="caption-cue">A read-only panel verifies the retained<br/>settlement.</p>
       <p id="cap-29" class="caption-cue">FINALTab: KeeperHub executes. Anyone<br/>verifies.</p>
       <!-- GENERATED CAPTIONS END -->
     </section>
@@ -80,12 +80,12 @@
     <!-- GENERATED VOICE CLIPS START -->
     <audio id="voice-01" class="clip media-clip" src="assets/audio/voice/scene-01.mp3" preload="auto" data-start="0.65" data-duration="4.644" data-track-index="30"></audio>
     <audio id="voice-02" class="clip media-clip" src="assets/audio/voice/scene-02.mp3" preload="auto" data-start="6.2" data-duration="9.706" data-track-index="30"></audio>
-    <audio id="voice-03" class="clip media-clip" src="assets/audio/voice/scene-03.mp3" preload="auto" data-start="16.4" data-duration="12.353" data-track-index="30"></audio>
-    <audio id="voice-04" class="clip media-clip" src="assets/audio/voice/scene-04.mp3" preload="auto" data-start="31.4" data-duration="11.703" data-track-index="30"></audio>
-    <audio id="voice-05" class="clip media-clip" src="assets/audio/voice/scene-05.mp3" preload="auto" data-start="44.2" data-duration="11.656" data-track-index="30"></audio>
-    <audio id="voice-06" class="clip media-clip" src="assets/audio/voice/scene-06.mp3" preload="auto" data-start="56.35" data-duration="8.916" data-track-index="30"></audio>
+    <audio id="voice-03" class="clip media-clip" src="assets/audio/voice/scene-03.mp3" preload="auto" data-start="16.4" data-duration="12.800" data-track-index="30"></audio>
+    <audio id="voice-04" class="clip media-clip" src="assets/audio/voice/scene-04.mp3" preload="auto" data-start="31.4" data-duration="12.565" data-track-index="30"></audio>
+    <audio id="voice-05" class="clip media-clip" src="assets/audio/voice/scene-05.mp3" preload="auto" data-start="44.2" data-duration="9.221" data-track-index="30"></audio>
+    <audio id="voice-06" class="clip media-clip" src="assets/audio/voice/scene-06.mp3" preload="auto" data-start="56.35" data-duration="9.430" data-track-index="30"></audio>
     <audio id="voice-07" class="clip media-clip" src="assets/audio/voice/scene-07.mp3" preload="auto" data-start="66.25" data-duration="6.362" data-track-index="30"></audio>
-    <audio id="voice-08" class="clip media-clip" src="assets/audio/voice/scene-08.mp3" preload="auto" data-start="73.15" data-duration="17.647" data-track-index="30"></audio>
+    <audio id="voice-08" class="clip media-clip" src="assets/audio/voice/scene-08.mp3" preload="auto" data-start="73.15" data-duration="17.633" data-track-index="30"></audio>
     <audio id="voice-09" class="clip media-clip" src="assets/audio/voice/scene-09.mp3" preload="auto" data-start="91.05" data-duration="3.437" data-track-index="30"></audio>
     <!-- GENERATED VOICE CLIPS END -->
 
@@ -116,35 +116,93 @@
     tl.fromTo("#wipe-08-paper",{x:-4100},{x:0,duration:.25,ease:"power3.in"},90.75).to("#wipe-08-paper",{x:4100,duration:.25,ease:"power3.out"},91.0);
 
     // GENERATED CAPTION TIMELINE START
-    tl.fromTo("#cap-01",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},.65).to("#cap-01",{opacity:0,duration:.14,ease:"sine.in"},3.184);
+    tl.set("#cap-01",{visibility:"visible"},0.65);
+    tl.fromTo("#cap-01",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},0.65).to("#cap-01",{opacity:0,duration:.14,ease:"sine.in"},3.184);
+    tl.set("#cap-01",{opacity:0,visibility:"hidden"},3.324);
+    tl.set("#cap-02",{visibility:"visible"},3.344);
     tl.fromTo("#cap-02",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},3.344).to("#cap-02",{opacity:0,duration:.14,ease:"sine.in"},5.194);
+    tl.set("#cap-02",{opacity:0,visibility:"hidden"},5.334);
+    tl.set("#cap-03",{visibility:"visible"},6.2);
     tl.fromTo("#cap-03",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},6.2).to("#cap-03",{opacity:0,duration:.14,ease:"sine.in"},9.142);
+    tl.set("#cap-03",{opacity:0,visibility:"hidden"},9.282);
+    tl.set("#cap-04",{visibility:"visible"},9.544);
     tl.fromTo("#cap-04",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},9.544).to("#cap-04",{opacity:0,duration:.14,ease:"sine.in"},12.892);
+    tl.set("#cap-04",{opacity:0,visibility:"hidden"},13.032);
+    tl.set("#cap-05",{visibility:"visible"},13.398);
     tl.fromTo("#cap-05",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},13.398).to("#cap-05",{opacity:0,duration:.14,ease:"sine.in"},15.806);
-    tl.fromTo("#cap-06",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},16.4).to("#cap-06",{opacity:0,duration:.14,ease:"sine.in"},19.249);
-    tl.fromTo("#cap-07",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},19.546).to("#cap-07",{opacity:0,duration:.14,ease:"sine.in"},21.989);
-    tl.fromTo("#cap-08",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},22.449).to("#cap-08",{opacity:0,duration:.14,ease:"sine.in"},24.506);
-    tl.fromTo("#cap-09",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},24.666).to("#cap-09",{opacity:0,duration:.14,ease:"sine.in"},26.619);
-    tl.fromTo("#cap-10",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},26.779).to("#cap-10",{opacity:0,duration:.14,ease:"sine.in"},28.653);
-    tl.fromTo("#cap-11",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},31.4).to("#cap-11",{opacity:0,duration:.14,ease:"sine.in"},33.309);
-    tl.fromTo("#cap-12",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},33.467).to("#cap-12",{opacity:0,duration:.14,ease:"sine.in"},35.735);
-    tl.fromTo("#cap-13",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},36.241).to("#cap-13",{opacity:0,duration:.14,ease:"sine.in"},38.916);
-    tl.fromTo("#cap-14",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},39.086).to("#cap-14",{opacity:0,duration:.14,ease:"sine.in"},43.003);
-    tl.fromTo("#cap-15",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},44.2).to("#cap-15",{opacity:0,duration:.14,ease:"sine.in"},45.702);
-    tl.fromTo("#cap-16",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},46.023).to("#cap-16",{opacity:0,duration:.14,ease:"sine.in"},48.721);
-    tl.fromTo("#cap-17",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},49.123).to("#cap-17",{opacity:0,duration:.14,ease:"sine.in"},51.914);
-    tl.fromTo("#cap-18",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},52.315).to("#cap-18",{opacity:0,duration:.14,ease:"sine.in"},55.756);
-    tl.fromTo("#cap-19",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},56.35).to("#cap-19",{opacity:0,duration:.14,ease:"sine.in"},59.907);
-    tl.fromTo("#cap-20",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},60.483).to("#cap-20",{opacity:0,duration:.14,ease:"sine.in"},62.299);
-    tl.fromTo("#cap-21",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},62.457).to("#cap-21",{opacity:0,duration:.14,ease:"sine.in"},65.166);
+    tl.set("#cap-05",{opacity:0,visibility:"hidden"},15.946);
+    tl.set("#cap-06",{visibility:"visible"},16.4);
+    tl.fromTo("#cap-06",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},16.4).to("#cap-06",{opacity:0,duration:.14,ease:"sine.in"},18.54);
+    tl.set("#cap-06",{opacity:0,visibility:"hidden"},18.68);
+    tl.set("#cap-07",{visibility:"visible"},19.08);
+    tl.fromTo("#cap-07",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},19.08).to("#cap-07",{opacity:0,duration:.14,ease:"sine.in"},21.22);
+    tl.set("#cap-07",{opacity:0,visibility:"hidden"},21.36);
+    tl.set("#cap-08",{visibility:"visible"},21.76);
+    tl.fromTo("#cap-08",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},21.76).to("#cap-08",{opacity:0,duration:.14,ease:"sine.in"},25.96);
+    tl.set("#cap-08",{opacity:0,visibility:"hidden"},26.1);
+    tl.set("#cap-09",{visibility:"visible"},26.12);
+    tl.fromTo("#cap-09",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},26.12).to("#cap-09",{opacity:0,duration:.14,ease:"sine.in"},28.056);
+    tl.set("#cap-09",{opacity:0,visibility:"hidden"},28.196);
+    tl.set("#cap-10",{visibility:"visible"},28.216);
+    tl.fromTo("#cap-10",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},28.216).to("#cap-10",{opacity:0,duration:.14,ease:"sine.in"},28.88);
+    tl.set("#cap-10",{opacity:0,visibility:"hidden"},29.02);
+    tl.set("#cap-11",{visibility:"visible"},31.4);
+    tl.fromTo("#cap-11",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},31.4).to("#cap-11",{opacity:0,duration:.14,ease:"sine.in"},34.07);
+    tl.set("#cap-11",{opacity:0,visibility:"hidden"},34.21);
+    tl.set("#cap-12",{visibility:"visible"},34.46);
+    tl.fromTo("#cap-12",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},34.46).to("#cap-12",{opacity:0,duration:.14,ease:"sine.in"},36.25);
+    tl.set("#cap-12",{opacity:0,visibility:"hidden"},36.39);
+    tl.set("#cap-13",{visibility:"visible"},36.7);
+    tl.fromTo("#cap-13",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},36.7).to("#cap-13",{opacity:0,duration:.14,ease:"sine.in"},38.65);
+    tl.set("#cap-13",{opacity:0,visibility:"hidden"},38.79);
+    tl.set("#cap-14",{visibility:"visible"},39.06);
+    tl.fromTo("#cap-14",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},39.06).to("#cap-14",{opacity:0,duration:.14,ease:"sine.in"},43.68);
+    tl.set("#cap-14",{opacity:0,visibility:"hidden"},43.82);
+    tl.set("#cap-15",{visibility:"visible"},44.2);
+    tl.fromTo("#cap-15",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},44.2).to("#cap-15",{opacity:0,duration:.14,ease:"sine.in"},46.39);
+    tl.set("#cap-15",{opacity:0,visibility:"hidden"},46.53);
+    tl.set("#cap-16",{visibility:"visible"},46.8);
+    tl.fromTo("#cap-16",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},46.8).to("#cap-16",{opacity:0,duration:.14,ease:"sine.in"},48.92);
+    tl.set("#cap-16",{opacity:0,visibility:"hidden"},49.06);
+    tl.set("#cap-17",{visibility:"visible"},49.54);
+    tl.fromTo("#cap-17",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},49.54).to("#cap-17",{opacity:0,duration:.14,ease:"sine.in"},50.88);
+    tl.set("#cap-17",{opacity:0,visibility:"hidden"},51.02);
+    tl.set("#cap-18",{visibility:"visible"},51.36);
+    tl.fromTo("#cap-18",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},51.36).to("#cap-18",{opacity:0,duration:.14,ease:"sine.in"},53.12);
+    tl.set("#cap-18",{opacity:0,visibility:"hidden"},53.26);
+    tl.set("#cap-19",{visibility:"visible"},56.35);
+    tl.fromTo("#cap-19",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},56.35).to("#cap-19",{opacity:0,duration:.14,ease:"sine.in"},59.21);
+    tl.set("#cap-19",{opacity:0,visibility:"hidden"},59.35);
+    tl.set("#cap-20",{visibility:"visible"},59.83);
+    tl.fromTo("#cap-20",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},59.83).to("#cap-20",{opacity:0,duration:.14,ease:"sine.in"},62.39);
+    tl.set("#cap-20",{opacity:0,visibility:"hidden"},62.53);
+    tl.set("#cap-21",{visibility:"visible"},62.55);
+    tl.fromTo("#cap-21",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},62.55).to("#cap-21",{opacity:0,duration:.14,ease:"sine.in"},65.43);
+    tl.set("#cap-21",{opacity:0,visibility:"hidden"},65.57);
+    tl.set("#cap-22",{visibility:"visible"},66.25);
     tl.fromTo("#cap-22",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},66.25).to("#cap-22",{opacity:0,duration:.14,ease:"sine.in"},69.912);
+    tl.set("#cap-22",{opacity:0,visibility:"hidden"},70.052);
+    tl.set("#cap-23",{visibility:"visible"},70.372);
     tl.fromTo("#cap-23",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},70.372).to("#cap-23",{opacity:0,duration:.14,ease:"sine.in"},72.512);
-    tl.fromTo("#cap-24",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},73.15).to("#cap-24",{opacity:0,duration:.14,ease:"sine.in"},75.767);
-    tl.fromTo("#cap-25",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},75.983).to("#cap-25",{opacity:0,duration:.14,ease:"sine.in"},77.764);
-    tl.fromTo("#cap-26",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},78.421).to("#cap-26",{opacity:0,duration:.14,ease:"sine.in"},82.199);
-    tl.fromTo("#cap-27",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},82.856).to("#cap-27",{opacity:0,duration:.14,ease:"sine.in"},87.365);
-    tl.fromTo("#cap-28",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},87.825).to("#cap-28",{opacity:0,duration:.14,ease:"sine.in"},90.697);
+    tl.set("#cap-23",{opacity:0,visibility:"hidden"},72.652);
+    tl.set("#cap-24",{visibility:"visible"},73.15);
+    tl.fromTo("#cap-24",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},73.15).to("#cap-24",{opacity:0,duration:.14,ease:"sine.in"},76.86);
+    tl.set("#cap-24",{opacity:0,visibility:"hidden"},77);
+    tl.set("#cap-25",{visibility:"visible"},77.27);
+    tl.fromTo("#cap-25",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},77.27).to("#cap-25",{opacity:0,duration:.14,ease:"sine.in"},80.19);
+    tl.set("#cap-25",{opacity:0,visibility:"hidden"},80.33);
+    tl.set("#cap-26",{visibility:"visible"},80.61);
+    tl.fromTo("#cap-26",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},80.61).to("#cap-26",{opacity:0,duration:.14,ease:"sine.in"},82.31);
+    tl.set("#cap-26",{opacity:0,visibility:"hidden"},82.45);
+    tl.set("#cap-27",{visibility:"visible"},82.89);
+    tl.fromTo("#cap-27",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},82.89).to("#cap-27",{opacity:0,duration:.14,ease:"sine.in"},86.87);
+    tl.set("#cap-27",{opacity:0,visibility:"hidden"},87.01);
+    tl.set("#cap-28",{visibility:"visible"},87.51);
+    tl.fromTo("#cap-28",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},87.51).to("#cap-28",{opacity:0,duration:.14,ease:"sine.in"},90.45);
+    tl.set("#cap-28",{opacity:0,visibility:"hidden"},90.59);
+    tl.set("#cap-29",{visibility:"visible"},91.05);
     tl.fromTo("#cap-29",{opacity:0,y:10},{opacity:1,y:0,duration:.16,ease:"sine.out"},91.05).to("#cap-29",{opacity:0,duration:.14,ease:"sine.in"},94.387);
+    tl.set("#cap-29",{opacity:0,visibility:"hidden"},94.527);
     // GENERATED CAPTION TIMELINE END
     window.__timelines["finaltab-winner"]=tl;
   </script>

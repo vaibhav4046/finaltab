@@ -2,10 +2,12 @@
 
 **Target duration:** 96.0 seconds
 **Voice:** George (`JBFqnCBsd6RMkjVDRZzb`) via ElevenLabs
-**Model:** `eleven_multilingual_v2` with timestamps
-**Voice settings (proposed):** stability 0.45 · similarity 0.75 · style 0.12 · speaker boost on
+**Models:** mixed, with exact per-scene provenance: retained scenes 1, 2, 7, and 9 use `eleven_multilingual_v2`; selected scenes 3, 4, 5, 6, and 8 use `eleven_flash_v2_5` from one call per selected exact text across three protected, expiring, fixed-scene Vercel release candidates. The ledger also records four superseded over-budget attempts, for nine provider calls total; the canonical product alias `finaltab.vercel.app` was never promoted to those candidates.
+**Settings boundary:** each release endpoint called `apps/web/lib/server/voice.ts`, which sends no `voice_settings` override and applies automatic text normalization. Retained clips keep their approved bytes; no global settings claim is made across the mixed package.
+**Alignment boundary:** retained clips use their original provider-native timing. Changed clips receive provider-free, offline transcript-constrained timing only after an independent transcription quality gate passes; they do not claim provider-native alignment.
+**Provider-call boundary:** no script in this video project generates narration or reads a provider key. The five selected MP3s are accepted only when their bytes match the sanitized, credential-free `data/narration-generation-ledger.json`; they are then aligned locally and synchronized. No further provider pass is permitted.
 **Voice direction:** Warm, precise, restrained. Speak like a careful operator showing evidence, not an announcer selling hype. Give code identifiers and proof states extra separation.
-**Timing note:** The 96-second story spine and canonical captures are locked. Scenes 3, 4, 5, 6, and 8 use the capture-synchronized selective ElevenLabs pass; only their fresh alignment may move their intra-frame caption holds.
+**Timing note:** The 96-second story spine and canonical captures are locked. Only the fresh offline alignment for scenes 3, 4, 5, 6, and 8 may move their intra-frame caption holds.
 
 ---
 
@@ -42,14 +44,14 @@
 **Time:** 00:44.200 – 00:55.860
 **Delivery:** This is retained evidence, not a recreated signing chronology. Keep the two signature meanings distinct and land the consumed-proof boundary plainly.
 
-    The retained plan verifies two debtor signatures: Circle authorized the exact USDC pull, and FINALTab bound consent to the complete payout plan. KeeperHub simulated before broadcast; consumed proof cannot move value again.
+    Circle permits the USDC pull; FINALTab binds every payout. KeeperHub simulates first. Consumed proof cannot move again.
 
 ## Line 6 — KeeperHub plus independent proof (Frame 6)
 
 **Time:** 00:56.350 – 01:05.700
 **Delivery:** Stress “submitted once.” Let the matching public identifiers sound conclusive, not celebratory.
 
-    With explicit operator authorization, KeeperHub submitted once. Its terminal receipt and an independent Base Sepolia check match the same transaction, settlement ID, and ledger hash.
+    KeeperHub submitted once with operator authorization. Its receipt and Base Sepolia independently match transaction, settlement ID, and ledger hash.
 
 ## Line 7 — MCP breadth (Frame 7)
 
@@ -64,7 +66,7 @@
 **Delivery:** Present-tense, but make the stop boundary the climax. Pause after “approval challenge” and “Then it stops.” Keep the retained status panel explicitly separate from this non-broadcast client run.
 **Screen text lock:** `NO WALLET SIGNATURE · NO SUBMIT · NO SECOND VALUE MOVE`
 
-    A real MCP client authenticates, lists all nine tools, allocates the receipt, prepares V2 typed data, and creates the short-lived approval challenge. Then it stops: no wallet signature, no submit, no second value move. A separate read-only panel verifies the retained settlement.
+    A real MCP client authenticates, lists nine tools, allocates the receipt, prepares V2 typed data, and creates an approval challenge. Then it stops: no wallet signature, submit, or value move. A read-only panel verifies the retained settlement.
 
 ## Line 9 — CTA (Frame 9)
 
@@ -75,7 +77,8 @@
 
 ## Spoken-word budget
 
-- Locked narration: 211 words.
-- Guide pace across 96 seconds: approximately 132 words per minute including designed pauses.
-- Scenes 1, 2, 7, and 9 retain their approved wording and existing audio hashes. Scenes 3, 4, 5, 6, and 8 use the final capture-synchronized selective generation package.
-- The regenerated ElevenLabs character alignment is the final caption and scene-sync authority for changed scenes.
+- Locked narration: 185 words.
+- Guide pace across 96 seconds: approximately 116 words per minute including designed pauses.
+- Scenes 1, 2, 7, and 9 retain their approved wording, MP3 hashes, Multilingual v2 provenance, and provider-native timing.
+- Scenes 3, 4, 5, 6, and 8 use the ledger-bound Flash v2.5 MP3s from the protected release endpoint. Their validated offline character alignment is the final caption and scene-sync authority.
+- `npm run voice:check` and `npm run voice:sync` are provider-free package-validation commands; neither can generate or request another clip.

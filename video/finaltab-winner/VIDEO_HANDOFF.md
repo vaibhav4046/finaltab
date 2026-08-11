@@ -2,30 +2,26 @@
 
 ## Current state
 
-The source is hardened for HyperFrames 0.7.106, but final rendering is deliberately blocked.
+The source is hardened for HyperFrames 0.7.106. Hybrid narration, captions, the source gate, and the strict final provenance gate are synchronized and passing; final rendering has not started.
 
 Completed:
 
 - Frame 8 is an authenticated non-broadcast MCP sequence with a hard stop and separate retained read-only proof.
 - Unsupported participant-invitation and fresh approval chronology are removed.
 - The retained transaction is labelled as separate from the filmed MCP client.
-- Capture contracts and a pending capture-hash lock exist.
+- All eight canonical captures are installed, their truth flags are set, and `data/capture-lock.json` contains the approved byte/hash lock.
 - SFX are local, licensed, hash-locked, and cued; BGM is disabled.
 - VTT exists beside SRT and cue JSON.
-- Selective narration and caption-sync scripts enforce changed scenes only.
+- The direct provider-key narration generator is retired. The remaining voice commands only validate and synchronize local assets; neither command can make a provider request.
+- The hybrid narration synchronizer validates retained Multilingual v2 provenance; the sanitized Flash v2.5 release-call ledger; the immutable deployment, shared provider-helper source, exact call/scene set, and MP3 byte/hash identity; frame budgets; alignment quality; and capture-lock identity.
+- All five changed-scene alignments pass their transcript-constrained quality gates, and SRT, VTT, cue JSON, baked caption HTML, voice durations, proof assets, and manifests are synchronized.
 - One root motion sidecar and narrow layout annotations cover the enhanced 0.7.106 audit.
 
-Still required:
+Remaining release steps:
 
-1. Production promotion/cutover must be complete.
-2. Capture C03, C04, C05, C06A, C06B, C07, C08A, and C08B under `data/capture-contracts.json`.
-3. Replace all capture slots and pending labels.
-4. Approve `data/capture-lock.json` with bytes and SHA-256 for all eight artifacts.
-5. Set the four capture truth flags only after evidence exists.
-6. Selectively regenerate ElevenLabs scenes 3, 4, 5, 6, and 8.
-7. Rebuild captions and verify all hashes.
-8. Run source, enhanced, and final gates.
-9. Render only after the final gate passes.
+1. Run the enhanced HyperFrames audit and inspect the pre-render contact sheet.
+2. Commit the exact checked source package.
+3. Render only if the enhanced audit remains clean and the final gate still passes.
 
 ## Safe capture boundary
 
@@ -33,16 +29,19 @@ Autonomous captures may use the canonical product, authenticated non-value-movin
 
 ## Narration reuse decision
 
-Current scene files are checksum-valid. Reuse scenes 1, 2, 7, and 9 unchanged. Scenes 3, 4, 5, 6, and 8 contain retired wording and are timing references only until selectively regenerated.
+Reuse scenes 1, 2, 7, and 9 byte-for-byte from the approved retained ElevenLabs Multilingual v2 package, including their provider-native timing. Scenes 3, 4, 5, 6, and 8 are the selected ElevenLabs Flash v2.5 responses generated with one call per selected exact text across three protected, expiring, fixed-scene Vercel release candidates. Four earlier attempts exceeded their scene budgets and are preserved as superseded evidence, for nine provider calls total. The canonical product alias `finaltab.vercel.app` was never promoted to those candidates; Vercel project aliases are not product release claims. Every endpoint called `apps/web/lib/server/voice.ts`, returned audio only, and provided no native timing; the local helper creates timing without claiming provider-native alignment. The sanitized `data/narration-generation-ledger.json` contains no credential and is the deployment/byte/hash authority for the five selected MP3s and the call-accounting authority for the four superseded attempts.
 
-After canonical captures are approved:
+The completed, provider-free synchronization sequence is:
 
 ```powershell
-npm run voice
+npm run voice:check
+npm run voice:sync
 npm run captions
 ```
 
-The first command regenerates exactly scenes 3, 4, 5, 6, and 8 and copies their alignment into the project. The second builds synchronized SRT, VTT, cue JSON, baked captions, voice durations, and hashes.
+`voice:check` is a read-only local validation. It binds the sanitized generation ledger to the three immutable deployment IDs, provider-helper contract, model, George voice ID, selected scene set, five MP3 byte/SHA identities, and nine-call accounting. `voice:sync` preserves the validated retained Multilingual v2 manifest under the immutable `retained-multilingual-v2-manifest.json` name, mirrors and SHA-verifies all five changed MP3/alignment pairs into proof output, restores the four retained alignment files, and atomically writes the mixed-provenance manifest. Neither command reads a provider key, performs a network request, or generates audio. `captions` then atomically builds synchronized SRT, VTT, cue JSON, baked captions, voice durations, and hashes; the local approved manifest is its final commit marker, so an earlier failure remains safely rerunnable.
+
+`npm run voice` no longer exists. `generate-voiceover.mjs` is a fail-closed retirement guard and cannot contact a provider.
 
 ## Verification
 
@@ -52,7 +51,7 @@ npm run check:enhanced
 node verify-video-gates.mjs
 ```
 
-Expected now: the source gate passes and reports the remaining capture, truth, lock, narration, and caption blockers. Expected before render: `FINAL RENDER GATE PASSED`.
+Current verified result: the source gate reports synchronized prerequisites and the final gate prints `FINAL RENDER GATE PASSED`.
 
 ## Final render
 

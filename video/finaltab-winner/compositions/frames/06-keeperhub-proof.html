@@ -7,18 +7,18 @@
     @font-face{font-family:Fraunces;src:url("assets/fonts/Fraunces-Variable.ttf") format("truetype");font-weight:100 900}
     @font-face{font-family:GeistMono;src:url("assets/fonts/GeistMono-Regular.woff2") format("woff2");font-weight:400}
     @font-face{font-family:GeistMono;src:url("assets/fonts/GeistMono-Bold.woff2") format("woff2");font-weight:700}
-    #root{position:absolute;inset:0;width:3840px;height:2160px;overflow:hidden;color:#F4EEE2;background:transparent}
-    .clip{position:absolute;inset:0;overflow:hidden}.ground{background:#0B0F12}
+    #root{position:absolute;inset:0;width:3840px;height:2160px;overflow:hidden;color:#F4F8F1;background:transparent}
+    .clip{position:absolute;inset:0;overflow:hidden}.ground{background:#050706}
     .evidence-media{width:3840px;height:2160px;object-fit:cover}
     .scene{width:50%;height:50%;transform:scale(2);transform-origin:0 0;padding:44px 60px 150px;box-sizing:border-box;pointer-events:none}
-    .witness-rail{position:absolute;left:50%;top:50px;transform:translateX(-50%);display:flex;align-items:center;gap:11px;padding:10px 14px;border:1px solid rgba(145,160,168,.32);border-radius:999px;background:rgba(11,15,18,.92);font:700 11px/1 GeistMono,monospace;color:#91A0A8;letter-spacing:.08em}.witness-rail b{color:#B7F5D8}.witness-rail i{width:42px;height:1px;background:#91A0A8}
-    .atomic{position:absolute;left:58px;top:790px;padding:10px 13px;border:1px solid rgba(145,160,168,.32);border-radius:10px;background:rgba(11,15,18,.94);font:700 12px/1.35 GeistMono,monospace;color:#91A0A8}.atomic b{color:#F4EEE2}
-    .agreement{position:absolute;left:480px;right:480px;top:800px;height:52px;border:1px solid rgba(183,245,216,.45);border-radius:999px;background:rgba(11,15,18,.94);display:flex;align-items:center;justify-content:center;gap:14px;font:700 12px/1 GeistMono,monospace;color:#B7F5D8}.agreement i{width:34px;height:1px;background:#B7F5D8}
-    .stamp{position:absolute;right:60px;top:786px;border:2px solid #B7F5D8;border-radius:10px;padding:12px 16px;background:rgba(11,15,18,.94);font:700 17px/1 GeistMono,monospace;color:#B7F5D8;letter-spacing:.06em;transform:rotate(-2deg);box-shadow:0 0 26px rgba(183,245,216,.13)}
+    .witness-rail{position:absolute;left:50%;top:50px;transform:translateX(-50%);display:flex;align-items:center;gap:11px;padding:10px 14px;border:1px solid rgba(183,192,184,.32);border-radius:999px;background:rgba(5,7,6,.92);font:700 11px/1 GeistMono,monospace;color:#B7C0B8;letter-spacing:.08em}.witness-rail b{color:#B8FF5C}.witness-rail i{width:42px;height:1px;background:#B7C0B8}
+    .atomic{position:absolute;left:58px;top:790px;padding:10px 13px;border:1px solid rgba(183,192,184,.32);border-radius:10px;background:rgba(5,7,6,.94);font:700 12px/1.35 GeistMono,monospace;color:#B7C0B8}.atomic b{color:#F4F8F1}
+    .agreement{position:absolute;left:480px;right:480px;top:800px;height:52px;border:1px solid rgba(184,255,92,.45);border-radius:999px;background:rgba(5,7,6,.94);display:flex;align-items:center;justify-content:center;gap:14px;font:700 12px/1 GeistMono,monospace;color:#B8FF5C}.agreement i{width:34px;height:1px;background:#B8FF5C}
+    .stamp{position:absolute;right:60px;top:786px;border:2px solid #B8FF5C;border-radius:10px;padding:12px 16px;background:rgba(5,7,6,.94);font:700 17px/1 GeistMono,monospace;color:#B8FF5C;letter-spacing:.06em;transform:rotate(-2deg);box-shadow:0 0 26px rgba(184,255,92,.13)}
   </style>
   <div id="root" data-composition-id="finaltab-keeperhub-proof" data-start="0" data-width="3840" data-height="2160" data-duration="10">
     <section id="f06-ground" class="clip ground" data-start="0" data-duration="10" data-track-index="0"></section>
-    <img id="f06-keeper" class="clip evidence-media" src="assets/capture/C06-retained-keeperhub-receipt.png" alt="Retained KeeperHub terminal execution receipt" data-start="0" data-duration="5.3" data-track-index="1"/>
+    <img id="f06-keeper" class="clip evidence-media" src="assets/capture/C06-retained-keeperhub-receipt.png" alt="Retained KeeperHub terminal execution receipt" data-start="0" data-duration="4.85" data-track-index="1"/>
     <img id="f06-rpc" class="clip evidence-media" src="assets/capture/C06-base-sepolia-proof.png" alt="Independent Base Sepolia transaction receipt and SettlementExecuted event proof" data-start="4.85" data-duration="5.15" data-track-index="2"/>
     <section id="f06-scene" class="clip scene" data-start="0" data-duration="10" data-track-index="3">
       <div id="f06-head" class="witness-rail"><b>WITNESS A · KEEPERHUB</b><i></i><span>THEN</span><i></i><b>WITNESS B · BASE SEPOLIA RPC</b></div>
@@ -32,7 +32,7 @@
     const tl=gsap.timeline({paused:true});
     tl.fromTo("#f06-keeper",{opacity:0},{opacity:1,duration:.64,ease:"power3.out"},.12);
     tl.fromTo("#f06-head",{opacity:0,y:14},{opacity:1,y:0,duration:.48,ease:"power3.out"},.24);
-    tl.fromTo("#f06-rpc",{opacity:0},{opacity:1,duration:.56,ease:"power3.out"},4.85);
+    tl.set("#f06-rpc",{opacity:1},4.85);
     tl.fromTo("#f06-atomic",{opacity:0,y:15},{opacity:1,y:0,duration:.45,ease:"power3.out"},5.25);
     tl.fromTo("#f06-agreement",{opacity:0,scaleX:.88},{opacity:1,scaleX:1,duration:.62,ease:"power3.out"},6.15);
     tl.fromTo("#f06-stamp",{opacity:0,scale:1.5,rotation:-8},{opacity:1,scale:1,rotation:-2,duration:.36,ease:"power4.out"},8.9);

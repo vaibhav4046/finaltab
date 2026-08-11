@@ -2,21 +2,23 @@
 
 ## Style prompt
 
-**Ledger Noir**: the warmth of a late-night restaurant receipt meets the exactness of an institutional settlement ledger. Frames feel printed, tactile, and cinematic—not like a generic neon SaaS dashboard. Large editorial statements establish the human problem; disciplined monospaced evidence proves the machine result. Negative space is deliberate, while animated rules, receipt edges, signatures, and transaction paths keep every scene alive. The emotional arc moves from messy social debt to calm, independently verified closure.
+**Ledger Noir**: the live product's carbon-black surface, electric-blue transit state, acid brand signal, and verified-green proof state meet the exactness of an institutional settlement ledger. Frames feel tactile and cinematic—not like a generic neon SaaS dashboard. Large editorial statements establish the human problem; disciplined monospaced evidence proves the machine result. Negative space is deliberate, while animated rules, signatures, and transaction paths keep every scene alive. The emotional arc moves from messy social debt to calm, independently verified closure.
 
 ## Colors
 
-- `#0B0F12` — night canvas; persistent background
-- `#F4EEE2` — receipt paper and primary statement text
-- `#FF936A` — human action, scan, and approval accent
-- `#B7F5D8` — verified proof only; never decorative
-- `#91A0A8` — secondary metadata and grid rules
+- `#050706` — night canvas; persistent background
+- `#F4F8F1` — receipt paper and primary statement text
+- `#45AFFF` — human action, scan, and approval accent
+- `#C8FF3D` — acid brand signal and transition handoff
+- `#B8FF5C` — verified proof only; never decorative
+- `#B7C0B8` — secondary metadata and grid rules
 
 No additional semantic colors are introduced. Failures use the product’s existing `#FF7B74` only when a real failed state is shown.
 
 ## Typography
 
-- **Fraunces SemiBold** — editorial statements and logo moments, 72–150 px, tight tracking
+- **Fraunces SemiBold** — editorial statements, 72–150 px, tight tracking
+- **Geist Sans SemiBold** — the text-only `FINALTab` wordmark, 128–148 px, tight tracking
 - **Geist Mono Regular/Bold** — evidence, addresses, amounts, tool calls, captions, and labels, 20–58 px with tabular numerals
 
 The serif voice is human and material; the mono voice is cryptographic and auditable. Never pair two display faces in one scene.

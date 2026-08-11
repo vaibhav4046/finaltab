@@ -23,76 +23,74 @@ then sends the exact call through
 KeeperHub.
 
 6
-00:00:16,400 --> 00:00:19,389
+00:00:16,400 --> 00:00:18,680
 Sign in. Scan a crowded receipt.
 
 7
-00:00:19,546 --> 00:00:22,129
+00:00:19,080 --> 00:00:21,360
 Correct the extraction. Add participants.
 
 8
-00:00:22,449 --> 00:00:24,646
-Describe who had what. FINALTab
-reconciles every line—
+00:00:21,760 --> 00:00:26,100
+Describe who had what. FINALTab reconciles
+every line—
 
 9
-00:00:24,666 --> 00:00:26,759
+00:00:26,120 --> 00:00:28,196
 tax, tip, and service included—
 
 10
-00:00:26,779 --> 00:00:28,793
+00:00:28,216 --> 00:00:29,020
 to the cent.
 
 11
-00:00:31,400 --> 00:00:33,449
+00:00:31,400 --> 00:00:34,210
 A four-stage review attests the current
+inputs;
 
 12
-00:00:33,467 --> 00:00:35,875
-inputs; any edit invalidates it.
+00:00:34,460 --> 00:00:36,390
+any edit invalidates it.
 
 13
-00:00:36,241 --> 00:00:39,056
-Freeze only after a fresh review, and the
+00:00:36,700 --> 00:00:38,790
+Freeze only after a fresh review,
 
 14
-00:00:39,086 --> 00:00:43,143
-ledger, debits, payouts, chain, and
-contract become one immutable plan.
+00:00:39,060 --> 00:00:43,820
+and the ledger, debits, payouts, chain,
+and contract become one immutable plan.
 
 15
-00:00:44,200 --> 00:00:45,842
-The retained plan verifies two debtor
+00:00:44,200 --> 00:00:46,530
+Circle permits the USDC pull;
 
 16
-00:00:46,023 --> 00:00:48,861
-signatures: Circle authorized the exact
-USDC pull,
+00:00:46,800 --> 00:00:49,060
+FINALTab binds every payout.
 
 17
-00:00:49,123 --> 00:00:52,054
-and FINALTab bound consent to the complete
-payout plan.
+00:00:49,540 --> 00:00:51,020
+KeeperHub simulates first.
 
 18
-00:00:52,315 --> 00:00:55,896
-KeeperHub simulated before broadcast;
-consumed proof cannot move value again.
+00:00:51,360 --> 00:00:53,260
+Consumed proof cannot move again.
 
 19
-00:00:56,350 --> 00:01:00,047
-With explicit operator authorization,
-KeeperHub submitted once.
+00:00:56,350 --> 00:00:59,350
+KeeperHub submitted once with operator
+authorization.
 
 20
-00:01:00,483 --> 00:01:02,439
-Its terminal receipt and an independent
-Base Sepolia check
+00:00:59,830 --> 00:01:02,530
+Its receipt and Base Sepolia independently
+match
 
 21
-00:01:02,457 --> 00:01:05,306
-match the same transaction, settlement
-ID, and ledger hash.
+00:01:02,550 --> 00:01:05,570
+transaction, settlement ID, and ledger
+hash.
 
 22
 00:01:06,250 --> 00:01:10,052
@@ -104,29 +102,28 @@ nine production MCP tools.
 FINALTab never holds wallet keys.
 
 24
-00:01:13,150 --> 00:01:15,907
-A real MCP client authenticates, lists all
+00:01:13,150 --> 00:01:17,000
+A real MCP client authenticates, lists
 nine tools,
 
 25
-00:01:15,983 --> 00:01:17,904
+00:01:17,270 --> 00:01:20,330
 allocates the receipt, prepares V2 typed
 data,
 
 26
-00:01:18,421 --> 00:01:22,339
-and creates the short-lived approval
-challenge. Then it stops:
+00:01:20,610 --> 00:01:22,450
+and creates an approval challenge.
 
 27
-00:01:22,856 --> 00:01:27,505
-no wallet signature, no submit, no second
-value move.
+00:01:22,890 --> 00:01:27,010
+Then it stops: no wallet signature,
+submit, or value move.
 
 28
-00:01:27,825 --> 00:01:30,837
-A separate read-only panel verifies the
-retained settlement.
+00:01:27,510 --> 00:01:30,590
+A read-only panel verifies the retained
+settlement.
 
 29
 00:01:31,050 --> 00:01:34,527

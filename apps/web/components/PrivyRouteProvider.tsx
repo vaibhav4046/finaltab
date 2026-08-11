@@ -1,10 +1,10 @@
 import type { ReactNode } from "react";
-import { privyPublicConfig } from "@/lib/privy/config";
+import { privyServerConfig } from "@/lib/privy/server";
 import { FinalTabPrivyProvider } from "./PrivyAuthProvider";
 
-/** Mount the wallet SDK only inside authenticated/account route boundaries. */
+/** Mount the wallet SDK only when the complete optional bridge is configured. */
 export function PrivyRouteProvider({ children }: { children: ReactNode }) {
-  const privy = privyPublicConfig();
+  const privy = privyServerConfig();
   return (
     <FinalTabPrivyProvider
       appId={privy?.appId}

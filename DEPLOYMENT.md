@@ -32,6 +32,16 @@ generated with at least 32 random bytes and must never use a `NEXT_PUBLIC_`
 prefix. The current production source has exactly nine MCP tools and no
 fixed-wallet money path.
 
+GitHub is the primary public sign-in through Supabase SSR PKCE. Configure the
+GitHub OAuth credentials in Supabase, keep the production redirect on the exact
+`/auth/callback` path (including the reserved `sb_flow_id` and normalized `next`
+query), then set the server-only `FINALTAB_GITHUB_OAUTH_ENABLED=true`. This is a
+configuration gate, not proof of provider operation; retain a real same-device
+OAuth + authenticated RLS probe. Keep `FINALTAB_TEAM_EMAIL_AUTH_ENABLED=false`
+unless the operator has separately verified email delivery. That second flag is
+only a UI gate, not an address allowlist. See
+[`docs/integrations/github-auth.md`](docs/integrations/github-auth.md).
+
 The hosted Supabase project has the four baseline migrations plus these five
 additive migrations applied and verified in order:
 
@@ -71,9 +81,13 @@ After deploying the web service, verify:
 6. no token, provider secret, or attestation secret appears in logs or browser
    bundles.
 
-Privy remains fail-closed until its production app, Supabase JWKS custom-auth
-connection, exact allowed domain, identity tokens, app ID, and verification key
-are configured and probed. The branded `/auth/complete` return page is ready;
+Privy is an optional enhancement and is deliberately disabled under the
+stop-before-charge constraint because the required custom-auth feature is on a
+paid tier. Missing or partial configuration stays fail-closed, does not block
+core health readiness, and does not mount the Privy runtime or setup-warning UI.
+Future enablement still requires its production app, Supabase JWKS custom-auth
+connection, exact allowed domain, identity tokens, app ID, verification key,
+and a live subject-pair probe. The branded `/auth/complete` return page is ready;
 branded inbound email additionally needs custom SMTP or a Send Email Hook backed
 by a verified sender domain.
 

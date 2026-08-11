@@ -193,11 +193,12 @@ memory. That memory cannot rewrite code, policy, prompts, or authorization and
 must not be marketed as self-evolving.
 
 Supabase Auth remains the canonical RLS identity. The Privy bridge is
-code-complete and fail-closed, but its dashboard app, Supabase JWKS connection,
-allowed domains, identity-token setting, app ID, and verification key are not
-configured. The branded return page is implemented; branded inbound email still
-requires a verified sender domain and custom SMTP or a Send Email Hook. Until
-the candidate application, Privy setup, and multi-identity browser probe pass, product copy
+code-complete, optional, fail-closed, and deliberately disabled because its
+required Custom Authentication capability needs a paid tier. It does not block
+core health readiness, and unconfigured UI does not advertise a broken setup.
+The branded return page is implemented; branded inbound email still requires a
+verified sender domain and custom SMTP or a Send Email Hook. Until the candidate
+application and multi-identity browser probe pass, product copy
 must distinguish verified backend infrastructure from live behavior.
 
 ## Priority order (opinionated)

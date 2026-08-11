@@ -3,8 +3,7 @@
 **Do not submit this draft yet.** V2 deployment, one value-moving V2 settlement,
 and the 29-table production Supabase additive schema are proven. Durable minute
 quota/spend-reservation controls and sensitive provider variables are also
-configured. The post-promotion financial cutover, Privy dashboard
-configuration, final deployment/provider probe,
+configured. The post-promotion financial cutover, final deployment/provider probe,
 unified nine-tool MCP capture, final video, public video URL, and DoraHacks
 confirmation are still pending. Current truth lives in
 [release/status.md](release/status.md).
@@ -150,9 +149,11 @@ promotion; legacy-write and old-quota-RPC denial must then be probed.
 
 Supabase Auth is the canonical account/RLS identity. The distinct sign-in and
 create-account routes, strict callback, and branded `/auth/complete` page are
-implemented. Privy is a linked-wallet identity bridge only and currently fails
-closed because its dashboard app, Supabase JWKS custom-auth connection, allowed
-domains, identity tokens, app ID, and verification key are not configured. A
+implemented. Privy is an optional linked-wallet identity bridge only. The
+authenticated dashboard showed the required Custom Authentication feature on a
+paid tier, so no billing details were entered and the bridge remains
+deliberately disabled. It is exposed as optional/unconfigured in health, hidden
+from unconfigured product UI, and does not block Supabase-backed readiness. A
 branded inbound email is also not live until a verified sender domain and custom
 SMTP or Send Email Hook are configured.
 
@@ -190,7 +191,7 @@ current production source.
   address/version, cent-perfect allocation, arbitrary-participant plan
   preparation, and proof binding. The current exactly-nine-tool source still
   needs its own deployment probe.
-- Final local candidate: 370 checks passed and one provider-gated vision check
+- Final local candidate: 387 checks passed and one provider-gated vision check
   skipped; the production build generated 33/33 pages. The existing nine
   ElevenLabs clips and caption timings are provisional references only.
   Production voice and the final 4K/60 product-film render remain pending.
@@ -205,8 +206,8 @@ current production source.
   cross-device behavior probe remain pending. The post-promotion cutover is
   unapplied; HMAC provenance, tenant isolation,
   shared-journal crash recovery, and legacy-write denial still require probes.
-- Privy bridge: code-complete and fail-closed; dashboard/JWKS/domain/identity
-  token/verifier configuration and live subject-pairing tests remain pending.
+- Privy bridge: optional, code-complete, fail-closed, and deliberately disabled
+  under the stop-before-charge constraint; it is not a submission blocker.
 - Unified production MCP human-approval trace: pending; the retained settlement
   was a separately authorized simulate-then-single-broadcast proof run.
 - Final V2 product video and public URL: pending.

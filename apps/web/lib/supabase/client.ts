@@ -11,6 +11,11 @@ export function createBrowserSupabaseClient() {
   const config = supabasePublicConfig();
   browserClient = config
     ? createBrowserClient(config.url, config.publishableKey, {
+        auth: {
+          // Correlate every callback to its per-flow verifier so overlapping
+          // sign-ins cannot consume each other's single-use PKCE code.
+          experimental: { appendPkceFlowIdToRedirects: true },
+        },
         cookieOptions: { sameSite: "lax", secure: location.protocol === "https:" },
       })
     : null;

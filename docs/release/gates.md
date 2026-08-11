@@ -14,10 +14,10 @@
 > project `yoavihmldqbkuxinrsih` is provisioned and schema-verified with its four
 > baseline plus additive `52236`/`60000`/`64822`/`73000`/`74000` migrations:
 > 29/29 public tables have RLS, sensitive mutation RPCs are service-role-only,
-> advisors report no errors, and the unindexed-FK warning is cleared. The current local candidate reports 370 passing + 1
+> advisors report no errors, and the unindexed-FK warning is cleared. The current local candidate reports 387 passing + 1
 > provider-gated vision skip and a 33/33-page build; it exposes exactly nine
 > production MCP tools and requires an attested four-stage review before
-> first-party Freeze. Post-promotion cutover `74500`, Privy configuration, final
+> first-party Freeze. Post-promotion cutover `74500`, final
 > deploy/provider probe, unified MCP capture, and 4K/60 video remain pending. Use
 > [status.md](status.md) and [SUBMISSION_CHECKLIST.md](SUBMISSION_CHECKLIST.md).
 

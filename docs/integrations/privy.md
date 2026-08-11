@@ -2,23 +2,38 @@
 
 ## Release status
 
-The integration is code-complete but **not live-configured**. The current Privy dashboard check reached the developer login screen without an authenticated developer session, so no app, domain allowlist, custom-auth plugin, identity-token setting, app ID, or verification key could be confirmed. `/api/privy/session` therefore fails closed until the dashboard and environment gates below are completed.
+The integration is code-complete but **optional and deliberately disabled**.
+After authenticated dashboard access, Privy's required Custom Authentication
+feature was presented on the Scale plan at $499/month, while production
+activation also requested payment information. The user authorized no charge,
+so no plan was activated and no billing information was entered.
+
+This is not a core release blocker. Supabase Auth and Postgres RLS remain the
+production identity system, while explicit external-wallet signatures remain
+the V2 settlement authority. `/api/health` therefore evaluates readiness from
+the required Supabase-backed capabilities and reports the bridge separately as
+`optional.privyIdentityBridge.configured: false` with
+`requiredForReadiness: false`. Unconfigured account routes do not mount the
+Privy SDK or show a setup-warning panel. `/api/privy/session` remains
+fail-closed.
 
 Supabase Auth remains FINALTab's canonical account and Postgres RLS identity. Privy is a custom-JWT subscriber that provisions an embedded wallet identity for the same Supabase `auth.users.id`; a Privy token is never accepted by settlement, tab, vision, MCP, or Supabase Data API authorization. The current ExecutionRail does not use the provisioned Privy wallet for V2 signing: every debtor and broadcaster must still use the explicit external-wallet signature flow.
 
 ## Trust boundary
 
-1. `/auth/sign-in` and `/auth/create-account` call Supabase passwordless auth.
-2. `/auth/callback` accepts one PKCE `code` **or** one email `token_hash` plus valid email OTP type, removes the secret from the next URL, and returns to `/auth/complete`.
+1. `/auth/sign-in` and `/auth/create-account` use GitHub as the primary public Supabase OAuth path. A separately gated email/OTP fallback is hidden by default.
+2. `/auth/callback` accepts one PKCE `code` (correlated to its validated `sb_flow_id`) **or** one email `token_hash` plus valid email OTP type, removes the secret from the next URL, and returns to `/auth/complete`.
 3. `FinalTabPrivyProvider` passes the live Supabase access JWT to Privy's JWT custom-auth subscriber. It does not call a second Privy login method.
 4. `/api/privy/session` requires a current Supabase cookie user plus a Privy access token and Privy identity token. It verifies the Privy issuer, app audience, token-pair subject, and the identity token's `custom_auth.custom_user_id` against the current Supabase UUID.
 5. The verified bridge response exposes identity and provisioned-wallet addresses only. It does not mint an API principal or settlement scope, and those addresses are not consumed by ExecutionRail. Value-moving settlement submission still requires the existing explicit app-metadata/scoped-token and exact external-wallet approval controls.
 
 Missing or conflicting configuration, tokens, origins, users, audiences, issuers, subjects, or custom-auth IDs are rejected. There is no local-development or browser-profile authentication fallback.
 
-## External configuration gate
+## Future optional enablement
 
-Complete these steps separately for development and production.
+Complete these steps only after explicit authorization for the required paid
+plan, separately for development and production. Stop before entering billing
+details or accepting a charge unless that authorization changes.
 
 ### Supabase
 
@@ -43,15 +58,16 @@ Complete these steps separately for development and production.
 
 ### Privy
 
-1. Create separate development and production Privy apps. Do not reuse the production app ID on localhost.
-2. Request/enable Custom Auth Support in **Integrations > Plugins**.
-3. Enable JWT-based authentication for the web client and permit client-side custom-auth requests because the React SDK subscribes in the browser.
-4. Register the Supabase JWKS URL above and set the JWT user ID claim to `sub`. Supabase's `sub` is the stable user UUID used by RLS.
-5. Enable identity tokens. The server bridge needs the signed `custom_auth.custom_user_id` linked account to prove identity consistency.
-6. In **Configuration > App settings > Domains**, add only exact controlled HTTPS origins. Add `http://localhost:3017` only to the development app. Never allow generic `https://*.vercel.app` or another shared hosting wildcard.
-7. For production, verify a stable base domain and enable Privy HttpOnly cookies. Keep `frame-ancestors 'none'`; FINALTab integrates with KeeperHub over API/webhooks, not iframes.
-8. Disable unused login methods, especially SMS for a high-value wallet workflow. Configure a short appropriate session duration and require passkeys/authenticator MFA where supported.
-9. Copy the matching app ID, optional web client ID, and ES256 verification public key into the deployment environment. This implementation performs local public-key verification and intentionally does not require or expose a Privy app secret.
+1. Confirm paid-plan authorization before changing the current disabled state.
+2. Create separate development and production Privy apps. Do not reuse the production app ID on localhost.
+3. Request/enable Custom Auth Support in **Integrations > Plugins**.
+4. Enable JWT-based authentication for the web client and permit client-side custom-auth requests because the React SDK subscribes in the browser.
+5. Register the Supabase JWKS URL above and set the JWT user ID claim to `sub`. Supabase's `sub` is the stable user UUID used by RLS.
+6. Enable identity tokens. The server bridge needs the signed `custom_auth.custom_user_id` linked account to prove identity consistency.
+7. In **Configuration > App settings > Domains**, add only exact controlled HTTPS origins. Add `http://localhost:3017` only to the development app. Never allow generic `https://*.vercel.app` or another shared hosting wildcard.
+8. For production, verify a stable base domain and enable Privy HttpOnly cookies. Keep `frame-ancestors 'none'`; FINALTab integrates with KeeperHub over API/webhooks, not iframes.
+9. Disable unused login methods, especially SMS for a high-value wallet workflow. Configure a short appropriate session duration and require passkeys/authenticator MFA where supported.
+10. Copy the matching app ID, optional web client ID, and ES256 verification public key into the deployment environment. This implementation performs local public-key verification and intentionally does not require or expose a Privy app secret.
 
 ## Environment variables
 
@@ -75,16 +91,17 @@ PRIVY_VERIFICATION_KEY="-----BEGIN PUBLIC KEY-----\n...\n-----END PUBLIC KEY----
 | `/auth/complete`, `/app/**` | Supabase session | Missing config is a setup redirect; missing session is a sign-in redirect. |
 | `/api/settle/**`, `/api/vision/**`, `/api/mcp`, agent and voice APIs | Handler-level session/scoped-token authorization | Middleware passes bearer requests through; handlers enforce exact scopes/origin. Privy bearer tokens are not principals here. |
 | `/api/privy/session` | Supabase session + verified Privy access/identity pair | Exact Supabase/Privy subject bridge; fail-closed 401/403/503 responses. |
-| `/api/health` | Public | `privyIdentityBridge` is only a configuration signal, not proof of a live dashboard/browser flow. |
+| `/api/health` | Public | Required checks determine `status`; `checks.privyIdentityBridge` and `optional.privyIdentityBridge` truthfully report the non-blocking bridge state. |
 
 ## Verification checklist
 
 - Run `pnpm --filter @finaltab/web typecheck`, `pnpm --filter @finaltab/web test`, root `pnpm lint`, and `pnpm --filter @finaltab/web build`.
-- In staging, test sign-in, create-account, numeric OTP, magic-link return, expired link, sign-out, wallet creation, browser reload, and mismatched Supabase/Privy accounts.
+- Test the required Supabase flow independently: sign-in, create-account, numeric OTP, magic-link return, expired link, sign-out, and browser reload.
 - Confirm `/api/privy/session` returns `503 PRIVY_NOT_CONFIGURED` before configuration and never logs either JWT.
 - Confirm a Privy token sent to a settlement endpoint receives `401 AUTH_REQUIRED`.
-- Inspect response CSP/security headers and run receipt camera, microphone, WalletConnect, Privy, and Base Sepolia browser flows. The CSP intentionally allows camera/microphone only from the same origin and denies framing.
-- After any Privy SDK update, rerun the CSP flow because required sources may change.
+- Confirm unconfigured account routes load no Privy runtime and show no setup-warning UI.
+- If future paid enablement is authorized, test wallet creation, mismatched Supabase/Privy accounts, exact allowed domains, server subject pairing, and the complete CSP flow before reporting the optional capability as live.
+- After any Privy SDK update, rerun the optional CSP flow because required sources may change.
 
 ## Primary documentation
 

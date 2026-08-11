@@ -25,7 +25,7 @@ database advisors report no errors, and the unindexed-FK warning is cleared.
 Post-promotion cutover `74500` is not applied. Main commit `b084497` passed both
 GitHub CI jobs and a 13/13 protected release probe against the then-current
 immutable Vercel deployment and public alias. The newer application release,
-unified nine-tool MCP capture, Privy dashboard configuration, final V2 video,
+unified nine-tool MCP capture, final V2 video,
 public video URL, and DoraHacks confirmation are not yet retained. The hybrid
 AssemblyAI/ElevenLabs voice path is locally
 verified but not deployed. Its Supabase-backed durable quota guard is applied
@@ -45,10 +45,10 @@ Those remaining release steps are blocking.
 | V2 source | `LIVE_PROVEN` | Sourcify exact creation/runtime match, match ID `43497805`; [repository entry](https://repo.sourcify.dev/84532/0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB) |
 | Authenticated MCP V2 surface | `SOURCE/TEST PROVEN; LIVE RECHECK PENDING` | Current source exposes exactly nine scoped production tools with arbitrary participants, external signatures, exact V2 plan binding, and fail-closed proof. The superseded `b084497` deployment passed auth/calculation/plan/proof probes, but does not prove the retired-tool cleanup. |
 | Clean release baseline | `PROVEN AT b084497` | 284 passing + 1 env-gated skip; both GitHub CI jobs green; 24 generated pages; Playwright 8/8 |
-| Final local candidate | `LOCAL_PROVEN; CI/DEPLOY PENDING` | 370 passing + 1 provider-gated vision skip; production build generated 33/33 pages. No full production/browser/provider claim is inferred. |
+| Final local candidate | `LOCAL_PROVEN; CI/DEPLOY PENDING` | 387 passing + 1 provider-gated vision skip; production build generated 33/33 pages. No full production/browser/provider claim is inferred. |
 | Hybrid voice candidate | `SCHEMA/CONFIG PROVEN; DEPLOY/PROBE PENDING` | AssemblyAI temp-token STT + buffered ElevenLabs readback; sensitive provider variables, per-minute quotas, and spend reservations are configured/applied; live provider lifecycle probe pending |
 | Settlement durability | `SOURCE/TEST/SCHEMA PROVEN; APP PROBE PENDING` | Fixed four-stage review; first-party Freeze requires a current HMAC-attested run; UI/REST/MCP share a durable submission journal; accepted recovery skips simulation/execute; prepared recovery reuses its stored successful simulation and deterministic idempotency key under a bounded approval expiry. Hosted schema presence does not prove these flows until the candidate probe passes. |
-| Supabase + Privy identity | `SUPABASE ADDITIVE SCHEMA PROVEN; PRIVY FAIL-CLOSED` | Supabase is canonical RLS identity; sign-in/create-account/callback and branded return page implemented. Privy app/JWKS/domain/identity-token/verifier setup and live subject-pairing remain pending; branded inbound email needs verified-domain SMTP or Send Email Hook. |
+| Supabase identity + optional Privy bridge | `SUPABASE ADDITIVE SCHEMA PROVEN; PRIVY OPTIONAL/DISABLED` | Supabase is canonical RLS identity; sign-in/create-account/callback and branded return page are implemented. Privy Custom Authentication requires a paid tier, so the bridge remains fail-closed and hidden under the stop-before-charge constraint; it is not required for core readiness. Branded inbound email still needs verified-domain SMTP or a Send Email Hook. |
 | V2 USDC settlement rail | `LIVE_PROVEN` | KeeperHub `3hmlqi36zweiwg6fc5o2u`; [tx `0x7a6fb760…a789`](https://sepolia.basescan.org/tx/0x7a6fb760f691954a41c71d5d508629c58aa09207bba0de4eaf164f097c59a789); block `45327128`; 1 atomic USDC; exact V2 event binding and balance conservation |
 | V2 video | `BLOCKING — PENDING RENDER` | No truthful duration, checksum, or public URL yet |
 | Supabase infrastructure | `LIVE-PROVEN ADDITIVE SCHEMA; APP PROBE/CUTOVER PENDING` | `finaltab-production`, ref `yoavihmldqbkuxinrsih`, London `eu-west-2`, free plan; four baseline plus additive `52236`/`60000`/`64822`/`73000`/`74000` applied; 29/29 public tables with RLS; sensitive mutation RPCs deny `PUBLIC`/`anon`/`authenticated` and allow `service_role`; no advisor errors; unindexed-FK warning cleared; post-promotion `74500` and final deployed behavior probe pending |
@@ -119,7 +119,7 @@ and Playwright passed 8/8 journeys. A protected probe then passed 13/13 on both
 the immutable deployment and public alias. Treat this as the last proven
 baseline and rerun every gate for a newer submission commit.
 
-The final local candidate measures **370 passing checks with 1 provider-gated
+The final local candidate measures **387 passing checks with 1 provider-gated
 vision check skipped**, and its production build generated **33/33 pages**.
 Existing ElevenLabs narration clips and caption timings are provisional review
 references and must be regenerated after approved production captures. These are
@@ -146,9 +146,10 @@ local candidate facts, not production-provider or final-render claims.
   variables and Supabase durable quotas are configured, but real
   microphone/readback/quota lifecycle probes must pass before calling hybrid
   voice live.
-- Privy remains deliberately unavailable until dashboard/JWKS/domain/identity
-  token/verifier configuration and subject-pairing tests pass. Branded inbound
-  email remains pending verified-domain SMTP or a Send Email Hook.
+- Privy remains deliberately unavailable because the required Custom
+  Authentication feature needs a paid tier. Health exposes it as optional and
+  unconfigured; Supabase Auth/RLS remains canonical. Branded inbound email
+  remains pending verified-domain SMTP or a Send Email Hook.
 
 ## Judge-readiness strategy
 
@@ -189,18 +190,16 @@ August 17 through August 19. Do not replace this with a countdown estimate.
    rejection, tenant isolation, cross-channel journaling, and crash recovery.
    Apply `74500` only after promotion, then prove legacy writes and the old quota
    RPC are denied.
-4. Complete and probe the Privy dashboard/JWKS/domain/identity-token/verifier
-   configuration; keep branded inbound email unclaimed until SMTP/domain setup.
-5. Capture a redacted production MCP trace that references the proven run
+4. Capture a redacted production MCP trace that references the proven run
    without implying the standalone runner exercised the human approval route.
-6. Deploy and live-probe the provisioned Supabase-backed release before
+5. Deploy and live-probe the provisioned Supabase-backed release before
    claiming durable or cross-device behavior.
-7. Deploy the Supabase-guarded voice release and retain a real
+6. Deploy the Supabase-guarded voice release and retain a real
    microphone/readback/quota lifecycle probe; durable quotas and sensitive
    provider variables are already configured.
-8. Capture the real product and nine-tool MCP flow, regenerate ElevenLabs voice
+7. Capture the real product and nine-tool MCP flow, regenerate ElevenLabs voice
    and captions, then render and review the 3840×2160/60 V2 video.
-9. Upload the video, record its real public URL and measured metadata, and
+8. Upload the video, record its real public URL and measured metadata, and
    replace every `PENDING` marker.
-10. Recheck PR state, submit the required links before the verified
+9. Recheck PR state, submit the required links before the verified
    deadline, and retain confirmation.

@@ -8,9 +8,9 @@ Nothing here is faked in the app: blocked paths render as blocked, unproven stat
   `64822`, `73000`, `74000`) for tenant isolation, review invalidation,
   cross-channel journaling, crash recovery, and voice budgets. Only after a
   successful promotion, apply `74500` and prove legacy writes are revoked.
-- Complete the Privy dashboard/JWKS/domain/identity-token/verifier setup and
-  live-probe subject pairing. Configure a verified-domain SMTP provider or Send
-  Email Hook separately before claiming branded inbound email.
+- Configure a verified-domain SMTP provider or Send Email Hook before claiming
+  branded inbound email. The paid Privy custom-auth bridge is optional and is
+  deliberately disabled under the stop-before-charge constraint.
 - Deploy the current exactly-nine-tool MCP/product release; probe auth,
   multi-identity persistence, review invalidation, voice, and the live tool list.
 - Bind the V2 MCP trace, KeeperHub receipt, independent V2 event/balance proof,

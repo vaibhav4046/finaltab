@@ -42,11 +42,18 @@ commits and local demo builds are not maintained security releases.
 - The London Supabase project is provisioned and its schema security is
   verified; persistence and cross-device identity behavior still must be
   verified against the final deployed application.
-- Supabase Auth is the canonical account and RLS subject. Privy is an optional
+- Supabase Auth is the canonical account and RLS subject. GitHub is the primary
+  public login through cookie-backed SSR PKCE. Each callback exchanges one code
+  against its validated per-flow verifier, never reflects provider errors, and
+  permits only same-site `safeNextPath` continuations. Its server feature flag
+  is configuration intent, not operational proof. Email UI remains separately
+  gated and hidden by default; that UI flag is not an address allowlist. Privy is an optional
   custom-JWT wallet bridge: its access and identity tokens are verified as a
   pair and must link to the current Supabase UUID. Privy tokens never become
   settlement/MCP principals, and local development has no implicit all-scope
-  identity. Privy dashboard setup remains an external fail-closed release gate;
+  identity. The bridge is disabled under the stop-before-charge constraint and
+  is not a core release gate; incomplete configuration remains fail-closed and
+  its SDK/UI are not mounted on production routes;
   see [docs/integrations/privy.md](docs/integrations/privy.md).
 - Single-use collaboration invites are issued only in URL fragments. Before an
   email-auth navigation, the browser exchanges the fragment for a 30-minute

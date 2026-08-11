@@ -60,6 +60,10 @@ export function openInviteHandoff(
   if (!key || !value || value.length < 80 || value.length > 512) return null;
   try {
     const packed = Buffer.from(value, "base64url");
+    // Node accepts non-canonical Base64URL spellings whose unused trailing
+    // bits decode to the same bytes. Require the one canonical encoding so a
+    // cookie has exactly one serialized representation before authentication.
+    if (packed.toString("base64url") !== value) return null;
     if (packed.length < 29) return null;
     const iv = packed.subarray(0, 12);
     const tag = packed.subarray(12, 28);

@@ -12,14 +12,14 @@ export default function AuthCompleteError({ reset }: { reset: () => void }) {
             <p className="font-mono text-xs font-semibold uppercase tracking-[0.2em] text-danger">FINALTab / Return blocked</p>
             <h1 className="mt-3 text-3xl font-semibold tracking-tight text-paper md:text-4xl">We could not verify this return.</h1>
             <p className="mt-3 max-w-2xl text-sm leading-relaxed text-fog">
-              No account or wallet identity was assumed. Retry the session check, or request a fresh single-use email from the account page.
+              No account or wallet identity was assumed. Retry the session check, or start a fresh secure sign-in from the account page.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <button type="button" onClick={reset} className="min-h-11 rounded-lg bg-signal px-5 font-mono text-xs font-semibold uppercase tracking-wider text-ink">
                 Retry verification
               </button>
               <Link href="/auth/sign-in" className="inline-flex min-h-11 items-center rounded-lg border border-edge px-5 text-sm text-paper">
-                Request a new email
+                Restart sign-in
               </Link>
             </div>
           </div>

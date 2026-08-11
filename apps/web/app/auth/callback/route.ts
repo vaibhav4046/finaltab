@@ -25,12 +25,23 @@ function authRedirect(origin: string, path: string): NextResponse {
   return response;
 }
 
+function oneQueryValue(url: URL, key: string): string | null {
+  const values = url.searchParams.getAll(key);
+  return values.length === 1 ? values[0] ?? null : null;
+}
+
+function pkceFlowId(value: string | null): string | null {
+  return value && /^[A-Za-z0-9_-]{8,64}$/.test(value) ? value : null;
+}
+
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const origin = canonicalAppOrigin(request);
-  const code = url.searchParams.get("code");
-  const tokenHash = url.searchParams.get("token_hash");
-  const type = emailOtpType(url.searchParams.get("type"));
+  const code = oneQueryValue(url, "code");
+  const tokenHash = oneQueryValue(url, "token_hash");
+  const type = emailOtpType(oneQueryValue(url, "type"));
+  const rawFlowId = oneQueryValue(url, "sb_flow_id");
+  const flowId = pkceFlowId(rawFlowId);
   const next = safeNextPath(url.searchParams.get("next"));
   const client = await createServerSupabaseClient();
 
@@ -40,16 +51,43 @@ export async function GET(request: Request) {
       `/auth?error=cloud-not-configured&next=${encodeURIComponent(next)}`,
     );
   }
-  if ((code && tokenHash) || (!code && !tokenHash) || (tokenHash && !type)) {
+  if (
+    url.searchParams.has("error") ||
+    url.searchParams.has("error_code") ||
+    url.searchParams.has("error_description")
+  ) {
+    return authRedirect(
+      origin,
+      `/auth?error=oauth-provider-error&next=${encodeURIComponent(next)}`,
+    );
+  }
+  if (
+    (code && tokenHash) ||
+    (!code && !tokenHash) ||
+    (code && !flowId) ||
+    (tokenHash && !type) ||
+    url.searchParams.getAll("code").length > 1 ||
+    url.searchParams.getAll("token_hash").length > 1 ||
+    url.searchParams.getAll("type").length > 1 ||
+    url.searchParams.getAll("sb_flow_id").length > 1 ||
+    url.searchParams.getAll("next").length > 1 ||
+    (rawFlowId !== null && flowId === null)
+  ) {
     return authRedirect(
       origin,
       `/auth?error=missing-or-ambiguous-code&next=${encodeURIComponent(next)}`,
     );
   }
 
-  const { error } = code
-    ? await client.auth.exchangeCodeForSession(code)
-    : await client.auth.verifyOtp({ token_hash: tokenHash!, type: type! });
+  let error: unknown;
+  try {
+    const result = code
+      ? await client.auth.exchangeCodeForSession(code, { flowId: flowId! })
+      : await client.auth.verifyOtp({ token_hash: tokenHash!, type: type! });
+    error = result.error;
+  } catch {
+    error = new Error("Auth exchange unavailable");
+  }
   if (error) {
     return authRedirect(
       origin,

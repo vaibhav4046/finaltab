@@ -137,19 +137,26 @@ sensitive Vercel Production variables, and Supabase now enforces durable
 authenticated per-user quotas of 8 transcription sessions and 20 readbacks per
 minute. Production enablement remains gated on deploying the newer release and
 running a real microphone/readback lifecycle probe. AssemblyAI is not used to
-narrate the product video. The final local suite reports 370 checks passing with
+narrate the product video. The final local suite reports 387 checks passing with
 one provider-gated vision check skipped, and the production build generated
 33/33 pages. These are working-tree results, not a production provider probe.
 
 ## Identity and durable agent control
 
-Supabase Auth is the canonical account and RLS identity. Distinct sign-in and
-create-account routes, a strict one-time callback, and a branded return page are
-implemented. Privy is only a linked-wallet identity bridge; its tokens never
-become settlement or MCP principals, and its provisioned wallet is not used by
-the V2 execution rail. The integration fails closed until the Privy dashboard
-app, JWKS custom-auth connection, allowed domains, identity tokens, app ID, and
-verification key are configured. Branded inbound email also remains pending a
+Supabase Auth is the canonical account and RLS identity. GitHub OAuth is the
+primary public entry path through the existing SSR PKCE callback; overlapping
+flows are correlated to their per-flow verifier, continuations are same-site,
+and the branded return page is provider-neutral. The server-only feature flag
+records configuration intent only, so a real GitHub round trip and authenticated
+RLS probe are still required before claiming it live. The email/OTP UI is hidden
+unless a separate server flag enables it as an operator fallback; Supabase
+default mail is not advertised as public delivery. Privy is an optional linked-wallet identity bridge; its tokens
+never become settlement or MCP principals, and its provisioned wallet is not
+used by the V2 execution rail. The authenticated dashboard showed that the
+required Custom Authentication feature needs the paid Scale tier, so the bridge
+is deliberately disabled under the stop-before-charge constraint. It remains
+fail-closed, does not appear as a setup warning in the product, and does not
+block core readiness. Branded or public inbound email also remains pending a
 verified sender domain and custom SMTP or Send Email Hook.
 
 The settlement-agent control plane persists attested run, stage-event, and
@@ -245,8 +252,8 @@ the separate 2026-08-11 one-atomic-unit run above. Likewise, the historical
   invalidation, tenant isolation, durable submission, and crash recovery must
   pass. Apply `20260811074500` only after promotion, then prove legacy writes and
   the old quota RPC are denied.
-- Complete the fail-closed Privy dashboard/JWKS/domain/token configuration. A
-  verified sender domain plus custom SMTP or a Send Email Hook is separately
+- Keep the optional Privy bridge disabled unless a future paid-plan decision is
+  explicitly authorized. A verified sender domain plus custom SMTP or a Send Email Hook is separately
   required before claiming a branded inbound authentication email.
 - Submit as a human entrant before 2026-08-13 12:00 UTC+2
   (10:00 UTC / 11:00 BST); retain the confirmation.

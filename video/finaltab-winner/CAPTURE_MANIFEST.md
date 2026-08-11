@@ -1,8 +1,9 @@
 # FINALTab capture manifest
 
 **State:** composition source and verified chain-proof overlay are built; the
-ordered additive Supabase schema is applied and verified, while Privy
-configuration, final production probes, and real browser,
+ordered additive Supabase schema is applied and verified. Privy's paid
+custom-auth bridge is optional, deliberately disabled, and excluded from this
+release's captures; final production probes and real browser,
 wallet, MCP-client, and explorer captures remain open. Current ElevenLabs
 audio/captions are a provisional script pass and must be regenerated after
 approved captures. No final render exists.
@@ -20,7 +21,7 @@ approved captures. No final render exists.
 | `G-V2-VALUE-MOVE` | The retained non-zero V2 USDC settlement executed through KeeperHub. Its execution ID and transaction differ from the V2 deployment execution `xasakw5nfxkh2s0fh4stn` and deployment transaction `0x904ec881...e8f`. | sanitized one-atomic-run manifest, KeeperHub receipt, RPC receipt/event proof, before/after balances, conservation check; no MCP-broadcast claim |
 | `G-MCP-LIVE-LIST` | An authenticated live `tools/list` returns exactly nine production tools and no retired fixed-wallet name. | redacted request/response pair, client name/version |
 | `G-MCP-V2-SAME-RUN` | The visible MCP sequence, KeeperHub receipt, proof capsule, balance deltas, and explorer transaction all describe the same V2 settlement run. | shared `runId`, trace manifest hashes, exact three proof identifiers |
-| `G-AUTH-LIVE` | Sign-in, create-account, one-time callback, branded return, sign-out, and protected-route redirects pass on the immutable production candidate. Any shown Privy identity additionally requires the dashboard/JWKS/domain/identity-token/verifier setup and a successful subject-pair probe. | redacted browser trace and route/header assertions |
+| `G-AUTH-LIVE` | Supabase-brokered GitHub sign-in, one-time callback, branded return, sign-out, and protected-route redirects pass on the promoted canonical origin `https://finaltab.vercel.app`. OAuth is never initiated on an immutable Vercel hostname because its PKCE cookies are host-bound. The current no-charge release must show no Privy setup warning, identity chip, or runtime. | redacted browser trace and route/header assertions |
 | `G-AGENT-REVIEW-LIVE` | The ordered additive migrations are applied; four stages run in order; pre-submission proof is honestly skipped; forged provenance is hidden; an upstream edit invalidates the review; a fresh attested run unlocks Freeze with the durable receipt UUID. | migration verification, run/event IDs, HMAC-safe logs, tenant-isolation probe |
 | `G-PUBLIC-LINKS` | Product, GitHub, MCP discovery, KeeperHub workflow, Sourcify, and fresh transaction links work logged out. | link-check record captured immediately before render |
 | `G-FINAL-AUDIO-SYNC` | All approved visual takes are locked; ElevenLabs narration and alignment are regenerated from the approved script; baked/external captions and scene timing are rebuilt from that final alignment and manually checked against the captures. | final voice manifest with per-scene hashes, final cue sheet/SRT, sync review record |
@@ -61,8 +62,8 @@ Every path below is a target, not an existing artifact. The filename may be stag
   `SUM = RECEIPT TOTAL`.
 - Required assertions: every share is in integer minor units; final shares sum exactly to receipt total; any cloud invite works in a separate logged-out profile before it is shown.
 - Gate: `G-PRODUCT-FINAL`, `G-V2-CONFIG`, `G-AUTH-LIVE`; cloud subsection
-  additionally requires the production multi-identity Supabase probe. Any Privy
-  identity chip is omitted until its separate setup passes.
+  additionally requires the production multi-identity Supabase probe. Omit all
+  Privy identity UI in this no-charge release.
 - Story use: Frame 3.
 
 ### C04 — Net, freeze, and plan binding
@@ -86,9 +87,8 @@ Every path below is a target, not an existing artifact. The filename may be stag
 - Required actions: recover the correct public signer for every debtor's `ReceiveWithAuthorization` and `SettlementConsent`; simulate the exact signed payload through KeeperHub; separately capture a genuine invalid/reverting payload returning `WOULD REVERT · NOT BROADCAST`.
 - Required assertions: the passed simulation reports no broadcast; the failure
   insert is from a real request and never transitions to execute; no raw wallet
-  secret or auth header enters the recording. The Privy linked wallet must not be
-  presented as the V2 signer because ExecutionRail requires the explicit external
-  participant wallet.
+  secret or auth header enters the recording. No Privy identity should appear;
+  ExecutionRail requires the explicit external participant wallet.
 - Gate: `G-SIGNATURE-SAFE`, `G-V2-CONFIG`.
 - Story use: Frame 5.
 

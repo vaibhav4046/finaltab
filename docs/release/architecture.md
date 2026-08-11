@@ -20,8 +20,8 @@
 > while prepared recovery reuses its successful simulation and deterministic
 > idempotency key under a bounded approval expiry. Post-promotion cutover
 > `74500` is not applied; the applied schema is not a live-flow probe. Privy is
-> code-complete but dashboard/JWKS/domain/identity-token/
-> verifier configuration is still fail-closed. The final application/provider
+> an optional, code-complete bridge that remains fail-closed and deliberately
+> disabled because its required custom-auth feature needs a paid tier. The final application/provider
 > probe remains open; do not rewrite the archived V1 rows below as current facts.
 
 **Gate 0 Inventory — 2026-08-10**

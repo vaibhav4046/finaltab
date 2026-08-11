@@ -30,8 +30,9 @@ interface Challenge {
 
 const QUERY_ERRORS: Record<string, string> = {
   "cloud-not-configured": "Account sign-in is unavailable until Supabase is configured.",
-  "missing-or-ambiguous-code": "That email return did not contain one valid sign-in code.",
-  "invalid-or-expired-link": "That secure email link is invalid or expired. Request a new one.",
+  "missing-or-ambiguous-code": "That secure return did not contain one valid sign-in code.",
+  "invalid-or-expired-link": "That secure sign-in return is invalid or expired. Start again.",
+  "oauth-provider-error": "GitHub sign-in was cancelled or could not be completed. Try again.",
   "session-required": "Your account session expired. Sign in again to continue.",
 };
 
@@ -45,7 +46,17 @@ function modeHref(mode: AuthMode, next: string): string {
   return next === "/app" ? path : `${path}?next=${encodeURIComponent(next)}`;
 }
 
-export function CloudAccessPanel({ initialMode = "sign-in" }: { initialMode?: AuthMode }) {
+export function CloudAccessPanel({
+  initialMode = "sign-in",
+  githubOAuthEnabled = false,
+  teamEmailAuthEnabled = false,
+  privyConfigured = false,
+}: {
+  initialMode?: AuthMode;
+  githubOAuthEnabled?: boolean;
+  teamEmailAuthEnabled?: boolean;
+  privyConfigured?: boolean;
+}) {
   const router = useRouter();
   const [mode, setMode] = useState<AuthMode>(initialMode);
   const [session, setSession] = useState<SessionState | null>(null);
@@ -55,7 +66,7 @@ export function CloudAccessPanel({ initialMode = "sign-in" }: { initialMode?: Au
   const [otpRequested, setOtpRequested] = useState(false);
   const [wallet, setWallet] = useState<`0x${string}` | null>(null);
   const [walletAvailable, setWalletAvailable] = useState(false);
-  const [busy, setBusy] = useState<"email" | "otp" | "wallet" | null>(null);
+  const [busy, setBusy] = useState<"github" | "email" | "otp" | "wallet" | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const next = typeof window === "undefined" ? "/app" : requestedNextPath();
@@ -95,38 +106,71 @@ export function CloudAccessPanel({ initialMode = "sign-in" }: { initialMode?: Au
     router.replace(modeHref(nextMode, requestedNextPath()), { scroll: false });
   };
 
+  const continueWithGitHub = async () => {
+    const client = createBrowserSupabaseClient();
+    if (!client || !githubOAuthEnabled || busy !== null) return;
+
+    setBusy("github");
+    setError(null);
+    setNotice(null);
+    let redirectStarted = false;
+    try {
+      const callback = new URL("/auth/callback", window.location.origin);
+      callback.searchParams.set("next", requestedNextPath());
+      const { data, error: authError } = await client.auth.signInWithOAuth({
+        provider: "github",
+        options: {
+          redirectTo: callback.toString(),
+          skipBrowserRedirect: true,
+        },
+      });
+      if (authError || !data.url) throw new Error("OAuth initiation failed");
+      redirectStarted = true;
+      window.location.assign(data.url);
+    } catch {
+      setError("GitHub sign-in could not start. Try again shortly.");
+    } finally {
+      if (!redirectStarted) setBusy(null);
+    }
+  };
+
   const sendEmail = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const client = createBrowserSupabaseClient();
     const normalizedEmail = email.trim().toLowerCase();
-    if (!client || !normalizedEmail) return;
+    if (!client || !teamEmailAuthEnabled || !normalizedEmail || busy !== null) return;
 
     setBusy("email");
     setError(null);
     setNotice(null);
-    const callback = new URL("/auth/callback", window.location.origin);
-    callback.searchParams.set("next", requestedNextPath());
-    const { error: authError } = await client.auth.signInWithOtp({
-      email: normalizedEmail,
-      options: {
-        emailRedirectTo: callback.toString(),
-        shouldCreateUser: mode === "create-account",
-      },
-    });
-    setBusy(null);
+    try {
+      const callback = new URL("/auth/callback", window.location.origin);
+      callback.searchParams.set("next", requestedNextPath());
+      const { error: authError } = await client.auth.signInWithOtp({
+        email: normalizedEmail,
+        options: {
+          emailRedirectTo: callback.toString(),
+          shouldCreateUser: mode === "create-account",
+        },
+      });
 
-    if (authError) {
-      setError(
-        mode === "sign-in"
-          ? "We could not send a sign-in email. Check the address or create an account."
-          : "We could not create this account. Check the address and try again shortly.",
+      if (authError) {
+        setError(
+          mode === "sign-in"
+            ? "We could not send a sign-in email. Check the address or create an account."
+            : "We could not create this account. Check the address and try again shortly.",
+        );
+        return;
+      }
+      setOtpRequested(true);
+      setNotice(
+        "Check your email. Open the secure link, or enter the one-time code if your email contains one.",
       );
-      return;
+    } catch {
+      setError("The email service could not be reached. Try again shortly.");
+    } finally {
+      setBusy(null);
     }
-    setOtpRequested(true);
-    setNotice(
-      "Check your email. Open the secure link, or enter the one-time code if your email contains one.",
-    );
   };
 
   const verifyEmailCode = async (event: FormEvent<HTMLFormElement>) => {
@@ -134,21 +178,34 @@ export function CloudAccessPanel({ initialMode = "sign-in" }: { initialMode?: Au
     const client = createBrowserSupabaseClient();
     const normalizedEmail = email.trim().toLowerCase();
     const normalizedOtp = otp.replaceAll(/\s/g, "");
-    if (!client || !normalizedEmail || !/^\d{6,8}$/.test(normalizedOtp)) return;
+    if (
+      !client ||
+      !teamEmailAuthEnabled ||
+      !normalizedEmail ||
+      !/^\d{6,8}$/.test(normalizedOtp) ||
+      busy !== null
+    ) return;
 
     setBusy("otp");
     setError(null);
-    const { error: authError } = await client.auth.verifyOtp({
-      email: normalizedEmail,
-      token: normalizedOtp,
-      type: "email",
-    });
-    setBusy(null);
-    if (authError) {
-      setError("That one-time code is invalid or expired. Request a new email.");
-      return;
+    let verified = false;
+    try {
+      const { error: authError } = await client.auth.verifyOtp({
+        email: normalizedEmail,
+        token: normalizedOtp,
+        type: "email",
+      });
+      if (authError) {
+        setError("That one-time code is invalid or expired. Request a new email.");
+        return;
+      }
+      verified = true;
+      window.location.assign(`/auth/complete?next=${encodeURIComponent(requestedNextPath())}`);
+    } catch {
+      setError("The verification service could not be reached. Try again shortly.");
+    } finally {
+      if (!verified) setBusy(null);
     }
-    window.location.assign(`/auth/complete?next=${encodeURIComponent(requestedNextPath())}`);
   };
 
   const verifyWallet = async () => {
@@ -228,7 +285,7 @@ export function CloudAccessPanel({ initialMode = "sign-in" }: { initialMode?: Au
             durable tabs, invitations and wallet linking remain unavailable; no browser-only identity is substituted.
           </p>
         </section>
-        <PrivySessionPanel />
+        {privyConfigured ? <PrivySessionPanel /> : null}
       </div>
     );
   }
@@ -236,8 +293,9 @@ export function CloudAccessPanel({ initialMode = "sign-in" }: { initialMode?: Au
   if (!session.authenticated) {
     return (
       <section className="overflow-hidden rounded-xl border border-edge bg-panel" aria-labelledby="account-title">
-        <div className="border-b border-edge bg-panel-2/60 p-2">
-          <div className="grid grid-cols-2 gap-2" aria-label="Account action">
+        {teamEmailAuthEnabled ? <div className="border-b border-edge bg-panel-2/60 p-2">
+          <p className="px-2 pb-2 font-mono text-[9px] font-semibold uppercase tracking-[0.16em] text-warn">Email fallback action</p>
+          <div className="grid grid-cols-2 gap-2" aria-label="Email fallback action">
             {(["sign-in", "create-account"] as const).map((candidate) => (
               <button
                 key={candidate}
@@ -254,79 +312,114 @@ export function CloudAccessPanel({ initialMode = "sign-in" }: { initialMode?: Au
               </button>
             ))}
           </div>
-        </div>
+        </div> : null}
 
         <div className="p-5 md:p-6">
           <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-signal">FINALTab account</p>
           <h2 id="account-title" className="mt-2 text-2xl font-semibold tracking-tight text-paper">
-            {mode === "sign-in" ? "Return to your tabs." : "Create your secure account."}
+            {githubOAuthEnabled
+              ? "Continue securely with GitHub."
+              : mode === "sign-in"
+                ? "Return to your tabs."
+                : "Create your secure account."}
           </h2>
           <p className="mt-2 max-w-xl text-sm leading-relaxed text-fog">
-            Supabase verifies your email and remains the database/RLS identity. After that succeeds,
-            Privy can provision a wallet identity for the exact same UUID. Current V2 settlement signing still uses an external wallet.
+            {githubOAuthEnabled
+              ? "GitHub verifies the login; Supabase issues the canonical account session and remains the database/RLS identity. A first successful GitHub login creates that account."
+              : "Public GitHub sign-in is disabled on this deployment."}
+            {privyConfigured
+              ? " The optional Privy bridge can provision a wallet identity for the same UUID."
+              : " Wallet ownership is proven separately after sign-in."}
+            {" "}Current V2 settlement signing still uses an external wallet.
           </p>
 
-          <form onSubmit={(event) => void sendEmail(event)} className="mt-5">
-            <label htmlFor="account-email" className="block text-sm font-medium text-paper">Email address</label>
-            <div className="mt-2 flex flex-col gap-2 sm:flex-row">
-              <input
-                id="account-email"
-                type="email"
-                autoComplete="email"
-                inputMode="email"
-                required
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                className="min-h-12 flex-1 rounded-lg border border-edge bg-panel-2 px-3 text-base text-paper outline-none focus-visible:ring-2 focus-visible:ring-signal"
-                placeholder="you@example.com"
-              />
-              <button
-                type="submit"
-                disabled={busy !== null || !email.trim()}
-                className="min-h-12 rounded-lg bg-signal px-5 font-mono text-xs font-semibold uppercase tracking-wider text-ink disabled:opacity-50"
-              >
-                {busy === "email"
-                  ? "Sending..."
-                  : mode === "sign-in"
-                    ? "Send sign-in email"
-                    : "Create with email"}
-              </button>
-            </div>
-          </form>
+          {githubOAuthEnabled ? (
+            <button
+              type="button"
+              onClick={() => void continueWithGitHub()}
+              disabled={busy !== null}
+              className="mt-5 flex min-h-12 w-full items-center justify-center gap-3 rounded-lg border border-signal/60 bg-gradient-to-r from-signal/15 to-blue-500/15 px-5 font-mono text-xs font-semibold uppercase tracking-wider text-paper shadow-[0_0_32px_rgba(200,255,61,0.08)] transition hover:border-signal hover:bg-signal/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-signal disabled:opacity-50"
+            >
+              <span aria-hidden="true" className="grid size-7 place-items-center rounded-full bg-paper font-sans text-[10px] font-bold tracking-normal text-ink">GH</span>
+              {busy === "github" ? "Opening GitHub..." : "Continue with GitHub"}
+            </button>
+          ) : null}
 
-          {otpRequested ? (
-            <form onSubmit={(event) => void verifyEmailCode(event)} className="mt-4 rounded-lg border border-edge-soft bg-panel-2 p-4">
-              <label htmlFor="account-otp" className="block text-sm font-medium text-paper">One-time email code</label>
-              <p className="mt-1 text-xs text-fog">Only use this field when your FINALTab email includes a numeric code.</p>
-              <div className="mt-3 flex flex-col gap-2 sm:flex-row">
-                <input
-                  id="account-otp"
-                  type="text"
-                  autoComplete="one-time-code"
-                  inputMode="numeric"
-                  pattern="[0-9]{6,8}"
-                  minLength={6}
-                  maxLength={8}
-                  value={otp}
-                  onChange={(event) => setOtp(event.target.value.replace(/\D/g, ""))}
-                  className="min-h-11 flex-1 rounded-lg border border-edge bg-canvas px-3 font-mono text-base tracking-[0.25em] text-paper outline-none focus-visible:ring-2 focus-visible:ring-signal"
-                  placeholder="000000"
-                />
-                <button
-                  type="submit"
-                  disabled={busy !== null || !/^\d{6,8}$/.test(otp)}
-                  className="min-h-11 rounded-lg border border-signal/60 px-5 font-mono text-xs font-semibold uppercase tracking-wider text-signal disabled:opacity-50"
-                >
-                  {busy === "otp" ? "Verifying..." : "Verify code"}
-                </button>
-              </div>
-            </form>
+          {teamEmailAuthEnabled ? (
+            <div className="mt-6 border-t border-edge pt-5">
+              <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-warn">Operator email fallback</p>
+              <p className="mt-2 text-xs leading-relaxed text-fog">
+                Use only when the deployment operator has confirmed delivery for your address. Supabase default mail is not a public delivery service; this UI gate is not a membership allowlist.
+              </p>
+              <form onSubmit={(event) => void sendEmail(event)} className="mt-4">
+                <label htmlFor="account-email" className="block text-sm font-medium text-paper">Email address</label>
+                <div className="mt-2 flex flex-col gap-2 sm:flex-row">
+                  <input
+                    id="account-email"
+                    type="email"
+                    autoComplete="email"
+                    inputMode="email"
+                    required
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    className="min-h-12 flex-1 rounded-lg border border-edge bg-panel-2 px-3 text-base text-paper outline-none focus-visible:ring-2 focus-visible:ring-signal"
+                    placeholder="you@example.com"
+                  />
+                  <button
+                    type="submit"
+                    disabled={busy !== null || !email.trim()}
+                    className="min-h-12 rounded-lg bg-signal px-5 font-mono text-xs font-semibold uppercase tracking-wider text-ink disabled:opacity-50"
+                  >
+                    {busy === "email"
+                      ? "Sending..."
+                      : mode === "sign-in"
+                        ? "Send sign-in email"
+                        : "Create with email"}
+                  </button>
+                </div>
+              </form>
+
+              {otpRequested ? (
+                <form onSubmit={(event) => void verifyEmailCode(event)} className="mt-4 rounded-lg border border-edge-soft bg-panel-2 p-4">
+                  <label htmlFor="account-otp" className="block text-sm font-medium text-paper">One-time email code</label>
+                  <p className="mt-1 text-xs text-fog">Only use this field when your FINALTab email includes a numeric code.</p>
+                  <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+                    <input
+                      id="account-otp"
+                      type="text"
+                      autoComplete="one-time-code"
+                      inputMode="numeric"
+                      pattern="[0-9]{6,8}"
+                      minLength={6}
+                      maxLength={8}
+                      value={otp}
+                      onChange={(event) => setOtp(event.target.value.replace(/\D/g, ""))}
+                      className="min-h-11 flex-1 rounded-lg border border-edge bg-canvas px-3 font-mono text-base tracking-[0.25em] text-paper outline-none focus-visible:ring-2 focus-visible:ring-signal"
+                      placeholder="000000"
+                    />
+                    <button
+                      type="submit"
+                      disabled={busy !== null || !/^\d{6,8}$/.test(otp)}
+                      className="min-h-11 rounded-lg border border-signal/60 px-5 font-mono text-xs font-semibold uppercase tracking-wider text-signal disabled:opacity-50"
+                    >
+                      {busy === "otp" ? "Verifying..." : "Verify code"}
+                    </button>
+                  </div>
+                </form>
+              ) : null}
+            </div>
+          ) : null}
+
+          {!githubOAuthEnabled && !teamEmailAuthEnabled ? (
+            <p className="mt-5 rounded-lg border border-warn/30 bg-warn/5 p-4 text-sm text-warn" role="alert">
+              No account-entry method is enabled. The deployment remains fail-closed.
+            </p>
           ) : null}
 
           {notice ? <p className="mt-4 text-sm text-signal" role="status">{notice}</p> : null}
           {error ? <p className="mt-4 text-sm text-danger" role="alert">{error}</p> : null}
           <p className="mt-5 text-xs leading-relaxed text-fog-dim">
-            Links and codes are single-use. FINALTab never asks for a password, wallet seed phrase or Privy app secret.
+            OAuth returns, links and codes are single-use. FINALTab never asks for a password, wallet seed phrase or provider secret.
           </p>
         </div>
       </section>
@@ -350,9 +443,7 @@ export function CloudAccessPanel({ initialMode = "sign-in" }: { initialMode?: Au
             </button>
           </form>
         </div>
-        <div className="mt-5">
-          <PrivySessionPanel />
-        </div>
+        {privyConfigured ? <div className="mt-5"><PrivySessionPanel /></div> : null}
         <Link href={next} className="mt-4 inline-flex min-h-11 items-center rounded-lg bg-signal px-5 font-mono text-xs font-semibold uppercase tracking-wider text-ink">
           Continue to FINALTab
         </Link>

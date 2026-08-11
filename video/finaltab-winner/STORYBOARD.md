@@ -9,7 +9,7 @@ workflow: product-launch-video
 fps: 60
 music: restrained analog pulse with tactile paper percussion and a controlled proof-climax lift
 captions: baked word-timed captions plus external SRT
-truth_status: source composition built; one-atomic-unit V2 KeeperHub settlement, independent RPC proof, and five-migration additive Supabase schema verified; current narration provisional; Privy/application/provider deployment probes, post-promotion 74500 cutover, and final real product/MCP captures pending
+truth_status: source composition built; one-atomic-unit V2 KeeperHub settlement, independent RPC proof, and five-migration additive Supabase schema verified; current narration provisional; optional paid Privy bridge deliberately disabled and excluded; application/provider deployment probes, post-promotion 74500 cutover, and final real product/MCP captures pending
 ---
 
 # FINALTab winner film
@@ -126,7 +126,7 @@ keyMessage: FINALTab handles messy, real-world bill details and arbitrary partic
 
 Adapt: keep the blueprint's held-surface signature; use one real FINALTab window and motivated focus locks instead of a decorative device mockup.
 
-Scene 1 (0.0–2.5s): the branded `/auth/complete` return resolves into a newly created durable tab, then the real receipt-consent/upload surface fills the frame. Show this only after the Supabase flow is live-probed; show the linked Privy identity only if its dashboard/JWKS/domain/token configuration also passes.
+Scene 1 (0.0–2.5s): the branded `/auth/complete` return resolves into a newly created durable tab, then the real receipt-consent/upload surface fills the frame. Show this only after the Supabase flow is live-probed. Do not show Privy identity or setup UI in the current no-charge release.
 
 Scene 2 (2.5–5.2s): an intentionally imperfect extracted line is edited in the real UI on “Correct any extraction”; arithmetic warning clears only after the correction is confirmed. Use a **cursor click + ripple** (`cursor-click-ripple`) only if the capture contains the actual interaction.
 

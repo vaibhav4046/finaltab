@@ -103,7 +103,7 @@ export function JoinInvitePanel() {
 
           {session?.configured && !session.authenticated && handoffReady ? (
             <div className="mt-6 rounded-2xl border border-quiet bg-surface-2 p-5">
-              <div className="flex gap-3"><LogIn size={20} className="mt-0.5 shrink-0 text-info" aria-hidden="true" /><div><h2 className="font-semibold text-txt">Sign in before joining</h2><p className="mt-2 text-sm leading-6 text-muted">The invite remains unclaimed. After passwordless sign-in, FINALTab will ask for confirmation again.</p></div></div>
+              <div className="flex gap-3"><LogIn size={20} className="mt-0.5 shrink-0 text-info" aria-hidden="true" /><div><h2 className="font-semibold text-txt">Sign in before joining</h2><p className="mt-2 text-sm leading-6 text-muted">The invite remains unclaimed. After secure sign-in, FINALTab will ask for confirmation again.</p></div></div>
               <Link href="/auth?next=%2Fjoin" className="touch-target mt-4 inline-flex items-center gap-2 rounded-xl bg-signal px-5 text-sm font-semibold text-ink">Continue to sign in <ArrowRight size={16} aria-hidden="true" /></Link>
             </div>
           ) : null}

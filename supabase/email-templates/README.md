@@ -3,7 +3,7 @@
 `access.html` is the branded, provider-neutral HTML source for Supabase **Confirm sign up** and **Magic link** emails. It uses only current Supabase Go-template variables:
 
 - `{{ .ConfirmationURL }}` preserves the configured PKCE redirect.
-- `{{ .Token }}` supplies the six-digit fallback already supported by FINALTab's account UI.
+- `{{ .Token }}` supplies the project-configured numeric fallback; FINALTab's account UI accepts 6–8 digits.
 - `{{ .Email }}` identifies the requested account without adding user-controlled HTML.
 
 Suggested subject: `Your secure FINALTab access`.

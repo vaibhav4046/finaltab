@@ -1,6 +1,6 @@
 # FINALTab HyperFrames composition plan
 
-**Phase:** source composition complete and statically verified. Agent/Privy/deployment probes, final real captures, regenerated audio, and render remain gated.
+**Phase:** source composition complete and statically verified. Agent/deployment probes, final real captures, regenerated audio, and render remain gated. Privy is optional, deliberately disabled, and excluded from this release's captures.
 **Timeline lock:** 96.0 seconds on a native 3840×2160 composition at 60 fps = 5,760 output frames.
 **Workflow:** `product-launch-video`, autonomous plan/build flow; rendering remains user-gated.
 
@@ -157,8 +157,9 @@ Pre-build validation must reject:
 - Use the real capture as the base plate; reconstruct only the one UI element that must animate independently or remain readable during a focus lock.
 - Do not rebuild the entire product surface in HTML.
 - All callouts must name visible state, not add unsupported state.
-- Frame 3 may show the branded auth return, linked Privy identity, durable tab,
-  or cross-device invite only after their respective production probes pass.
+- Frame 3 may show the branded Supabase auth return, durable tab, or cross-device
+  invite only after their respective production probes pass. Do not show a
+  linked Privy identity in the current no-charge release.
   Participant names and wallet addresses must be visibly user-entered, never
   inferred from a receipt that does not contain them.
 - Frame 4 must show the four fixed review stages, honest pre-submission proof
@@ -205,8 +206,8 @@ Pre-build validation must reject:
 
 1. Retain the verified additive-migration evidence, deploy/probe the candidate,
    apply and verify the still-pending `74500` cutover only after promotion,
-   configure/probe Privy, and close the final product/security/deployment gates
-   outside this video project.
+   and close the final product/security/deployment gates outside this video
+   project. Keep the optional paid Privy bridge disabled and out of captures.
 2. Complete C03–C08 captures and the same-run proof package in `CAPTURE_MANIFEST.md`.
 3. Populate and validate `data/release-proof.json`; run a whole-repo secret scan before staging any capture.
 4. Produce `frame.md` from the locked design system.

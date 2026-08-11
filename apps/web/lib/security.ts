@@ -35,17 +35,20 @@ function validHttpsOrigin(value: string | undefined): string | null {
 
 export interface CspOptions {
   development?: boolean;
+  privyEnabled?: boolean;
   privyApiUrl?: string;
   supabaseUrl?: string;
 }
 
-/** CSP sources follow Privy's official web integration allowlist. */
+/** Optional Privy sources are admitted only when the complete bridge is enabled. */
 export function buildContentSecurityPolicy(nonce: string, options: CspOptions = {}): string {
   if (!/^[A-Za-z0-9_-]{16,128}$/.test(nonce)) {
     throw new Error("CSP nonce must be an opaque base64url value");
   }
 
-  const customPrivyOrigin = validHttpsOrigin(options.privyApiUrl);
+  const customPrivyOrigin = options.privyEnabled
+    ? validHttpsOrigin(options.privyApiUrl)
+    : null;
   const supabaseOrigin = validHttpsOrigin(options.supabaseUrl);
   const customSources = [customPrivyOrigin, supabaseOrigin].filter(
     (source): source is string => Boolean(source),
@@ -58,7 +61,7 @@ export function buildContentSecurityPolicy(nonce: string, options: CspOptions = 
     ...(options.development ? ["'unsafe-eval'"] : []),
   ];
   const frames = [
-    "https://auth.privy.io",
+    ...(options.privyEnabled ? ["https://auth.privy.io"] : []),
     "https://verify.walletconnect.com",
     "https://verify.walletconnect.org",
     "https://challenges.cloudflare.com",
@@ -66,11 +69,11 @@ export function buildContentSecurityPolicy(nonce: string, options: CspOptions = 
   ];
   const connect = [
     "'self'",
-    "https://auth.privy.io",
+    ...(options.privyEnabled ? ["https://auth.privy.io"] : []),
     "wss://relay.walletconnect.com",
     "wss://relay.walletconnect.org",
     "wss://www.walletlink.org",
-    "https://*.rpc.privy.systems",
+    ...(options.privyEnabled ? ["https://*.rpc.privy.systems"] : []),
     "https://explorer-api.walletconnect.com",
     "https://sepolia.base.org",
     "https://streaming.eu.assemblyai.com",

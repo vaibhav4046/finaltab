@@ -13,7 +13,7 @@ tested; they are gated on inputs only a human can supply.
 | 4 | Optionally publish V2 source on BaseScan | Sourcify exact match is already proven; BaseScan requires its own account/API flow | Low | BaseScan-native readability only |
 | 5 | Render/upload the V2 video and submit to DoraHacks | Account and publication actions | High | Submission itself |
 | 6 | Rotate the Alchemy API key | Rotating a credential is never autonomous | Medium | Nothing functional — the repo no longer needs it |
-| 7 | Sign in to the Privy developer dashboard and complete the documented free configuration | The dashboard currently stops at account login; app/JWKS/domain/identity-token settings cannot be configured anonymously | High | Live Privy identity bridge |
+| 7 | Optionally authorize a paid Privy Custom Authentication plan in the future | The authenticated dashboard showed Custom Authentication on Scale ($499/month) and production activation requested payment details; the current instruction is stop before charge | Low | Optional linked-wallet provisioning only; core Supabase Auth/RLS remains complete |
 | 8 | Provide a verified sender domain and configure custom SMTP or a Send Email Hook | Supabase default mail cannot prove the requested branded inbound email | Medium | Branded authentication email; the branded return page already exists |
 
 ## Resolved with explicit authorization on 2026-08-11

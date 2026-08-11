@@ -39,8 +39,8 @@
         "keeperhub": 35,
         "flightRecorder": 7,
         "vision": "34 passing, 1 provider-gated skip",
-        "web": 207,
-        "total": "370 passing, 1 provider-gated skip"
+        "web": 224,
+        "total": "387 passing, 1 provider-gated skip"
       },
       "productionBuildPages": "33/33",
       "playwright": "14/14 passing across desktop and Pixel 7",
@@ -180,8 +180,11 @@
       "canonicalAccount": "Supabase Auth / auth.uid()",
       "signInCreateAccountCallback": "SOURCE_IMPLEMENTED",
       "brandedReturnPage": "SOURCE_IMPLEMENTED",
-      "privyBridge": "FAIL_CLOSED_NOT_CONFIGURED",
-      "privyPending": [
+      "privyBridge": "OPTIONAL_DISABLED_PAID_CUSTOM_AUTH_NOT_AUTHORIZED",
+      "privyRequiredForReadiness": false,
+      "privyUnconfiguredUi": "HIDDEN",
+      "privyFutureEnablement": [
+        "explicit paid-plan authorization",
         "production app",
         "Supabase JWKS custom auth",
         "exact allowed domain",

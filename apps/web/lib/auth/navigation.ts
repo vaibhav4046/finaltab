@@ -13,7 +13,7 @@ export function safeNextPath(value: string | null | undefined, fallback = DEFAUL
     if (!isWorkspace && !isInviteJoin) return fallback;
     // Fragments can carry proof or invite capabilities. Never tunnel them
     // through the server-visible `next` query. /join has no legitimate query
-    // state; its single-use token survives auth only in same-tab sessionStorage.
+    // state; its single-use token is carried by the encrypted HttpOnly handoff.
     if (isInviteJoin) return "/join";
     return `${parsed.pathname}${parsed.search}`;
   } catch {

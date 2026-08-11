@@ -168,6 +168,8 @@ describe("production surface retirement gate", () => {
     expect(authPages).not.toContain("<main");
     expect(privyShell).toContain('import("./PrivySessionPanelRuntime")');
     expect(privyShell).not.toContain("@privy-io/react-auth");
+    expect(privyShell).toContain("if (!bridge.providerConfigured) return null");
+    expect(privyShell).not.toContain("Privy setup required");
   });
 
   it("keeps single-use invite secrets out of auth and callback URLs", () => {

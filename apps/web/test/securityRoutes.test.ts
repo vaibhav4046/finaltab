@@ -7,6 +7,7 @@ import {
   buildContentSecurityPolicy,
   routeProtection,
 } from "@/lib/security";
+import { authFeatureFlags } from "@/lib/auth/features";
 import { refreshSupabaseSession } from "@/lib/supabase/middleware";
 
 const ENV_KEYS = [
@@ -14,6 +15,8 @@ const ENV_KEYS = [
   "NEXT_PUBLIC_SUPABASE_URL",
   "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
   "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+  "FINALTAB_GITHUB_OAUTH_ENABLED",
+  "FINALTAB_TEAM_EMAIL_AUTH_ENABLED",
 ] as const;
 const before = Object.fromEntries(ENV_KEYS.map((key) => [key, process.env[key]]));
 const mutableEnv = process.env as Record<string, string | undefined>;
@@ -31,22 +34,63 @@ describe("authentication route matrix", () => {
     const rootLayout = readFileSync(new URL("../app/layout.tsx", import.meta.url), "utf8");
     const authLayout = readFileSync(new URL("../app/auth/layout.tsx", import.meta.url), "utf8");
     const appLayout = readFileSync(new URL("../app/app/layout.tsx", import.meta.url), "utf8");
+    const routeProvider = readFileSync(new URL("../components/PrivyRouteProvider.tsx", import.meta.url), "utf8");
 
     expect(rootLayout).not.toMatch(/Privy|privy/);
     expect(authLayout).toContain("PrivyRouteProvider");
     expect(appLayout).toContain("PrivyRouteProvider");
+    expect(routeProvider).toContain('import { privyServerConfig } from "@/lib/privy/server"');
+    expect(routeProvider).not.toContain("privyPublicConfig");
   });
 
-  it("keeps the email return neutral and provides branded success, loading, and error states", () => {
+  it("keeps the identity return provider-neutral with branded success, loading, and error states", () => {
     const completePage = readFileSync(new URL("../app/auth/complete/page.tsx", import.meta.url), "utf8");
     const completeLoading = readFileSync(new URL("../app/auth/complete/loading.tsx", import.meta.url), "utf8");
     const completeError = readFileSync(new URL("../app/auth/complete/error.tsx", import.meta.url), "utf8");
 
-    expect(completePage).toContain("Email verified. Secure session ready.");
+    expect(completePage).toContain("Identity verified. Secure session ready.");
     expect(completePage).not.toContain("Account restored");
-    expect(completeLoading).toContain("Verifying your email return.");
+    expect(completeLoading).toContain("Verifying your secure return.");
     expect(completeError).toContain("We could not verify this return.");
-    expect(completeError).toContain("Request a new email");
+    expect(completeError).toContain("Restart sign-in");
+  });
+
+  it("keeps GitHub and email rendering intent server-only and opt-in", () => {
+    delete mutableEnv.FINALTAB_GITHUB_OAUTH_ENABLED;
+    delete mutableEnv.FINALTAB_TEAM_EMAIL_AUTH_ENABLED;
+    expect(authFeatureFlags()).toEqual({
+      githubOAuthEnabled: false,
+      teamEmailAuthEnabled: false,
+    });
+
+    mutableEnv.FINALTAB_GITHUB_OAUTH_ENABLED = "true";
+    mutableEnv.FINALTAB_TEAM_EMAIL_AUTH_ENABLED = "true";
+    expect(authFeatureFlags()).toEqual({
+      githubOAuthEnabled: true,
+      teamEmailAuthEnabled: true,
+    });
+  });
+
+  it("uses correlated SSR PKCE for GitHub and hides email behind a separate server flag", () => {
+    const panel = readFileSync(new URL("../components/CloudAccessPanel.tsx", import.meta.url), "utf8");
+    const authPanel = readFileSync(new URL("../components/AuthPanel.tsx", import.meta.url), "utf8");
+    const browserClient = readFileSync(new URL("../lib/supabase/client.ts", import.meta.url), "utf8");
+    const callback = readFileSync(new URL("../app/auth/callback/route.ts", import.meta.url), "utf8");
+
+    expect(authPanel).toContain("authFeatureFlags()");
+    expect(panel).toContain('provider: "github"');
+    expect(panel).toContain('new URL("/auth/callback", window.location.origin)');
+    expect(panel).toContain("callback.searchParams.set(\"next\", requestedNextPath())");
+    expect(panel).toContain("teamEmailAuthEnabled ? (");
+    expect(panel).toContain("this UI gate is not a membership allowlist");
+    expect(panel).not.toContain("NEXT_PUBLIC_GITHUB");
+    expect(browserClient).toContain("appendPkceFlowIdToRedirects: true");
+    expect(callback).toContain('oneQueryValue(url, "sb_flow_id")');
+    expect(callback).toContain("(code && !flowId)");
+    expect(callback).toContain("exchangeCodeForSession(code, { flowId: flowId! })");
+    expect(callback).toContain('url.searchParams.has("error")');
+    expect(callback).toContain('url.searchParams.has("error_description")');
+    expect(callback).not.toMatch(/get(?:All)?\("error_description"\)/);
   });
 
   it("ships a branded, script-free email template with link and OTP fallback", () => {
@@ -154,6 +198,7 @@ describe("safe auth navigation", () => {
 describe("browser security policy", () => {
   it("contains the official Privy sources, a nonce, and production hardening", () => {
     const csp = buildContentSecurityPolicy("0123456789abcdef0123456789abcdef", {
+      privyEnabled: true,
       supabaseUrl: "https://project.supabase.co",
       privyApiUrl: "https://privy.accounts.example",
     });
@@ -166,6 +211,19 @@ describe("browser security policy", () => {
     expect(csp).toContain("frame-ancestors 'none'");
     expect(csp).toContain("upgrade-insecure-requests");
     expect(csp).not.toContain("'unsafe-eval'");
+  });
+
+  it("omits Privy origins when the optional bridge is disabled", () => {
+    const csp = buildContentSecurityPolicy("0123456789abcdef0123456789abcdef", {
+      privyApiUrl: "https://privy.accounts.example",
+      supabaseUrl: "https://project.supabase.co",
+    });
+
+    expect(csp).not.toContain("https://auth.privy.io");
+    expect(csp).not.toContain("https://*.rpc.privy.systems");
+    expect(csp).not.toContain("https://privy.accounts.example");
+    expect(csp).toContain("https://verify.walletconnect.com");
+    expect(csp).toContain("https://project.supabase.co");
   });
 
   it("preserves same-origin camera and microphone while denying framing", () => {

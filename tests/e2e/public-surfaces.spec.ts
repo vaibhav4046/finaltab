@@ -124,7 +124,7 @@ test("protected workspace pages never fall back to a demo identity", async ({ pa
   for (const path of ["/app/proof", "/app/tab"]) {
     await page.goto(path);
     await expect(page).toHaveURL(/\/auth\?error=(?:cloud-not-configured|session-required)&next=/);
-    await expect(page.getByRole("heading", { name: /One real account.*verified provisioning bridge/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "One real account. Supabase-secured." })).toBeVisible();
     await expect(page.getByText(/local profile|choose.*sigil/i)).toHaveCount(0);
   }
 });

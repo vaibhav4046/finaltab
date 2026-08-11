@@ -29,7 +29,8 @@ describe("encrypted invite handoff", () => {
     process.env.FINALTAB_PROOF_SIGNING_SECRET = "invite-handoff-test-secret-that-is-longer-than-32-bytes";
     const sealed = sealInviteHandoff("B".repeat(43), { nowSeconds: 2_000 });
     expect(sealed).not.toBeNull();
-    expect(openInviteHandoff(`${sealed!.slice(0, -1)}A`, { nowSeconds: 2_001 })).toBeNull();
+    const changedLastCharacter = sealed!.endsWith("A") ? "B" : "A";
+    expect(openInviteHandoff(`${sealed!.slice(0, -1)}${changedLastCharacter}`, { nowSeconds: 2_001 })).toBeNull();
 
     process.env.FINALTAB_PROOF_SIGNING_SECRET = "different-invite-handoff-secret-longer-than-32-bytes";
     expect(openInviteHandoff(sealed, { nowSeconds: 2_001 })).toBeNull();

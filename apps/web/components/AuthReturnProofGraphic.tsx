@@ -6,7 +6,7 @@ const PROOF_LABEL: Record<AuthProofState, string> = {
   error: "RETURN BLOCKED",
 };
 
-/** A local, dependency-free receipt proof for the email return states. */
+/** A local, dependency-free receipt proof for every identity return state. */
 export function AuthReturnProofGraphic({ state }: { state: AuthProofState }) {
   const verified = state === "verified";
   const failed = state === "error";

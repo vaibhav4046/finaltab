@@ -92,7 +92,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             </span>
             <span className="min-w-0 flex-1">
               <span className="block truncate font-medium text-txt">Account</span>
-              <span className="block truncate text-xs text-faint">Supabase + Privy</span>
+              <span className="block truncate text-xs text-faint">Supabase secured</span>
             </span>
           </Link>
         </div>

@@ -62,6 +62,8 @@
     "postPromotionCutoverApplied": false,
     "applicationFlowProbeComplete": false,
     "privyConfigured": false,
+    "privyRequiredForReadiness": false,
+    "privyCaptureAllowed": false,
     "chainAdapter": "base-sepolia"
   },
   "deliveryTarget": {

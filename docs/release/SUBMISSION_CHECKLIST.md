@@ -2,7 +2,7 @@
 
 **Current state:** the one-atomic-unit V2 rail settlement, 29-table RLS Supabase
 additive schema, durable voice quotas/spend reservations, and sensitive provider
-configuration are proven. The post-promotion cutover, Privy dashboard setup, final deploy/provider probe,
+configuration are proven. The post-promotion cutover, final deploy/provider probe,
 unified nine-tool production MCP capture, final 4K/60 V2 video and public URL,
 and human form submission remain
 blocking. Main commit `b084497` is the clean baseline: both GitHub CI jobs were
@@ -28,7 +28,7 @@ open until the final submission commit reproduces that baseline.
       `pnpm build`, and `pnpm test:e2e` are green.
 - [ ] The final test count is copied from that clean run, not the historical
       V1 `212 passed, 1 skipped` baseline.
-- [ ] Final local evidence reproduces 370 passing + 1 provider-gated vision skip
+- [ ] Final local evidence reproduces 387 passing + 1 provider-gated vision skip
       and a production build that generates 33/33 pages.
 - [ ] Added-line, tracked-file, and media secret scans are clean.
 
@@ -128,9 +128,10 @@ behavior.
 - [ ] Verify four-stage ordering, forged-row rejection, stale-review invalidation,
       durable receipt UUID binding, cross-tenant denial, bounded-memory expiry,
       and user deletion before calling the agent control plane live.
-- [ ] Configure Privy's production app, Supabase JWKS custom auth, exact allowed
-      domain, identity tokens, app ID, and verification key; verify subject pairs
-      and prove Privy tokens cannot authorize settlement/MCP routes.
+- [x] Keep Privy optional and disabled under the stop-before-charge constraint;
+      health must expose `configured: false` with `requiredForReadiness: false`,
+      unconfigured UI must stay hidden, and Privy tokens must remain invalid as
+      settlement/MCP principals.
 - [ ] Keep branded inbound email unclaimed until a verified sender domain and
       custom SMTP or Send Email Hook are live-probed. The branded return page may
       be shown as implemented.
@@ -143,7 +144,7 @@ behavior.
       configuration, and waits for final `Turn` plus `Termination` on stop.
 - [x] ElevenLabs readback is bounded, uncached, text-backed, and truthfully
       labelled as a short buffered browser clip.
-- [x] Final local candidate passed 370 checks + 1 provider-gated vision skip,
+- [x] Final local candidate passed 387 checks + 1 provider-gated vision skip,
       and the production build generated 33/33 pages.
 - [x] The baseline no-charge per-minute Supabase quota migration is applied remotely.
 - [x] The additive daily/monthly spend-reservation migration `20260811064822`
@@ -232,7 +233,7 @@ V2_SETTLEMENT_AMOUNT_ATOMIC=1
 V2_SETTLEMENT_ID=0x8b670800d9856a90baa7492adefaf06ae86ac345d053db3dc7f01b065aadb9db
 V2_LEDGER_HASH=0x1581eb7f56485ff4d2a684a832fc8d085b9b0e5d8540c85e2d550e8f7b0cb91e
 V2_MCP_HUMAN_APPROVAL_TRACE=PENDING
-PRIVY_PRODUCTION_STATE=PENDING_DASHBOARD_JWKS_DOMAIN_IDENTITY_TOKEN_VERIFIER_SETUP
+PRIVY_PRODUCTION_STATE=OPTIONAL_DISABLED_PAID_CUSTOM_AUTH_NOT_AUTHORIZED
 BRANDED_INBOUND_EMAIL=PENDING_VERIFIED_DOMAIN_AND_CUSTOM_SMTP_OR_SEND_EMAIL_HOOK
 AGENT_CONTROL_MIGRATION=APPLIED
 FINANCIAL_TRUTH_CUTOVER=PENDING_POST_PROMOTION

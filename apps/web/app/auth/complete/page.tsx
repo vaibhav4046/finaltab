@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { AuthReturnProofGraphic } from "@/components/AuthReturnProofGraphic";
 import { PrivySessionPanel } from "@/components/PrivySessionPanel";
 import { safeNextPath } from "@/lib/auth/navigation";
+import { privyServerConfig } from "@/lib/privy/server";
 import { authenticatedUser } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -25,6 +26,7 @@ export default async function AuthCompletePage({
   if (!user) {
     redirect(`/auth?error=session-required&next=${encodeURIComponent(next)}`);
   }
+  const privyConfigured = Boolean(privyServerConfig());
 
   return (
     <div className="mx-auto w-full max-w-5xl px-4 py-10 md:px-6">
@@ -36,18 +38,20 @@ export default async function AuthCompletePage({
               Supabase session verified
             </div>
             <p className="mt-5 font-mono text-xs font-semibold uppercase tracking-[0.2em] text-signal">FINALTab / Secure return</p>
-            <h1 className="mt-3 text-3xl font-semibold tracking-tight text-paper md:text-4xl">Email verified. Secure session ready.</h1>
+            <h1 className="mt-3 text-3xl font-semibold tracking-tight text-paper md:text-4xl">Identity verified. Secure session ready.</h1>
             <p className="mt-3 max-w-2xl text-sm leading-relaxed text-fog">
               Supabase established the durable account for <span className="text-paper">{user.email ?? "this user"}</span>.
-              Privy now consumes that same signed subject and must prove the exact link before a provisioned wallet identity is shown.
-              Current V2 settlement signatures still come from external wallets.
+              {privyConfigured
+                ? " The optional Privy bridge must prove that exact subject link before showing a provisioned wallet identity."
+                : " Database access remains bound to that signed Supabase subject."}
+              {" "}Current V2 settlement signatures still come from external wallets.
             </p>
           </div>
           <AuthReturnProofGraphic state="verified" />
         </div>
 
         <div className="p-6 md:p-9">
-          <PrivySessionPanel />
+          {privyConfigured ? <PrivySessionPanel /> : null}
 
           <div className="mt-6 flex flex-wrap items-center gap-3">
             <Link
@@ -61,7 +65,7 @@ export default async function AuthCompletePage({
             </Link>
           </div>
           <p className="mt-4 text-xs leading-relaxed text-fog-dim">
-            Privy never replaces database authorization. Tabs, membership and approvals continue under Supabase Row Level Security.
+            Tabs, membership and approvals remain authorized by Supabase Row Level Security. Optional wallet providers never replace it.
           </p>
         </div>
       </section>

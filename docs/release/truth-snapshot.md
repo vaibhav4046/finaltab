@@ -26,14 +26,14 @@
 > authenticated-only durable voice quota, spend reservations, and sensitive
 > provider configuration are ready. The current local candidate has
 > exactly nine production MCP tools, external-wallet signing, and a mandatory
-> attested four-stage first-party review before Freeze. Its final suite is 370
+> attested four-stage first-party review before Freeze. Its final suite is 387
 > passing with one provider-gated vision skip and a 33/33-page production build.
 > UI, REST, and MCP value submissions share one durable journal in source: an
 > accepted retry skips simulation and execution, while prepared recovery reuses
 > the stored successful simulation and deterministic idempotency key under a
 > bounded approval expiry. Post-promotion cutover `74500` is not applied; the
 > additive schema does not prove live application/provider behavior;
-> Privy dashboard/JWKS/domain/identity-token/verifier configuration, final
+> The paid Privy bridge is optional and deliberately disabled; final
 > application/provider probes, real captures, and the 4K/60 render remain open.
 > Every “end-to-end” or `confirm: true` statement below describes
 > the historical V1 system only.

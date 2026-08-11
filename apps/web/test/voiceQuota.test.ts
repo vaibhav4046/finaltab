@@ -220,6 +220,13 @@ describe("voice spend reservation migration", () => {
     )),
     "utf8",
   );
+  const shadowRepair = readFileSync(
+    fileURLToPath(new URL(
+      "../../../supabase/migrations/20260811165823_fix_voice_budget_current_time_shadow.sql",
+      import.meta.url,
+    )),
+    "utf8",
+  );
 
   it("fixes provider units and every spend/concurrency cap in trusted SQL", () => {
     expect(VOICE_STT_RESERVATION_SECONDS).toBe(180);
@@ -279,5 +286,16 @@ describe("voice spend reservation migration", () => {
       "grant execute on function public.reserve_voice_budget_service(uuid, text, bigint)\n  to service_role",
     );
     expect(rpcCompatibility).not.toMatch(/grant execute[\s\S]*to (public|anon|authenticated)/i);
+  });
+
+  it("repairs the CURRENT_TIME variable collision without changing fixed-cap behavior", () => {
+    const marker = "create or replace function public.reserve_voice_budget(";
+    const originalFunction = migration.slice(migration.indexOf(marker)).trim();
+    const repairedFunction = shadowRepair.slice(shadowRepair.indexOf(marker)).trim();
+
+    expect(originalFunction.match(/\bcurrent_time\b/g)).toHaveLength(9);
+    expect(repairedFunction).not.toMatch(/\bcurrent_time\b/i);
+    expect(repairedFunction.match(/\bobserved_at\b/g)).toHaveLength(9);
+    expect(repairedFunction).toBe(originalFunction.replace(/\bcurrent_time\b/g, "observed_at"));
   });
 });

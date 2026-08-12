@@ -11,9 +11,13 @@ import { describe, expect, it } from "vitest";
 // the whole point of the design and nothing in CI notices if a migration edit
 // drops one.
 //
-// These assertions are static. They prove the clauses are present in the
-// migration, not that a running Postgres enforces them; a live proof needs a
-// real database and is tracked separately.
+// These assertions are static: they prove the clauses are present in the
+// migration, not that a running Postgres enforces them. The enforcement half
+// lives in durableSubmissionJournalEnforcement.test.ts, which applies these same
+// migrations to a real PostgreSQL engine and makes the database refuse the
+// calls. Both are kept, because they fail differently — this file names the
+// clause that went missing, that one catches a clause that survived an edit and
+// stopped biting.
 
 const migration = readFileSync(
   fileURLToPath(new URL("../../../supabase/migrations/20260811074000_durable_submission_intents.sql", import.meta.url)),

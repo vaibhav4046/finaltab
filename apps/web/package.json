@@ -30,6 +30,7 @@
     "zod4": "npm:zod@^4.4.3"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "0.5.4",
     "@tailwindcss/postcss": "^4.0.0",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",

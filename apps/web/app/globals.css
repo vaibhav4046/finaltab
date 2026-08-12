@@ -22,7 +22,11 @@
 
   --color-txt: #f4f8f1;
   --color-muted: #b7c0b8;
-  --color-faint: #7e8b82;
+  /* Contrast-derived. The previous #7e8b82 measured 4.45:1 against the lightest
+     surface it lands on (signal/10 over canvas, #1d2510) and failed WCAG AA for
+     body text. This value measures 5.0:1 there, so every faint-on-tint pairing
+     clears 4.5:1 with headroom. */
+  --color-faint: #86948a;
 
   /* Compatibility aliases used throughout the settlement lab. */
   --color-night: #050706;
@@ -347,7 +351,7 @@ button:disabled {
   --color-info: #45afff;
   --color-txt: #f4f8f1;
   --color-muted: #b7c0b8;
-  --color-faint: #7e8b82;
+  --color-faint: #86948a;
   --color-night: #050706;
   --color-panel: #0a0d0b;
   --color-panel-2: #111711;

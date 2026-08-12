@@ -213,8 +213,9 @@ describe("proposeAllocation", () => {
     });
     const request = JSON.parse(body) as { messages: Array<{ role: string; content: string }> };
     const payload = request.messages.find((message) => message.role === "user")?.content ?? "";
-    expect(payload).toContain('"itemIndex": 0');
-    expect(payload).toContain('"quantity": 1');
+    expect(payload).toContain('"itemIndex":0');
+    expect(payload).toContain('"quantity":1');
+    expect(payload).not.toContain("\n");
     expect(payload).not.toContain("unitPrice");
     expect(payload).not.toContain("lineTotal");
     expect(payload).not.toContain('"currency"');

@@ -45,6 +45,9 @@ export async function proposeAllocation(
     throw new Error(`payerId ${input.payerId} is not in participants`);
   }
 
+  // Compact JSON is materially smaller than pretty-printed JSON for large
+  // tables. Human readability is irrelevant to the model transport; keeping
+  // the prompt tight protects the free-tier TPM boundary.
   const userPayload = JSON.stringify(
     {
       // Allocation needs item identity and quantity, not prices or receipt
@@ -62,8 +65,6 @@ export async function proposeAllocation(
       payerId: input.payerId,
       instruction: input.instruction,
     },
-    null,
-    2,
   );
 
   let lastError: unknown = null;

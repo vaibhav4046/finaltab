@@ -134,6 +134,11 @@ Playwright result from the prior deployment's evidence.
 - AssemblyAI and ElevenLabs are deployed/configured. Their sensitive Production
   variables and Supabase budget controls are present, but a real
   microphone/readback lifecycle must pass before calling hybrid voice live.
+  `tests/e2e/voice-lifecycle.spec.ts` is the runnable probe for that gate. It
+  skips by default and states its own blocker: minting a capture credential
+  requires a real signed-in Supabase session, which cannot be produced without a
+  human completing GitHub OAuth or email OTP. See section 7 of
+  `docs/release/user-actions.md`.
 - Product-film narration was generated locally with Kokoro. The no-charge
   ElevenLabs preflight made one denied quota-check GET, zero synthesis POSTs,
   and no retry.

@@ -250,3 +250,47 @@ Alchemy endpoint back, put the new key in `BASE_SEPOLIA_RPC_URL` in an untracked
 
 I did not rotate it: rotating credentials is outside autonomous scope, and doing
 it silently could break a deploy you had in flight.
+
+---
+
+## 7. Production browser voice lifecycle — blocked on a human sign-in
+
+`tests/e2e/voice-lifecycle.spec.ts` is the runnable probe for the last open
+voice gate. It drives the real settlement room: create a durable tab, start the
+microphone, capture a live AssemblyAI transcript, push it through **Use
+transcript**, and confirm that the transcript stops at the instruction textarea
+instead of reaching allocation. It also asserts the abort path leaves no stuck
+control, and inspects the live `POST /api/voice/token` response for durable
+quota headers and for any permanent provider key.
+
+**It cannot be run autonomously, and the blocker is not a missing script.**
+`apps/web/lib/server/voiceQuota.ts` accepts only a principal whose `source` is
+`session` or `bearer-jwt` with a UUID subject, so no machine or API token can
+mint an AssemblyAI streaming credential. Production sign-in offers GitHub OAuth
+and email OTP only, and `teamEmailAuth` is disabled with delivery unproven.
+Producing a session therefore means authenticating as you, which is outside
+autonomous scope.
+
+**To run it yourself:**
+
+1. Sign in to <https://finaltab.vercel.app> in a browser, then save that browser
+   context as a Playwright storage state file (`pnpm exec playwright open
+   --save-storage=voice-session.json https://finaltab.vercel.app`, sign in, then
+   close the window). Keep the file untracked — it holds a live session.
+2. Run the probe against production:
+
+```bash
+E2E_VOICE_STORAGE_STATE=./voice-session.json E2E_BASE_URL=https://finaltab.vercel.app pnpm exec playwright test tests/e2e/voice-lifecycle.spec.ts --project=chromium
+```
+
+The microphone is a Chromium fake device fed by the retained locally generated
+Kokoro narration at
+`video/finaltab-winner/assets/audio/voice-v3/source-local/scene-01-kokoro.wav`;
+override it with `E2E_VOICE_FIXTURE_WAV`. A full run costs one AssemblyAI
+streaming session per test. It never triggers a paid ElevenLabs readback, never
+touches participant funds, and cannot broadcast anything — the probe stops at
+the instruction textarea, and allocation stays gated on a confirmed receipt.
+
+Until that run passes, hybrid voice stays at
+`DEPLOYED/CONFIG PROVEN; PROVIDER LIFECYCLE PENDING`. Do not upgrade the claim
+on the strength of the probe existing.

@@ -196,7 +196,11 @@ Production variables. Supabase enforces durable per-user quotas of 8
 transcription sessions and 20 readbacks per minute through the server-only
 reservation path. A real production microphone/readback provider lifecycle has
 not completed, so voice remains **configured and deployed, not live-proven**.
-AssemblyAI is not used to narrate the product video.
+[`tests/e2e/voice-lifecycle.spec.ts`](tests/e2e/voice-lifecycle.spec.ts) is the
+runnable probe for that gate; it skips by default because minting a capture
+credential requires a signed-in Supabase session that only a human can produce.
+Section 7 of [docs/release/user-actions.md](docs/release/user-actions.md) has the
+operator runbook. AssemblyAI is not used to narrate the product video.
 
 ## Identity and durable agent control
 

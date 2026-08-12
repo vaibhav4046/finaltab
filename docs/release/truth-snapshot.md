@@ -29,7 +29,8 @@
 > authenticated owner tab create/read, exactly-nine-tool list, and non-value MCP
 > calculation/preparation probe passed. The deployed voice path, spend
 > reservations, and sensitive provider configuration are ready but a real
-> microphone/readback lifecycle is not proven.
+> microphone/readback lifecycle is not proven; `tests/e2e/voice-lifecycle.spec.ts`
+> is the gated probe for it and skips without an operator-supplied session.
 > UI, REST, and MCP value submissions share one durable journal in source: an
 > accepted retry skips simulation and execution, while prepared recovery reuses
 > the stored successful simulation and deterministic idempotency key under a

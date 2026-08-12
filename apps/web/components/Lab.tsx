@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AgentReviewLauncher, type AgentReviewGate } from "./AgentReviewLauncher";
@@ -10,6 +10,7 @@ import { ReceiptPanel } from "./ReceiptPanel";
 import { SplitPanel } from "./SplitPanel";
 import { invalidateReviewedSettlement, reviewedSettlementInputKey } from "@/lib/reviewGate";
 import type { AllocationState, ExecutionStage, Person, ReceiptState } from "@/lib/types";
+import type { DurableTabDraft } from "@/lib/tabDraft";
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
@@ -29,6 +30,14 @@ export function Lab() {
   const [newTabTitle, setNewTabTitle] = useState("");
   const [creatingTab, setCreatingTab] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
+  const [participantsLoaded, setParticipantsLoaded] = useState(false);
+  const [draftState, setDraftState] = useState<"loading" | "ready" | "saving" | "error">("loading");
+  const [draftMessage, setDraftMessage] = useState<string | null>(null);
+  const draftContextRef = useRef<{
+    tabId: string | null;
+    revision: number;
+    queue: Promise<void>;
+  }>({ tabId: null, revision: 0, queue: Promise.resolve() });
 
   useEffect(() => {
     const requestedTab = new URLSearchParams(window.location.search).get("tab");
@@ -42,6 +51,92 @@ export function Lab() {
     }
     setQueryReady(true);
   }, []);
+
+  useEffect(() => {
+    if (!cloudTabId) return;
+    let disposed = false;
+    const draftContext = { tabId: cloudTabId, revision: 0, queue: Promise.resolve() };
+    draftContextRef.current = draftContext;
+    setParticipantsLoaded(false);
+    setLocked(false);
+    setDraftState("loading");
+    setDraftMessage(null);
+    void fetch(`/api/tabs/${cloudTabId}/draft`, { cache: "no-store" })
+      .then(async (response) => {
+        const body = await response.json() as {
+          tabStatus?: string;
+          draft?: DurableTabDraft | null;
+          message?: string;
+        };
+        if (!response.ok) throw new Error(body.message ?? "The durable draft could not be loaded.");
+        if (disposed) return;
+        if (body.tabStatus && body.tabStatus !== "open") {
+          setLocked(true);
+          setDraftState("ready");
+          setDraftMessage("This tab is frozen. Its editable pre-freeze draft is hidden; use the execution history for immutable settlement truth.");
+          return;
+        }
+        if (body.draft) {
+          draftContext.revision = body.draft.revision;
+          setReceipt(body.draft.receiptState);
+          setAllocation(body.draft.allocationState);
+          setPayerId(body.draft.payerParticipantId ?? "");
+          setReview(invalidateReviewedSettlement());
+          setNetted([]);
+          setDraftMessage(body.draft.allocationState
+            ? "Confirmed receipt and reconciled split restored from the durable tab."
+            : "Confirmed receipt restored from the durable tab.");
+        }
+        setDraftState("ready");
+      })
+      .catch((error) => {
+        if (disposed) return;
+        setDraftState("error");
+        setDraftMessage(error instanceof Error ? error.message : "The durable draft could not be loaded.");
+      });
+    return () => { disposed = true; };
+  }, [cloudTabId]);
+
+  const persistDraft = useCallback((
+    nextReceipt: ReceiptState,
+    nextAllocation: AllocationState | null,
+    nextPayerId: string,
+  ) => {
+    if (!cloudTabId || !nextReceipt.confirmedAt || locked) return;
+    const draftContext = draftContextRef.current;
+    if (draftContext.tabId !== cloudTabId) return;
+    const save = async () => {
+      if (draftContextRef.current === draftContext) {
+        setDraftState("saving");
+        setDraftMessage("Saving confirmed draft…");
+      }
+      const response = await fetch(`/api/tabs/${draftContext.tabId}/draft`, {
+        method: "PUT",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          expectedRevision: draftContext.revision,
+          receiptState: nextReceipt,
+          allocationState: nextAllocation,
+          payerParticipantId: nextPayerId || null,
+        }),
+      });
+      const body = await response.json() as { revision?: number; message?: string };
+      if (!response.ok || !Number.isSafeInteger(body.revision)) {
+        throw new Error(body.message ?? "The confirmed draft could not be saved.");
+      }
+      draftContext.revision = body.revision!;
+      if (draftContextRef.current !== draftContext) return;
+      setDraftState("ready");
+      setDraftMessage(nextAllocation
+        ? "Confirmed receipt, payer, instruction, and reconciled split saved."
+        : "Confirmed receipt draft saved.");
+    };
+    draftContext.queue = draftContext.queue.then(save, save).catch((error) => {
+      if (draftContextRef.current !== draftContext) return;
+      setDraftState("error");
+      setDraftMessage(error instanceof Error ? error.message : "The confirmed draft could not be saved.");
+    });
+  }, [cloudTabId, locked]);
 
   const createDurableTab = async () => {
     const title = newTabTitle.trim();
@@ -68,12 +163,20 @@ export function Lab() {
 
   const resetAfterParticipantChange = (next: Person[]) => {
     if (locked) return;
+    if (!participantsLoaded) {
+      setParticipantsLoaded(true);
+      setPeople(next);
+      setPayerId((current) => next.some((person) => person.id === current) ? current : (next[0]?.id ?? ""));
+      return;
+    }
     setPeople(next);
-    if (!next.some((person) => person.id === payerId)) setPayerId(next[0]?.id ?? "");
+    const nextPayerId = next.some((person) => person.id === payerId) ? payerId : (next[0]?.id ?? "");
+    if (nextPayerId !== payerId) setPayerId(nextPayerId);
     setAllocation(null);
     setReview(invalidateReviewedSettlement());
     setNetted([]);
     setStage("idle");
+    if (receipt?.confirmedAt) persistDraft(receipt, null, nextPayerId);
   };
 
   const reviewInputKey = reviewedSettlementInputKey({
@@ -85,6 +188,7 @@ export function Lab() {
     netted,
     currency: receipt?.receipt.currency ?? "",
   });
+  const editingLocked = locked || draftState === "loading";
 
   if (!queryReady) {
     return <div className="grid min-h-[55vh] place-items-center font-mono text-xs text-fog">Opening durable workspace…</div>;
@@ -162,9 +266,16 @@ export function Lab() {
         </p>
       </header>
 
+      <p
+        className={`mb-4 rounded-xl border px-4 py-3 text-sm ${draftState === "error" ? "border-danger/30 bg-danger/5 text-danger" : "border-info/25 bg-info/5 text-muted"}`}
+        role={draftState === "error" ? "alert" : "status"}
+      >
+        {draftState === "loading" ? "Loading confirmed receipt and split from this durable tab…" : draftMessage ?? "Confirmed receipt and split changes persist across signed-in devices."}
+      </p>
+
       <ParticipantSetup
         people={people}
-        locked={locked}
+        locked={editingLocked}
         cloudTabId={cloudTabId}
         onPeople={resetAfterParticipantChange}
       />
@@ -179,23 +290,29 @@ export function Lab() {
             setReview(invalidateReviewedSettlement());
             setNetted([]);
             setStage("idle");
+            if (next.confirmedAt) persistDraft(next, null, payerId);
           }}
-          locked={locked}
+          locked={editingLocked}
         />
         <SplitPanel
           people={people}
           receipt={receipt}
           allocation={allocation}
           payerId={payerId}
-          locked={locked}
+          locked={editingLocked}
           onPayer={(next) => {
             setPayerId(next);
+            setAllocation(null);
             setReview(invalidateReviewedSettlement());
+            setNetted([]);
+            setStage("idle");
+            if (receipt?.confirmedAt) persistDraft(receipt, null, next);
           }}
           onAllocation={(next) => {
             setAllocation(next);
             setReview(invalidateReviewedSettlement());
             setNetted([]);
+            if (receipt?.confirmedAt && next) persistDraft(receipt, next, payerId);
           }}
           onNetted={setNetted}
         />
@@ -218,7 +335,7 @@ export function Lab() {
         allocation={allocation}
         payerParticipantId={payerId}
         reviewInputKey={reviewInputKey}
-        locked={locked}
+        locked={editingLocked}
         review={review}
         onReviewed={setReview}
       />

@@ -130,8 +130,8 @@ export function invalidBody(error: unknown): Response {
   );
 }
 
-export function readCloudJson(request: Request): Promise<unknown> {
-  return readJsonBodyWithLimit(request, CLOUD_MUTATION_MAX_BYTES);
+export function readCloudJson(request: Request, maxBytes = CLOUD_MUTATION_MAX_BYTES): Promise<unknown> {
+  return readJsonBodyWithLimit(request, maxBytes);
 }
 
 export function databaseUnavailable(code = "CLOUD_WRITE_FAILED"): Response {

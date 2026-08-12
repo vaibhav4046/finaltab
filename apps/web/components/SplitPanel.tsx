@@ -47,6 +47,10 @@ export function SplitPanel({
   const [blocked, setBlocked] = useState<string | null>(null);
   const [showNetted, setShowNetted] = useState(false);
 
+  useEffect(() => {
+    if (allocation) setInstruction(allocation.instruction);
+  }, [allocation]);
+
   const nameOf = useMemo(() => {
     const m = new Map(people.map((p) => [p.id, p.name]));
     return (id: string) => m.get(id) ?? id;

@@ -7,7 +7,7 @@
   "height": 2160,
   "fps": 60,
   "frameCount": 5400,
-  "wordCount": 188,
+  "wordCount": 183,
   "scenes": [
     {
       "scene": 1,
@@ -62,18 +62,18 @@
       "end": 50,
       "src": "compositions/frames-v3/05-real-site-demo.html",
       "captureId": "C05",
-      "narration": "Watch the product: sign in, create a tab, upload and correct a receipt, add people, assign items, include tax and tip, run four checks, inspect balances and memory, then lock the plan in one clear, traceable workflow."
+      "narration": "Watch the product: sign in, create a durable tab, enter the receipt workspace, inspect exact-cent reviews, open the evidence graph, and reach the proof route—one traceable path from input to verification."
     },
     {
       "scene": 6,
       "slug": "complex-agent-task",
-      "title": "Complex voice and agent task",
+      "title": "Complex typed agent task",
       "start": 50,
       "duration": 18,
       "end": 68,
       "src": "compositions/frames-v3/06-complex-agent-task.html",
       "captureId": "C06",
-      "narration": "Now try a hard request: weighted items, shared service, exclusions, and a payer correction. Voice reads it back. The model suggests assignments. Math balances every cent. Four reviewers record what passed and why. Memory keeps a compact audit summary."
+      "narration": "Now try a hard request: weighted items, shared service, exclusions, and a payer correction. Typed input stays visible. The model suggests assignments. Math balances every cent. Four reviewers record what passed and why. Memory keeps a compact audit summary."
     },
     {
       "scene": 7,
@@ -99,16 +99,16 @@
     }
   ],
   "narration": {
-    "provider": "ElevenLabs",
-    "voiceName": "George",
-    "voiceId": "JBFqnCBsd6RMkjVDRZzb",
-    "model": "eleven_multilingual_v2",
+    "provider": "Kokoro-82M (local)",
+    "voiceName": "George (British male)",
+    "voiceId": "bm_george",
+    "model": "kokoro-v1.0",
     "outputFormat": "mp3_44100_128",
-    "providerCallsRequired": 1,
-    "batchScope": "complete-eight-scene-script",
+    "providerCallsRequired": 0,
+    "batchScope": "complete-eight-scene-script-local",
     "reuseAllowed": false,
-    "masterPath": "assets/audio/voice-v3/finaltab-v3-george-master.mp3",
-    "alignmentPath": "assets/audio/voice-v3/finaltab-v3-george-alignment.json"
+    "masterPath": "assets/audio/voice-v3/finaltab-v3-local-kokoro-master.mp3",
+    "alignmentPath": "assets/audio/voice-v3/finaltab-v3-local-kokoro-alignment.json"
   },
   "mastering": {
     "integratedLufs": -14,

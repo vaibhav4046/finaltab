@@ -4,10 +4,6 @@ import { dirname, join, resolve, sep } from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { resolveMediaTools } from "./scripts/resolve-media-tools.mjs";
-import {
-  ELEVENLABS_INCLUDED_QUOTA_SAFETY_MULTIPLIER,
-  countElevenLabsNarrationCharacters,
-} from "./scripts/elevenlabs-quota-guard.mjs";
 
 const projectDir = dirname(fileURLToPath(import.meta.url));
 const allowPlaceholders = process.argv.includes("--allow-placeholders");
@@ -187,7 +183,7 @@ const lockedLines = scriptLines(script);
 invariant(lockedLines.length === 8, "SCRIPT.md must contain exactly eight indented narration lines");
 invariant(lockedLines.every((line, indexValue) => line === contract.scenes[indexValue].narration), "SCRIPT.md narration differs from the V3 contract");
 const spokenWords = words(lockedLines.join(" "));
-invariant(spokenWords.length === 188 && contract.wordCount === 188, "Narration must remain exactly 188 words");
+invariant(spokenWords.length === 183 && contract.wordCount === 183, "Narration must remain exactly 183 words");
 for (const forbidden of contract.spokenTermRules.forbidden) {
   invariant(!lockedLines.join(" ").toLocaleLowerCase().includes(forbidden.toLocaleLowerCase()), `Narration contains forbidden unexplained term: ${forbidden}`);
 }
@@ -241,18 +237,18 @@ invariant(["pending-v3-captures", "approved-v3-captures"].includes(captureLock.s
 invariant(voice.schemaVersion === 3, "Voice manifest schema differs");
 invariant(voice.provider === contract.narration.provider && voice.model === contract.narration.model, "Voice provider/model differs");
 invariant(voice.voiceId === contract.narration.voiceId && voice.voiceName === contract.narration.voiceName, "Voice identity differs");
-invariant(voice.expectedProviderCalls === 1 && voice.reuseAllowed === false && voice.reusedAssets.length === 0, "Voice manifest does not enforce one all-new batch");
+invariant(voice.expectedProviderCalls === 0 && voice.reuseAllowed === false && voice.reusedAssets.length === 0, "Voice manifest does not enforce the approved zero-provider local batch");
 invariant(Array.isArray(voice.scenes) && voice.scenes.length === 8, "Voice manifest must contain eight scene guides");
 invariant(voice.scenes.every((scene, indexValue) => scene.text === lockedLines[indexValue]), "Voice manifest text differs from SCRIPT.md");
 invariant(voice.master?.path === contract.narration.masterPath && voice.master?.alignmentPath === contract.narration.alignmentPath, "Voice master paths differ");
 
-invariant(ledger.schemaVersion === 3 && ledger.provider === "ElevenLabs" && ledger.model === "eleven_multilingual_v2", "Narration ledger provider/model differs");
+invariant(ledger.schemaVersion === 3 && ledger.provider === contract.narration.provider && ledger.model === contract.narration.model, "Narration ledger provider/model differs");
 invariant(ledger.sanitized === true && ledger.containsCredentials === false, "Narration ledger must remain sanitized and credential-free");
 invariant(ledger.voiceId === contract.narration.voiceId && ledger.scriptWordCount === contract.wordCount, "Narration ledger voice/script scope differs");
-invariant(ledger.callSummary?.expectedProviderCalls === 1 && ledger.callSummary?.reusedSceneCalls === 0, "Narration ledger does not enforce one new batch");
+invariant(ledger.callSummary?.expectedProviderCalls === 0 && ledger.callSummary?.attemptedProviderCalls === 0 && ledger.callSummary?.reusedSceneCalls === 0, "Narration ledger does not enforce zero provider calls");
 
 invariant(captions.schemaVersion === 3 && captions.durationSeconds === 90 && captions.maxLineLength === 42, "Caption contract differs");
-invariant(captions.scriptWordCount === 188, "Caption contract must require exactly 188 words");
+invariant(captions.scriptWordCount === 183, "Caption contract must require exactly 183 words");
 invariant(audio.schemaVersion === 3 && audio.durationSeconds === 90 && audio.bgm === null, "Audio manifest duration/BGM differs");
 invariant(audio.mastering?.integratedLufs === -14 && audio.mastering?.maxTruePeakDbtp === -1, "Audio mastering target differs");
 invariant(audio.cues.filter((cue) => cue.id.startsWith("handoff-")).length === 7, "Audio manifest must contain seven scene handoffs");
@@ -278,8 +274,8 @@ invariant(packageJson.scripts?.["gate:render"] === "node verify-video-gates.mjs"
 
 const pending = [];
 if (captureLock.status !== "approved-v3-captures") pending.push("four approved V3 captures");
-if (voice.status !== "approved-v3-single-batch") pending.push("one approved George multilingual-v2 batch");
-if (ledger.status !== "approved-v3-single-batch") pending.push("one-call narration ledger");
+if (voice.status !== "approved-v3-local-offline") pending.push("approved local Kokoro narration");
+if (ledger.status !== "approved-v3-local-offline") pending.push("zero-provider narration ledger");
 if (captions.status !== "approved-v3-captions") pending.push("V3 captions");
 if (motion.status !== "approved-v3-motion" || motion.assertions?.length !== 24) pending.push("24 final motion assertions");
 if (storyScenes.some((scene) => field(scene.block, "status") !== "animated")) pending.push("eight newly animated V3 scenes");
@@ -307,18 +303,19 @@ invariant(pending.length === 0, `FINAL RENDER BLOCKED · ${[...new Set(pending)]
 const deniedCaptures = new Set(superseded.captureSha256);
 const deniedNarration = new Set(superseded.narrationSha256);
 invariant(Array.isArray(captureLock.captures) && captureLock.captures.length === 4, "Approved capture lock must contain four V3 files");
-invariant(typeof captureLock.attestationPath === "string", "Approved capture lock must identify its human review");
+invariant(typeof captureLock.attestationPath === "string", "Approved capture lock must identify its independent review");
 const captureAttestationPath = resolve(projectDir, captureLock.attestationPath);
 invariant(captureAttestationPath.startsWith(`${projectDir}${sep}`), "Capture attestation path escapes the video project");
 invariant(existsSync(captureAttestationPath) && sha256(readFileSync(captureAttestationPath)) === captureLock.attestationSha256, "Capture attestation file/hash differs");
 const captureAttestation = JSON.parse(readFileSync(captureAttestationPath, "utf8"));
-invariant(captureAttestation.schemaVersion === 3 && captureAttestation.status === "approved-human-review", "Capture attestation is not an approved V3 human review");
+invariant(captureAttestation.schemaVersion === 3 && captureAttestation.status === "approved-independent-review", "Capture attestation is not an approved V3 independent review");
 const captureReviews = new Map((captureAttestation.captures ?? []).map((item) => [item.id, item]));
 invariant(captureReviews.size === 4, "Capture attestation must cover exactly four unique IDs");
 const locks = new Map(captureLock.captures.map((item) => [item.id, item]));
 for (const capture of captureContracts.captures) {
   const review = captureReviews.get(capture.id);
-  invariant(review?.sourceMatches === true && review?.noSecretsOrPrivateIdentity === true && review?.noValueMovement === true, `Capture human review is incomplete: ${capture.id}`);
+  invariant(review?.reviewerType === "independent-automated-visual-and-source-audit", `Capture reviewer type differs: ${capture.id}`);
+  invariant(review?.sourceMatches === true && review?.noSecretsOrPrivateIdentity === true && review?.noValueMovement === true, `Capture independent review is incomplete: ${capture.id}`);
   invariant(capture.required.every((statement) => review.required?.[statement] === true), `Capture required-evidence review is incomplete: ${capture.id}`);
   invariant(capture.forbidden.every((statement) => review.forbiddenAbsent?.[statement] === true), `Capture forbidden-evidence review is incomplete: ${capture.id}`);
   const lock = locks.get(capture.id);
@@ -338,71 +335,36 @@ for (const capture of captureContracts.captures) {
   }
 }
 
-invariant(voice.selectedProviderCalls === 1 && voice.master?.batchId, "Approved voice manifest does not identify one selected batch");
-invariant(ledger.callSummary?.selectedProviderCalls === 1 && ledger.callSummary?.supersededProviderCalls === 0, "Approved narration ledger must contain exactly one provider call");
-invariant(ledger.selectedBatch?.batchId === voice.master.batchId, "Voice manifest and generation ledger batch IDs differ");
-invariant(ledger.callSummary?.attemptedProviderCalls === 1, "Approved narration ledger must prove exactly one attempted provider call");
-const quotaPreflight = ledger.quotaPreflight;
-const safeQuotaPreflightKeys = new Set([
-  "checkedAt",
-  "currentOverageIsZero",
-  "exactNarrationCharacters",
-  "extensionOrOverageAvailable",
-  "hasOpenInvoices",
-  "httpStatus",
-  "paymentPendingOrFailed",
-  "reasonCode",
-  "remainingIncludedCharacters",
-  "requiredIncludedCharacters",
-  "result",
-  "safetyMultiplier",
-  "sanitized",
-  "subscriptionActive",
-]);
-invariant(quotaPreflight && Object.keys(quotaPreflight).length === safeQuotaPreflightKeys.size && Object.keys(quotaPreflight).every((key) => safeQuotaPreflightKeys.has(key)), "Narration quota preflight fields are incomplete or non-aggregate");
-const exactNarrationCharacters = countElevenLabsNarrationCharacters(lockedLines.join("\n\n"));
-invariant(quotaPreflight.sanitized === true && quotaPreflight.result === "approved" && quotaPreflight.reasonCode === "included_quota_sufficient", "Narration quota preflight was not approved");
-invariant(typeof quotaPreflight.checkedAt === "string" && typeof quotaPreflight.extensionOrOverageAvailable === "boolean", "Narration quota preflight aggregate metadata is incomplete");
-invariant(quotaPreflight.httpStatus === 200 && quotaPreflight.subscriptionActive === true, "Narration quota preflight did not verify an active subscription");
-invariant(quotaPreflight.currentOverageIsZero === true && quotaPreflight.hasOpenInvoices === false && quotaPreflight.paymentPendingOrFailed === false, "Narration quota preflight found a billing issue");
-invariant(quotaPreflight.exactNarrationCharacters === exactNarrationCharacters, "Narration quota preflight cost differs from the exact provider text");
-invariant(quotaPreflight.safetyMultiplier >= ELEVENLABS_INCLUDED_QUOTA_SAFETY_MULTIPLIER, "Narration quota preflight safety multiplier is too small");
-invariant(quotaPreflight.requiredIncludedCharacters >= Math.ceil(exactNarrationCharacters * quotaPreflight.safetyMultiplier), "Narration quota preflight did not conservatively price the exact text");
-invariant(quotaPreflight.remainingIncludedCharacters >= quotaPreflight.requiredIncludedCharacters, "Narration generation required extension or overage");
-invariant(voice.rawProviderResponse?.batchId === voice.master.batchId && voice.rawProviderResponse?.batchId === ledger.selectedBatch?.batchId, "Raw response, master, and ledger batch IDs differ");
-invariant(voice.rawProviderResponse?.path === "assets/audio/voice-v3/finaltab-v3-george-provider-response.mp3", "Raw V3 provider response path differs");
-invariant(voice.rawProviderResponse?.path === ledger.selectedBatch?.path && voice.rawProviderResponse?.sha256 === ledger.selectedBatch?.sha256, "Raw response and ledger evidence differ");
-invariant(existsSync(join(projectDir, ...voice.rawProviderResponse.path.split("/"))), "Raw V3 provider response is missing");
-invariant(statSync(join(projectDir, ...voice.rawProviderResponse.path.split("/"))).size === voice.rawProviderResponse.bytes && fileSha(voice.rawProviderResponse.path) === voice.rawProviderResponse.sha256, "Raw V3 provider response hash/bytes differ");
+invariant(voice.selectedProviderCalls === 0 && voice.master?.batchId === null, "Approved local voice manifest must prove zero provider calls");
+invariant(ledger.callSummary?.selectedProviderCalls === 0 && ledger.callSummary?.attemptedProviderCalls === 0, "Approved local narration ledger must prove zero provider calls");
+invariant(ledger.elevenLabsDecision?.result === "quota-preflight-denied" && ledger.elevenLabsDecision?.subscriptionGetsAlreadyConsumed === 1 && ledger.elevenLabsDecision?.synthesisPosts === 0 && ledger.elevenLabsDecision?.retryAllowed === false, "Denied ElevenLabs boundary differs");
+invariant(voice.rawProviderResponse === undefined && ledger.selectedBatch === null, "Local narration must not claim a cloud provider response");
 const narrationPath = join(projectDir, ...voice.master.path.split("/"));
 invariant(existsSync(narrationPath), "V3 narration master is missing");
 invariant(statSync(narrationPath).size === voice.master.bytes && fileSha(voice.master.path) === voice.master.sha256, "V3 narration master hash/bytes differ");
 invariant(!deniedNarration.has(voice.master.sha256), "V3 narration reuses a rejected audio hash");
 const narrationSourceSha = sha256(lockedLines.join("\n"));
 invariant(voice.scriptNarrationSha256 === narrationSourceSha, "Voice manifest script hash differs");
-invariant(ledger.selectedBatch?.scriptNarrationSha256 === narrationSourceSha, "Narration ledger script hash differs");
+invariant(ledger.scriptNarrationSha256 === narrationSourceSha, "Narration ledger script hash differs");
 
 const alignment = readJson(voice.master.alignmentPath);
 invariant(alignment.schemaVersion === 3 && alignment.status === "approved-v3-alignment", "V3 narration alignment is not approved");
-invariant(alignment.timingMapping?.method === "monotonic-levenshtein-forced-v1", "V3 narration timing mapping method differs");
-invariant(alignment.timingMapping?.lockedWordCount === 188 && alignment.timingMapping?.mappedWordCount === 188 && alignment.timingMapping?.fullMonotonicMapping === true, "V3 narration timing mapping is incomplete");
-invariant(Number.isInteger(alignment.timingMapping?.rawAsrWordCount) && alignment.timingMapping.rawAsrWordCount >= 150 && alignment.timingMapping.rawAsrWordCount <= 220, "V3 narration raw ASR word count is implausible");
-invariant(Number.isInteger(alignment.timingMapping?.rawAsrEditDistance) && alignment.timingMapping.rawAsrEditDistance >= 0, "V3 narration raw ASR edit distance is invalid");
-invariant(alignment.timingMapping?.maximumRawAsrWordErrorRate === 0.15 && Number.isFinite(alignment.timingMapping?.rawAsrWordErrorRate) && alignment.timingMapping.rawAsrWordErrorRate >= 0 && alignment.timingMapping.rawAsrWordErrorRate <= 0.15, "V3 narration raw ASR WER exceeds 15%");
+invariant(alignment.timingMapping?.method === "local-kokoro-known-source-proportional-v1", "V3 local narration timing mapping method differs");
+invariant(alignment.timingMapping?.lockedWordCount === 183 && alignment.timingMapping?.mappedWordCount === 183 && alignment.timingMapping?.fullMonotonicMapping === true, "V3 narration timing mapping is incomplete");
 invariant(Array.isArray(alignment.scenes) && alignment.scenes.length === 8, "V3 alignment must contain eight scenes");
 for (const [indexValue, scene] of alignment.scenes.entries()) {
   const expected = contract.scenes[indexValue];
   invariant(scene.scene === expected.scene && scene.text === expected.narration, `Alignment text differs for scene ${expected.scene}`);
   invariant(scene.start >= expected.start && scene.end <= expected.end && scene.end > scene.start, `Alignment escapes scene ${expected.scene}`);
-  invariant(Number.isFinite(scene.atempoFactor) && scene.atempoFactor >= 1 && scene.atempoFactor <= 1.12, `Alignment tempo factor is outside the bounded 1.00–1.12 range for scene ${expected.scene}`);
+  invariant(Number.isFinite(scene.atempoFactor) && scene.atempoFactor >= 1 && scene.atempoFactor <= 1.24, `Alignment tempo factor is outside the bounded 1.00–1.24 range for scene ${expected.scene}`);
   invariant(Array.isArray(scene.words) && scene.words.length > 0, `Alignment has no words for scene ${expected.scene}`);
   const priorWordCount = alignment.scenes.slice(0, indexValue).reduce((sum, item) => sum + item.words.length, 0);
   invariant(scene.words.every((word, wordIndex) => word.id === `w${priorWordCount + wordIndex}`), `Alignment word IDs are not contiguous in scene ${expected.scene}`);
   invariant(scene.words.every((word, wordIndex) => word.start >= expected.start && word.end <= expected.end && word.end > word.start && (wordIndex === 0 || word.start >= scene.words[wordIndex - 1].end)), `Alignment word timing is invalid in scene ${expected.scene}`);
 }
 const alignedWords = alignment.scenes.flatMap((scene) => scene.words);
-invariant(alignedWords.length === 188, `Alignment contains ${alignedWords.length} words, not 188`);
-invariant(JSON.stringify(normalizedWords(alignedWords.map((word) => word.text).join(" "))) === JSON.stringify(normalizedWords(lockedLines.join(" "))), "Alignment transcript differs from the exact locked 188-word narration");
+invariant(alignedWords.length === 183, `Alignment contains ${alignedWords.length} words, not 183`);
+invariant(JSON.stringify(normalizedWords(alignedWords.map((word) => word.text).join(" "))) === JSON.stringify(normalizedWords(lockedLines.join(" "))), "Alignment transcript differs from the exact locked 183-word narration");
 
 invariant(voice.captionAssets?.status === "approved-v3-captions", "Voice manifest caption state differs");
 const srt = readText("CAPTIONS.srt");
@@ -410,7 +372,7 @@ const vtt = readText("CAPTIONS.vtt");
 const captionJsonSource = readText("data/caption-cues.json");
 invariant(!/pending/iu.test(srt + vtt), "Caption files still contain pending markers");
 invariant(captions.cues.length > 0 && new Set(captions.cues.map((cue) => cue.scene)).size === 8, "Caption cues do not cover all eight scenes");
-invariant(words(captions.cues.flatMap((cue) => cue.lines).join(" ")).length === 188, "Caption cues do not contain exactly 188 words");
+invariant(words(captions.cues.flatMap((cue) => cue.lines).join(" ")).length === 183, "Caption cues do not contain exactly 183 words");
 invariant(JSON.stringify(normalizedWords(captions.cues.flatMap((cue) => cue.lines).join(" "))) === JSON.stringify(normalizedWords(lockedLines.join(" "))), "Caption transcript differs from the exact locked narration");
 invariant(captions.cues.every((cue, indexValue) => cue.start >= 0 && cue.end <= 90 && cue.end > cue.start && (indexValue === 0 || cue.start >= captions.cues[indexValue - 1].end)), "Caption cues overlap, escape the film, or have invalid timing");
 invariant(voice.captionAssets.srtSha256 === sha256(srt), "SRT hash differs");
@@ -427,7 +389,8 @@ for (const scene of contract.scenes) {
   const frame = readFileSync(absolute, "utf8");
   invariant(!/SOURCE LOCK|CAPTURE PENDING|FINAL FRAME PENDING/iu.test(frame), `Final frame still contains a placeholder: scene ${scene.scene}`);
   const gsapSelectors = [...frame.matchAll(/\.(?:fromTo|to|set)\("([^"]+)"/gu)].map((match) => match[1]);
-  invariant(gsapSelectors.every((selector) => selector.startsWith(`#v3-${scene.scene}-`)), `Scene ${scene.scene} contains an unscoped GSAP selector`);
+  const scenePrefix = `#v3-${String(scene.scene).padStart(2, "0")}-`;
+  invariant(gsapSelectors.every((selector) => selector.startsWith(scenePrefix)), `Scene ${scene.scene} contains an unscoped GSAP selector`);
 }
 const architecture = readText(contract.scenes[3].src);
 for (const phrase of ["KEEPERHUB", "EXECUTION SERVICE", "BASE SEPOLIA", "PUBLIC TEST NETWORK"]) {

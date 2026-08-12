@@ -38,13 +38,13 @@ One product and one film brand: carbon-black surfaces, electric blue for activit
 
 ## Narration and audio
 
-- Locked script: 188 words.
-- Voice: ElevenLabs George (`JBFqnCBsd6RMkjVDRZzb`).
-- Model: `eleven_multilingual_v2` only.
-- Generation: one new provider batch for the complete eight-scene script; no retained line or old scene audio may be reused.
-- Current state: generation pending. No provider request is made by this source rebuild.
+- Locked script: 183 words.
+- Voice: George, British male (`bm_george`), synthesized locally with Kokoro-82M.
+- Model: `kokoro-v1.0` from the local offline cache.
+- Generation: one complete local build for all eight locked scenes; zero metered TTS provider calls and no reused narration assets.
+- Current state: the local narration master, timing map, and captions are approved. The earlier ElevenLabs quota check was denied, consumed its single allowed subscription GET, made zero synthesis POSTs, and must not be retried.
 - Final mix: integrated loudness −14.0 LUFS, true peak no higher than −1.0 dBTP, no background music, and restrained local SFX below the voice.
 
 ## Release condition
 
-Source validation may pass with explicit placeholders. Final rendering stays blocked until all four V3 captures, the single new narration batch, alignment, captions, eight newly built scene compositions, capture hashes, and final audio checks pass. The rendered 4K60 MP4 must be exactly 90.000 seconds within one video frame.
+Source validation may pass with explicit placeholders. Final rendering stays blocked until all four V3 captures, the approved local narration package, alignment, captions, eight newly built scene compositions, capture hashes, and final audio checks pass. The rendered 4K60 MP4 must be exactly 90.000 seconds within one video frame.

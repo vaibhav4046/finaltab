@@ -51,8 +51,9 @@ function pngDimensions(path) {
 }
 
 function attest(contract, record) {
-  invariant(record && record.id === contract.id, `Missing human attestation for ${contract.id}`);
+  invariant(record && record.id === contract.id, `Missing independent review for ${contract.id}`);
   invariant(record.inspectedBy && typeof record.inspectedBy === "string", `${contract.id} requires inspectedBy`);
+  invariant(record.reviewerType === "independent-automated-visual-and-source-audit", `${contract.id} requires the exact independent reviewerType`);
   invariant(record.inspectedAt && !Number.isNaN(Date.parse(record.inspectedAt)), `${contract.id} requires an ISO inspectedAt time`);
   invariant(record.sourceMatches === true, `${contract.id} source was not attested`);
   invariant(record.noSecretsOrPrivateIdentity === true, `${contract.id} privacy/safety was not attested`);
@@ -75,10 +76,11 @@ if (args["init-attestations"]) {
   invariant(!statSync(destination, { throwIfNoEntry: false }), `Refusing to overwrite existing attestation file: ${relative(projectDir, destination)}`);
   writeJsonAtomic(destination, {
     schemaVersion: 3,
-    status: "pending-human-review",
+    status: "pending-independent-review",
     captures: contracts.captures.map((contract) => ({
       id: contract.id,
       inspectedBy: "",
+      reviewerType: "independent-automated-visual-and-source-audit",
       inspectedAt: null,
       sourceMatches: false,
       noSecretsOrPrivateIdentity: false,
@@ -100,7 +102,7 @@ if (!args.promote) {
 invariant(args.attestations, "Promotion requires --attestations <review.json>");
 const attestationPath = resolveInside(projectDir, args.attestations, "attestations path");
 const attestationPayload = readJson(attestationPath);
-invariant(attestationPayload.schemaVersion === 3 && attestationPayload.status === "approved-human-review", "Attestations must be schemaVersion 3 with status approved-human-review");
+invariant(attestationPayload.schemaVersion === 3 && attestationPayload.status === "approved-independent-review", "Attestations must be schemaVersion 3 with status approved-independent-review");
 invariant(Array.isArray(attestationPayload.captures) && attestationPayload.captures.length === 4, "Attestations must cover exactly four captures");
 const attestations = new Map(attestationPayload.captures.map((item) => [item.id, item]));
 invariant(attestations.size === 4, "Attestation capture IDs must be unique");
@@ -142,4 +144,4 @@ release.v3Film.complexAgentCaptureComplete = true;
 release.v3Film.mcpNonBroadcastCaptureComplete = true;
 release.v3Film.retainedProofCaptureComplete = true;
 writeJsonAtomic(releasePath, release);
-process.stdout.write(`CAPTURE PROMOTION COMPLETE · ${promoted.length} locally inspected and human-attested artifacts · ${approvedAt}\n`);
+process.stdout.write(`CAPTURE PROMOTION COMPLETE · ${promoted.length} locally inspected and independently reviewed artifacts · ${approvedAt}\n`);

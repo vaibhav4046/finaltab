@@ -4,7 +4,7 @@ Machine-readable authority: [data/capture-contracts.json](data/capture-contracts
 
 ## Current state
 
-All four V3 capture paths are pending. Existing captures from the rejected 96-second film are superseded and cannot satisfy the V3 hash gate.
+All four canonical V3 captures are promoted and hash-locked under the approved independent automated visual-and-source audit. Existing captures from the rejected 96-second film remain superseded and cannot satisfy the V3 hash gate.
 
 ## Absolute restrictions
 
@@ -43,11 +43,11 @@ Build only from the retained KeeperHub receipt and public Base Sepolia transacti
 ## Promotion
 
 1. Run `npm run capture:init-review -- data/capture-attestations.json` to create an exact contract-derived review worksheet.
-2. Inspect each V3 artifact, complete every assertion, set reviewer/time, and change the worksheet status to `approved-human-review`.
+2. Inspect each V3 artifact, complete every assertion, set reviewer/type/time, and change the worksheet status to `approved-independent-review`. The accepted reviewer type is `independent-automated-visual-and-source-audit`; it must bind visual inspection to the decoded media, sanitized source record, and exact contract assertions without claiming a human reviewer.
 3. Run `npm run capture:promote -- --attestations data/capture-attestations.json`.
 4. The promoter probes local media, rejects missing/undersized/short files and superseded V2 hashes, then records only the four canonical paths, byte sizes, SHA-256 values, media facts, review hash, and approval time in `data/capture-lock.json`.
 5. Run `npm run check:source`, then `npm run gate:render`.
 
-`capture-evidence.mjs` performs no browser automation, network request, MCP operation, wallet action, or value movement. Semantic truth remains a named human review; technical/hash checks are automatic and fail closed.
+`capture-evidence.mjs` performs no browser automation, network request, MCP operation, wallet action, or value movement. Semantic truth requires a named independent review; technical/hash checks are automatic and fail closed. The reviewer type is recorded explicitly, so an automated audit is never mislabeled as human review.
 
-The final gate remains blocked while any V3 path, truth check, or hash is pending.
+The capture gate is satisfied only by those four promoted hashes; any later byte, attestation, truth-check, or path change fails closed.

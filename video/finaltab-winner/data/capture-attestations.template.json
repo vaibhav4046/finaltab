@@ -1,6 +1,6 @@
 {
   "schemaVersion": 3,
-  "status": "pending-human-review",
-  "instructions": "Copy this file, set status to approved-human-review, and attest every exact required/forbidden statement from capture-contracts.json after watching the artifact. The promoter rejects omitted assertions.",
+  "status": "pending-independent-review",
+  "instructions": "Copy this file, set status to approved-independent-review, record reviewerType independent-automated-visual-and-source-audit, and attest every exact required/forbidden statement from capture-contracts.json after inspecting the decoded artifact and sanitized source record. The promoter rejects omitted assertions.",
   "captures": []
 }

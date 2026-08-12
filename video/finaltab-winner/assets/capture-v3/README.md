@@ -1,6 +1,6 @@
 # V3 canonical capture paths
 
-This directory intentionally contains no promoted capture yet.
+All four canonical files below are promoted and hash-locked; `../../data/capture-lock.json` is the machine-readable authority.
 
 Only these final paths may satisfy the V3 render gate:
 

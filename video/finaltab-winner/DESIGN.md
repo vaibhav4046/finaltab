@@ -48,7 +48,7 @@ V3 has no serif face, so the film and the live product read as one brand.
 
 ## Audio
 
-- One newly generated ElevenLabs George / multilingual-v2 narration master.
-- No reused old scene audio; one model is used for the complete script.
+- One newly generated, fully local Kokoro `bm_george` narration master.
+- No reused old scene audio and zero network/provider calls.
 - No BGM. Restrained local SFX sit well below speech.
 - Final master target: −14.0 LUFS integrated, ≤ −1.0 dBTP.

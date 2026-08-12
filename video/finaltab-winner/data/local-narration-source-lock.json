@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "status": "approved-v3-local-offline",
+  "provider": "Kokoro-82M (local)",
+  "model": "kokoro-v1.0",
+  "voiceId": "bm_george",
+  "assets": [
+    {
+      "scene": 1,
+      "textSha256": "ab6f9b197873649164a782dd55ff528c6cd45a882c486e623d5b1966cac294c2",
+      "speed": 1.05,
+      "path": "assets/audio/voice-v3/source-local/scene-01-kokoro.wav",
+      "bytes": 170028,
+      "sha256": "bc7d072f8613bfeff3a6ad3574bd6728ca6732b8f9cca30b4de0057ded135f5f"
+    },
+    {
+      "scene": 2,
+      "textSha256": "f688ff81df6f9f442e31563112fd1a146aafd1b3ffb95066a71e4f29a04e1225",
+      "speed": 1.05,
+      "path": "assets/audio/voice-v3/source-local/scene-02-kokoro.wav",
+      "bytes": 328748,
+      "sha256": "f83932ebca05bd511fb04d373bcfc0c7a68f75f6e386d85f1a5f2a6b5546c5e9"
+    },
+    {
+      "scene": 3,
+      "textSha256": "471ffebf04a2814fd6644ac41b1f541ceedd947fdc5d3de7c58b2887e8469420",
+      "speed": 1.05,
+      "path": "assets/audio/voice-v3/source-local/scene-03-kokoro.wav",
+      "bytes": 341036,
+      "sha256": "4178ff41747a77317b4a21dd5439e81c779cad883d98c08f3612e2b453993af0"
+    },
+    {
+      "scene": 4,
+      "textSha256": "046b2879132545f33797af687d2b1b82634e9b5ccc7b3dcd26ce5d148e50b13c",
+      "speed": 1.05,
+      "path": "assets/audio/voice-v3/source-local/scene-04-kokoro.wav",
+      "bytes": 450604,
+      "sha256": "5f6187afe7cd13b81a4551d5e49a74dcfc4912ae55fb657d2c39856a9cb553c1"
+    },
+    {
+      "scene": 5,
+      "textSha256": "1ebbd515817aaff4ef3dad254e524b683210b603f0f385320460c978b690422c",
+      "speed": 1.05,
+      "path": "assets/audio/voice-v3/source-local/scene-05-kokoro.wav",
+      "bytes": 653356,
+      "sha256": "815827b17f8bef92918b06da9ffc9b44680155ec9139aed52177d174e1061848"
+    },
+    {
+      "scene": 6,
+      "textSha256": "0382e7bc8efcd7a7f3446849d91b30d48d380c1530485fc92a59b8c25874a3a2",
+      "speed": 1.05,
+      "path": "assets/audio/voice-v3/source-local/scene-06-kokoro.wav",
+      "bytes": 805932,
+      "sha256": "3e71c40cd419ea4b88a499ec2ba7fc6e1ce2ff44caf47f05f60e6480bf3f7a41"
+    },
+    {
+      "scene": 7,
+      "textSha256": "b6d94bb51b8e7f027e0bd3ec9bc845bae5918eccec4525cd3e5568164986779c",
+      "speed": 1.05,
+      "path": "assets/audio/voice-v3/source-local/scene-07-kokoro.wav",
+      "bytes": 793644,
+      "sha256": "dd68d394d65678660e501b226ee64ccb16127a35be30ae38c856360ff03e7d60"
+    },
+    {
+      "scene": 8,
+      "textSha256": "8ed5511b932da918e93b5862ea4ff4a55d486dc1b209debf9e74a8d69aa4e8fb",
+      "speed": 1.25,
+      "path": "assets/audio/voice-v3/source-local/scene-08-kokoro.wav",
+      "bytes": 237612,
+      "sha256": "df6646c9e8454fd42db6e156e4a545bd50e6406daada21cc26923f7f69571169"
+    }
+  ],
+  "updatedAt": "2026-08-12T04:21:51.374Z"
+}

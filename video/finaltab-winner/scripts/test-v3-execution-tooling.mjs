@@ -106,23 +106,25 @@ function assertDeniedWithoutPost(scenario, reasonCode) {
 }
 
 test("frozen V3 source contract remains byte-identical", () => {
-  assert.equal(hash(read("data/v3-source-contract.json")), "58b6b90fc7faa646ce13d1e44c105500634ff500a8db6de8074b09ba50cd528f");
+  assert.equal(hash(read("data/v3-source-contract.json")), "9a78de1d4226b3df3859a5ab5bd2946762157b05de1ab4df65248fe25a53ab0f");
 });
 
-test("script and contract contain the same exact 188-word sequence", () => {
+test("script and local contract contain the same exact 183-word sequence", () => {
   const script = read("SCRIPT.md").toString("utf8");
   const contract = JSON.parse(read("data/v3-source-contract.json"));
   const lines = scriptNarrationLines(script);
   assert.equal(lines.length, 8);
-  assert.equal(words(lines.join(" ")).length, 188);
-  const exactProviderText = lines.join("\n\n");
-  assert.equal(countElevenLabsNarrationCharacters(exactProviderText), 1_200);
-  assert.equal(Math.ceil(1_200 * ELEVENLABS_INCLUDED_QUOTA_SAFETY_MULTIPLIER), 1_320);
+  assert.equal(words(lines.join(" ")).length, 183);
+  assert.equal(contract.wordCount, 183);
   assert.deepEqual(lines, contract.scenes.map((scene) => scene.narration));
   assert.deepEqual(normalizedWords(lines.join(" ")), normalizedWords(contract.scenes.map((scene) => scene.narration).join(" ")));
+  assert.equal(contract.narration.provider, "Kokoro-82M (local)");
+  assert.equal(contract.narration.model, "kokoro-v1.0");
+  assert.equal(contract.narration.voiceId, "bm_george");
+  assert.equal(contract.narration.providerCallsRequired, 0);
 });
 
-test("provider and capture entry points are dry and mutation-free by default", () => {
+test("local voice and capture contract checks are dry and mutation-free by default", () => {
   const tracked = [
     "data/voiceover-manifest.json",
     "data/narration-generation-ledger.json",
@@ -130,28 +132,27 @@ test("provider and capture entry points are dry and mutation-free by default", (
     "data/release-proof.json",
   ];
   const before = Object.fromEntries(tracked.map((path) => [path, hash(read(path))]));
-  const voice = run(process.execPath, ["generate-voiceover.mjs", "--check-contract"]);
+  const voice = run(process.execPath, ["scripts/sync-route-voice-manifest.mjs"]);
   assert.equal(voice.status, 0, voice.stderr);
-  assert.match(voice.stdout, /no provider request made/u);
+  assert.match(voice.stdout, /VOICE PACKAGE CONTRACT PASSED/u);
   const capture = run(process.execPath, ["capture-evidence.mjs"]);
   assert.equal(capture.status, 0, capture.stderr);
   assert.match(capture.stdout, /no browser, network, MCP, wallet, or value action/u);
   assert.deepEqual(Object.fromEntries(tracked.map((path) => [path, hash(read(path))])), before);
 });
 
-test("voice generation retains both explicit one-call authorization flags", () => {
-  const ledgerBefore = hash(read("data/narration-generation-ledger.json"));
-  const help = run(process.execPath, ["generate-voiceover.mjs", "--help"]);
-  assert.equal(help.status, 0, help.stderr);
-  assert.match(help.stdout, /--preflight-only --acknowledge-one-no-charge-subscription-get/u);
-  assert.match(help.stdout, /--execute --acknowledge-one-paid-provider-call/u);
-  const missingPreflightAcknowledgement = run(process.execPath, ["generate-voiceover.mjs", "--preflight-only"]);
-  assert.notEqual(missingPreflightAcknowledgement.status, 0);
-  assert.match(missingPreflightAcknowledgement.stderr, /Preflight requires --acknowledge-one-no-charge-subscription-get/u);
-  const missingAcknowledgement = run(process.execPath, ["generate-voiceover.mjs", "--execute"]);
-  assert.notEqual(missingAcknowledgement.status, 0);
-  assert.match(missingAcknowledgement.stderr, /Execution requires --acknowledge-one-paid-provider-call/u);
-  assert.equal(hash(read("data/narration-generation-ledger.json")), ledgerBefore);
+test("active package exposes only local narration generation and verification", () => {
+  const packageJson = JSON.parse(read("package.json"));
+  assert.equal(packageJson.scripts["voice:generate"], "node scripts/generate-local-narration.mjs");
+  assert.equal(packageJson.scripts["voice:local:generate"], "node scripts/generate-local-narration.mjs");
+  assert.equal(packageJson.scripts["voice:check"], "node scripts/sync-route-voice-manifest.mjs");
+  for (const retiredScript of ["voice:preflight", "voice:runtime:preflight", "voice:runtime:generate", "voice:align"]) {
+    assert.equal(packageJson.scripts[retiredScript], undefined);
+  }
+  const generatorSource = read("scripts/generate-local-narration.mjs").toString("utf8");
+  assert.match(generatorSource, /HF_HUB_OFFLINE/u);
+  assert.match(generatorSource, /TRANSFORMERS_OFFLINE/u);
+  assert.match(generatorSource, /ttsProviderCallsAllowed:\s*0/u);
 });
 
 test("preflight-only primitive cannot make a synthesis POST even when included quota is sufficient", async () => {
@@ -168,19 +169,17 @@ test("preflight-only primitive cannot make a synthesis POST even when included q
   assert.deepEqual(calls.map((call) => call.method), ["GET"]);
 });
 
-test("offline alignment preflight and caption source enforce exact-safe contracts", () => {
-  const python = process.platform === "win32" ? "python" : "python3";
-  const alignment = run(python, ["scripts/align-narration.py"]);
-  assert.equal(alignment.status, 0, alignment.stderr);
-  assert.match(alignment.stdout, /raw ASR WER <=15% with full monotonic 188-word mapping/u);
-  const mappingSelfTest = run(python, ["scripts/align-narration.py", "--self-test-mapping"]);
-  assert.equal(mappingSelfTest.status, 0, mappingSelfTest.stderr);
-  assert.match(mappingSelfTest.stdout, /FORCED ASR MAPPING SELF-TEST PASSED/u);
-  const alignmentSource = read("scripts/align-narration.py").toString("utf8");
-  assert.match(alignmentSource, /atempo_factor > 1\.12/u);
-  assert.match(alignmentSource, /"atempoFactor"/u);
-  assert.match(alignmentSource, /monotonic-levenshtein-forced-v1/u);
-  assert.match(alignmentSource, /rawAsrWordErrorRate/u);
+test("local alignment and caption source enforce exact-safe contracts", () => {
+  const alignment = JSON.parse(read("assets/audio/voice-v3/finaltab-v3-local-kokoro-alignment.json"));
+  assert.equal(alignment.schemaVersion, 3);
+  assert.equal(alignment.status, "approved-v3-alignment");
+  assert.equal(alignment.timingMapping.method, "local-kokoro-known-source-proportional-v1");
+  assert.equal(alignment.timingMapping.lockedWordCount, 183);
+  assert.equal(alignment.timingMapping.mappedWordCount, 183);
+  assert.equal(alignment.timingMapping.fullMonotonicMapping, true);
+  assert.equal(alignment.scenes.length, 8);
+  assert.equal(alignment.scenes.flatMap((scene) => scene.words).length, 183);
+  assert.equal(alignment.scenes.every((scene) => scene.atempoFactor >= 1 && scene.atempoFactor <= 1.24), true);
   const captions = read("build-captions.mjs").toString("utf8");
   assert.match(captions, /data-layout-allow-caption-zone/u);
   assert.doesNotMatch(captions, /translateX\s*\(/u);

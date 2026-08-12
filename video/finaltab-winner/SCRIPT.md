@@ -1,10 +1,10 @@
 # SCRIPT — FINALTab V3 judge film
 
 **Target duration:** 90.000 seconds
-**Spoken words:** 188
-**Voice:** George (`JBFqnCBsd6RMkjVDRZzb`) via ElevenLabs
-**Model:** `eleven_multilingual_v2` for the complete script
-**Generation contract:** One new batch, all eight lines, no retained audio, no per-scene model mixing
+**Spoken words:** 183
+**Voice:** `bm_george` via local Kokoro
+**Model:** `kokoro-v1.0` on-device; no metered TTS provider
+**Generation contract:** Eight newly synthesized local scene sources, zero TTS provider calls, no retained audio reuse
 **Voice direction:** Human, direct, calm, and confident. Explain the product as if showing it to a smart friend. Keep the hard stop unmistakable.
 **Mastering:** Final program at −14.0 LUFS integrated, ≤ −1.0 dBTP; voice always clear above restrained SFX.
 
@@ -43,14 +43,14 @@
 **Time:** 00:30.250 – 00:49.650
 **Delivery:** Active demonstration. Each short action should match the real capture.
 
-    Watch the product: sign in, create a tab, upload and correct a receipt, add people, assign items, include tax and tip, run four checks, inspect balances and memory, then lock the plan in one clear, traceable workflow.
+    Watch the product: sign in, create a durable tab, enter the receipt workspace, inspect exact-cent reviews, open the evidence graph, and reach the proof route—one traceable path from input to verification.
 
 ## Line 6 — Complex agent task (Scene 6)
 
 **Time:** 00:50.200 – 01:07.750
 **Delivery:** Build momentum through the task, then settle on the compact memory summary.
 
-    Now try a hard request: weighted items, shared service, exclusions, and a payer correction. Voice reads it back. The model suggests assignments. Math balances every cent. Four reviewers record what passed and why. Memory keeps a compact audit summary.
+    Now try a hard request: weighted items, shared service, exclusions, and a payer correction. Typed input stays visible. The model suggests assignments. Math balances every cent. Four reviewers record what passed and why. Memory keeps a compact audit summary.
 
 ## Line 7 — MCP hard stop (Scene 7)
 
@@ -74,8 +74,8 @@
 | 02 | 18 | 8s |
 | 03 | 15 | 8s |
 | 04 | 24 | 10s |
-| 05 | 37 | 20s |
+| 05 | 32 | 20s |
 | 06 | 39 | 18s |
 | 07 | 38 | 17s |
 | 08 | 11 | 5s |
-| **Total** | **188** | **90s** |
+| **Total** | **183** | **90s** |

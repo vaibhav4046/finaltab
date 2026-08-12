@@ -11,23 +11,14 @@ const ledger = readJson("data/narration-generation-ledger.json");
 
 invariant(lines.length === 8, "V3 script must contain eight narration lines");
 invariant(manifest.schemaVersion === 3 && ledger.schemaVersion === 3, "V3 voice schemas differ");
-invariant(manifest.provider === "ElevenLabs" && ledger.provider === "ElevenLabs", "Voice provider differs");
-invariant(manifest.model === "eleven_multilingual_v2" && ledger.model === "eleven_multilingual_v2", "Voice model differs");
-invariant(manifest.voiceId === "JBFqnCBsd6RMkjVDRZzb" && ledger.voiceId === manifest.voiceId, "George voice ID differs");
-invariant(manifest.expectedProviderCalls === 1 && ledger.callSummary.expectedProviderCalls === 1, "V3 requires one complete-script provider batch");
+invariant(manifest.provider === "Kokoro-82M (local)" && ledger.provider === manifest.provider, "Local voice provider differs");
+invariant(manifest.model === "kokoro-v1.0" && ledger.model === manifest.model, "Local voice model differs");
+invariant(manifest.voiceId === "bm_george" && ledger.voiceId === manifest.voiceId, "Local voice ID differs");
+invariant(manifest.expectedProviderCalls === 0 && ledger.callSummary.expectedProviderCalls === 0, "Offline V3 narration must make zero provider calls");
 invariant(manifest.reuseAllowed === false && manifest.reusedAssets.length === 0 && ledger.callSummary.reusedSceneCalls === 0, "Old narration reuse is forbidden");
 invariant(manifest.scenes.length === 8 && manifest.scenes.every((scene, index) => scene.text === lines[index]), "Voice manifest text differs from SCRIPT.md");
-
-if (manifest.status === "pending-v3-single-batch") {
-  invariant(manifest.selectedProviderCalls === 0 && ledger.status === "pending-v3-single-batch", "Pending V3 voice state is inconsistent");
-  process.stdout.write("VOICE SOURCE CONTRACT PASSED · one new George multilingual-v2 complete-script batch is still pending\n");
-} else if (manifest.status === "generated-v3-single-batch") {
-  invariant(ledger.status === "generated-v3-single-batch", "Generated V3 voice states differ");
-  invariant(manifest.selectedProviderCalls === 1 && ledger.callSummary.selectedProviderCalls === 1, "Generated V3 package must bind exactly one provider response");
-  invariant(manifest.rawProviderResponse?.sha256 === ledger.selectedBatch?.sha256, "Generated V3 provider response hashes differ");
-  process.stdout.write("VOICE GENERATION CONTRACT PASSED · one George multilingual-v2 response recorded · offline alignment pending\n");
-} else {
-  invariant(manifest.status === "approved-v3-single-batch" && ledger.status === "approved-v3-single-batch", "Approved V3 voice states differ");
-  invariant(manifest.selectedProviderCalls === 1 && ledger.callSummary.selectedProviderCalls === 1, "Approved V3 package must bind one selected provider call");
-  process.stdout.write("VOICE PACKAGE CONTRACT PASSED · one new George multilingual-v2 batch is recorded\n");
-}
+invariant(manifest.status === "approved-v3-local-offline" && ledger.status === manifest.status, "Approved offline V3 voice states differ");
+invariant(manifest.selectedProviderCalls === 0 && ledger.callSummary.selectedProviderCalls === 0, "Offline V3 narration selected a provider call");
+invariant(ledger.callSummary.attemptedProviderCalls === 0 && ledger.localGeneration?.ttsProviderCalls === 0, "Local V3 narration attempted a TTS provider request");
+invariant(ledger.elevenLabsDecision?.synthesisPosts === 0 && ledger.elevenLabsDecision?.retryAllowed === false, "ElevenLabs no-retry boundary differs");
+process.stdout.write("VOICE PACKAGE CONTRACT PASSED · eight-scene local Kokoro master · zero TTS provider calls · zero ElevenLabs synthesis POSTs\n");

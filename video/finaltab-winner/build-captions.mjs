@@ -34,6 +34,7 @@ function splitLines(items, maxLength = 42) {
 function sceneCues(scene) {
   const cues = [];
   let buffer = [];
+  const danglingNegations = new Set(["no", "not", "never", "without"]);
   const flush = () => {
     if (!buffer.length) return;
     const lines = splitLines(buffer);
@@ -50,8 +51,16 @@ function sceneCues(scene) {
     const candidate = [...buffer, word];
     if (splitLines(candidate)) buffer = candidate;
     else {
-      flush();
-      buffer = [word];
+      const previous = buffer.at(-1);
+      const previousToken = previous?.text.trim().toLowerCase().replace(/[^a-z]/gu, "");
+      if (buffer.length > 1 && danglingNegations.has(previousToken)) {
+        buffer.pop();
+        flush();
+        buffer = [previous, word];
+      } else {
+        flush();
+        buffer = [word];
+      }
     }
   }
   flush();
@@ -63,19 +72,19 @@ function sceneCues(scene) {
 
 const contract = readJson("data/v3-source-contract.json");
 const lockedLines = scriptNarrationLines(readFileSync(pathFor("SCRIPT.md"), "utf8"));
-invariant(contract.wordCount === 188 && lockedLines.length === 8, "Frozen V3 narration contract must contain eight lines and exactly 188 words");
-invariant(words(lockedLines.join(" ")).length === 188, "SCRIPT.md must contain exactly 188 spoken words");
+invariant(contract.wordCount === 183 && lockedLines.length === 8, "Frozen V3 narration contract must contain eight lines and exactly 183 words");
+invariant(words(lockedLines.join(" ")).length === 183, "SCRIPT.md must contain exactly 183 spoken words");
 invariant(lockedLines.every((line, index) => line === contract.scenes[index]?.narration), "SCRIPT.md differs from the frozen V3 narration contract");
 const voice = readJson("data/voiceover-manifest.json");
-invariant(voice.status === "approved-v3-single-batch", "Approved V3 narration is required before captions");
+invariant(voice.status === "approved-v3-local-offline", "Approved offline V3 narration is required before captions");
 const alignment = readJson(voice.master.alignmentPath);
 invariant(alignment.schemaVersion === 3 && alignment.status === "approved-v3-alignment", "Approved V3 alignment is required");
 invariant(Array.isArray(alignment.scenes) && alignment.scenes.length === 8, "Alignment must contain eight scenes");
 const alignedWords = alignment.scenes.flatMap((scene) => scene.words ?? []);
-invariant(alignedWords.length === 188, `Alignment must contain exactly 188 words, received ${alignedWords.length}`);
+invariant(alignedWords.length === 183, `Alignment must contain exactly 183 words, received ${alignedWords.length}`);
 invariant(
   JSON.stringify(normalizedWords(alignedWords.map((word) => word.text).join(" "))) === JSON.stringify(normalizedWords(lockedLines.join(" "))),
-  "Alignment word sequence differs from the exact locked 188-word narration",
+  "Alignment word sequence differs from the exact locked 183-word narration",
 );
 for (const [index, scene] of alignment.scenes.entries()) {
   const expected = contract.scenes[index];
@@ -84,25 +93,26 @@ for (const [index, scene] of alignment.scenes.entries()) {
 }
 const cues = alignment.scenes.flatMap(sceneCues);
 invariant(new Set(cues.map((cue) => cue.scene)).size === 8, "Captions must cover all eight scenes");
-invariant(words(cues.flatMap((cue) => cue.lines).join(" ")).length === 188, "Caption cues must contain exactly 188 words");
+invariant(words(cues.flatMap((cue) => cue.lines).join(" ")).length === 183, "Caption cues must contain exactly 183 words");
+invariant(cues.every((cue) => !/^(?:money|value) moves\b/iu.test(cue.lines.join(" "))), "A value-movement caption cannot lose its leading negation");
 
 const cuePayload = {
   schemaVersion: 3,
   status: "approved-v3-captions",
   durationSeconds: 90,
   maxLineLength: 42,
-  scriptWordCount: 188,
+  scriptWordCount: 183,
   cues,
 };
 const cueSource = `${JSON.stringify(cuePayload, null, 2)}\n`;
-const srt = `${cues.map((cue, index) => `${index + 1}\n${fmtSrt(cue.start)} --> ${fmtSrt(cue.end)}\n${cue.lines.join("\n")}\n`).join("\n")}\n`;
-const vtt = `WEBVTT\n\n${cues.map((cue) => `${fmtVtt(cue.start)} --> ${fmtVtt(cue.end)}\n${cue.lines.join("\n")}\n`).join("\n")}\n`;
+const srt = `${cues.map((cue, index) => `${index + 1}\n${fmtSrt(cue.start)} --> ${fmtSrt(cue.end)}\n${cue.lines.join("\n")}`).join("\n\n")}\n`;
+const vtt = `WEBVTT\n\n${cues.map((cue) => `${fmtVtt(cue.start)} --> ${fmtVtt(cue.end)}\n${cue.lines.join("\n")}`).join("\n\n")}\n`;
 let index = readFileSync(pathFor("index.html"), "utf8");
 const captionMarkup = [
   "    <!-- V3_CAPTIONS_START -->",
   `    <audio id="v3-narration-master" src="${escapeHtml(voice.master.path)}" data-start="0" data-duration="90" data-track-index="30" data-volume="1"></audio>`,
   "    <style id=\"v3-caption-style\">.v3-caption-cue.clip{inset:auto 240px 60px;height:144px;box-sizing:border-box;margin:0;padding:18px 34px;border:2px solid rgba(183,192,184,.45);border-radius:22px;background:rgba(5,7,6,.94);color:#F4F8F1;text-align:center;font:650 46px/1.16 Geist,Arial,sans-serif}.v3-caption-line{display:block;white-space:nowrap}</style>",
-  ...cues.map((cue, indexValue) => `    <p id="v3-caption-${String(indexValue + 1).padStart(2, "0")}" class="clip v3-caption-cue" data-layout-allow-caption-zone data-start="${cue.start.toFixed(3)}" data-duration="${(cue.end - cue.start).toFixed(3)}" data-track-index="20">${cue.lines.map((line) => `<span class="v3-caption-line">${escapeHtml(line)}</span>`).join("")}</p>`),
+  ...cues.map((cue, indexValue) => `    <p id="v3-caption-${String(indexValue + 1).padStart(2, "0")}" class="clip caption-cue v3-caption-cue" data-layout-allow-caption-zone data-start="${cue.start.toFixed(6)}" data-duration="${(cue.end - cue.start).toFixed(6)}" data-track-index="${40 + indexValue}">${cue.lines.map((line) => `<span class="v3-caption-line">${escapeHtml(line)}</span>`).join("")}</p>`),
   "    <!-- V3_CAPTIONS_END -->",
 ].join("\n");
 invariant(/<!-- V3_CAPTIONS_START -->[\s\S]*?<!-- V3_CAPTIONS_END -->/u.test(index), "index.html caption markers are missing");

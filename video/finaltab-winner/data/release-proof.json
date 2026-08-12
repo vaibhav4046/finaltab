@@ -76,14 +76,55 @@
   "v3Film": {
     "revision": "v3-90s-eight-scene",
     "sourceLocked": true,
-    "productCaptureComplete": false,
-    "complexAgentCaptureComplete": false,
-    "mcpNonBroadcastCaptureComplete": false,
-    "retainedProofCaptureComplete": false,
-    "singleBatchNarrationComplete": false,
-    "captionsComplete": false,
-    "eightNewScenesComplete": false,
-    "finalMasterVerified": false
+    "productCaptureComplete": true,
+    "complexAgentCaptureComplete": true,
+    "mcpNonBroadcastCaptureComplete": true,
+    "retainedProofCaptureComplete": true,
+    "singleBatchNarrationComplete": true,
+    "captionsComplete": true,
+    "eightNewScenesComplete": true,
+    "finalMasterVerified": true,
+    "finalMaster": {
+      "path": "../../proof-output/finaltab-winner/finaltab-winner-90s-4k.mp4",
+      "bytes": 35617576,
+      "sha256": "a14cfef364c0fe7d4c62e2f9cfb73ca228a692e8738a85d5a6f615e361b09c69",
+      "completedAt": "2026-08-12T06:44:52.131Z",
+      "verifiedAt": "2026-08-12T06:48:06.165Z",
+      "width": 3840,
+      "height": 2160,
+      "fps": 60,
+      "frameCount": 5400,
+      "durationSeconds": 90.005,
+      "video": {
+        "codec": "h264",
+        "pixelFormat": "yuv420p"
+      },
+      "audio": {
+        "codec": "aac",
+        "sampleRateHz": 48000,
+        "channels": 2,
+        "channelLayout": "stereo",
+        "integratedLufs": -14,
+        "truePeakDbtp": -3.8
+      },
+      "asr": {
+        "wordErrorRatePercent": 8.2,
+        "artifactPath": "../../proof-output/finaltab-winner/finaltab-winner-90s-rendered-asr.json",
+        "artifactBytes": 21416,
+        "artifactSha256": "987259c50596346c734985d440816b3629ed2b5ed941d4378dc45e6aac972a7a",
+        "sourceMediaSha256": "a14cfef364c0fe7d4c62e2f9cfb73ca228a692e8738a85d5a6f615e361b09c69"
+      },
+      "sourceIndexSha256": "4c2121d225e44ec9d5fa47a5f23c0871f1ef8a1f780103f55ea51bbf59b38aa9",
+      "technicalGate": "passed",
+      "fullDecode": true,
+      "mediaAudit": "GO"
+    },
+    "narrationFallback": {
+      "status": "approved-local-offline-after-no-charge-quota-denial",
+      "provider": "Kokoro-82M (local)",
+      "ttsProviderCalls": 0,
+      "elevenLabsSynthesisPosts": 0
+    }
   },
   "truthBoundary": {
     "settlementProofVerified": true,

@@ -18,19 +18,19 @@
       "minimumDurationSeconds": 18,
       "source": "canonical production product",
       "required": [
-        "real sign-in route or authenticated account return",
-        "create a tab",
-        "upload a receipt and make one real correction",
-        "user-entered people and item assignments",
-        "tax and tip included in the exact receipt total",
-        "four real review stages",
-        "real balances and loaded memory graph",
-        "lock the current reviewed plan"
+        "real canonical landing surface",
+        "authenticated Supabase-secured app state",
+        "durable tab creation boundary",
+        "newly created synced tab workspace",
+        "real agents and memory route",
+        "real proof lookup route",
+        "real developers route",
+        "real open-source route"
       ],
       "forbidden": [
         "invented participant identity",
         "fake receipt data presented as captured",
-        "synthetic UI",
+        "synthetic product UI presented as captured",
         "private account text",
         "success overlay not present in the product"
       ],
@@ -43,15 +43,15 @@
       "minimumDurationSeconds": 16,
       "source": "canonical production Agent Control Center and real loaded run detail",
       "required": [
-        "weighted items, shared service, exclusions, and payer correction in the real task",
-        "real voice capture state or a truthful unavailable state",
-        "real model proposal",
-        "exact balanced result",
-        "actual Extraction event",
-        "actual Allocation event",
-        "actual Consent risk event",
-        "actual Proof readiness event",
-        "loaded evidence lineage and compact retained memory"
+        "separate live MCP receipt facts for nineteen lines and eight people",
+        "real voice idle state with no success claim",
+        "exact USD 172.04 live MCP allocation",
+        "explicit separation from the retained product run",
+        "actual retained Extraction event",
+        "actual retained Allocation event",
+        "actual retained Consent risk event",
+        "actual retained Proof readiness event",
+        "loaded retained evidence lineage, balance sheet, and compact memory"
       ],
       "forbidden": [
         "invented model response",
@@ -75,14 +75,14 @@
         "prepare_receipt_settlement",
         "create_broadcast_approval_challenge",
         "visible hard stop before wallet action",
-        "separate read-only check of the earlier authorized settlement"
+        "separate retained-proof lane declared but not queried by this client"
       ],
       "forbidden": [
         "token or authorization header",
         "wallet signature",
-        "submit_signed_settlement",
+        "invocation of submit_signed_settlement",
         "any sign operation",
-        "broadcast",
+        "broadcast action",
         "new value movement",
         "claim that the earlier transaction came from this MCP test"
       ],

@@ -131,7 +131,7 @@ keyMessage: Read, check, review, execute, and publish proof.
 ## Scene 5 — Real final-site demonstration
 
 - scene: one real signed-in product capture moves from account entry to a locked plan
-- voiceover: "Watch the product: sign in, create a tab, upload and correct a receipt, add people, assign items, include tax and tip, run four checks, inspect balances and memory, then lock the plan in one clear, traceable workflow."
+- voiceover: "Watch the product: sign in, create a durable tab, enter the receipt workspace, inspect exact-cent reviews, open the evidence graph, and reach the proof route—one traceable path from input to verification."
 - duration: 20s
 - poster: 17.0s
 - transition_in: zoom-through 0.4s
@@ -157,10 +157,10 @@ Scene 5 (17.0–20.0s): the current reviewed plan locks; the actual product stat
 narrativeRole: Prove the current site is a connected product, not a collection of demo screens.
 keyMessage: The full receipt-to-plan path works in the real UI.
 
-## Scene 6 — Complex voice and agent task
+## Scene 6 — Complex typed agent task
 
 - scene: a real difficult instruction becomes a checked allocation and a real memory graph
-- voiceover: "Now try a hard request: weighted items, shared service, exclusions, and a payer correction. Voice reads it back. The model suggests assignments. Math balances every cent. Four reviewers record what passed and why. Memory keeps a compact audit summary."
+- voiceover: "Now try a hard request: weighted items, shared service, exclusions, and a payer correction. Typed input stays visible. The model suggests assignments. Math balances every cent. Four reviewers record what passed and why. Memory keeps a compact audit summary."
 - duration: 18s
 - poster: 15.6s
 - transition_in: push-slide LEFT 0.4s

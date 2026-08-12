@@ -6,7 +6,7 @@
   "expectedAssertionCount": 24,
   "assertions": [
     { "kind": "appearsBy", "selector": "#v3-01-title", "bySec": 2 },
-    { "kind": "before", "a": "#v3-01-signal", "b": "#v3-01-title" },
+    { "kind": "before", "a": "#v3-01-signal", "b": "#v3-01-final" },
     { "kind": "staysInFrame", "selector": "#v3-01-copy" },
 
     { "kind": "appearsBy", "selector": "#v3-02-title", "bySec": 6 },

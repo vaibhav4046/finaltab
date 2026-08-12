@@ -13,7 +13,7 @@
     .halo{position:absolute;left:970px;top:340px;width:1900px;height:900px;border-radius:50%;background:radial-gradient(circle,rgba(69,175,255,.21),rgba(69,175,255,0) 70%)}
     .stage{box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:180px 240px 350px;text-align:center}
     .signal{position:absolute;top:660px;left:1130px;width:1580px;height:8px;background:#C8FF3D;transform-origin:0 50%;box-shadow:0 0 70px rgba(200,255,61,.4)}
-    .wordmark{display:flex;align-items:baseline;font:780 286px/.86 Geist,Arial,sans-serif;letter-spacing:-.075em;color:#F4F8F1}
+    .wordmark{display:flex;align-items:baseline;font:780 286px/.86 Geist,Arial,sans-serif;letter-spacing:-.075em;color:#F4F8F1;opacity:0}
     .word-final,.word-tab{display:block}
     .word-tab{color:#45AFFF}
     .under{width:720px;height:10px;margin-top:78px;background:#C8FF3D;transform-origin:50% 50%}
@@ -23,7 +23,7 @@
   </style>
   <div id="v3-01-root" data-composition-id="finaltab-v3-logo" data-start="0" data-width="3840" data-height="2160" data-duration="4">
     <section id="v3-01-ground" class="clip ground" data-start="0" data-duration="4" data-track-index="0"><div class="grid"></div><div id="v3-01-halo" class="halo"></div></section>
-    <section id="v3-01-stage" class="clip stage" data-start="0" data-duration="4" data-track-index="1">
+    <section id="v3-01-stage" class="clip stage" data-layout-allow-occlusion data-start="0" data-duration="4" data-track-index="1">
       <div id="v3-01-signal" class="signal"></div>
       <div id="v3-01-title" class="wordmark"><span id="v3-01-final" class="word-final">FINAL</span><span id="v3-01-tab" class="word-tab">Tab</span></div>
       <div id="v3-01-rule" class="under"></div>
@@ -35,6 +35,7 @@
     window.__timelines=window.__timelines||{};
     const tl=gsap.timeline({paused:true});
     tl.addLabel("signal",0).fromTo("#v3-01-signal",{scaleX:0,opacity:0},{scaleX:1,opacity:1,duration:.72,ease:"power3.out"},.08)
+      .set("#v3-01-title",{opacity:1},.54)
       .fromTo("#v3-01-final",{x:-220,opacity:0},{x:0,opacity:1,duration:.78,ease:"expo.out"},.55)
       .fromTo("#v3-01-tab",{x:220,opacity:0},{x:0,opacity:1,duration:.78,ease:"expo.out"},.67)
       .to("#v3-01-signal",{scaleX:.46,y:456,duration:.66,ease:"power3.inOut"},1.12)

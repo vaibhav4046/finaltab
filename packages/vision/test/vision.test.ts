@@ -55,6 +55,37 @@ describe("extractJsonObject", () => {
   it("throws when no object present", () => {
     expect(() => extractJsonObject("no json here")).toThrow(/no JSON object/);
   });
+
+  // The closing fence used to be stripped with `\s*```$`, which the engine
+  // retries from every position inside a whitespace run. These two tests pin
+  // the replacement: same characters removed, without the quadratic scan.
+  it("strips the closing fence and the whitespace before it, in every shape", () => {
+    const shapes = [
+      '```json\n{"a":1}\n```',
+      '```\n{"a":1}\n```',
+      '```JSON  {"a":1}   ```',
+      '{"a":1}\t\n  ```',
+      '{"a":1}```',
+      '  ```json\r\n{"a":1}\r\n```  ',
+      '{"a":1}',
+      'prose {"a":1} more prose',
+    ];
+    for (const shape of shapes) {
+      const legacy = shape.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "");
+      const unfenced = shape.trim().replace(/^```(?:json)?\s*/i, "");
+      const current = unfenced.endsWith("```") ? unfenced.slice(0, -3).trimEnd() : unfenced;
+      expect(current).toBe(legacy);
+      expect(extractJsonObject(shape)).toEqual({ a: 1 });
+    }
+  });
+
+  it("stays fast on a long whitespace run in model output", () => {
+    const hostile = `{"a":1}${" ".repeat(200_000)}x`;
+    const start = Date.now();
+    expect(extractJsonObject(hostile)).toEqual({ a: 1 });
+    // The old expression needed roughly twelve seconds for this input.
+    expect(Date.now() - start).toBeLessThan(1_000);
+  });
 });
 
 describe("parseReceiptImage", () => {

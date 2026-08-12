@@ -182,7 +182,13 @@ export function isRetryableGroqError(e: unknown): boolean {
  * data, it only unwraps.
  */
 export function extractJsonObject(raw: string): unknown {
-  const trimmed = raw.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "");
+  // The opening fence is anchored, so it is attempted from one position and
+  // scans once. A trailing `\s*```$` is not anchored: the engine retries from
+  // every position inside a whitespace run, which is quadratic in the length
+  // of the model's output. The closing fence is therefore removed by
+  // comparison instead, which strips exactly the same characters.
+  const unfenced = raw.trim().replace(/^```(?:json)?\s*/i, "");
+  const trimmed = unfenced.endsWith("```") ? unfenced.slice(0, -3).trimEnd() : unfenced;
   const start = trimmed.indexOf("{");
   const end = trimmed.lastIndexOf("}");
   if (start === -1 || end === -1 || end <= start) {

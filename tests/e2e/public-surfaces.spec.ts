@@ -29,9 +29,10 @@ test("landing disables ambient motion when reduced motion is requested", async (
   });
 });
 
-test("nonce CSP hydrates the interactive landing at mobile, desktop, and 4K widths", async ({ browser }) => {
+test("nonce CSP hydrates the interactive landing at mobile, tablet, desktop, and 4K widths", async ({ browser }) => {
   for (const viewport of [
     { width: 390, height: 844 },
+    { width: 768, height: 1024 },
     { width: 1440, height: 1000 },
     { width: 3840, height: 2160 },
   ]) {

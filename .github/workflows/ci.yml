@@ -32,6 +32,8 @@ jobs:
       - name: Contract tests (explicit gate)
         run: pnpm test:contracts
       - run: pnpm build
+      - name: First-load JS budget
+        run: pnpm bundle:budget
 
   e2e:
     name: Browser smoke tests

@@ -1,0 +1,20 @@
+{
+  "tolerance": 0.03,
+  "routes": {
+    "/_not-found/page": 355530,
+    "/app/agents/[id]/page": 399421,
+    "/app/agents/page": 399421,
+    "/app/page": 377397,
+    "/app/proof/[id]/page": 366948,
+    "/app/proof/page": 366948,
+    "/app/tab/page": 606471,
+    "/auth/complete/page": 365224,
+    "/auth/create-account/page": 383258,
+    "/auth/page": 383259,
+    "/auth/sign-in/page": 383259,
+    "/developers/page": 363950,
+    "/join/page": 372785,
+    "/open-source/page": 363950,
+    "/page": 412269
+  }
+}

@@ -14,7 +14,8 @@
     "build": "pnpm -r --if-present build",
     "kh:proof": "node packages/keeperhub-flight-recorder/bin/kh-proof.mjs",
     "mcp:bootstrap-token": "node scripts/bootstrap-mcp-token.mjs",
-    "probe:anon-authorization": "node scripts/probe-anon-authorization.mjs"
+    "probe:anon-authorization": "node scripts/probe-anon-authorization.mjs",
+    "probe:settlement-replay": "node scripts/probe-settlement-replay.mjs"
   },
   "devDependencies": {
     "@eslint/eslintrc": "3.3.6",

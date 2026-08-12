@@ -45,7 +45,7 @@ Best Onboarding UX Improvement bounty application saved.
 | Authenticated MCP V2 surface | `LIVE_PROVEN — NON-VALUE PROBE` | A scoped token initialized and listed exactly nine tools; `split_equal` and arbitrary-participant V2 preparation passed. No submission call was made. |
 | Canonical release | `LIVE_PROVEN` | Deployment `dpl_F5PgMqo7A9zecQW2LKos2FcCNVMs` serves commit `039582fc44901d1f436b61a426f1523a936427f9` and is `READY`. |
 | Hybrid voice candidate | `DEPLOYED/CONFIG PROVEN; PROVIDER LIFECYCLE PENDING` | AssemblyAI temp-token STT + buffered ElevenLabs readback code is deployed; sensitive provider variables and server-side budget reservations are configured/applied; real microphone/readback lifecycle pending. |
-| Settlement durability | `SOURCE/TEST/SCHEMA PROVEN; APP PROBE PENDING` | Fixed four-stage review; first-party Freeze requires a current HMAC-attested run; UI/REST/MCP share a durable submission journal; accepted recovery skips simulation/execute; prepared recovery reuses its stored successful simulation and deterministic idempotency key under a bounded approval expiry. Hosted schema presence does not prove these flows until the candidate probe passes. |
+| Settlement durability | `ONCHAIN GUARD LIVE-PROVEN; SOURCE/TEST/SCHEMA PROVEN; JOURNAL APP PROBE PENDING` | Fixed four-stage review; first-party Freeze requires a current HMAC-attested run; UI/REST/MCP share a durable submission journal; accepted recovery skips simulation/execute; prepared recovery reuses its stored successful simulation and deterministic idempotency key under a bounded approval expiry. The **third** duplicate guard — the contract's own `executed` mapping — is live-proven read-only: `pnpm probe:settlement-replay` rebuilds the broadcast calldata for `3hmlqi36zweiwg6fc5o2u`, matches its retained keccak256 byte for byte, and replays it by `eth_call`, which reverts `AlreadyExecuted(0x8b670800…b9db)` at head while the identical bytes do not revert at block `45327127`. The journal's own accepted-replay and prepared-recovery paths remain unproven against a live database; hosted schema presence does not prove them. |
 | Supabase identity + optional Privy bridge | `GITHUB LIVE_PROVEN; PRIVY OPTIONAL/DISABLED` | GitHub OAuth, branded return, `/app`, reload, and an authenticated tab create/read passed. Privy remains fail-closed and hidden under the stop-before-charge constraint. Email fallback UI is disabled and delivery unproven. |
 | V2 USDC settlement rail | `LIVE_PROVEN` | KeeperHub `3hmlqi36zweiwg6fc5o2u`; [tx `0x7a6fb760…a789`](https://sepolia.basescan.org/tx/0x7a6fb760f691954a41c71d5d508629c58aa09207bba0de4eaf164f097c59a789); block `45327128`; 1 atomic USDC; exact V2 event binding and balance conservation |
 | V2 video | `PUBLIC/VERIFIED` | <https://youtu.be/eXZACnOdt5w>; 90.005s; 3840×2160 at 60 fps; 5,400 H.264 video frames with AAC audio; 35,617,576 bytes; SHA-256 `a14cfef364c0fe7d4c62e2f9cfb73ca228a692e8738a85d5a6f615e361b09c69` |
@@ -135,6 +135,18 @@ Playwright result from the prior deployment's evidence.
   which PostgREST cannot expose at all. Denial lands at the GRANT layer, before
   any policy is consulted. This proves nothing about the `authenticated` role —
   the two-identity claim above stays unclaimed until a real second session runs.
+- Duplicate settlement execution is guarded three times: the durable journal's
+  one-intent-per-idempotency-key primary key and `SUBMISSION_ACCEPTANCE_CONFLICT`
+  transition, the deterministic KeeperHub idempotency key, and the contract's
+  `executed` mapping. Only the third is provable from outside with no credentials
+  and no value at risk, and it is: `pnpm probe:settlement-replay` is read-only
+  (`eth_call` only — nothing signed, nothing broadcast, no gas) and its retained
+  result is `docs/release/evidence/replay-rejection-probe.json`. The first two
+  guards are covered by source, unit tests and the migration-invariant test only.
+- The journal lock is released before the KeeperHub call, by design: a database
+  row lock is not held across a network broadcast. Duplicate prevention across a
+  crash-and-retry therefore rests on the deterministic idempotency key and the
+  onchain guard, with the journal recording — not gating — that boundary.
 - Groq has historical live evidence; other model-provider fallback legs should
   remain described according to their current measured state.
 - Sourcify exact matching is proven. BaseScan source verification is not

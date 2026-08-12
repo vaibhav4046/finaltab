@@ -177,16 +177,47 @@ describe("proposeAllocation", () => {
     ).rejects.toThrow(/failed after 3 attempts/);
   });
 
-  it("retryable 429 then valid proposal -> succeeds on attempt 2", async () => {
-    const res = await proposeAllocation(
-      client([
-        { status: 429, body: { error: { code: "rate_limit_exceeded", message: "slow down" } } },
-        JSON.stringify(validProposal),
-      ]),
-      { receipt, participants, payerId: "p1", instruction: "x" },
-    );
-    expect(res.attempts).toBe(2);
-    expect(res.proposal.payerId).toBe("p1");
+  it("surfaces a 429 once instead of retrying inside the same cooldown", async () => {
+    let calls = 0;
+    const fetchImpl = (async () => {
+      calls += 1;
+      return new Response(
+        JSON.stringify({ error: { code: "rate_limit_exceeded", message: "slow down" } }),
+        { status: 429 },
+      );
+    }) as typeof fetch;
+    await expect(
+      proposeAllocation(new GroqClient({ apiKey: "gsk_test", fetchImpl }), {
+        receipt,
+        participants,
+        payerId: "p1",
+        instruction: "x",
+      }),
+    ).rejects.toMatchObject({ httpStatus: 429 });
+    expect(calls).toBe(1);
+  });
+
+  it("sends only allocation-relevant item fields to the advisory model", async () => {
+    let body = "";
+    const fetchImpl = (async (_url: string | URL | Request, init?: RequestInit) => {
+      body = String(init?.body ?? "");
+      return new Response(JSON.stringify({ choices: [{ message: { content: JSON.stringify(validProposal) } }] }), {
+        status: 200,
+      });
+    }) as typeof fetch;
+    await proposeAllocation(new GroqClient({ apiKey: "gsk_test", fetchImpl }), {
+      receipt,
+      participants,
+      payerId: "p1",
+      instruction: "split it",
+    });
+    const request = JSON.parse(body) as { messages: Array<{ role: string; content: string }> };
+    const payload = request.messages.find((message) => message.role === "user")?.content ?? "";
+    expect(payload).toContain('"itemIndex": 0');
+    expect(payload).toContain('"quantity": 1');
+    expect(payload).not.toContain("unitPrice");
+    expect(payload).not.toContain("lineTotal");
+    expect(payload).not.toContain('"currency"');
   });
 
   it("retains provider-reported usage across schema retries", async () => {

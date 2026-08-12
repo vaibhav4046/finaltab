@@ -47,7 +47,17 @@ export async function proposeAllocation(
 
   const userPayload = JSON.stringify(
     {
-      receipt: { currency: input.receipt.currency, items: input.receipt.items },
+      // Allocation needs item identity and quantity, not prices or receipt
+      // totals. Keeping the advisory prompt this small makes complex tables
+      // fit conservative provider TPM limits; the deterministic reconciler
+      // still receives the complete receipt and remains the money authority.
+      receipt: {
+        items: input.receipt.items.map((item, itemIndex) => ({
+          itemIndex,
+          description: item.description,
+          quantity: item.quantity,
+        })),
+      },
       participants: input.participants,
       payerId: input.payerId,
       instruction: input.instruction,

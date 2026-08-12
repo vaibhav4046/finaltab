@@ -183,6 +183,16 @@ describe("production surface retirement gate", () => {
     expect(privyShell).not.toContain("Privy setup required");
   });
 
+  it("keeps allocation provider failures bounded and safe for product UI", () => {
+    const route = readFileSync(join(WEB_ROOT, "app", "api", "vision", "allocate", "route.ts"), "utf8");
+    const clients = readFileSync(join(WEB_ROOT, "lib", "server", "clients.ts"), "utf8");
+    expect(route).toContain("maxCompletionTokens: 1536");
+    expect(route).toContain("Allocation model is busy. Wait a moment, then try again.");
+    expect(route).toContain("Allocation model is temporarily unavailable.");
+    expect(route).not.toContain('jsonError(e instanceof Error ? e.message : "allocation failed"');
+    expect(clients).toContain('Pick<GroqClientOptions, "maxCompletionTokens" | "timeoutMs">');
+  });
+
   it("keeps public evidence pages on one responsive editorial system", () => {
     const developers = readFileSync(join(WEB_ROOT, "app", "developers", "page.tsx"), "utf8");
     const openSource = readFileSync(join(WEB_ROOT, "app", "open-source", "page.tsx"), "utf8");

@@ -165,14 +165,15 @@ function groqErrorDetail(body: unknown): string | null {
 }
 
 /**
- * True for Groq failures worth one more attempt: 400 json_validate_failed
- * (model emitted invalid JSON under json_object mode), timeouts, rate limits,
- * and transient 5xx. Auth/permission errors are never retryable.
+ * True for Groq failures worth one immediate retry: 400 json_validate_failed
+ * (model emitted invalid JSON under json_object mode), timeouts, and transient
+ * 5xx. A 429 needs the provider's cooldown, so retrying it inside the same
+ * request only burns latency and repeats the rejection.
  */
 export function isRetryableGroqError(e: unknown): boolean {
   if (!(e instanceof GroqApiError)) return false;
   if (e.httpStatus === 401 || e.httpStatus === 403) return false;
-  return e.httpStatus === 400 || e.httpStatus === 408 || e.httpStatus === 429 || e.httpStatus >= 500;
+  return e.httpStatus === 400 || e.httpStatus === 408 || e.httpStatus >= 500;
 }
 
 /**

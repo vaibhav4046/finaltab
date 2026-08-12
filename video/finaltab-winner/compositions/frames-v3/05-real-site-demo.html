@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8"/><title>FINALTab V3 — 05 · REAL FINAL SITE</title></head>
+<body>
+<template>
+  <style>
+    @font-face{font-family:Geist;src:url("assets/fonts/Geist-Variable.woff2") format("woff2");font-weight:100 900}
+    @font-face{font-family:GeistMono;src:url("assets/fonts/GeistMono-Regular.woff2") format("woff2");font-weight:400}
+    @font-face{font-family:GeistMono;src:url("assets/fonts/GeistMono-Bold.woff2") format("woff2");font-weight:700}
+    #v3-05-root{position:absolute;inset:0;width:3840px;height:2160px;overflow:hidden;color:#F4F8F1}
+    .clip{position:absolute;inset:0;overflow:hidden}
+    .ground{background:#050706}
+    .ground:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(69,175,255,.055) 2px,transparent 2px),linear-gradient(rgba(200,255,61,.035) 2px,transparent 2px);background-size:192px 192px}
+    .stage{box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;gap:52px;padding:192px 240px 332px}
+    .eyebrow{font:700 36px/1 GeistMono,monospace;letter-spacing:.14em;color:#B7C0B8}
+    .title{max-width:3300px;font:760 190px/.92 Geist,Arial,sans-serif;letter-spacing:-.055em;color:#45AFFF}
+    .copy{max-width:3200px;font:650 62px/1.25 Geist,Arial,sans-serif;letter-spacing:-.025em;color:#F4F8F1}
+    .rule{width:100%;height:4px;background:linear-gradient(90deg,#45AFFF 0 72%,#C8FF3D 72% 100%);transform-origin:0 50%}
+    .pending{align-self:flex-start;border:2px solid rgba(183,192,184,.5);border-radius:999px;padding:20px 30px;font:700 30px/1 GeistMono,monospace;letter-spacing:.09em;color:#B7C0B8}
+  </style>
+  <div id="v3-05-root" data-composition-id="finaltab-v3-real-site-demo" data-start="0" data-width="3840" data-height="2160" data-duration="20">
+    <section id="v3-05-ground" class="clip ground" data-start="0" data-duration="20" data-track-index="0"></section>
+    <section id="v3-05-stage" class="clip stage" data-start="0" data-duration="20" data-track-index="1">
+      <div id="v3-05-eyebrow" class="eyebrow">05 · REAL FINAL SITE</div>
+      <div id="v3-05-title" class="title">C05 CAPTURE PENDING</div>
+      <div id="v3-05-rule" class="rule"></div>
+      <div id="v3-05-copy" class="copy">SIGN IN → CREATE TAB → RECEIPT → PEOPLE → FOUR CHECKS → MEMORY → LOCK</div>
+      <div id="v3-05-pending" class="pending">V3 SOURCE LOCK · FINAL FRAME PENDING</div>
+    </section>
+  </div>
+  <script>
+    window.__timelines=window.__timelines||{};
+    const tl=gsap.timeline({paused:true});
+    tl.fromTo("#v3-05-eyebrow",{opacity:0,x:-40},{opacity:1,x:0,duration:.5,ease:"power3.out"},.15);
+    tl.fromTo("#v3-05-title",{opacity:0,y:48},{opacity:1,y:0,duration:.7,ease:"power3.out"},.55);
+    tl.fromTo("#v3-05-rule",{opacity:0,scaleX:0},{opacity:1,scaleX:1,duration:.7,ease:"power3.out"},1.1);
+    tl.fromTo("#v3-05-copy",{opacity:0,y:32},{opacity:1,y:0,duration:.62,ease:"power3.out"},1.80);
+    tl.fromTo("#v3-05-pending",{opacity:0},{opacity:1,duration:.35,ease:"sine.out"},12.40);
+    window.__timelines["finaltab-v3-real-site-demo"]=tl;
+  </script>
+</template>
+</body>
+</html>

@@ -70,13 +70,13 @@ export function ParticipantSetup({ people, locked, cloudTabId, onPeople }: Parti
       <section className="mb-4 rounded-2xl border border-edge bg-panel p-4" aria-labelledby="participants-title">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-signal">Tab setup</p>
+            <p className="font-mono text-xs uppercase tracking-[0.18em] text-signal">Tab setup</p>
             <h2 id="participants-title" className="mt-1 text-lg font-semibold text-paper">Who is at the table?</h2>
             <p className="mt-1 max-w-2xl text-sm text-fog">
               Add the real participant wallets. Each debtor must connect the exact address listed here and approve both the USDC pull and complete payout plan.
             </p>
           </div>
-          <span className="rounded-full border border-signal/30 bg-signal/10 px-3 py-1.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-signal">
+          <span className="rounded-full border border-signal/30 bg-signal/10 px-3 py-1.5 font-mono text-xs font-semibold uppercase tracking-wider text-signal">
             External wallets only
           </span>
         </div>
@@ -89,7 +89,7 @@ export function ParticipantSetup({ people, locked, cloudTabId, onPeople }: Parti
                   <p className="font-medium text-paper">{person.name}</p>
                   <p className="mt-1 truncate font-mono text-xs text-fog" title={person.address}>{person.address}</p>
                 </div>
-                <span className="rounded-full bg-signal/10 px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-signal">
+                <span className="rounded-full bg-signal/10 px-2 py-1 font-mono text-xs uppercase tracking-wider text-signal">
                   wallet
                 </span>
               </div>

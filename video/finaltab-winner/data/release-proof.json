@@ -69,7 +69,21 @@
   "deliveryTarget": {
     "width": 3840,
     "height": 2160,
-    "fps": 60
+    "fps": 60,
+    "durationSeconds": 90,
+    "frames": 5400
+  },
+  "v3Film": {
+    "revision": "v3-90s-eight-scene",
+    "sourceLocked": true,
+    "productCaptureComplete": false,
+    "complexAgentCaptureComplete": false,
+    "mcpNonBroadcastCaptureComplete": false,
+    "retainedProofCaptureComplete": false,
+    "singleBatchNarrationComplete": false,
+    "captionsComplete": false,
+    "eightNewScenesComplete": false,
+    "finalMasterVerified": false
   },
   "truthBoundary": {
     "settlementProofVerified": true,

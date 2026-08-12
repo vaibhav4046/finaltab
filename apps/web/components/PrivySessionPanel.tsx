@@ -15,7 +15,7 @@ function LoadingPrivySessionPanel() {
       aria-labelledby="privy-session-loading-title"
       aria-busy="true"
     >
-      <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-fog-dim">Identity bridge</p>
+      <p className="font-mono text-xs uppercase tracking-[0.18em] text-fog-dim">Identity bridge</p>
       <h3 id="privy-session-loading-title" className="mt-1 text-sm font-semibold text-paper">
         Loading configured identity provider
       </h3>

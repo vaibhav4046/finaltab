@@ -253,7 +253,7 @@ export function CloudAccessPanel({
   if (sessionLoadError) {
     return (
       <section className="rounded-xl border border-danger/30 bg-danger/5 p-5" aria-labelledby="account-title">
-        <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-danger">Account check failed</p>
+        <p className="font-mono text-xs uppercase tracking-[0.18em] text-danger">Account check failed</p>
         <h2 id="account-title" className="mt-2 text-xl font-semibold text-paper">We could not read this session.</h2>
         <p className="mt-2 text-sm text-fog">Reload this page before entering an email. No account state was assumed.</p>
         <button type="button" onClick={() => window.location.reload()} className="mt-4 min-h-11 rounded-lg border border-edge px-4 text-sm text-paper">
@@ -294,7 +294,7 @@ export function CloudAccessPanel({
     return (
       <section className="overflow-hidden rounded-xl border border-edge bg-panel" aria-labelledby="account-title">
         {teamEmailAuthEnabled ? <div className="border-b border-edge bg-panel-2/60 p-2">
-          <p className="px-2 pb-2 font-mono text-[9px] font-semibold uppercase tracking-[0.16em] text-warn">Email fallback action</p>
+          <p className="px-2 pb-2 font-mono text-xs font-semibold uppercase tracking-[0.16em] text-warn">Email fallback action</p>
           <div className="grid grid-cols-2 gap-2" aria-label="Email fallback action">
             {(["sign-in", "create-account"] as const).map((candidate) => (
               <button
@@ -315,7 +315,7 @@ export function CloudAccessPanel({
         </div> : null}
 
         <div className="p-5 md:p-6">
-          <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-signal">FINALTab account</p>
+          <p className="font-mono text-xs uppercase tracking-[0.18em] text-signal">FINALTab account</p>
           <h2 id="account-title" className="mt-2 text-2xl font-semibold tracking-tight text-paper">
             {githubOAuthEnabled
               ? "Continue securely with GitHub."
@@ -340,14 +340,14 @@ export function CloudAccessPanel({
               disabled={busy !== null}
               className="mt-5 flex min-h-12 w-full items-center justify-center gap-3 rounded-lg border border-signal/60 bg-gradient-to-r from-signal/15 to-blue-500/15 px-5 font-mono text-xs font-semibold uppercase tracking-wider text-paper shadow-[0_0_32px_rgba(200,255,61,0.08)] transition hover:border-signal hover:bg-signal/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-signal disabled:opacity-50"
             >
-              <span aria-hidden="true" className="grid size-7 place-items-center rounded-full bg-paper font-sans text-[10px] font-bold tracking-normal text-ink">GH</span>
+              <span aria-hidden="true" className="grid size-7 place-items-center rounded-full bg-paper font-sans text-xs font-bold tracking-normal text-ink">GH</span>
               {busy === "github" ? "Opening GitHub..." : "Continue with GitHub"}
             </button>
           ) : null}
 
           {teamEmailAuthEnabled ? (
             <div className="mt-6 border-t border-edge pt-5">
-              <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-warn">Operator email fallback</p>
+              <p className="font-mono text-xs font-semibold uppercase tracking-[0.18em] text-warn">Operator email fallback</p>
               <p className="mt-2 text-xs leading-relaxed text-fog">
                 Use only when the deployment operator has confirmed delivery for your address. Supabase default mail is not a public delivery service; this UI gate is not a membership allowlist.
               </p>
@@ -431,11 +431,11 @@ export function CloudAccessPanel({
       <section className="rounded-xl border border-edge bg-panel p-5" aria-labelledby="account-title">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-signal">Account active</p>
+            <p className="font-mono text-xs uppercase tracking-[0.18em] text-signal">Account active</p>
             <h2 id="account-title" className="mt-2 text-xl font-semibold text-paper">
               {session.user?.email ?? "Verified Supabase user"}
             </h2>
-            <p className="mt-1 break-all font-mono text-[10px] text-fog-dim">RLS subject {session.user?.id}</p>
+            <p className="mt-1 break-all font-mono text-xs text-fog-dim">RLS subject {session.user?.id}</p>
           </div>
           <form action="/auth/signout" method="post">
             <button type="submit" className="min-h-11 rounded-lg border border-edge px-4 text-sm text-fog hover:text-paper">
@@ -450,7 +450,7 @@ export function CloudAccessPanel({
       </section>
 
       <section className="rounded-xl border border-edge bg-panel p-5" aria-labelledby="external-wallet-title">
-        <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-fog-dim">Optional external wallet</p>
+        <p className="font-mono text-xs uppercase tracking-[0.18em] text-fog-dim">Optional external wallet</p>
         <h3 id="external-wallet-title" className="mt-1 text-sm font-semibold text-paper">Prove an injected Base Sepolia wallet</h3>
         {wallet ? (
           <p className="mt-2 break-all font-mono text-xs text-signal" role="status">{wallet}</p>

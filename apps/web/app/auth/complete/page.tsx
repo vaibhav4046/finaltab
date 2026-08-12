@@ -9,7 +9,7 @@ import { authenticatedUser } from "@/lib/supabase/server";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Account verified - FINALTab",
+  title: "Account verified — FINALTab",
 };
 
 export default async function AuthCompletePage({
@@ -29,11 +29,11 @@ export default async function AuthCompletePage({
   const privyConfigured = Boolean(privyServerConfig());
 
   return (
-    <div className="mx-auto w-full max-w-5xl px-4 py-10 md:px-6">
-      <section className="overflow-hidden rounded-2xl border border-edge bg-panel">
+    <div className="auth-page">
+      <section className="auth-card">
         <div className="grid items-center gap-6 border-b border-edge bg-[radial-gradient(circle_at_85%_20%,rgba(20,92,255,0.16),transparent_42%)] p-6 md:grid-cols-[1fr_320px] md:p-9">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-signal/30 bg-signal/5 px-3 py-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-signal">
+            <div className="inline-flex items-center gap-2 rounded-full border border-signal/30 bg-signal/5 px-3 py-1.5 font-mono text-xs font-semibold uppercase tracking-[0.18em] text-signal">
               <span className="h-1.5 w-1.5 rounded-full bg-signal" />
               Supabase session verified
             </div>

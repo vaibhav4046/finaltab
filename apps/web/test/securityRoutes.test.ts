@@ -8,7 +8,7 @@ import {
   routeProtection,
 } from "@/lib/security";
 import { authFeatureFlags } from "@/lib/auth/features";
-import { refreshSupabaseSession } from "@/lib/supabase/middleware";
+import { refreshSupabaseSession, supabaseMiddlewareInternals } from "@/lib/supabase/middleware";
 
 const ENV_KEYS = [
   "FINALTAB_APP_ORIGIN",
@@ -30,7 +30,7 @@ afterEach(() => {
 });
 
 describe("authentication route matrix", () => {
-  it("keeps the heavy Privy provider outside the public root layout", () => {
+  it("keeps the optional Privy runtime on identity routes only", () => {
     const rootLayout = readFileSync(new URL("../app/layout.tsx", import.meta.url), "utf8");
     const authLayout = readFileSync(new URL("../app/auth/layout.tsx", import.meta.url), "utf8");
     const appLayout = readFileSync(new URL("../app/app/layout.tsx", import.meta.url), "utf8");
@@ -38,7 +38,7 @@ describe("authentication route matrix", () => {
 
     expect(rootLayout).not.toMatch(/Privy|privy/);
     expect(authLayout).toContain("PrivyRouteProvider");
-    expect(appLayout).toContain("PrivyRouteProvider");
+    expect(appLayout).not.toMatch(/Privy|privy/);
     expect(routeProvider).toContain('import { privyServerConfig } from "@/lib/privy/server"');
     expect(routeProvider).not.toContain("privyPublicConfig");
   });
@@ -156,6 +156,23 @@ describe("authentication route matrix", () => {
     expect(page.status).toBe(307);
     expect(page.headers.get("location")).toContain("/auth?error=cloud-not-configured");
     expect(page.headers.get("location")).toContain("next=%2Fapp%2Ftab%3Ffrom%3Dtest");
+  });
+
+  it("skips Supabase work for configured no-cookie public traffic and fails protected pages immediately", async () => {
+    mutableEnv.NEXT_PUBLIC_SUPABASE_URL = "https://project.supabase.co";
+    mutableEnv.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY = "sb_publishable_test";
+
+    const publicRequest = new NextRequest("https://finaltab.example/developers");
+    expect(supabaseMiddlewareInternals.hasSupabaseSessionCookie(publicRequest)).toBe(false);
+    const publicResponse = await refreshSupabaseSession(publicRequest);
+    expect(publicResponse.headers.get("x-middleware-next")).toBe("1");
+    expect(publicResponse.headers.get("x-finaltab-auth")).toBe("anonymous");
+
+    const protectedResponse = await refreshSupabaseSession(
+      new NextRequest("https://finaltab.example/app/agents"),
+    );
+    expect(protectedResponse.status).toBe(307);
+    expect(protectedResponse.headers.get("location")).toContain("error=session-required");
   });
 });
 

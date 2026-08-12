@@ -119,12 +119,12 @@ export function ConfiguredPrivySessionPanel() {
     <section className="rounded-xl border border-edge bg-panel-2 p-4" aria-labelledby="privy-session-title">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-fog-dim">Identity bridge</p>
+          <p className="font-mono text-xs uppercase tracking-[0.18em] text-fog-dim">Identity bridge</p>
           <h3 id="privy-session-title" className="mt-1 text-sm font-semibold text-paper">
             Supabase RLS + Privy provisioned identity
           </h3>
         </div>
-        <span className={`font-mono text-[10px] uppercase tracking-wider ${tone}`}>
+        <span className={`font-mono text-xs uppercase tracking-wider ${tone}`}>
           {check.status === "verified" ? "verified" : "fail-closed"}
         </span>
       </div>
@@ -132,7 +132,7 @@ export function ConfiguredPrivySessionPanel() {
         {detail}
       </p>
       {check.status === "verified" ? (
-        <div className="mt-3 grid gap-2 border-t border-edge-soft pt-3 font-mono text-[11px] text-fog sm:grid-cols-2">
+        <div className="mt-3 grid gap-2 border-t border-edge-soft pt-3 font-mono text-xs text-fog sm:grid-cols-2">
           <p>Privy · {shortId(check.identity.privyUserId)}</p>
           <p>Supabase · {shortId(check.identity.supabaseUserId)}</p>
           <p className="sm:col-span-2">

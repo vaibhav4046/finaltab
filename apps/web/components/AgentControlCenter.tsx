@@ -13,6 +13,7 @@ import {
   ShieldAlert,
   Trash2,
 } from "lucide-react";
+import { AgentMemoryGraph } from "@/components/AgentMemoryGraph";
 import type {
   SettlementAgentEvent,
   SettlementAgentMemory,
@@ -82,7 +83,7 @@ function EventCard({ event }: { event: SettlementAgentEvent }) {
     typeof value === "string" || typeof value === "number" || typeof value === "boolean",
   ).slice(0, 6);
   return (
-    <li className="rounded-2xl border border-quiet-soft bg-surface-2 p-4">
+    <li className="stage-swap rounded-2xl border border-quiet-soft bg-surface-2 p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="font-mono text-xs uppercase tracking-[0.16em] text-faint">Stage 0{event.sequence}</p>
@@ -97,13 +98,13 @@ function EventCard({ event }: { event: SettlementAgentEvent }) {
         <dl className="mt-4 grid gap-2 sm:grid-cols-2">
           {facts.map(([key, value]) => (
             <div key={key} className="rounded-xl border border-quiet-soft bg-canvas/40 px-3 py-2">
-              <dt className="font-mono text-[11px] uppercase tracking-wide text-faint">{key.replaceAll(/([A-Z])/g, " $1")}</dt>
+              <dt className="font-mono text-xs uppercase tracking-wide text-faint">{key.replaceAll(/([A-Z])/g, " $1")}</dt>
               <dd className="mt-1 break-words font-mono text-xs text-txt">{String(value)}</dd>
             </div>
           ))}
         </dl>
       ) : null}
-      <p className="mt-3 font-mono text-[11px] text-faint">
+      <p className="mt-3 font-mono text-xs text-faint">
         {event.durationMs} ms · input {event.inputHash.slice(0, 12)}…
         {event.modelName ? ` · ${event.modelProvider}/${event.modelName}` : " · deterministic only"}
       </p>
@@ -115,12 +116,19 @@ export function AgentControlCenter({ runId }: Props) {
   const [availability, setAvailability] = useState<"loading" | "disabled" | "signed-out" | "ready" | "error">("loading");
   const [runs, setRuns] = useState<SettlementAgentRun[]>([]);
   const [selected, setSelected] = useState<SettlementAgentRunDetail | null>(null);
+  const [graphRun, setGraphRun] = useState<SettlementAgentRunDetail | null>(null);
+  const [graphIssue, setGraphIssue] = useState<string | null>(null);
   const [memory, setMemory] = useState<SettlementAgentMemory[]>([]);
   const [message, setMessage] = useState<string | null>(null);
+  const [messageKind, setMessageKind] = useState<"info" | "error">("info");
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [confirmingDelete, setConfirmingDelete] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setMessage(null);
+    setMessageKind("info");
+    setGraphIssue(null);
+    setConfirmingDelete(null);
     try {
       const sessionRequest = fetch("/api/session", { cache: "no-store" });
       const requests: Promise<Response>[] = [
@@ -136,12 +144,31 @@ export function AgentControlCenter({ runId }: Props) {
       if (!responses[0]!.ok || !responses[1]!.ok || (responses[2] && !responses[2]!.ok)) {
         throw new Error(String(bodies.find((body) => typeof body.message === "string")?.message ?? "Agent control data could not be loaded."));
       }
-      setRuns((bodies[0]!.runs ?? []) as SettlementAgentRun[]);
+      const loadedRuns = (bodies[0]!.runs ?? []) as SettlementAgentRun[];
+      const loadedSelected = runId ? (bodies[2]!.run as SettlementAgentRunDetail) : null;
+      setRuns(loadedRuns);
       setMemory((bodies[1]!.memory ?? []) as SettlementAgentMemory[]);
-      setSelected(runId ? (bodies[2]!.run as SettlementAgentRunDetail) : null);
+      setSelected(loadedSelected);
+      setGraphRun(loadedSelected);
+
+      if (!loadedSelected && loadedRuns[0]) {
+        try {
+          const graphResponse = await fetch(`/api/agents/runs/${encodeURIComponent(loadedRuns[0].id)}`, { cache: "no-store" });
+          const graphBody = await graphResponse.json() as { run?: SettlementAgentRunDetail; message?: string };
+          if (!graphResponse.ok || !graphBody.run) {
+            throw new Error(graphBody.message ?? "The latest run detail could not be loaded.");
+          }
+          setGraphRun(graphBody.run);
+        } catch (error) {
+          setGraphRun(null);
+          setGraphIssue(error instanceof Error ? error.message : "The latest run detail could not be loaded.");
+        }
+      }
       setAvailability("ready");
     } catch (error) {
       setAvailability("error");
+      setMessageKind("error");
+      setGraphRun(null);
       setMessage(error instanceof Error ? error.message : "Agent control data could not be loaded.");
     }
   }, [runId]);
@@ -151,13 +178,20 @@ export function AgentControlCenter({ runId }: Props) {
   const deleteMemory = async (id: string) => {
     setDeleting(id);
     setMessage(null);
+    setMessageKind("info");
     try {
       const response = await fetch(`/api/agents/memory/${encodeURIComponent(id)}`, { method: "DELETE" });
-      const body = await response.json() as { message?: string };
-      if (!response.ok) throw new Error(body.message ?? "Memory could not be deleted.");
+      const body = await response.json().catch(() => ({})) as { error?: string; message?: string };
+      if (!response.ok) {
+        throw new Error(body.message ?? body.error ?? `Memory deletion failed with status ${response.status}.`);
+      }
       setMemory((current) => current.filter((entry) => entry.id !== id));
-      setMessage("Memory deleted. The append-only tab audit keeps only its digest and deletion event.");
+      setSelected((current) => current ? { ...current, memory: current.memory.filter((entry) => entry.id !== id) } : current);
+      setGraphRun((current) => current ? { ...current, memory: current.memory.filter((entry) => entry.id !== id) } : current);
+      setConfirmingDelete(null);
+      setMessage("Memory removed from this view. The append-only tab audit keeps its digest and deletion event.");
     } catch (error) {
+      setMessageKind("error");
       setMessage(error instanceof Error ? error.message : "Memory could not be deleted.");
     } finally {
       setDeleting(null);
@@ -165,6 +199,10 @@ export function AgentControlCenter({ runId }: Props) {
   };
 
   const balanceSheet = useMemo(() => selected ? balanceRows(selected) : [], [selected]);
+  const pendingMemory = useMemo(
+    () => memory.find((entry) => entry.id === confirmingDelete) ?? null,
+    [confirmingDelete, memory],
+  );
   const currency = selected && typeof selected.resultSummary.currency === "string" ? selected.resultSummary.currency : "USD";
 
   if (availability === "loading") {
@@ -178,7 +216,7 @@ export function AgentControlCenter({ runId }: Props) {
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-[1800px] px-4 py-8 sm:px-6 lg:px-8">
       <header className="relative overflow-hidden rounded-3xl border border-quiet-soft bg-surface-1 p-6 sm:p-8">
         <div className="ledger-grid absolute inset-0" aria-hidden="true" />
         <div className="relative flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
@@ -194,7 +232,14 @@ export function AgentControlCenter({ runId }: Props) {
         </div>
       </header>
 
-      {message ? <p className={`mt-4 rounded-xl border p-3 text-sm ${availability === "error" ? tone("failed") : "border-info/30 bg-info/10 text-info"}`} role={availability === "error" ? "alert" : "status"}>{message}</p> : null}
+      {message ? <p className={`mt-4 rounded-xl border p-3 text-sm ${messageKind === "error" ? tone("failed") : "border-info/30 bg-info/10 text-info"}`} role={messageKind === "error" ? "alert" : "status"}>{message}</p> : null}
+
+      <AgentMemoryGraph
+        run={selected ?? graphRun}
+        hasRuns={runs.length > 0}
+        firstRunId={runs[0]?.id}
+        detailIssue={graphIssue}
+      />
 
       {selected ? (
         <>
@@ -221,7 +266,20 @@ export function AgentControlCenter({ runId }: Props) {
           <aside>
             <div className="flex items-center gap-2"><Database size={18} className="text-signal" aria-hidden="true" /><h2 className="text-xl font-semibold text-txt">Bounded audit memory</h2></div>
             <p className="mt-2 text-sm leading-6 text-muted">Only compact invariant summaries are retained for audit and comparison. They never change policy, alter code, or enter a model prompt, and you can delete them at any time.</p>
-            <div className="mt-4 space-y-3">{memory.map((entry) => <article key={entry.id} className="rounded-2xl border border-quiet-soft bg-surface-1 p-4"><div className="flex items-start justify-between gap-3"><div><p className="font-mono text-xs uppercase tracking-wide text-signal">revision {entry.revision}</p><h3 className="mt-1 font-medium text-txt">Latest settlement review</h3></div><button type="button" disabled={deleting !== null} onClick={() => void deleteMemory(entry.id)} className="touch-target grid h-11 w-11 place-items-center rounded-xl text-muted hover:bg-danger/10 hover:text-danger disabled:opacity-50" aria-label="Delete this memory"><Trash2 size={17} aria-hidden="true" /></button></div><p className="mt-3 font-mono text-xs text-muted">{entry.contentHash.slice(0, 18)}…</p><p className="mt-2 text-xs text-faint">Expires {new Date(entry.expiresAt).toLocaleDateString()}</p>{entry.sourceRunId ? <Link href={`/app/agents/${entry.sourceRunId}`} className="touch-target mt-3 inline-flex items-center gap-2 text-sm font-semibold text-info">Inspect source run <ExternalLink size={14} aria-hidden="true" /></Link> : null}</article>)}{memory.length === 0 ? <div className="rounded-2xl border border-dashed border-quiet p-5 text-sm text-muted">No retained memory.</div> : null}</div>
+            <div className="mt-4 space-y-3">{memory.map((entry) => <article key={entry.id} className="rounded-2xl border border-quiet-soft bg-surface-1 p-4"><div className="flex items-start justify-between gap-3"><div><p className="font-mono text-xs uppercase tracking-wide text-signal">revision {entry.revision}</p><h3 className="mt-1 font-medium text-txt">Latest settlement review</h3></div><button type="button" disabled={deleting !== null} onClick={() => setConfirmingDelete(entry.id)} className="touch-target grid h-11 w-11 place-items-center rounded-xl text-muted hover:bg-danger/10 hover:text-danger disabled:opacity-50" aria-label="Review deletion of this memory"><Trash2 size={17} aria-hidden="true" /></button></div><p className="mt-3 font-mono text-xs text-muted">{entry.contentHash.slice(0, 18)}…</p><p className="mt-2 text-xs text-faint">Expires {new Date(entry.expiresAt).toLocaleDateString()}</p>{entry.sourceRunId ? <Link href={`/app/agents/${entry.sourceRunId}`} className="touch-target mt-3 inline-flex items-center gap-2 text-sm font-semibold text-info">Inspect source run <ExternalLink size={14} aria-hidden="true" /></Link> : null}</article>)}{memory.length === 0 ? <div className="rounded-2xl border border-dashed border-quiet p-5 text-sm text-muted">No retained memory.</div> : null}</div>
+            {pendingMemory ? (
+              <div className="mt-4 rounded-2xl border border-danger/35 bg-danger/10 p-4" role="region" aria-labelledby={`memory-delete-${pendingMemory.id}`} aria-busy={deleting === pendingMemory.id}>
+                <p id={`memory-delete-${pendingMemory.id}`} className="font-semibold text-txt">Remove bounded memory revision {pendingMemory.revision}?</p>
+                <p className="mt-2 text-sm leading-6 text-muted">This removes the compact summary from the product. The append-only tab audit keeps the digest and deletion event.</p>
+                <p className="mt-3 break-all font-mono text-xs text-faint" title={pendingMemory.contentHash}>{pendingMemory.contentHash}</p>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <button type="button" disabled={deleting !== null} onClick={() => setConfirmingDelete(null)} className="touch-target inline-flex items-center rounded-xl border border-quiet px-4 text-sm font-semibold text-muted hover:text-txt disabled:opacity-50">Keep memory</button>
+                  <button type="button" disabled={deleting !== null} onClick={() => void deleteMemory(pendingMemory.id)} className="touch-target inline-flex items-center rounded-xl border border-danger/40 bg-danger/15 px-4 text-sm font-semibold text-danger hover:bg-danger/20 disabled:opacity-50">
+                    {deleting === pendingMemory.id ? "Removing…" : "Remove memory"}
+                  </button>
+                </div>
+              </div>
+            ) : null}
             <div className="mt-4 rounded-2xl border border-info/25 bg-info/5 p-4"><div className="flex items-center gap-2 text-info"><CheckCircle2 size={17} aria-hidden="true" /><p className="font-semibold">Measured, not magical</p></div><p className="mt-2 text-sm leading-6 text-muted">The control plane reports reconciler conservation and wallet/consent gates, then says proof not submitted until the independent verifier has an exact binding. It does not claim self-modifying code or unsupported networks.</p></div>
           </aside>
         </section>

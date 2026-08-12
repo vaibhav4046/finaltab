@@ -1,13 +1,18 @@
 {
   "id": "finaltab-winner",
-  "name": "finaltab-winner",
+  "name": "FINALTab V3 judge film",
+  "sourceRevision": "v3-90s-eight-scene",
   "deliveryTarget": {
     "width": 3840,
     "height": 2160,
     "fps": 60,
-    "framesAt96Seconds": 5760,
-    "resolutionPreset": "landscape-4k"
+    "durationSeconds": 90,
+    "framesAt90Seconds": 5400,
+    "resolutionPreset": "landscape-4k",
+    "integratedLufs": -14,
+    "maxTruePeakDbtp": -1
   },
-  "renderState": "gated-no-final-render",
-  "createdAt": "2026-08-11T01:07:31.250Z"
+  "renderState": "source-locked-v3-captures-audio-compositions-pending",
+  "createdAt": "2026-08-11T01:07:31.250Z",
+  "revisedAt": "2026-08-12T00:00:00.000Z"
 }

@@ -1,114 +1,58 @@
-# COMPOSITION PLAN — FINALTab winner film
+# COMPOSITION PLAN — FINALTab V3 judge film
 
 ## Master
 
 - Composition ID: `finaltab-winner`
-- Duration: 96 seconds
-- Canvas/delivery: 3840×2160
+- Exact duration: 90.000 seconds / 5,400 frames
+- Canvas and delivery: 3840×2160
 - Frame rate: 60 fps
-- HyperFrames: 0.7.106
-- Palette and typography: [frame.md](frame.md)
-- Motion assertions: one root [index.motion.json](index.motion.json), 27 targeted assertions
+- HyperFrames pin: 0.7.106
+- Current build state: V3 source locked; new captures, narration, captions, and all eight scene compositions pending
+- Design truth: [frame.md](frame.md)
+- Source truth: [data/v3-source-contract.json](data/v3-source-contract.json)
 
-## Frame schedule
+## Scene schedule
 
-| Frame | Composition | Start | Duration | Evidence role |
-| --- | --- | ---: | ---: | --- |
-| 01 | `finaltab-outcome-lockup` | 0 | 6 | human outcome |
-| 02 | `finaltab-architecture-rail` | 6 | 10 | five control boundaries |
-| 03 | `finaltab-complex-product-flow` | 16 | 15 | canonical signed-in product capture |
-| 04 | `finaltab-net-freeze-bind` | 31 | 13 | review invalidation and freeze |
-| 05 | `finaltab-dual-consent-simulate` | 44 | 12 | sanitized retained signature/simulation evidence |
-| 06 | `finaltab-keeperhub-proof` | 56 | 10 | retained KeeperHub + independent chain proof |
-| 07 | `finaltab-nine-mcp-tools` | 66 | 7 | authenticated nine-tool surface |
-| 08 | `finaltab-mcp-climax` | 73 | 18 | non-broadcast MCP boundary + separate retained status |
-| 09 | `finaltab-proof-cta` | 91 | 5 | public URLs and retained transaction |
+| Scene | Future composition | Start | Duration | End | Evidence role |
+| --- | --- | ---: | ---: | ---: | --- |
+| 01 | `finaltab-v3-logo` | 0 | 4 | 4 | text-only identity |
+| 02 | `finaltab-v3-product-thesis` | 4 | 8 | 12 | product promise |
+| 03 | `finaltab-v3-use-cases` | 12 | 8 | 20 | practical breadth |
+| 04 | `finaltab-v3-simple-architecture` | 20 | 10 | 30 | plain-English mechanism |
+| 05 | `finaltab-v3-real-site-demo` | 30 | 20 | 50 | real final product capture |
+| 06 | `finaltab-v3-complex-agent-task` | 50 | 18 | 68 | voice, model, review, memory proof |
+| 07 | `finaltab-v3-mcp-nonbroadcast` | 68 | 17 | 85 | authenticated tool test and hard stop |
+| 08 | `finaltab-v3-proof-cta` | 85 | 5 | 90 | earlier-run proof and CTA |
 
-## Tracks
+## Planned root tracks
 
 | Track | Role |
 | ---: | --- |
-| 0 | master ground |
-| 10 | frame subcompositions |
-| 15 | eight carbon–blue–acid transit wipes |
-| 20 | baked captions |
-| 30 | nine scene narration clips |
-| 32 | transition whooshes |
-| 33 | proof ping |
-| 34 | approval-boundary click |
-| 35 | climax riser |
-| 36 | CTA impact |
+| 0 | persistent carbon ground |
+| 10 | eight newly built scene compositions |
+| 15 | seven restrained carbon/blue/acid handoffs |
+| 20 | captions |
+| 30 | one new full-script George narration master |
+| 32 | quiet transition SFX |
+| 33 | hard-stop click and proof ping |
 
-No BGM track is present because no music source is approved.
-
-## Transition and layout contract
-
-Eight 0.5-second carbon–blue–acid transit wipes straddle the cuts at 6, 16, 31, 44, 56, 66, 73, and 91 seconds. The enhanced audit samples those transitions.
-
-Narrow annotations only:
-
-- `#caption-layer[data-layout-allow-caption-zone]`
-- `#f02-world[data-layout-allow-overflow]`
-- transition occlusion on Frame 2 heading, counter, stations 2 and 4
-- transition occlusion on the Frame 8 rail
-
-No broad layout ignore is allowed.
-
-## Audio and captions
-
-- Retained narration: scenes 1, 2, 7, and 9 use the approved ElevenLabs Multilingual v2 MP3s and provider-native timing.
-- Changed narration: scenes 3, 4, 5, 6, and 8 use the selected Flash v2.5 MP3s generated with one call per selected exact text across three protected, expiring, fixed-scene Vercel release candidates, plus provider-free offline alignment. Four over-budget attempts are recorded as superseded, for nine provider calls total. The canonical product alias `finaltab.vercel.app` was never promoted to those candidates.
-- `data/narration-generation-ledger.json` is sanitized and credential-free; both the synchronizer and final gate bind it to the exact three deployment IDs, helper contract, voice, selected scene set, and MP3 byte/SHA values, and verify the superseded-attempt accounting.
-- `generate-voiceover.mjs` is a fail-closed retirement guard. No video-project command calls a narration provider or reads a provider key.
-- `npm run voice:check` validates the complete local package without writing; `npm run voice:sync` restores retained alignment files and writes the hybrid manifest without a network request.
-- `build-captions.mjs` consumes local alignment files and atomically updates SRT, VTT, cue JSON, baked caption HTML, voice clip durations, and hashes.
-- `data/audio-manifest.json` locks every local SFX byte/hash and cue.
-- SFX volumes are 0.12–0.24 under narration.
+There is no BGM track. The final program is mastered to −14.0 LUFS integrated with true peak at or below −1.0 dBTP.
 
 ## Capture promotion
 
-Machine-readable contracts live in `data/capture-contracts.json`; approved capture hashes live in `data/capture-lock.json`. All canonical capture assets are installed and the final gate rechecks every byte, resolution, frame rate, and minimum duration before render.
+Only the four V3 paths in `data/capture-contracts.json` may satisfy this cut. Existing V2 film captures and narration remain unreferenced and cannot satisfy the V3 gate. Each V3 file must be hashed into `data/capture-lock.json` after manual inspection.
 
-## Actual source layout
+## Voice promotion
 
-```
-video/finaltab-winner/
-  index.html
-  index.motion.json
-  frame.md
-  SCRIPT.md
-  STORYBOARD.md
-  CAPTIONS.srt
-  CAPTIONS.vtt
-  data/
-    release-proof.json
-    capture-contracts.json
-    capture-lock.json
-    narration-generation-ledger.json
-    voiceover-manifest.json
-    caption-cues.json
-    audio-manifest.json
-  assets/
-    audio/voice/
-    audio/sfx/
-    capture-slots/
-    fonts/
-    vendor/
-  compositions/frames/01..09
-  generate-voiceover.mjs  # retired, fail-closed provider guard
-  scripts/align-narration.py
-  scripts/sync-route-voice-manifest.mjs
-  build-captions.mjs
-  verify-video-gates.mjs
-```
+The complete 188-word script is generated once with George and `eleven_multilingual_v2`. The selected master and its offline alignment are recorded in `data/narration-generation-ledger.json` and `data/voiceover-manifest.json`. The gate rejects any reused scene, second model, multiple selected provider calls, or text mismatch.
 
-## Verification and render commands
+## Release path
 
 ```powershell
 npm run check:source
+npm run gate:render
 npm run check:enhanced
-node verify-video-gates.mjs
 npm run render:final
 ```
 
-The third command must pass before the fourth is allowed. The final command renders PNG video frames at native 4K60 with strict checks, no best-effort fallback, low-memory mode, and frame caching disabled.
+`check:source` is allowed to report explicit pending capture/audio/composition prerequisites. `gate:render` must fail until every V3 prerequisite is approved. `render:final` later renders a raw 4K60 picture, performs two-pass loudness normalization, and verifies the final 90-second master; none of those commands are run during this source rebuild.

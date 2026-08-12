@@ -7,6 +7,12 @@ function nextResponse(requestHeaders: Headers) {
   return NextResponse.next({ request: { headers: requestHeaders } });
 }
 
+function hasSupabaseSessionCookie(request: NextRequest): boolean {
+  return request.cookies.getAll().some(({ name }) =>
+    name.startsWith("sb-") && name.includes("-auth-token"),
+  );
+}
+
 function protectedFailure(
   request: NextRequest,
   status: 401 | 503,
@@ -62,6 +68,18 @@ export async function refreshSupabaseSession(
     return response;
   }
 
+  // Public pages and bearer-token APIs do not need a Supabase round trip when
+  // the browser supplied no session cookie. Protected pages fail immediately
+  // instead of constructing a client only to discover the same empty state.
+  if (!hasSupabaseSessionCookie(request)) {
+    if (protection === "supabase-session") {
+      return protectedFailure(request, 401, "AUTH_REQUIRED");
+    }
+    const response = nextResponse(requestHeaders);
+    response.headers.set("x-finaltab-auth", "anonymous");
+    return response;
+  }
+
   let response = nextResponse(requestHeaders);
   const supabase = createServerClient(config.url, config.publishableKey, {
     cookies: {
@@ -87,3 +105,5 @@ export async function refreshSupabaseSession(
   response.headers.set("x-finaltab-auth", data?.claims ? "authenticated" : "anonymous");
   return response;
 }
+
+export const supabaseMiddlewareInternals = { hasSupabaseSessionCookie };

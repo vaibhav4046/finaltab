@@ -1,6 +1,6 @@
 {
   "buildCommand": "pnpm --filter @finaltab/web build",
   "installCommand": "pnpm install",
-  "devCommand": "pnpm dev",
+  "devCommand": "pnpm --filter @finaltab/web dev",
   "name": "finaltab"
 }

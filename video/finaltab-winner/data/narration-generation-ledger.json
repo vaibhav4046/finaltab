@@ -1,128 +1,21 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 3,
+  "status": "pending-v3-single-batch",
   "sanitized": true,
   "containsCredentials": false,
   "provider": "ElevenLabs",
-  "model": "eleven_flash_v2_5",
-  "outputFormat": "mp3_44100_128",
+  "model": "eleven_multilingual_v2",
+  "voiceName": "George",
   "voiceId": "JBFqnCBsd6RMkjVDRZzb",
-  "generationRoute": "POST /api/internal/video-narration (protected, expiring release endpoint)",
-  "endpointClass": "protected-expiring-fixed-scene-release",
-  "canonicalProductAliasPromoted": false,
+  "outputFormat": "mp3_44100_128",
+  "scriptWordCount": 188,
+  "batchScope": "complete-eight-scene-script",
   "callSummary": {
-    "finalFixedScenes": [3, 4, 5, 6, 8],
-    "callsPerFinalExactText": 1,
-    "selectedCalls": 5,
-    "supersededOverBudgetCalls": 4,
-    "totalProviderCalls": 9
+    "expectedProviderCalls": 1,
+    "selectedProviderCalls": 0,
+    "supersededProviderCalls": 0,
+    "reusedSceneCalls": 0
   },
-  "deployments": [
-    {
-      "deploymentId": "dpl_Fuxjf39h4M8ocRird8SiSRK6nxeN",
-      "deploymentUrl": "https://finaltab-7b88w394j-vaibhav4046s-projects.vercel.app",
-      "role": "initial-candidate",
-      "canonicalProductAliasPromoted": false
-    },
-    {
-      "deploymentId": "dpl_7gBR3AtNKDBwkduRbMknfgHdF45n",
-      "deploymentUrl": "https://finaltab-9zf0x4a3b-vaibhav4046s-projects.vercel.app",
-      "role": "duration-repair-candidate",
-      "canonicalProductAliasPromoted": false
-    },
-    {
-      "deploymentId": "dpl_5aVre5mMDoB58DFQo7rbLqa3nztG",
-      "deploymentUrl": "https://finaltab-14c2uklv9-vaibhav4046s-projects.vercel.app",
-      "role": "final-scene-5-duration-repair-candidate",
-      "canonicalProductAliasPromoted": false
-    }
-  ],
-  "scenes": [
-    {
-      "scene": 3,
-      "characters": 172,
-      "bytes": 204845,
-      "sha256": "51b1fb3e18bc9c61a91ed1ec6292a0de00002010cb5bfe27b2161f3012c27e93",
-      "generatedAt": "2026-08-11T17:40:40.2480716Z",
-      "deploymentId": "dpl_Fuxjf39h4M8ocRird8SiSRK6nxeN",
-      "deploymentUrl": "https://finaltab-7b88w394j-vaibhav4046s-projects.vercel.app"
-    },
-    {
-      "scene": 4,
-      "characters": 186,
-      "bytes": 201083,
-      "sha256": "833d2cc2cc60e19a367ebc0d6ecc257a222688364f4c8fb303f67261d150dcb1",
-      "generatedAt": "2026-08-11T17:40:43.7524114Z",
-      "deploymentId": "dpl_Fuxjf39h4M8ocRird8SiSRK6nxeN",
-      "deploymentUrl": "https://finaltab-7b88w394j-vaibhav4046s-projects.vercel.app"
-    },
-    {
-      "scene": 5,
-      "characters": 119,
-      "bytes": 147584,
-      "sha256": "93a853fc14bcc725a29f07ab056f6ea5da778ab1c31f9bf3ff64ca437a86fcb2",
-      "generatedAt": "2026-08-11T17:56:16.8963286Z",
-      "deploymentId": "dpl_5aVre5mMDoB58DFQo7rbLqa3nztG",
-      "deploymentUrl": "https://finaltab-14c2uklv9-vaibhav4046s-projects.vercel.app"
-    },
-    {
-      "scene": 6,
-      "characters": 147,
-      "bytes": 150928,
-      "sha256": "4ba2ce7aeadd6eadcda1860702b1300450d226b4f24438a85232f78a3ca99517",
-      "generatedAt": "2026-08-11T17:49:45.2598349Z",
-      "deploymentId": "dpl_7gBR3AtNKDBwkduRbMknfgHdF45n",
-      "deploymentUrl": "https://finaltab-9zf0x4a3b-vaibhav4046s-projects.vercel.app"
-    },
-    {
-      "scene": 8,
-      "characters": 243,
-      "bytes": 282167,
-      "sha256": "dd820ba3f0289fb81bb15b849ccddf2697765298854835fef036347417e32430",
-      "generatedAt": "2026-08-11T17:49:49.3675254Z",
-      "deploymentId": "dpl_7gBR3AtNKDBwkduRbMknfgHdF45n",
-      "deploymentUrl": "https://finaltab-9zf0x4a3b-vaibhav4046s-projects.vercel.app"
-    }
-  ],
-  "superseded": [
-    {
-      "scene": 5,
-      "characters": 152,
-      "bytes": 209442,
-      "sha256": "5380c7bf177036b5aa5e52202359f90d451983428440ae240989e24d80a7d87d",
-      "generatedAt": "2026-08-11T17:49:41.8917621Z",
-      "deploymentId": "dpl_7gBR3AtNKDBwkduRbMknfgHdF45n",
-      "deploymentUrl": "https://finaltab-9zf0x4a3b-vaibhav4046s-projects.vercel.app",
-      "reason": "13.087s exceeded the 11.800s scene budget"
-    },
-    {
-      "scene": 5,
-      "characters": 222,
-      "bytes": 260015,
-      "sha256": "e11cf5f96e54f2abf68a7f9d91585050dc0fe68c839be521ffbe6c76ffee7c7c",
-      "generatedAt": "2026-08-11T17:40:47.3768831Z",
-      "deploymentId": "dpl_Fuxjf39h4M8ocRird8SiSRK6nxeN",
-      "deploymentUrl": "https://finaltab-7b88w394j-vaibhav4046s-projects.vercel.app",
-      "reason": "16.248s exceeded the 11.800s scene budget"
-    },
-    {
-      "scene": 6,
-      "characters": 182,
-      "bytes": 181857,
-      "sha256": "a3638e79b0a84a338b30cb846061c1a576006348b2cec9b30a09241a0d028900",
-      "generatedAt": "2026-08-11T17:40:50.9529051Z",
-      "deploymentId": "dpl_Fuxjf39h4M8ocRird8SiSRK6nxeN",
-      "deploymentUrl": "https://finaltab-7b88w394j-vaibhav4046s-projects.vercel.app",
-      "reason": "11.363s exceeded the 9.650s scene budget"
-    },
-    {
-      "scene": 8,
-      "characters": 279,
-      "bytes": 303901,
-      "sha256": "014cb4b1a40d672f7e13b1120004e320c74a7503a1dcea94279f63011ffb7383",
-      "generatedAt": "2026-08-11T17:40:54.7824502Z",
-      "deploymentId": "dpl_Fuxjf39h4M8ocRird8SiSRK6nxeN",
-      "deploymentUrl": "https://finaltab-7b88w394j-vaibhav4046s-projects.vercel.app",
-      "reason": "18.991s exceeded the 17.850s scene budget"
-    }
-  ]
+  "selectedBatch": null,
+  "note": "No provider request was made during the V3 source rebuild. Populate selectedBatch only after one new complete-script George multilingual-v2 response is approved."
 }

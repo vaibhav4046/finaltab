@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { useEffect, useState } from "react";
 import {
   ArrowRight,
   Check,
@@ -78,16 +77,47 @@ type JourneyStep = {
   copy: string;
   icon: LucideIcon;
   tone: string;
+  capability?: "vision";
+};
+
+type VisionAvailability = "checking" | "configured" | "unconfigured" | "unknown";
+
+const VISION_PRESENTATION: Record<VisionAvailability, { status: string; copy: string; tone: string; evidence: string }> = {
+  checking: {
+    status: "Checking provider",
+    copy: "FINALTab is checking this deployment before it labels automated extraction available. Deterministic arithmetic remains the final gate.",
+    tone: "border-quiet bg-surface-2 text-muted",
+    evidence: "receipt vision · checking configuration",
+  },
+  configured: {
+    status: "Provider configured",
+    copy: "Choose a receipt photo. A configured server-side vision provider proposes structured line items for human review, then the engine re-adds the arithmetic.",
+    tone: "border-info/35 bg-info/10 text-info",
+    evidence: "receipt vision · provider configured",
+  },
+  unconfigured: {
+    status: "Provider not configured",
+    copy: "Automated receipt extraction is disabled in this deployment. FINALTab does not present it as live; deterministic review and arithmetic remain explicit boundaries.",
+    tone: "border-warn/35 bg-warn/10 text-warn",
+    evidence: "receipt vision · not configured",
+  },
+  unknown: {
+    status: "Configuration not verified",
+    copy: "The runtime configuration check could not complete, so FINALTab does not claim automated extraction is available. Deterministic arithmetic remains the final gate.",
+    tone: "border-warn/35 bg-warn/10 text-warn",
+    evidence: "receipt vision · configuration unverified",
+  },
 };
 
 const JOURNEY: JourneyStep[] = [
   {
     number: "01",
     title: "Scan",
-    status: "Live",
-    copy: "Choose a receipt photo. Groq vision returns structured line items and the engine re-adds the arithmetic.",
+    status: "Checking provider",
+    copy: "Provider availability is checked against this deployment before automated extraction is advertised.",
     icon: ScanLine,
-    tone: "border-signal/35 bg-signal/10 text-signal",
+    tone: "border-quiet bg-surface-2 text-muted",
+    capability: "vision",
   },
   {
     number: "02",
@@ -156,7 +186,7 @@ function PublicNav() {
           <span className="text-[17px] font-semibold tracking-[-0.035em] text-txt">
             FINAL<span className="text-signal">Tab</span>
           </span>
-          <span className="hidden items-center gap-1.5 border-l border-quiet-soft pl-3 font-mono text-[10px] uppercase tracking-[0.16em] text-faint sm:inline-flex">
+          <span className="hidden items-center gap-1.5 border-l border-quiet-soft pl-3 font-mono text-xs uppercase tracking-[0.16em] text-faint sm:inline-flex">
             <span className="proof-beacon" aria-hidden="true"><span /><span /></span>
             testnet live
           </span>
@@ -267,12 +297,11 @@ function LedgerNode({ x, y, name, detail, payer = false }: { x: number; y: numbe
   );
 }
 
-function DebtGraph({ stage, reduceMotion }: { stage: "raw" | "netted"; reduceMotion: boolean | null }) {
+function DebtGraph({ stage }: { stage: "raw" | "netted" }) {
   const raw = stage === "raw";
-  const routeInitial = reduceMotion ? false : { opacity: 0 };
 
   return (
-    <motion.svg
+    <svg
       key={stage}
       viewBox="0 0 600 340"
       className="h-auto w-full"
@@ -280,9 +309,6 @@ function DebtGraph({ stage, reduceMotion }: { stage: "raw" | "netted"; reduceMot
       aria-label={raw
         ? "Raw debt graph. Guest 01 owes the payer 18 dollars 40 cents and Guest 02 5 dollars 70 cents. Guest 02 owes the payer 17 dollars 10 cents."
         : "Netted transfer graph. Guest 01 owes the payer 24 dollars 10 cents and Guest 02 owes the payer 11 dollars 40 cents."}
-      initial={reduceMotion ? false : { opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.2 }}
     >
       <defs>
         <marker id="ledger-arrow-signal" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
@@ -297,7 +323,8 @@ function DebtGraph({ stage, reduceMotion }: { stage: "raw" | "netted"; reduceMot
       <text x="16" y="112" fill="#7e8b82" fontFamily="ui-monospace, monospace" fontSize="13" letterSpacing="2">PAID</text>
       <text x="16" y="324" fill="#7e8b82" fontFamily="ui-monospace, monospace" fontSize="13" letterSpacing="2">OWES</text>
 
-      <motion.path
+      <path
+        className="flow-draw"
         d={raw ? "M184 251 C213 177 257 127 293 102" : "M184 251 C215 171 257 122 293 102"}
         fill="none"
         stroke={raw ? "#45afff" : "#c8ff3d"}
@@ -305,11 +332,9 @@ function DebtGraph({ stage, reduceMotion }: { stage: "raw" | "netted"; reduceMot
         strokeLinecap="round"
         markerEnd={raw ? "url(#ledger-arrow-info)" : "url(#ledger-arrow-signal)"}
         vectorEffect="non-scaling-stroke"
-        initial={routeInitial}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
       />
-      <motion.path
+      <path
+        className="flow-draw"
         d={raw ? "M468 251 C439 177 395 127 359 102" : "M468 251 C437 171 395 122 359 102"}
         fill="none"
         stroke={raw ? "#45afff" : "#c8ff3d"}
@@ -317,12 +342,10 @@ function DebtGraph({ stage, reduceMotion }: { stage: "raw" | "netted"; reduceMot
         strokeLinecap="round"
         markerEnd={raw ? "url(#ledger-arrow-info)" : "url(#ledger-arrow-signal)"}
         vectorEffect="non-scaling-stroke"
-        initial={routeInitial}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.2, delay: reduceMotion ? 0 : 0.04, ease: [0.22, 1, 0.36, 1] }}
       />
       {raw ? (
-        <motion.path
+        <path
+          className="flow-draw"
           d="M199 293 C278 328 375 328 454 293"
           fill="none"
           stroke="#45afff"
@@ -330,9 +353,6 @@ function DebtGraph({ stage, reduceMotion }: { stage: "raw" | "netted"; reduceMot
           strokeLinecap="round"
           markerEnd="url(#ledger-arrow-info)"
           vectorEffect="non-scaling-stroke"
-          initial={routeInitial}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.2, delay: reduceMotion ? 0 : 0.08, ease: [0.22, 1, 0.36, 1] }}
         />
       ) : null}
 
@@ -343,11 +363,11 @@ function DebtGraph({ stage, reduceMotion }: { stage: "raw" | "netted"; reduceMot
       <LedgerNode x={260} y={30} name="Payer" detail="paid $68.40" payer />
       <LedgerNode x={65} y={244} name="Guest 01" detail={raw ? "raw debtor" : "owes $24.10"} />
       <LedgerNode x={455} y={244} name="Guest 02" detail={raw ? "raw debtor" : "owes $11.40"} />
-    </motion.svg>
+    </svg>
   );
 }
 
-function ReceiptMathVisual({ reduceMotion }: { reduceMotion: boolean | null }) {
+function ReceiptMathVisual() {
   const shares = [
     ["Payer", "$32.90", "48.1%"],
     ["Guest 01", "$24.10", "35.2%"],
@@ -371,12 +391,9 @@ function ReceiptMathVisual({ reduceMotion }: { reduceMotion: boolean | null }) {
               <span className="font-mono text-muted">{amount}</span>
             </div>
             <div className="mt-2 h-2 overflow-hidden rounded-full bg-surface-2">
-              <motion.div
+              <div
                 className="h-full rounded-full bg-signal"
-                style={{ width, transformOrigin: "left" }}
-                initial={reduceMotion ? false : { scaleX: 0, opacity: 0.35 }}
-                animate={{ scaleX: 1, opacity: 1 }}
-                transition={{ duration: reduceMotion ? 0 : 0.22, ease: [0.22, 1, 0.36, 1] }}
+                style={{ width }}
               />
             </div>
           </div>
@@ -422,7 +439,7 @@ const LEDGER_STAGE_COPY: Record<LedgerStage, { eyebrow: string; title: string; c
   receipt: {
     eyebrow: "Arithmetic gate",
     title: "Confirm what the table actually spent.",
-    copy: "The vision model proposes line items. Integer minor-unit math re-adds every charge and refuses a mismatched total.",
+    copy: "When a server-side vision provider is configured, it proposes line items for review. Integer minor-unit math re-adds every charge and refuses a mismatched total.",
   },
   raw: {
     eyebrow: "Uncompressed ledger",
@@ -466,7 +483,6 @@ const LEDGER_STAGE_ROWS: Record<LedgerStage, { title: string; rows: Array<[strin
 
 function LedgerWorkbench() {
   const [stage, setStage] = useState<LedgerStage>("receipt");
-  const reduceMotion = useReducedMotion();
   const copy = LEDGER_STAGE_COPY[stage];
   const table = LEDGER_STAGE_ROWS[stage];
 
@@ -511,17 +527,14 @@ function LedgerWorkbench() {
         </div>
 
         <div className="ledger-register relative min-w-0 border-b border-quiet-soft p-5 sm:p-7 lg:border-b-0 lg:border-r">
-          <motion.div
+          <div
             key={stage}
-            initial={reduceMotion ? false : { opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            className="relative flex min-h-[360px] items-center"
+            className="stage-swap relative flex min-h-[360px] items-center"
           >
-            {stage === "receipt" ? <ReceiptMathVisual reduceMotion={reduceMotion} /> : null}
-            {stage === "raw" || stage === "netted" ? <DebtGraph stage={stage} reduceMotion={reduceMotion} /> : null}
+            {stage === "receipt" ? <ReceiptMathVisual /> : null}
+            {stage === "raw" || stage === "netted" ? <DebtGraph stage={stage} /> : null}
             {stage === "proof" ? <ExactProofVisual /> : null}
-          </motion.div>
+          </div>
         </div>
 
         <aside className="flex min-w-0 flex-col p-5 sm:p-7" aria-label={`${table.title} and stage explanation`}>
@@ -641,8 +654,7 @@ function CategoryProofDocket() {
   );
 }
 
-const EVIDENCE_TICKER = [
-  "Groq receipt vision",
+const STATIC_EVIDENCE = [
   "integer-minor-unit math",
   "dual-wallet consent",
   "KeeperHub execution",
@@ -652,18 +664,20 @@ const EVIDENCE_TICKER = [
   "Supabase RLS",
 ] as const;
 
-function EvidenceMarquee() {
+function EvidenceMarquee({ visionAvailability }: { visionAvailability: VisionAvailability }) {
+  const evidence = [VISION_PRESENTATION[visionAvailability].evidence, ...STATIC_EVIDENCE];
+
   return (
-    <div className="evidence-marquee border-b border-quiet-soft" aria-label="Live product evidence">
+    <div className="evidence-marquee border-b border-quiet-soft" aria-label="Product evidence and runtime capability status">
       <div className="evidence-marquee-track" aria-hidden="true">
-        {[...EVIDENCE_TICKER, ...EVIDENCE_TICKER].map((item, index) => (
+        {[...evidence, ...evidence].map((item, index) => (
           <span key={`${item}-${index}`} className="evidence-marquee-item">
             <span className="h-1.5 w-1.5 rounded-full bg-signal" />
             {item}
           </span>
         ))}
       </div>
-      <span className="sr-only">{EVIDENCE_TICKER.join(", ")}</span>
+      <span className="sr-only" aria-live="polite">{evidence.join(", ")}</span>
     </div>
   );
 }
@@ -679,8 +693,27 @@ function SectionHeading({ eyebrow, title, copy }: { eyebrow: string; title: stri
 }
 
 export default function Landing() {
-  const reduceMotion = useReducedMotion();
-  const reveal = reduceMotion ? false : { opacity: 0, y: 18 };
+  const [visionAvailability, setVisionAvailability] = useState<VisionAvailability>("checking");
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function checkVisionConfiguration() {
+      try {
+        const response = await fetch("/api/health", { cache: "no-store", signal: controller.signal });
+        if (!response.ok) throw new Error(`Health check failed (${response.status}).`);
+        const payload = await response.json() as { checks?: { vision?: unknown } };
+        setVisionAvailability(payload.checks?.vision === true ? "configured" : "unconfigured");
+      } catch {
+        if (!controller.signal.aborted) setVisionAvailability("unknown");
+      }
+    }
+
+    void checkVisionConfiguration();
+    return () => controller.abort();
+  }, []);
+
+  const visionPresentation = VISION_PRESENTATION[visionAvailability];
 
   return (
     <div className="marketing-shell min-h-dvh overflow-x-hidden bg-canvas text-txt">
@@ -691,7 +724,7 @@ export default function Landing() {
         <section className="marketing-hero atmosphere relative isolate overflow-hidden border-b border-quiet-soft pb-16 pt-28 sm:pb-24 sm:pt-36">
           <div className="ledger-register ledger-register-hero absolute inset-0 -z-10" aria-hidden="true" />
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <motion.div initial={reveal} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}>
+            <div className="entry-rise">
               <div className="inline-flex min-h-9 items-center gap-2 rounded-full border border-quiet bg-surface-1/80 px-3.5 font-mono text-xs font-medium text-muted backdrop-blur-sm">
                 <Sparkles size={14} className="text-signal" aria-hidden="true" />
                 receipt → consent → KeeperHub → exact proof
@@ -726,14 +759,9 @@ export default function Landing() {
                   </ul>
                 </div>
               </div>
-            </motion.div>
+            </div>
 
-            <motion.div
-              initial={reduceMotion ? false : { opacity: 0, x: 22 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.24, delay: reduceMotion ? 0 : 0.04, ease: [0.22, 1, 0.36, 1] }}
-              className="hero-ledger-stage mt-12 grid overflow-hidden rounded-3xl border border-quiet bg-surface-1/88 lg:grid-cols-[0.76fr_1.24fr]"
-            >
+            <div className="entry-slide hero-ledger-stage mt-12 grid overflow-hidden rounded-3xl border border-quiet bg-surface-1/88 lg:grid-cols-[0.76fr_1.24fr]">
               <div className="ledger-register relative border-b border-quiet-soft p-6 sm:p-8 lg:border-b-0 lg:border-r">
                 <div className="relative mb-6 flex items-center justify-between gap-4">
                   <p className="font-mono text-xs font-semibold uppercase tracking-[0.2em] text-faint">01 / Receipt truth</p>
@@ -748,11 +776,11 @@ export default function Landing() {
                 </div>
                 <HeroProofRail />
               </div>
-            </motion.div>
+            </div>
           </div>
         </section>
 
-        <EvidenceMarquee />
+        <EvidenceMarquee visionAvailability={visionAvailability} />
         <CategoryProofDocket />
 
         <section id="journey" className="border-b border-quiet-soft bg-surface-1/30 py-20 sm:py-28">
@@ -765,6 +793,7 @@ export default function Landing() {
             <ol className="mt-12 grid gap-4 md:grid-cols-2 xl:grid-cols-5" aria-label="FINALTab product journey">
               {JOURNEY.map((step) => {
                 const Icon = step.icon;
+                const presentation = step.capability === "vision" ? visionPresentation : step;
                 return (
                   <li
                     key={step.title}
@@ -777,10 +806,14 @@ export default function Landing() {
                       <span className="font-mono text-xs text-faint">{step.number}</span>
                     </div>
                     <h3 className="mt-6 text-lg font-semibold text-txt">{step.title}</h3>
-                    <span className={`mt-3 inline-flex min-h-7 items-center rounded-full border px-2.5 font-mono text-xs font-medium ${step.tone}`}>
-                      {step.status}
+                    <span
+                      className={`mt-3 inline-flex min-h-7 items-center rounded-full border px-2.5 font-mono text-xs font-medium ${presentation.tone}`}
+                      role={step.capability === "vision" ? "status" : undefined}
+                      aria-live={step.capability === "vision" ? "polite" : undefined}
+                    >
+                      {presentation.status}
                     </span>
-                    <p className="mt-4 text-sm leading-6 text-muted">{step.copy}</p>
+                    <p className="mt-4 text-sm leading-6 text-muted">{presentation.copy}</p>
                   </li>
                 );
               })}

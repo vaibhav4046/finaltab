@@ -6,7 +6,7 @@ export function AuthPanel({ initialMode = "sign-in" }: { initialMode?: AuthMode 
   const privyConfigured = Boolean(privyServerConfig());
   const { githubOAuthEnabled, teamEmailAuthEnabled } = authFeatureFlags();
   return (
-    <div className="mx-auto w-full max-w-3xl px-4 py-10 md:px-6">
+    <div className="auth-page">
       <header className="mb-6">
         <p className="font-mono text-xs font-semibold uppercase tracking-[0.2em] text-signal">FINALTab / Account</p>
         <h1 className="mt-3 text-3xl font-semibold tracking-tight text-paper">

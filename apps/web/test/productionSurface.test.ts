@@ -88,6 +88,9 @@ describe("production surface retirement gate", () => {
     expect(launcher).not.toContain('fetch("/api/vision/allocate"');
     expect(room).toContain('fetch("/api/tabs"');
     expect(room).toContain('JSON.stringify({ title, currency: "USD" })');
+    expect(room).toContain("const UUID_PATTERN");
+    expect(room).toContain("UUID_PATTERN.test(normalizedTab)");
+    expect(room).toContain("No remote record was requested");
     expect(room).toContain("if (!cloudTabId)");
     expect(room).toContain("FINALTab will not open an unsaved settlement room");
 
@@ -155,15 +158,21 @@ describe("production surface retirement gate", () => {
       join(WEB_ROOT, "app", "auth", "complete", "error.tsx"),
     ].map((file) => readFileSync(file, "utf8")).join("\n");
 
-    expect(receipt).toContain("motion, useReducedMotion");
+    expect(receipt).not.toContain("framer-motion");
+    expect(receipt).toContain("receipt-paper entry-rise");
     expect(receipt).toContain("event.clipboardData.files");
     expect(receipt).toContain("Take photo, drop, browse, or paste");
     expect(receipt).toContain("grid gap-2 sm:grid-cols-[1fr_1.3fr_auto]");
-    expect(split).toContain("motion, useReducedMotion");
+    expect(split).not.toContain("framer-motion");
+    expect(split).toContain("stage-swap flex items-center");
     expect(split).toContain("min-h-11 rounded-md border px-3");
-    expect(rail).toContain("motion, useReducedMotion");
-    expect(room).toContain("settlement-room-shell");
-    expect(globals).toMatch(/\.app-shell \.settlement-room-shell\s*\{[^}]*max-width:\s*128rem/s);
+    expect(rail).not.toContain("framer-motion");
+    expect(rail).toContain("stage-swap rounded-md");
+    expect(room).toContain("workspace-page workspace-page-wide settlement-room-shell");
+    expect(room).toContain("xl:grid-cols-3");
+    expect(room).not.toContain("lg:grid-cols-3");
+    expect(globals).toMatch(/\.workspace-page-wide\s*\{[^}]*max-width:\s*90rem/s);
+    expect(globals).not.toMatch(/\.app-shell \.settlement-room-shell\s*\{[^}]*max-width:\s*128rem/s);
     expect(notes).toContain('role="alert"');
     expect(notes).toContain('role="status" aria-live="polite"');
     expect(joinPanel).toContain('<main className="app-shell');
@@ -172,6 +181,35 @@ describe("production surface retirement gate", () => {
     expect(privyShell).not.toContain("@privy-io/react-auth");
     expect(privyShell).toContain("if (!bridge.providerConfigured) return null");
     expect(privyShell).not.toContain("Privy setup required");
+  });
+
+  it("keeps public evidence pages on one responsive editorial system", () => {
+    const developers = readFileSync(join(WEB_ROOT, "app", "developers", "page.tsx"), "utf8");
+    const openSource = readFileSync(join(WEB_ROOT, "app", "open-source", "page.tsx"), "utf8");
+    const publicHeader = readFileSync(join(WEB_ROOT, "components", "PublicHeader.tsx"), "utf8");
+    const globals = readFileSync(join(WEB_ROOT, "app", "globals.css"), "utf8");
+
+    for (const page of [developers, openSource]) {
+      expect(page).toContain('className="marketing-shell editorial-shell text-txt"');
+      expect(page).toContain('id="public-main"');
+      expect(page).toContain("editorial-page editorial-arrive");
+      expect(page).toContain("editorial-hero");
+      expect(page).toContain("editorial-fact-rail");
+      expect(page).toContain("editorial-section-index");
+    }
+    expect(developers).toContain("tool-progress-item");
+    expect(developers).toContain('testId="mcp-production-tools"');
+    expect(openSource).toContain("editorial-manifest-row");
+    expect(openSource).toContain("editorial-code");
+    expect(publicHeader).toContain("order-3 mt-2 flex w-full");
+    expect(publicHeader).not.toMatch(/touch-target hidden items-center/);
+    expect(globals).toMatch(/\.editorial-page\s*\{[^}]*max-width:\s*90rem/s);
+    expect(globals).toMatch(/@media \(min-width: 2200px\)[\s\S]*\.editorial-page,[\s\S]*max-width:\s*128rem/s);
+    expect(globals).toContain(".entry-rise");
+    expect(globals).toContain(".entry-slide");
+    expect(globals).toContain(".stage-swap");
+    expect(globals).toContain(".flow-draw");
+    expect(globals).toMatch(/@media \(prefers-reduced-motion: reduce\)[\s\S]*\.editorial-arrive,[\s\S]*animation:\s*none/);
   });
 
   it("keeps single-use invite secrets out of auth and callback URLs", () => {

@@ -20,13 +20,21 @@ type NavItem = {
   icon: LucideIcon;
 };
 
-const NAV_ITEMS: NavItem[] = [
+const WORKSPACE_NAV_ITEMS: NavItem[] = [
   { href: "/app", label: "Home", shortLabel: "Home", icon: House },
-  { href: "/app/tab", label: "New settlement", shortLabel: "Settle", icon: ScanLine },
-  { href: "/app/agents", label: "Agents / Memory", shortLabel: "Agents", icon: Bot },
+  { href: "/app/tab", label: "Settlement room", shortLabel: "Settle", icon: ScanLine },
+  { href: "/app/agents", label: "Agents & memory", shortLabel: "Agents", icon: Bot },
   { href: "/app/proof", label: "Proofs", shortLabel: "Proofs", icon: FileCheck2 },
-  { href: "/auth", label: "Account", shortLabel: "Account", icon: UserRound },
 ];
+
+const ACCOUNT_NAV_ITEM: NavItem = {
+  href: "/auth",
+  label: "Account",
+  shortLabel: "Account",
+  icon: UserRound,
+};
+
+const MOBILE_NAV_ITEMS = [...WORKSPACE_NAV_ITEMS, ACCOUNT_NAV_ITEM];
 
 function isActive(pathname: string, href: string): boolean {
   if (href === "/app") return pathname === "/app";
@@ -36,6 +44,7 @@ function isActive(pathname: string, href: string): boolean {
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const mainRef = useRef<HTMLElement>(null);
+  const accountActive = isActive(pathname, ACCOUNT_NAV_ITEM.href);
 
   useEffect(() => {
     mainRef.current?.focus({ preventScroll: true });
@@ -50,7 +59,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <Link href="/" className="touch-target flex items-center rounded-xl px-1" aria-label="FINALTab public home">
             <div>
               <p className="text-[18px] font-semibold tracking-[-0.035em] text-txt">FINAL<span className="text-signal">Tab</span></p>
-              <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-faint">settlement workspace</p>
+              <p className="font-mono text-xs uppercase tracking-[0.12em] text-faint">settlement workspace</p>
             </div>
           </Link>
         </div>
@@ -63,7 +72,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
         <nav className="mt-5 flex flex-1 flex-col gap-1.5 px-3" aria-label="Workspace navigation">
           <p className="px-3 pb-1 font-mono text-xs font-semibold uppercase tracking-[0.18em] text-faint">Workspace</p>
-          {NAV_ITEMS.map((item) => {
+          {WORKSPACE_NAV_ITEMS.map((item) => {
             const active = isActive(pathname, item.href);
             const Icon = item.icon;
             return (
@@ -86,7 +95,13 @@ export function AppShell({ children }: { children: ReactNode }) {
         </nav>
 
         <div className="border-t border-quiet-soft p-3">
-          <Link href="/auth" className="touch-target flex items-center gap-3 rounded-xl px-3 text-sm text-muted transition-colors hover:bg-surface-2 hover:text-txt">
+          <Link
+            href="/auth"
+            aria-current={accountActive ? "page" : undefined}
+            className={`touch-target flex items-center gap-3 rounded-xl px-3 text-sm transition-colors ${
+              accountActive ? "bg-signal/10 text-signal" : "text-muted hover:bg-surface-2 hover:text-txt"
+            }`}
+          >
             <span className="grid h-8 w-8 place-items-center rounded-full border border-quiet bg-surface-2 text-base" aria-hidden="true">
               <UserRound size={16} />
             </span>
@@ -102,17 +117,9 @@ export function AppShell({ children }: { children: ReactNode }) {
         <Link href="/" className="touch-target flex items-center rounded-lg" aria-label="FINALTab public home">
           <span className="text-[17px] font-semibold tracking-[-0.035em] text-txt">FINAL<span className="text-signal">Tab</span></span>
         </Link>
-        <div className="flex items-center gap-2">
-          <span className="hidden min-h-8 items-center rounded-full border border-info/30 bg-info/10 px-2.5 font-mono text-xs font-semibold text-info min-[390px]:inline-flex">
-            TESTNET
-          </span>
-          <Link href="/auth" className="touch-target inline-flex max-w-36 items-center gap-2 rounded-xl px-2 text-sm text-muted transition-colors hover:bg-surface-1 hover:text-txt" aria-label="Open account">
-            <span className="grid h-8 w-8 place-items-center rounded-full border border-quiet bg-surface-1 text-base" aria-hidden="true">
-              <UserRound size={16} />
-            </span>
-            <span className="hidden max-w-20 truncate sm:block">Account</span>
-          </Link>
-        </div>
+        <span className="inline-flex min-h-8 items-center rounded-full border border-info/30 bg-info/10 px-2.5 font-mono text-xs font-semibold text-info">
+          Base Sepolia
+        </span>
       </header>
 
       <main
@@ -126,7 +133,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       <nav className="safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-quiet-soft bg-surface-1/96 backdrop-blur-xl lg:hidden" aria-label="Mobile workspace navigation">
         <div className="grid grid-cols-5">
-          {NAV_ITEMS.map((item) => {
+          {MOBILE_NAV_ITEMS.map((item) => {
             const active = isActive(pathname, item.href);
             const Icon = item.icon;
             return (

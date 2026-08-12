@@ -1,33 +1,121 @@
 {
   "version": 1,
-  "duration": 96,
+  "revision": "v3-90s-eight-scene",
+  "status": "pending-final-frame-assertions",
+  "duration": 90,
+  "expectedAssertionCount": 24,
   "assertions": [
-    { "kind": "appearsBy", "selector": "#f01-promise", "bySec": 3.9 },
-    { "kind": "before", "a": "#f01-eyebrow", "b": "#f01-promise" },
-    { "kind": "staysInFrame", "selector": "#f01-lockup" },
-    { "kind": "appearsBy", "selector": "#f02-station-5", "bySec": 14.8 },
-    { "kind": "before", "a": "#f02-station-1", "b": "#f02-station-5" },
-    { "kind": "staysInFrame", "selector": "#f02-heading" },
-    { "kind": "appearsBy", "selector": "#f03-callout-3", "bySec": 25.2 },
-    { "kind": "before", "a": "#f03-callout-1", "b": "#f03-callout-3" },
-    { "kind": "staysInFrame", "selector": "#f03-plate" },
-    { "kind": "appearsBy", "selector": "#f04-bind", "bySec": 41.0 },
-    { "kind": "before", "a": "#f04-row-1", "b": "#f04-bind" },
-    { "kind": "staysInFrame", "selector": "#f04-plan" },
-    { "kind": "appearsBy", "selector": "#f05-sim", "bySec": 51.1 },
-    { "kind": "before", "a": "#f05-sig-a", "b": "#f05-sig-b" },
-    { "kind": "staysInFrame", "selector": "#f05-plate" },
-    { "kind": "appearsBy", "selector": "#f06-stamp", "bySec": 65.5 },
-    { "kind": "before", "a": "#f06-keeper", "b": "#f06-rpc" },
-    { "kind": "staysInFrame", "selector": "#f06-keeper" },
-    { "kind": "appearsBy", "selector": "#f07-tool-9", "bySec": 70.4 },
-    { "kind": "before", "a": "#f07-tool-1", "b": "#f07-tool-7" },
-    { "kind": "staysInFrame", "selector": "#f07-head" },
-    { "kind": "appearsBy", "selector": "#f08-status", "bySec": 87.8 },
-    { "kind": "before", "a": "#f08-step-1", "b": "#f08-step-6" },
-    { "kind": "staysInFrame", "selector": "#f08-capture" },
-    { "kind": "appearsBy", "selector": "#f09-proof", "bySec": 92.4 },
-    { "kind": "before", "a": "#f09-brand", "b": "#f09-proof" },
-    { "kind": "staysInFrame", "selector": "#f09-proof" }
+    {
+      "kind": "appearsBy",
+      "selector": "#v3-01-title",
+      "bySec": 2
+    },
+    {
+      "kind": "before",
+      "a": "#v3-01-eyebrow",
+      "b": "#v3-01-title"
+    },
+    {
+      "kind": "staysInFrame",
+      "selector": "#v3-01-copy"
+    },
+    {
+      "kind": "appearsBy",
+      "selector": "#v3-02-title",
+      "bySec": 6
+    },
+    {
+      "kind": "before",
+      "a": "#v3-02-eyebrow",
+      "b": "#v3-02-title"
+    },
+    {
+      "kind": "staysInFrame",
+      "selector": "#v3-02-copy"
+    },
+    {
+      "kind": "appearsBy",
+      "selector": "#v3-03-title",
+      "bySec": 14
+    },
+    {
+      "kind": "before",
+      "a": "#v3-03-eyebrow",
+      "b": "#v3-03-title"
+    },
+    {
+      "kind": "staysInFrame",
+      "selector": "#v3-03-copy"
+    },
+    {
+      "kind": "appearsBy",
+      "selector": "#v3-04-title",
+      "bySec": 22
+    },
+    {
+      "kind": "before",
+      "a": "#v3-04-eyebrow",
+      "b": "#v3-04-title"
+    },
+    {
+      "kind": "staysInFrame",
+      "selector": "#v3-04-copy"
+    },
+    {
+      "kind": "appearsBy",
+      "selector": "#v3-05-title",
+      "bySec": 32
+    },
+    {
+      "kind": "before",
+      "a": "#v3-05-eyebrow",
+      "b": "#v3-05-title"
+    },
+    {
+      "kind": "staysInFrame",
+      "selector": "#v3-05-copy"
+    },
+    {
+      "kind": "appearsBy",
+      "selector": "#v3-06-title",
+      "bySec": 52
+    },
+    {
+      "kind": "before",
+      "a": "#v3-06-eyebrow",
+      "b": "#v3-06-title"
+    },
+    {
+      "kind": "staysInFrame",
+      "selector": "#v3-06-copy"
+    },
+    {
+      "kind": "appearsBy",
+      "selector": "#v3-07-title",
+      "bySec": 70
+    },
+    {
+      "kind": "before",
+      "a": "#v3-07-eyebrow",
+      "b": "#v3-07-title"
+    },
+    {
+      "kind": "staysInFrame",
+      "selector": "#v3-07-copy"
+    },
+    {
+      "kind": "appearsBy",
+      "selector": "#v3-08-title",
+      "bySec": 87
+    },
+    {
+      "kind": "before",
+      "a": "#v3-08-eyebrow",
+      "b": "#v3-08-title"
+    },
+    {
+      "kind": "staysInFrame",
+      "selector": "#v3-08-copy"
+    }
   ]
 }

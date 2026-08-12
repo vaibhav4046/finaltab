@@ -1,62 +1,49 @@
-# VIDEO HANDOFF — FINALTab winner film
+# VIDEO HANDOFF — FINALTab V3 judge film
 
-## Current state
+## Frozen source
 
-The source is hardened for HyperFrames 0.7.106. Hybrid narration, captions, the source gate, and the strict final provenance gate are synchronized and passing; final rendering has not started.
+- Exact runtime: 90.000 seconds / 5,400 frames at 60 fps.
+- Exact scene windows: `0–4`, `4–12`, `12–20`, `20–30`, `30–50`, `50–68`, `68–85`, `85–90`.
+- Locked narration: 188 plain-English words across eight lines.
+- Brand: Geist Sans headlines and wordmark; Geist Mono evidence; carbon / acid / electric blue; verified green for checked proof only.
+- Audio requirement: one entirely new ElevenLabs George / `eleven_multilingual_v2` complete-script batch; no old scene reuse; final mix −14.0 LUFS integrated and ≤ −1.0 dBTP.
+- Safety: the MCP capture stops after approval-challenge creation. No wallet signature, submit, broadcast, or value movement. Earlier-run proof is separate and read only.
 
-Completed:
+## Intentionally pending
 
-- Frame 8 is an authenticated non-broadcast MCP sequence with a hard stop and separate retained read-only proof.
-- Unsupported participant-invitation and fresh approval chronology are removed.
-- The retained transaction is labelled as separate from the filmed MCP client.
-- All eight canonical captures are installed, their truth flags are set, and `data/capture-lock.json` contains the approved byte/hash lock.
-- SFX are local, licensed, hash-locked, and cued; BGM is disabled.
-- VTT exists beside SRT and cue JSON.
-- The direct provider-key narration generator is retired. The remaining voice commands only validate and synchronize local assets; neither command can make a provider request.
-- The hybrid narration synchronizer validates retained Multilingual v2 provenance; the sanitized Flash v2.5 release-call ledger; the immutable deployment, shared provider-helper source, exact call/scene set, and MP3 byte/hash identity; frame budgets; alignment quality; and capture-lock identity.
-- All five changed-scene alignments pass their transcript-constrained quality gates, and SRT, VTT, cue JSON, baked caption HTML, voice durations, proof assets, and manifests are synchronized.
-- One root motion sidecar and narrow layout annotations cover the enhanced 0.7.106 audit.
+1. Four V3 canonical captures: C05–C08.
+2. One new complete-script ElevenLabs batch and offline alignment.
+3. SRT, VTT, cue JSON, and baked captions from that alignment.
+4. Eight newly built V3 scene compositions and the final 90-second index.
+5. V3 capture/audio hash promotion.
+6. HyperFrames enhanced check, contact-sheet inspection, render, two-pass loudness master, and rendered-master verification.
 
-Remaining release steps:
+No provider request, live capture, wallet action, MCP mutation, or render was performed by the V3 source rebuild.
 
-1. Run the enhanced HyperFrames audit and inspect the pre-render contact sheet.
-2. Commit the exact checked source package.
-3. Render only if the enhanced audit remains clean and the final gate still passes.
-
-## Safe capture boundary
-
-Autonomous captures may use the canonical product, authenticated non-value-moving MCP tools, retained KeeperHub evidence, and public Base Sepolia proof. The only expected user contingency is GitHub MFA or first-time consent. Do not request wallet action, call a settlement submission tool, or move value.
-
-## Narration reuse decision
-
-Reuse scenes 1, 2, 7, and 9 byte-for-byte from the approved retained ElevenLabs Multilingual v2 package, including their provider-native timing. Scenes 3, 4, 5, 6, and 8 are the selected ElevenLabs Flash v2.5 responses generated with one call per selected exact text across three protected, expiring, fixed-scene Vercel release candidates. Four earlier attempts exceeded their scene budgets and are preserved as superseded evidence, for nine provider calls total. The canonical product alias `finaltab.vercel.app` was never promoted to those candidates; Vercel project aliases are not product release claims. Every endpoint called `apps/web/lib/server/voice.ts`, returned audio only, and provided no native timing; the local helper creates timing without claiming provider-native alignment. The sanitized `data/narration-generation-ledger.json` contains no credential and is the deployment/byte/hash authority for the five selected MP3s and the call-accounting authority for the four superseded attempts.
-
-The completed, provider-free synchronization sequence is:
-
-```powershell
-npm run voice:check
-npm run voice:sync
-npm run captions
-```
-
-`voice:check` is a read-only local validation. It binds the sanitized generation ledger to the three immutable deployment IDs, provider-helper contract, model, George voice ID, selected scene set, five MP3 byte/SHA identities, and nine-call accounting. `voice:sync` preserves the validated retained Multilingual v2 manifest under the immutable `retained-multilingual-v2-manifest.json` name, mirrors and SHA-verifies all five changed MP3/alignment pairs into proof output, restores the four retained alignment files, and atomically writes the mixed-provenance manifest. Neither command reads a provider key, performs a network request, or generates audio. `captions` then atomically builds synchronized SRT, VTT, cue JSON, baked captions, voice durations, and hashes; the local approved manifest is its final commit marker, so an earlier failure remains safely rerunnable.
-
-`npm run voice` no longer exists. `generate-voiceover.mjs` is a fail-closed retirement guard and cannot contact a provider.
-
-## Verification
+## Gate semantics
 
 ```powershell
 npm run check:source
-npm run check:enhanced
-node verify-video-gates.mjs
 ```
 
-Current verified result: the source gate reports synchronized prerequisites and the final gate prints `FINAL RENDER GATE PASSED`.
+Validates the exact schedule, script, terminology, design tokens, pending-safe manifests, capture contracts, SFX bytes, and render command without pretending missing assets exist. It prints a source-pass message plus the explicit pending list.
 
-## Final render
+```powershell
+npm run gate:render
+```
+
+Strict mode. It must fail until captures, one-batch voice evidence, alignment, captions, eight new frames, the final index, and hash locks are complete.
 
 ```powershell
 npm run render:final
 ```
 
-This is native 3840×2160 at 60 fps, PNG video frames, strict-all, no best-effort, low-memory mode, and no frame cache. Do not run it before canonical captures are supplied and all gates pass.
+Later, after the strict gate passes, renders the raw 4K60 composition, masters the complete program to −14.0 LUFS, and checks resolution, fps, runtime, integrated loudness, and true peak. Do not run it while any prerequisite is pending.
+
+## Required truth labels
+
+- `MCP · TOOL CONNECTION`
+- `HARD STOP · NO SIGNATURE · NO SUBMIT · NO MONEY MOVED`
+- `EARLIER AUTHORIZED RUN · READ ONLY · NOT CREATED HERE`
+- `KEEPERHUB · EXECUTION SERVICE`
+- `BASE SEPOLIA · PUBLIC TEST NETWORK`

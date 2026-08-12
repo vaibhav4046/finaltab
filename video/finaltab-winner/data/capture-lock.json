@@ -1,55 +1,6 @@
 {
-  "schemaVersion": 1,
-  "status": "approved-canonical-captures",
-  "approvedAt": "2026-08-11T16:08:54.1573361Z",
-  "captures": [
-    {
-      "id": "C03",
-      "path": "assets/capture/C03-complex-product-flow.mp4",
-      "bytes": 2678580,
-      "sha256": "93e29202df08b6624df10e8f7db9a6b60fe87254673098255a9a4d54a52eac6d"
-    },
-    {
-      "id": "C04",
-      "path": "assets/capture/C04-net-freeze-bind.mp4",
-      "bytes": 6070004,
-      "sha256": "a5aac91988814131d871ac102aae67ce67346343178aa4480875a4354d64ed62"
-    },
-    {
-      "id": "C05",
-      "path": "assets/capture/C05-retained-signature-simulation.png",
-      "bytes": 1600544,
-      "sha256": "b5d22baeeccc72f40d810acc547809e8bc1b92ecb17dbdf3ee8ae8bd4418efb7"
-    },
-    {
-      "id": "C06A",
-      "path": "assets/capture/C06-retained-keeperhub-receipt.png",
-      "bytes": 1659283,
-      "sha256": "2ea65fac300e807e1b32949beaa0551aa6f72fe5ed4101e11504d6556d03a4c6"
-    },
-    {
-      "id": "C06B",
-      "path": "assets/capture/C06-base-sepolia-proof.png",
-      "bytes": 1587492,
-      "sha256": "71603e7aad631c892eae82d95f69f07d01c19c1392b440e9bae1140ea19eda90"
-    },
-    {
-      "id": "C07",
-      "path": "assets/capture/C07-live-tools-list.png",
-      "bytes": 1423640,
-      "sha256": "df810326a0047d9f6ee3e788385d005446c8d87653b963700d576e42f1ca16c7"
-    },
-    {
-      "id": "C08A",
-      "path": "assets/capture/C08-mcp-nonbroadcast.mp4",
-      "bytes": 2729927,
-      "sha256": "3a1b2dbadf87e586fb399e43421cc221c337661b8e5131ba1e12926a0a09f9de"
-    },
-    {
-      "id": "C08B",
-      "path": "assets/capture/C08-retained-status.png",
-      "bytes": 1574674,
-      "sha256": "1c63665855405878f29ef5e0631b64b27ffe31ff89722b8d2250b730e5c5487c"
-    }
-  ]
+  "schemaVersion": 3,
+  "status": "pending-v3-captures",
+  "approvedAt": null,
+  "captures": []
 }

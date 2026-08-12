@@ -13,6 +13,7 @@ const ENV_KEYS = [
   "NEXT_PUBLIC_SUPABASE_URL",
   "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
   "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+  "FINALTAB_APP_ORIGIN",
   "NODE_ENV",
 ] as const;
 const original = Object.fromEntries(ENV_KEYS.map((key) => [key, process.env[key]]));
@@ -105,6 +106,22 @@ describe("Supabase session scope defaults", () => {
 });
 
 describe("protected API authentication", () => {
+  it("normalizes the configured canonical origin without weakening exact matching", () => {
+    mutableEnv.FINALTAB_APP_ORIGIN = "https://finaltab.example/";
+
+    expect(apiAccessInternals.hasCanonicalSessionOrigin(new Request("https://finaltab.example/api/voice/speak", {
+      method: "POST",
+      headers: { origin: "https://finaltab.example" },
+    }))).toBe(true);
+    expect(apiAccessInternals.hasCanonicalSessionOrigin(new Request("https://finaltab.example/api/voice/speak", {
+      method: "POST",
+      headers: { origin: "https://attacker.example" },
+    }))).toBe(false);
+    expect(apiAccessInternals.hasCanonicalSessionOrigin(new Request("https://finaltab.example/api/voice/speak", {
+      method: "POST",
+    }))).toBe(false);
+  });
+
   it("does not invent a privileged principal for unauthenticated local development", async () => {
     delete process.env.FINALTAB_API_TOKENS_JSON;
     delete process.env.NEXT_PUBLIC_SUPABASE_URL;

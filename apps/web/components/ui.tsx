@@ -20,8 +20,8 @@ export function Panel({
       }`}
     >
       <header className="flex items-baseline justify-between border-b border-edge-soft px-4 py-3">
-        <h2 className="font-mono text-[11px] font-medium uppercase tracking-[0.2em] text-fog">{title}</h2>
-        <span className="font-mono text-[10px] text-fog-dim">{step}</span>
+        <h2 className="font-mono text-xs font-medium uppercase tracking-[0.2em] text-fog">{title}</h2>
+        <span className="font-mono text-xs text-fog-dim">{step}</span>
       </header>
       <div className="lab-scroll min-h-0 flex-1 overflow-y-auto p-4">{children}</div>
     </section>
@@ -43,7 +43,7 @@ export function Badge({
   } as const;
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider ${tones[tone]}`}
+      className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 font-mono text-xs uppercase tracking-wider ${tones[tone]}`}
     >
       {children}
     </span>
@@ -96,7 +96,7 @@ export function Spinner() {
 export function ErrorNote({ message }: { message: string }) {
   return (
     <p
-      className="mt-2 rounded-md border border-coral/30 bg-coral/5 px-3 py-2 font-mono text-[11px] leading-relaxed text-coral"
+      className="mt-2 rounded-md border border-coral/30 bg-coral/5 px-3 py-2 font-mono text-xs leading-relaxed text-coral"
       role="alert"
     >
       {message}
@@ -107,8 +107,8 @@ export function ErrorNote({ message }: { message: string }) {
 export function BlockedNote({ message }: { message: string }) {
   return (
     <div className="mt-2 rounded-md border border-amber/30 bg-amber/5 px-3 py-2" role="status" aria-live="polite">
-      <p className="font-mono text-[10px] uppercase tracking-wider text-amber">Blocked — honest state</p>
-      <p className="mt-1 font-mono text-[11px] leading-relaxed text-paper-dim">{message}</p>
+      <p className="font-mono text-xs uppercase tracking-wider text-amber">Blocked — honest state</p>
+      <p className="mt-1 font-mono text-xs leading-relaxed text-paper-dim">{message}</p>
     </div>
   );
 }

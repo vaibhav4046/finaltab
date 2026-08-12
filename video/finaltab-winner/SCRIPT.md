@@ -1,84 +1,81 @@
-# SCRIPT — FINALTab winner film
+# SCRIPT — FINALTab V3 judge film
 
-**Target duration:** 96.0 seconds
+**Target duration:** 90.000 seconds
+**Spoken words:** 188
 **Voice:** George (`JBFqnCBsd6RMkjVDRZzb`) via ElevenLabs
-**Models:** mixed, with exact per-scene provenance: retained scenes 1, 2, 7, and 9 use `eleven_multilingual_v2`; selected scenes 3, 4, 5, 6, and 8 use `eleven_flash_v2_5` from one call per selected exact text across three protected, expiring, fixed-scene Vercel release candidates. The ledger also records four superseded over-budget attempts, for nine provider calls total; the canonical product alias `finaltab.vercel.app` was never promoted to those candidates.
-**Settings boundary:** each release endpoint called `apps/web/lib/server/voice.ts`, which sends no `voice_settings` override and applies automatic text normalization. Retained clips keep their approved bytes; no global settings claim is made across the mixed package.
-**Alignment boundary:** retained clips use their original provider-native timing. Changed clips receive provider-free, offline transcript-constrained timing only after an independent transcription quality gate passes; they do not claim provider-native alignment.
-**Provider-call boundary:** no script in this video project generates narration or reads a provider key. The five selected MP3s are accepted only when their bytes match the sanitized, credential-free `data/narration-generation-ledger.json`; they are then aligned locally and synchronized. No further provider pass is permitted.
-**Voice direction:** Warm, precise, restrained. Speak like a careful operator showing evidence, not an announcer selling hype. Give code identifiers and proof states extra separation.
-**Timing note:** The 96-second story spine and canonical captures are locked. Only the fresh offline alignment for scenes 3, 4, 5, 6, and 8 may move their intra-frame caption holds.
+**Model:** `eleven_multilingual_v2` for the complete script
+**Generation contract:** One new batch, all eight lines, no retained audio, no per-scene model mixing
+**Voice direction:** Human, direct, calm, and confident. Explain the product as if showing it to a smart friend. Keep the hard stop unmistakable.
+**Mastering:** Final program at −14.0 LUFS integrated, ≤ −1.0 dBTP; voice always clear above restrained SFX.
 
 ---
 
-## Line 1 — Outcome hook (Frame 1)
+## Line 1 — Logo (Scene 1)
 
-**Time:** 00:00.650 – 00:05.600
-**Delivery:** Intimate and matter-of-fact; land “certain” gently, then sharpen “screenshots.”
+**Time:** 00:00.300 – 00:03.700
+**Delivery:** Spacious. Let the wordmark land before the second sentence.
 
-    A shared bill should end with everyone certain—and no one chasing screenshots.
+    FINALTab. One receipt. One clear settlement.
 
-## Line 2 — Architecture (Frame 2)
+## Line 2 — What it does (Scene 2)
 
-**Time:** 00:06.200 – 00:15.910
-**Delivery:** One controlled build; lightly separate “deterministic ledger,” “entire payout plan,” and “KeeperHub.”
+**Time:** 00:04.250 – 00:11.700
+**Delivery:** Warm and useful; emphasize “once” and “public proof.”
 
-    FINALTab turns a receipt into a deterministic ledger, binds each debtor's USDC pull to the whole payout plan, then sends the exact call through KeeperHub.
+    Turn a shared receipt into an exact split, gather approvals, move test funds once, and leave public proof.
 
-## Line 3 — Complex product flow (Frame 3)
+## Line 3 — Use cases (Scene 3)
 
-**Time:** 00:16.400 – 00:30.650
-**Delivery:** The first four sentences are crisp action cues. Slow slightly for “tax, tip, and service included” and land “to the cent.”
+**Time:** 00:12.250 – 00:19.650
+**Delivery:** Conversational. Give each use case its own beat.
 
-    Sign in. Scan a crowded receipt. Correct the extraction. Add participants. Describe who had what. FINALTab reconciles every line—tax, tip, and service included—to the cent.
+    For dinners, trips, team expenses, or agent-led payments, everyone sees each amount, approval, and result.
 
-## Line 4 — Net and freeze (Frame 4)
+## Line 4 — Architecture (Scene 4)
 
-**Time:** 00:31.400 – 00:43.600
-**Delivery:** Make the invalidation boundary unmistakable. Land “Freeze only after a fresh review” as the control point, then read the bound fields as evidence.
+**Time:** 00:20.200 – 00:29.750
+**Delivery:** Plain, steady, and slightly quicker through the two translated names.
 
-    A four-stage review attests the current inputs; any edit invalidates it. Freeze only after a fresh review, and the ledger, debits, payouts, chain, and contract become one immutable plan.
+    Vision reads the bill. Math checks every cent. Reviewers check the split and wallet safety. KeeperHub, the execution service, runs it. Base Sepolia, the public test network, confirms it.
 
-## Line 5 — Dual signatures and simulation (Frame 5)
+## Line 5 — Real product (Scene 5)
 
-**Time:** 00:44.200 – 00:55.860
-**Delivery:** This is retained evidence, not a recreated signing chronology. Keep the two signature meanings distinct and land the consumed-proof boundary plainly.
+**Time:** 00:30.250 – 00:49.650
+**Delivery:** Active demonstration. Each short action should match the real capture.
 
-    Circle permits the USDC pull; FINALTab binds every payout. KeeperHub simulates first. Consumed proof cannot move again.
+    Watch the product: sign in, create a tab, upload and correct a receipt, add people, assign items, include tax and tip, run four checks, inspect balances and memory, then lock the plan.
 
-## Line 6 — KeeperHub plus independent proof (Frame 6)
+## Line 6 — Complex agent task (Scene 6)
 
-**Time:** 00:56.350 – 01:05.700
-**Delivery:** Stress “submitted once.” Let the matching public identifiers sound conclusive, not celebratory.
+**Time:** 00:50.200 – 01:07.750
+**Delivery:** Build momentum through the task, then settle on the compact memory summary.
 
-    KeeperHub submitted once with operator authorization. Its receipt and Base Sepolia independently match transaction, settlement ID, and ledger hash.
+    Now give it a hard request: weighted items, shared service, exclusions, and a payer correction. Voice captures it. The model suggests assignments. Math balances every cent. Four reviewers record what passed and why. Memory keeps a compact audit summary.
 
-## Line 7 — MCP breadth (Frame 7)
+## Line 7 — MCP hard stop (Scene 7)
 
-**Time:** 01:06.250 – 01:12.610
-**Delivery:** Slight lift on “nine production MCP tools,” then lower and reassure on the wallet-key boundary.
+**Time:** 01:08.200 – 01:24.700
+**Delivery:** Present tense and factual. Pause after “approval challenge,” then make the stop the climax.
 
-    Agents use the same safety rail through nine production MCP tools. FINALTab never holds wallet keys.
+    MCP, the tool connection, signs in, lists nine tools, allocates the receipt, prepares a wallet request, and creates an approval challenge. Then hard stop: no signature, submit, or money moved. A read-only check verifies the earlier authorized settlement.
 
-## Line 8 — MCP climax (Frame 8)
+## Line 8 — Proof CTA (Scene 8)
 
-**Time:** 01:13.150 – 01:30.800
-**Delivery:** Present-tense, but make the stop boundary the climax. Pause after “approval challenge” and “Then it stops.” Keep the retained status panel explicitly separate from this non-broadcast client run.
-**Screen text lock:** `NO WALLET SIGNATURE · NO SUBMIT · NO SECOND VALUE MOVE`
+**Time:** 01:25.200 – 01:29.750
+**Delivery:** Calm and conclusive. Do not rush “executed once.”
 
-    A real MCP client authenticates, lists nine tools, allocates the receipt, prepares V2 typed data, and creates an approval challenge. Then it stops: no wallet signature, submit, or value move. A read-only panel verifies the retained settlement.
-
-## Line 9 — CTA (Frame 9)
-
-**Time:** 01:31.050 – 01:35.900
-**Delivery:** Calm, spacious word marks. Do not rush the last sentence.
-
-    FINALTab: KeeperHub executes. Anyone verifies.
+    FINALTab. People approve. The earlier run executed once. Anyone can verify.
 
 ## Spoken-word budget
 
-- Locked narration: 185 words.
-- Guide pace across 96 seconds: approximately 116 words per minute including designed pauses.
-- Scenes 1, 2, 7, and 9 retain their approved wording, MP3 hashes, Multilingual v2 provenance, and provider-native timing.
-- Scenes 3, 4, 5, 6, and 8 use the ledger-bound Flash v2.5 MP3s from the protected release endpoint. Their validated offline character alignment is the final caption and scene-sync authority.
-- `npm run voice:check` and `npm run voice:sync` are provider-free package-validation commands; neither can generate or request another clip.
+| Scene | Words | Window |
+| --- | ---: | ---: |
+| 01 | 6 | 4s |
+| 02 | 18 | 8s |
+| 03 | 15 | 8s |
+| 04 | 29 | 10s |
+| 05 | 32 | 20s |
+| 06 | 39 | 18s |
+| 07 | 38 | 17s |
+| 08 | 11 | 5s |
+| **Total** | **188** | **90s** |

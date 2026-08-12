@@ -13,15 +13,21 @@ const WalletAddressSchema = z
   .regex(/^0x[0-9a-fA-F]{40}$/, "Enter a complete 0x wallet address.")
   .transform((value) => value.toLowerCase() as `0x${string}`);
 
+const SettlementCurrencySchema = z
+  .string()
+  .trim()
+  .transform((value) => value.toUpperCase())
+  .refine((value): value is "USD" => value === "USD", "FINALTab settlements use USD only.");
+
 export const CreateTabSchema = z.object({
   title: z.string().trim().min(1).max(80),
-  currency: z.string().trim().regex(/^[A-Za-z]{3}$/).transform((value) => value.toUpperCase()),
+  currency: SettlementCurrencySchema,
 });
 
 export const UpdateTabSchema = z
   .object({
     title: z.string().trim().min(1).max(80).optional(),
-    currency: z.string().trim().regex(/^[A-Za-z]{3}$/).transform((value) => value.toUpperCase()).optional(),
+    currency: SettlementCurrencySchema.optional(),
     payerParticipantId: z.string().uuid().nullable().optional(),
   })
   .refine((value) => Object.keys(value).length > 0, "Provide at least one draft field to update.");

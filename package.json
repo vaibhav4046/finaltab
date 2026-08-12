@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "description": "AI-assisted shared-expense settlement with KeeperHub-verified onchain execution",
   "scripts": {
+    "dev": "pnpm --filter @finaltab/web dev",
     "lint": "eslint apps packages playwright.config.ts tests/e2e",
     "typecheck": "pnpm -r --if-present typecheck",
     "test": "pnpm --dir contracts build && pnpm -r --if-present test",

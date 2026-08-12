@@ -1,50 +1,50 @@
-# BRIEF — FINALTab winner film
+# BRIEF — FINALTab V3 judge film
 
 ## Deliverable
 
-A 96-second, native 3840×2160, 60 fps product film built and rendered with HyperFrames 0.7.106. The visual system is Ledger Noir aligned to the live product: carbon black, electric-blue transit boundaries, acid-green verified proof, and exact monospaced evidence.
+An exact 90.000-second, native 3840×2160, 60 fps product film. It opens on the text-only FINALTab wordmark, explains the product in plain English, shows the real signed-in product, proves a difficult voice-and-agent run, performs a real authenticated MCP tool-connection test that stops before any wallet action, and closes on independently checkable proof.
 
-## Audience and outcome
+## Audience and message
 
-Hackathon judges should understand three things without trusting narration alone:
+Hackathon judges should leave with one sentence: FINALTab turns a shared receipt into an exact plan that people approve, executes an authorized test-network settlement once, and leaves proof anyone can inspect.
 
-1. FINALTab turns an ambiguous shared receipt into an exact frozen settlement plan.
-2. Human and agent paths use the same external-wallet safety boundary.
-3. The retained Base Sepolia V2 settlement is publicly verifiable and is not presented as the output of the filmed MCP session.
+## Locked scene order
 
-## Story spine
+| Scene | Window | Job |
+| --- | --- | --- |
+| 01 | 00:00–00:04 | Text-only FINALTab logo animation |
+| 02 | 00:04–00:12 | What the product does |
+| 03 | 00:12–00:20 | Real use cases |
+| 04 | 00:20–00:30 | Simple architecture in plain English |
+| 05 | 00:30–00:50 | Real final-site demonstration |
+| 06 | 00:50–01:08 | Real complex voice, model, four-review, and memory-graph task |
+| 07 | 01:08–01:25 | Authenticated MCP non-broadcast test and hard stop |
+| 08 | 01:25–01:30 | Earlier-run proof and CTA |
 
-- Human problem and architecture.
-- Real signed-in product flow: scan, correct, add user-entered participants, allocate, reconcile.
-- Four-stage current-input review, invalidation on edit, fresh rerun, freeze.
-- Sanitized retained evidence for both debtor signatures and the successful pre-broadcast simulation.
-- Retained KeeperHub receipt plus independent Base Sepolia proof.
-- Exactly nine authenticated production MCP tools.
-- Real MCP client runs only non-value-moving tools through approval-challenge creation, then stops.
-- A separate read-only panel verifies the retained settlement.
-- Public product, source, workflow, and transaction CTA.
+The windows are contiguous and total exactly 90.000 seconds.
 
 ## Truth boundaries
 
-- No synthetic product UI, terminal output, client transcript, proof result, or participant identity.
-- No second wallet signature, settlement submission, replay, or value move.
-- The retained execution came from an explicitly authorized simulate-then-single-broadcast runner, not from MCP.
-- Frame 8 may not imply that its client created the retained transaction.
-- Participant names are entered by the user and never inferred from a receipt.
-- Production captures must satisfy [data/capture-contracts.json](data/capture-contracts.json) and the final hash lock.
+- No fake product UI, terminal output, participant identity, model response, review event, memory record, tool result, or proof state.
+- Receipt names are never inferred. People shown in the product are entered by the user or safely redacted.
+- The filmed MCP session may authenticate, list tools, allocate the receipt, prepare a wallet request, and create an approval challenge. It must stop there.
+- The filmed MCP session never requests a wallet signature and never calls a submit, sign, broadcast, or value-moving operation.
+- The settled transaction shown at the end is an earlier authorized run. It is visibly separate from the filmed MCP test.
+- KeeperHub is introduced as the execution service. Base Sepolia is introduced as the public test network. MCP is introduced as a tool connection.
 
-## Audio
+## Visual system
 
-- Voice: ElevenLabs George, with provenance scoped by scene rather than flattened into one model claim.
-- Retained scenes 1, 2, 7, and 9 keep their approved `eleven_multilingual_v2` MP3s and provider-native timing.
-- Changed scenes 3, 4, 5, 6, and 8 use selected `eleven_flash_v2_5` MP3s obtained with one call per selected exact text across three protected, expiring, fixed-scene Vercel release candidates. Four earlier attempts exceeded their scene budgets and are explicitly retained as superseded evidence, for nine provider calls total. The canonical product alias `finaltab.vercel.app` was never promoted to those candidates; Vercel's project aliases are not product release claims. Every endpoint called the shared `apps/web/lib/server/voice.ts` helper, returned audio only, used ElevenLabs defaults, and did not return timing alignment.
-- `data/narration-generation-ledger.json` is the sanitized, credential-free call ledger. The source gate binds its three immutable deployment IDs, provider, model, George voice ID, exact selected scene set, byte counts, and SHA-256 values to the five local MP3s, while preserving the four over-budget attempts as non-selected records.
-- Changed-scene timing is produced locally by the provider-free, transcript-constrained alignment helper and must pass its independent transcription quality gate.
-- No command in this video project calls ElevenLabs. `npm run voice:check` validates the complete local package without writing; `npm run voice:sync` restores retained alignment files and writes the mixed-provenance manifest without making a network request.
-- Build SRT, VTT, cue JSON, baked captions, and audio hashes only after the local mixed package validates.
-- No music bed is approved in the current source.
-- SFX are the documented local Pixabay-licensed files in `assets/audio/sfx`; no provider lookup was used.
+One product and one film brand: carbon-black surfaces, electric blue for activity, acid green for product signal, and verified green only for checked proof. FINALTab and all headlines use Geist Sans. Evidence uses Geist Mono. No serif face is part of V3.
+
+## Narration and audio
+
+- Locked script: 188 words.
+- Voice: ElevenLabs George (`JBFqnCBsd6RMkjVDRZzb`).
+- Model: `eleven_multilingual_v2` only.
+- Generation: one new provider batch for the complete eight-scene script; no retained line or old scene audio may be reused.
+- Current state: generation pending. No provider request is made by this source rebuild.
+- Final mix: integrated loudness −14.0 LUFS, true peak no higher than −1.0 dBTP, no background music, and restrained local SFX below the voice.
 
 ## Release condition
 
-The final render is intentionally blocked until all canonical captures, truth flags, capture hashes, hybrid narration provenance, caption hashes, enhanced HyperFrames checks, and source gates pass.
+Source validation may pass with explicit placeholders. Final rendering stays blocked until all four V3 captures, the single new narration batch, alignment, captions, eight newly built scene compositions, capture hashes, and final audio checks pass. The rendered 4K60 MP4 must be exactly 90.000 seconds within one video frame.

@@ -11,6 +11,8 @@ import { SplitPanel } from "./SplitPanel";
 import { invalidateReviewedSettlement, reviewedSettlementInputKey } from "@/lib/reviewGate";
 import type { AllocationState, ExecutionStage, Person, ReceiptState } from "@/lib/types";
 
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
 export function Lab() {
   const router = useRouter();
   const [people, setPeople] = useState<Person[]>([]);
@@ -23,13 +25,21 @@ export function Lab() {
   const [locked, setLocked] = useState(false);
   const [cloudTabId, setCloudTabId] = useState<string | null>(null);
   const [queryReady, setQueryReady] = useState(false);
+  const [queryError, setQueryError] = useState<string | null>(null);
   const [newTabTitle, setNewTabTitle] = useState("");
   const [creatingTab, setCreatingTab] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
 
   useEffect(() => {
     const requestedTab = new URLSearchParams(window.location.search).get("tab");
-    if (requestedTab) setCloudTabId(requestedTab);
+    if (requestedTab !== null) {
+      const normalizedTab = requestedTab.trim().toLowerCase();
+      if (UUID_PATTERN.test(normalizedTab)) {
+        setCloudTabId(normalizedTab);
+      } else {
+        setQueryError("This settlement URL does not contain a valid tab ID.");
+      }
+    }
     setQueryReady(true);
   }, []);
 
@@ -80,6 +90,21 @@ export function Lab() {
     return <div className="grid min-h-[55vh] place-items-center font-mono text-xs text-fog">Opening durable workspace…</div>;
   }
 
+  if (queryError) {
+    return (
+      <div className="workspace-page grid min-h-[70vh] place-items-center py-10">
+        <section className="surface-shadow w-full max-w-2xl rounded-2xl border border-danger/30 bg-surface-1 p-6 sm:p-8" aria-labelledby="invalid-tab-title">
+          <p className="font-mono text-xs font-semibold uppercase tracking-[0.2em] text-danger">Invalid settlement route</p>
+          <h1 id="invalid-tab-title" className="mt-3 text-3xl font-semibold tracking-tight text-txt">This shared tab cannot be opened.</h1>
+          <p className="mt-3 text-sm leading-6 text-muted">{queryError} No remote record was requested and no local settlement state was created.</p>
+          <Link href="/app" className="touch-target mt-5 inline-flex items-center rounded-xl bg-signal px-5 text-sm font-semibold text-ink">
+            Return to shared tab history
+          </Link>
+        </section>
+      </div>
+    );
+  }
+
   if (!cloudTabId) {
     return (
       <div className="mx-auto grid min-h-[70vh] max-w-3xl place-items-center px-4 py-10 sm:px-6">
@@ -124,7 +149,7 @@ export function Lab() {
   }
 
   return (
-    <div className="settlement-room-shell mx-auto max-w-[1400px] px-4 pb-10 md:px-6">
+    <div className="workspace-page workspace-page-wide settlement-room-shell pb-10">
       <header className="flex flex-wrap items-baseline justify-between gap-2 py-6">
         <div>
           <p className="font-mono text-xs tracking-[0.25em] text-signal">SETTLEMENT ROOM</p>
@@ -132,7 +157,7 @@ export function Lab() {
             Settle the table. Prove it onchain.
           </h1>
         </div>
-        <p className="font-mono text-[10px] uppercase tracking-wider text-faint">
+        <p className="font-mono text-xs uppercase tracking-wider text-faint">
           Base Sepolia · USDC · KeeperHub execution
         </p>
       </header>
@@ -144,7 +169,7 @@ export function Lab() {
         onPeople={resetAfterParticipantChange}
       />
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
         <ReceiptPanel
           receipt={receipt}
           onReceipt={(next) => {

@@ -12,6 +12,7 @@ import {
 } from "@/lib/server/settlementSubmission";
 
 export const runtime = "nodejs";
+export const maxDuration = 60;
 const BYTES32_RE = /^0x[0-9a-fA-F]{64}$/;
 
 export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }): Promise<Response> {

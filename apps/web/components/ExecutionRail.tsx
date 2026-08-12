@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
 import { Panel, Badge, Button, ErrorNote, Spinner, BlockedNote } from "./ui";
 import { signPreparedDebit, shortHex, formatUsdcMinor } from "@/lib/flow";
 import { freezeReviewedLedger, reviewedReceiptId, type ReviewedSettlementBinding } from "@/lib/reviewGate";
@@ -90,7 +89,6 @@ export function ExecutionRail({
   onStage,
   onLocked,
 }: ExecutionRailProps) {
-  const reduceMotion = useReducedMotion();
   const [rail, setRail] = useState<RailState>({
     frozen: null,
     flowId: null,
@@ -467,10 +465,10 @@ export function ExecutionRail({
                       </Button>
                     ) : (
                       <div className="space-y-1 rounded-md border border-edge bg-panel-2 p-2.5">
-                        <p className="font-mono text-[9px] uppercase tracking-wider text-fog-dim">ledgerHash</p>
-                        <p className="break-all font-mono text-[10px] text-paper-dim">{rail.frozen.ledgerHash}</p>
-                        <p className="pt-1 font-mono text-[9px] uppercase tracking-wider text-fog-dim">settlementId</p>
-                        <p className="break-all font-mono text-[10px] text-paper-dim">{rail.frozen.settlementId}</p>
+                        <p className="font-mono text-xs uppercase tracking-wider text-fog-dim">ledgerHash</p>
+                        <p className="break-all font-mono text-xs text-paper-dim">{rail.frozen.ledgerHash}</p>
+                        <p className="pt-1 font-mono text-xs uppercase tracking-wider text-fog-dim">settlementId</p>
+                        <p className="break-all font-mono text-xs text-paper-dim">{rail.frozen.settlementId}</p>
                         <div className="pt-1.5">
                           <Button variant="ghost" onClick={doUnfreeze}>
                             Start revised plan · retain audit record
@@ -479,7 +477,7 @@ export function ExecutionRail({
                       </div>
                     )}
                     {(netted.length === 0 || !reviewReady) && !rail.frozen && (
-                      <p className="mt-1 font-mono text-[9px] text-fog-dim">
+                      <p className="mt-1 font-mono text-xs text-fog-dim">
                         {!reviewReady ? "complete the attested agent review first" : "net the debts in panel 02 first"}
                       </p>
                     )}
@@ -499,16 +497,16 @@ export function ExecutionRail({
                       <div className="space-y-1.5">
                         {rail.signed.map((t, i2) => (
                           <div key={i2} className="rounded-md border border-edge bg-panel-2 px-2.5 py-1.5">
-                            <p className="font-mono text-[10px] text-paper">
+                            <p className="font-mono text-xs text-paper">
                               {nameOfAddress(t.from)} approved{" "}
                               <span className="text-lime">{formatUsdcMinor(t.value)} USDC</span>
                             </p>
-                            <p className="font-mono text-[9px] text-fog-dim">
+                            <p className="font-mono text-xs text-fog-dim">
                               USDC pull + complete payout-plan consent · nonce {shortHex(t.nonce, 5)}
                             </p>
                           </div>
                         ))}
-                        <p className="font-mono text-[9px] text-fog-dim">
+                        <p className="font-mono text-xs text-fog-dim">
                           V2 recomputes the plan hash onchain. Any debtor, payout, amount, ledger, chain, or contract
                           change invalidates approval.
                         </p>
@@ -521,10 +519,10 @@ export function ExecutionRail({
                   <div className="mt-1.5">
                     {stage === "sim_failed" ? (
                       <div className="rounded-md border border-coral/40 bg-coral/5 p-2.5">
-                        <p className="font-mono text-[10px] font-semibold uppercase tracking-wider text-coral">
+                        <p className="font-mono text-xs font-semibold uppercase tracking-wider text-coral">
                           Would revert — not broadcast
                         </p>
-                        <p className="mt-1 break-all font-mono text-[10px] text-coral/80">{rail.simDetail}</p>
+                        <p className="mt-1 break-all font-mono text-xs text-coral/80">{rail.simDetail}</p>
                         <div className="mt-2">
                           <Button variant="ghost" onClick={() => void doSimulate()} disabled={busy}>
                             Retry simulation
@@ -545,10 +543,10 @@ export function ExecutionRail({
                   <div className="mt-1.5">
                     {rail.executionId ? (
                       <div className="rounded-md border border-edge bg-panel-2 px-2.5 py-1.5">
-                        <p className="font-mono text-[9px] uppercase tracking-wider text-fog-dim">execution id</p>
-                        <p className="break-all font-mono text-[10px] text-paper-dim">{rail.executionId}</p>
+                        <p className="font-mono text-xs uppercase tracking-wider text-fog-dim">execution id</p>
+                        <p className="break-all font-mono text-xs text-paper-dim">{rail.executionId}</p>
                         {(stage === "pending" || stage === "executing") && (
-                          <p className="mt-1 flex items-center gap-2 font-mono text-[10px] text-fog">
+                          <p className="mt-1 flex items-center gap-2 font-mono text-xs text-fog">
                             <Spinner /> polling KeeperHub…
                           </p>
                         )}
@@ -564,16 +562,11 @@ export function ExecutionRail({
                 {s.key === "verify" && idx >= 4 && (
                   <div className="mt-1.5">
                     {stage === "verified" && (
-                      <motion.div
-                        initial={reduceMotion ? false : { opacity: 0, scale: 0.96 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={reduceMotion ? { duration: 0 } : undefined}
-                        className="rounded-md border border-lime/50 bg-lime/10 p-3"
-                      >
+                      <div className="stage-swap rounded-md border border-lime/50 bg-lime/10 p-3">
                         <p className="font-mono text-sm font-bold uppercase tracking-widest text-lime">
                           Verified settled
                         </p>
-                        <p className="mt-1 font-mono text-[10px] leading-relaxed text-paper-dim">
+                        <p className="mt-1 font-mono text-xs leading-relaxed text-paper-dim">
                           Terminal success + onchain receipt exists + verified flag true. This banner only renders on
                           VERIFIED_SETTLED — there is no optimistic version of it.
                         </p>
@@ -583,17 +576,17 @@ export function ExecutionRail({
                               settlementId: rail.frozen?.settlementId ?? "",
                               ledgerHash: rail.frozen?.ledgerHash ?? "",
                             }).toString()}${rail.proofCapability ? `#proof=${encodeURIComponent(rail.proofCapability)}` : ""}`}
-                            className="mt-3 inline-flex min-h-11 items-center rounded-lg border border-lime/40 px-3 font-mono text-[10px] uppercase tracking-wider text-lime"
+                            className="mt-3 inline-flex min-h-11 items-center rounded-lg border border-lime/40 px-3 font-mono text-xs uppercase tracking-wider text-lime"
                           >
                             Open independently verified proof
                           </a>
                         ) : null}
-                      </motion.div>
+                      </div>
                     )}
                     {stage === "failed" && (
                       <div className="rounded-md border border-coral/40 bg-coral/5 p-3">
                         <p className="font-mono text-sm font-bold uppercase tracking-widest text-coral">Failed</p>
-                        <p className="mt-1 font-mono text-[10px] text-coral/80">
+                        <p className="mt-1 font-mono text-xs text-coral/80">
                           KeeperHub reported terminal failure. Nothing settled.
                         </p>
                       </div>
@@ -601,7 +594,7 @@ export function ExecutionRail({
                     {stage === "unproven" && (
                       <div className="rounded-md border border-amber/40 bg-amber/5 p-3">
                         <p className="font-mono text-sm font-bold uppercase tracking-widest text-amber">Unproven</p>
-                        <p className="mt-1 font-mono text-[10px] text-paper-dim">
+                        <p className="mt-1 font-mono text-xs text-paper-dim">
                           Execution reached a terminal state but the receipt could not be verified. We do not call this
                           settled.
                         </p>
@@ -617,10 +610,10 @@ export function ExecutionRail({
 
       {rail.lastStatus !== null && stage !== "idle" && (
         <details className="mt-3 rounded-md border border-edge bg-panel-2 p-2.5">
-          <summary className="cursor-pointer font-mono text-[10px] uppercase tracking-wider text-fog">
+          <summary className="cursor-pointer font-mono text-xs uppercase tracking-wider text-fog">
             Raw KeeperHub status
           </summary>
-          <pre className="lab-scroll mt-2 max-h-48 overflow-auto font-mono text-[10px] leading-relaxed text-fog">
+          <pre className="lab-scroll mt-2 max-h-48 overflow-auto font-mono text-xs leading-relaxed text-fog">
             {JSON.stringify(rail.lastStatus, null, 2)}
           </pre>
         </details>
@@ -628,21 +621,21 @@ export function ExecutionRail({
 
       {durableHistory.length > 0 && (
         <details className="mt-3 rounded-md border border-info/25 bg-info/5 p-2.5">
-          <summary className="cursor-pointer font-mono text-[10px] uppercase tracking-wider text-info">
+          <summary className="cursor-pointer font-mono text-xs uppercase tracking-wider text-info">
             Refresh-safe history · {durableHistory.length} attested record{durableHistory.length === 1 ? "" : "s"}
           </summary>
           <div className="mt-2 space-y-2">
             {durableHistory.map((flow) => (
               <div key={flow.id} className="rounded-md border border-edge bg-panel-2 p-2.5">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <span className="font-mono text-[10px] font-semibold uppercase tracking-wider text-paper">
+                  <span className="font-mono text-xs font-semibold uppercase tracking-wider text-paper">
                     {flow.state.replaceAll("_", " ")}
                   </span>
-                  <span className="font-mono text-[9px] text-fog-dim">revision {flow.revision}/4</span>
+                  <span className="font-mono text-xs text-fog-dim">revision {flow.revision}/4</span>
                 </div>
-                <p className="mt-1 break-all font-mono text-[9px] text-fog">ledger {flow.ledgerHash}</p>
-                {flow.executionId ? <p className="mt-1 break-all font-mono text-[9px] text-fog">execution {flow.executionId}</p> : null}
-                <p className="mt-1 font-mono text-[9px] text-fog-dim">
+                <p className="mt-1 break-all font-mono text-xs text-fog">ledger {flow.ledgerHash}</p>
+                {flow.executionId ? <p className="mt-1 break-all font-mono text-xs text-fog">execution {flow.executionId}</p> : null}
+                <p className="mt-1 font-mono text-xs text-fog-dim">
                   {flow.proofVerified ? `independently verified · ${flow.receiptCount} receipt${flow.receiptCount === 1 ? "" : "s"}` : "proof not verified"}
                   {" · "}{new Date(flow.updatedAt).toLocaleString()}
                 </p>
@@ -651,13 +644,13 @@ export function ExecutionRail({
           </div>
         </details>
       )}
-      {historyError ? <p className="mt-2 font-mono text-[9px] text-warn">History unavailable: {historyError}</p> : null}
+      {historyError ? <p className="mt-2 font-mono text-xs text-warn">History unavailable: {historyError}</p> : null}
 
       {error && <ErrorNote message={error} />}
       {blocked && <BlockedNote message={blocked} />}
 
       {stage === "idle" && netted.length === 0 && (
-        <p className="mt-2 font-mono text-[10px] leading-relaxed text-fog-dim">
+        <p className="mt-2 font-mono text-xs leading-relaxed text-fog-dim">
           Nothing here is simulated UI. Every state — simulate, execute, verify — is a real KeeperHub API result, and
           the app refuses to show success it cannot prove.
         </p>

@@ -5,6 +5,7 @@ import {
   AddParticipantSchema,
   ApprovalDecisionSchema,
   CreateTabSchema,
+  UpdateTabSchema,
   createInviteToken,
   hashInviteToken,
   inviteExpiry,
@@ -33,6 +34,13 @@ describe("durable tab collaboration boundaries", () => {
       attachSelf: false,
     });
     expect(AddParticipantSchema.parse({ displayName: "Participant B", walletAddress: null }).walletAddress).toBeNull();
+  });
+
+  it("accepts only USD for durable tab creation and updates", () => {
+    expect(CreateTabSchema.parse({ title: "Team dinner", currency: " usd " }).currency).toBe("USD");
+    expect(UpdateTabSchema.parse({ currency: "usd" }).currency).toBe("USD");
+    expect(() => CreateTabSchema.parse({ title: "Team dinner", currency: "GBP" })).toThrow("USD only");
+    expect(() => UpdateTabSchema.parse({ currency: "EUR" })).toThrow("USD only");
   });
 
   it("does not expose a path that marks an approval signed", () => {

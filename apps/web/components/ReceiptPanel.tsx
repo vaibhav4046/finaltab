@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
 import {
   ParsedReceiptSchema,
   checkReceiptArithmetic,
@@ -308,15 +307,8 @@ export function ReceiptPanel({ receipt, onReceipt, locked = false }: ReceiptPane
 }
 
 function ReceiptPaper({ receipt, currency }: { receipt: ParsedReceipt; currency: string }) {
-  const reduceMotion = useReducedMotion();
-
   return (
-    <motion.div
-      initial={reduceMotion ? false : { opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={reduceMotion ? { duration: 0 } : undefined}
-      className="receipt-paper relative mx-auto max-w-sm px-5 pb-6 pt-5 text-ink"
-    >
+    <div className="receipt-paper entry-rise relative mx-auto max-w-sm px-5 pb-6 pt-5 text-ink">
       <div className="text-center">
         <p className="font-mono text-sm font-bold uppercase tracking-widest">{receipt.merchant}</p>
         <p className="mt-1 font-mono text-xs text-ink-soft">{receipt.date ?? "date unknown"} · {receipt.currency}</p>
@@ -346,7 +338,7 @@ function ReceiptPaper({ receipt, currency }: { receipt: ParsedReceipt; currency:
         </div>
       </div>
       <div className="receipt-tear absolute -bottom-[10px] left-0 w-full" />
-    </motion.div>
+    </div>
   );
 }
 

@@ -21,28 +21,23 @@ export function CloudTabsPanel() {
   const [availability, setAvailability] = useState<CloudAvailability>("loading");
   const [tabs, setTabs] = useState<CloudTabSummary[]>([]);
   const [title, setTitle] = useState("");
-  const [currency, setCurrency] = useState("USD");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [messageTone, setMessageTone] = useState<"status" | "error">("status");
 
   const load = useCallback(async () => {
     setMessage(null);
+    setMessageTone("status");
     try {
-      const [sessionResponse, response] = await Promise.all([
-        fetch("/api/session", { cache: "no-store" }),
-        fetch("/api/tabs", { cache: "no-store" }),
-      ]);
-      const [session, body] = await Promise.all([
-        sessionResponse.json() as Promise<{ configured: boolean; authenticated: boolean }>,
-        response.json() as Promise<ListResponse>,
-      ]);
-      if (!session.configured) {
+      const response = await fetch("/api/tabs", { cache: "no-store" });
+      const body = await response.json() as ListResponse;
+      if (body.configured === false) {
         setAvailability("disabled");
         return;
       }
-      if (!session.authenticated) {
+      if (response.status === 401 || body.error === "AUTH_REQUIRED") {
         setAvailability("signed-out");
         return;
       }
@@ -51,6 +46,7 @@ export function CloudTabsPanel() {
       setAvailability("ready");
     } catch (error) {
       setAvailability("error");
+      setMessageTone("error");
       setMessage(error instanceof Error ? error.message : "Could not load cloud tabs.");
     }
   }, []);
@@ -63,11 +59,12 @@ export function CloudTabsPanel() {
     if (!title.trim() || busy) return;
     setBusy(true);
     setMessage(null);
+    setMessageTone("status");
     try {
       const response = await fetch("/api/tabs", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ title, currency }),
+        body: JSON.stringify({ title, currency: "USD" }),
       });
       const body = await response.json() as { ok?: boolean; tab?: CloudTabSummary; message?: string };
       if (!response.ok || !body.tab) throw new Error(body.message ?? "The cloud draft was not created.");
@@ -75,6 +72,7 @@ export function CloudTabsPanel() {
       setTitle("");
       setMessage("Cloud draft created. Add the table before sharing an invite.");
     } catch (error) {
+      setMessageTone("error");
       setMessage(error instanceof Error ? error.message : "The cloud draft was not created.");
     } finally {
       setBusy(false);
@@ -85,6 +83,7 @@ export function CloudTabsPanel() {
     if (!editTitle.trim() || busy) return;
     setBusy(true);
     setMessage(null);
+    setMessageTone("status");
     try {
       const response = await fetch(`/api/tabs/${tabId}`, {
         method: "PATCH",
@@ -99,6 +98,7 @@ export function CloudTabsPanel() {
       setEditingId(null);
       setMessage("Draft title saved to the shared tab.");
     } catch (error) {
+      setMessageTone("error");
       setMessage(error instanceof Error ? error.message : "The draft title was not updated.");
     } finally {
       setBusy(false);
@@ -155,17 +155,16 @@ export function CloudTabsPanel() {
           <div className="surface-shadow rounded-2xl border border-quiet-soft bg-surface-1 p-5">
             <div className="flex items-center gap-3">
               <span className="grid h-11 w-11 place-items-center rounded-xl bg-info/10 text-info"><Plus size={20} aria-hidden="true" /></span>
-              <div><h3 className="font-semibold text-txt">Create a durable draft</h3><p className="text-sm text-muted">Only the owner can rename the draft; owners and members can add the table.</p></div>
+              <div><h3 className="font-semibold text-txt">Create a durable draft</h3><p className="text-sm text-muted">Only the owner can rename a draft; tab members can add participants.</p></div>
             </div>
             <div className="mt-4 grid gap-3 sm:grid-cols-[1fr_110px_auto]">
               <label className="text-sm text-muted">Tab name
                 <input value={title} onChange={(event) => setTitle(event.target.value)} maxLength={80} placeholder="Friday dinner" className="mt-1 min-h-11 w-full rounded-xl border border-quiet bg-surface-2 px-3 text-base text-txt outline-none focus-visible:ring-2 focus-visible:ring-signal" />
               </label>
               <label className="text-sm text-muted">Currency
-                <select value={currency} onChange={(event) => setCurrency(event.target.value)} className="mt-1 min-h-11 w-full rounded-xl border border-quiet bg-surface-2 px-3 text-base text-txt outline-none focus-visible:ring-2 focus-visible:ring-signal">
-                  <option value="USD">USD</option><option value="GBP">GBP</option><option value="EUR">EUR</option>
-                </select>
+                <input readOnly value="USD" aria-describedby="cloud-currency-note" className="mt-1 min-h-11 w-full rounded-xl border border-quiet bg-surface-2 px-3 font-mono text-sm text-txt" />
               </label>
+              <span id="cloud-currency-note" className="sr-only">Durable settlement writes are USD only.</span>
               <button type="button" onClick={() => void createTab()} disabled={busy || !title.trim()} className="touch-target self-end rounded-xl bg-signal px-5 text-sm font-semibold text-ink disabled:opacity-50">{busy ? "Saving…" : "Create draft"}</button>
             </div>
           </div>
@@ -193,7 +192,7 @@ export function CloudTabsPanel() {
                       {tab.role === "owner" && editingId !== tab.id ? (
                         <button type="button" onClick={() => { setEditingId(tab.id); setEditTitle(tab.title); }} className="touch-target inline-flex items-center gap-2 rounded-xl border border-quiet px-3 text-sm text-muted hover:text-txt"><Pencil size={15} aria-hidden="true" /> Rename</button>
                       ) : null}
-                      <Link href={`/app/tab?tab=${encodeURIComponent(tab.id)}`} className="touch-target inline-flex items-center gap-2 rounded-xl bg-info px-4 text-sm font-semibold text-ink">Open table <ArrowRight size={16} aria-hidden="true" /></Link>
+                      <Link href={`/app/tab?tab=${encodeURIComponent(tab.id)}`} className="touch-target inline-flex items-center gap-2 rounded-xl bg-info px-4 text-sm font-semibold text-ink">Open tab <ArrowRight size={16} aria-hidden="true" /></Link>
                     </div>
                   </div>
                 </article>
@@ -209,7 +208,11 @@ export function CloudTabsPanel() {
         </div>
       ) : null}
 
-      {message && availability === "ready" ? <p className="mt-3 text-sm text-info" role="status">{message}</p> : null}
+      {message && availability === "ready" ? (
+        <p className={`mt-3 text-sm ${messageTone === "error" ? "text-danger" : "text-info"}`} role={messageTone === "error" ? "alert" : "status"}>
+          {message}
+        </p>
+      ) : null}
     </section>
   );
 }

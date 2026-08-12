@@ -1,8 +1,26 @@
 # FINALTab
 
-Turn a shared receipt into an exact, externally signed USDC settlement, route
-the transaction through KeeperHub, and refuse to call it settled until both
-KeeperHub and an independent Base Sepolia check prove it landed.
+**Split a group receipt, then actually settle it, with proof at every step.**
+
+Photograph a bill and FINALTab works out who owes what, to the cent. Each person
+approves their own share from their own wallet. Nobody, including FINALTab, can
+move the money without those signatures, and the payment is only reported as
+done once an independent check confirms it really landed.
+
+In precise terms: turn a shared receipt into an exact, externally signed USDC
+settlement, route the transaction through KeeperHub, and refuse to call it
+settled until both KeeperHub and an independent Base Sepolia check prove it
+landed.
+
+## Start here
+
+- Live product: [finaltab.vercel.app](https://finaltab.vercel.app/)
+- 90-second film: [YouTube](https://youtu.be/eXZACnOdt5w)
+- DoraHacks submission: [FINALTab BUIDL #47656](https://dorahacks.io/buidl/47656)
+- How it is built, in six diagrams: [docs/architecture.md](docs/architecture.md)
+- Finalist deck: [docs/pitch/FINALTab-Finalist-Pitch.pptx](docs/pitch/FINALTab-Finalist-Pitch.pptx)
+- Finalist talk track and demo runbook: [docs/pitch/FINALIST_PITCH.md](docs/pitch/FINALIST_PITCH.md)
+- Judge Q&A: [docs/pitch/JUDGE_QA.md](docs/pitch/JUDGE_QA.md)
 
 Built for KeeperHub Agents Onchain. Current submission readiness is tracked in
 [docs/release/status.md](docs/release/status.md); historical evidence does not
@@ -56,12 +74,28 @@ derived from loaded run inputs, recorded stage events, evidence hashes, and
 compact retained audit records. It cannot rewrite settlement policy, source
 code, or wallet authorization.
 
-- Live product: [finaltab.vercel.app](https://finaltab.vercel.app/)
-- 90-second film: [YouTube](https://youtu.be/eXZACnOdt5w)
-- DoraHacks submission: [FINALTab BUIDL #47656](https://dorahacks.io/buidl/47656)
-- Finalist deck: [docs/pitch/FINALTab-Finalist-Pitch.pptx](docs/pitch/FINALTab-Finalist-Pitch.pptx)
-- Finalist talk track and demo runbook: [docs/pitch/FINALIST_PITCH.md](docs/pitch/FINALIST_PITCH.md)
-- Judge Q&A: [docs/pitch/JUDGE_QA.md](docs/pitch/JUDGE_QA.md)
+The same system is drawn in more detail in
+[docs/architecture.md](docs/architecture.md): trust boundaries, the
+authentication and RLS boundary, the MCP request lifecycle, the durable
+submission intent state machine, and the evidence lineage.
+
+## What is actually autonomous
+
+Worth being precise about, because "AI agent" is doing a lot of work in most
+submissions:
+
+| Step | Who decides | Can it move money? |
+|---|---|---|
+| Reading the receipt | Vision model | No |
+| Working out each share | Deterministic engine, integer minor units | No |
+| Four-stage review | Bounded review over validity, arithmetic, consent risk, proof preflight | No, it can only block Freeze |
+| Approving a share | The debtor, in their own wallet | Only by signing |
+| Approving the broadcast | A permitted human wallet, on a short-lived bound challenge | Only by signing |
+| Executing | KeeperHub | Yes, and only against those signatures |
+| Confirming | Independent Base Sepolia receipt and event check | No, it can only refuse to confirm |
+
+A model never chooses or authorizes value movement. The agent's autonomy is the
+authority to **stop** a settlement, never to release one.
 
 ## Hackathon category map
 

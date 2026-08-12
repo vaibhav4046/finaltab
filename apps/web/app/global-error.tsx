@@ -1,14 +1,28 @@
 "use client";
 
-export default function GlobalError({ reset }: { error: Error & { digest?: string }; reset: () => void }) {
+import { GeistMono } from "geist/font/mono";
+import { GeistSans } from "geist/font/sans";
+import { RouteStatePanel, type RouteErrorBoundaryProps } from "@/components/RouteStatePanel";
+
+export default function GlobalError({ reset }: RouteErrorBoundaryProps) {
   return (
-    <html lang="en">
-      <body className="grid min-h-dvh place-items-center bg-[#050706] px-4 py-12 font-sans text-[#f4f8f1]">
-        <main className="w-full max-w-2xl rounded-2xl border border-[#344238] bg-[#0a0d0b] p-6 sm:p-9">
-          <p className="font-mono text-xs font-semibold uppercase tracking-[0.2em] text-[#45afff]">FINALTab / Recovery</p>
-          <h1 className="mt-4 text-4xl font-semibold tracking-[-0.045em]">FINALTab could not open.</h1>
-          <p className="mt-4 text-sm leading-6 text-[#b7c0b8]">The application stopped before it could establish a trustworthy view. Reload it; no success state is assumed.</p>
-          <button type="button" onClick={reset} className="mt-6 min-h-11 rounded-xl bg-[#c8ff3d] px-5 text-sm font-semibold text-[#050706]">Reload FINALTab</button>
+    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`}>
+      <body className="app-shell bg-canvas font-sans text-txt">
+        <main className="route-state-screen">
+          <RouteStatePanel
+            eyebrow="FINALTab / Recovery"
+            title="FINALTab could not establish a trusted view."
+            description="Reload the application. If recovery stops again, return to the public home."
+            note="No success state was accepted from the failed application tree."
+            titleId="global-error-title"
+            tone="error"
+            actions={
+              <>
+                <button type="button" onClick={reset} className="route-state-action route-state-action-primary">Reload FINALTab</button>
+                <a href="/" className="route-state-action route-state-action-secondary">Return home</a>
+              </>
+            }
+          />
         </main>
       </body>
     </html>

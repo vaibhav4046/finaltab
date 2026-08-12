@@ -135,6 +135,11 @@ Playwright result from the prior deployment's evidence.
   which PostgREST cannot expose at all. Denial lands at the GRANT layer, before
   any policy is consulted. This proves nothing about the `authenticated` role —
   the two-identity claim above stays unclaimed until a real second session runs.
+  The run is retained at
+  [evidence/anon-authorization-probe.json](evidence/anon-authorization-probe.json),
+  which records every surface and its status code. The probe writes no session
+  token and refuses to emit an artifact containing the key at all, so the
+  evidence can be committed without becoming a second place the key lives.
 - Duplicate settlement execution is guarded three times: the durable journal's
   one-intent-per-idempotency-key primary key and `SUBMISSION_ACCEPTANCE_CONFLICT`
   transition, the deterministic KeeperHub idempotency key, and the contract's

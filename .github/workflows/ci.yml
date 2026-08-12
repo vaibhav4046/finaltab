@@ -35,6 +35,45 @@ jobs:
       - name: First-load JS budget
         run: pnpm bundle:budget
 
+  integrity:
+    name: Dependency, asset, truth, and secret integrity
+    runs-on: ubuntu-latest
+    steps:
+      # Full history: a secret deleted in a later commit is still published, so
+      # the scan has to see every commit rather than the diff.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # Deliberately no pnpm install. These three gates read manifests, git and
+      # markdown using only Node builtins, so running them with an empty
+      # node_modules is the strongest form of the clean-environment check:
+      # an import that only resolves because of a hoisted or parent-directory
+      # install cannot pass here.
+      - name: Undeclared dependency gate
+        run: node scripts/dependency-integrity.mjs
+      - name: Broken asset and document reference gate
+        run: node scripts/asset-integrity.mjs
+      - name: Release-truth claim gate
+        run: node scripts/truth-consistency.mjs
+
+      - name: Secret scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_CONFIG: .gitleaks.toml
+
+      # Pull requests only: the action compares a base ref against a head ref,
+      # which a push to main does not provide.
+      - name: Dependency review
+        if: github.event_name == 'pull_request'
+        uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high
+
   e2e:
     name: Browser smoke tests
     needs: quality

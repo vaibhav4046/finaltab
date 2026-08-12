@@ -31,11 +31,12 @@ authorized standalone runner did not exercise the production MCP short-lived
 human approval boundary, so the complete value-moving MCP loop remains
 unproven.
 
-Canonical deployment `dpl_EYEXUVqto8UDcUqoqWKcE1Ui1kPa` at commit
-`2d808c7a589385e2f8494189978da64d982fb0cc` is live and `ready` at
-`finaltab.vercel.app`. Its authenticated MCP recheck initialized successfully,
-listed exactly nine production tools, and passed non-value calculation plus
-arbitrary-participant V2 preparation. No MCP value submission was called.
+Canonical deployment `dpl_F5PgMqo7A9zecQW2LKos2FcCNVMs` at commit
+`039582fc44901d1f436b61a426f1523a936427f9` is `READY` at
+`finaltab.vercel.app`. The public film's authenticated MCP run initialized,
+listed exactly nine production tools, allocated and prepared the complex
+receipt, created an approval challenge, and then stopped. No signing,
+submission, broadcast, or value movement occurred.
 
 ### Historical V1 evidence — preserved
 
@@ -180,11 +181,12 @@ at 10 tabs or 10 million, "a bare tx hash is never proof" is the same check.
 
 ## 6. Per-user accounts and bounded review agents
 
-The London Supabase project has its four baseline plus five ordered additive
+The London Supabase project has its four baseline plus seven ordered additive
 migrations applied: agent control (`52236`), agent-event composite-FK index
 coverage (`60000`), voice spend reservations (`64822`), first-party settlement
-flow (`73000`), and the shared UI/REST/MCP submission journal (`74000`). All
-29 public tables have RLS; sensitive new mutation RPCs are service-role-only,
+flow (`73000`), the shared UI/REST/MCP submission journal (`74000`), the V3
+narration-generation journal (`20260812023200`), and durable pre-Freeze tab
+drafts (`20260812090000`). All 31 public tables have RLS; sensitive new mutation RPCs are service-role-only,
 and the unindexed-FK warning is cleared. Database advisors have zero error-level
 findings, with reviewed warnings remaining. Post-promotion cutover `74500` is
 applied: legacy direct financial writes and the old quota RPC deny browser

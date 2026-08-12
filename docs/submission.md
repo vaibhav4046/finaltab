@@ -1,11 +1,12 @@
-# DoraHacks submission copy — final media pending
+# DoraHacks submission copy — submitted and under review
 
-**Do not submit this draft yet.** V2 deployment, one value-moving V2 settlement,
-the hardened 29-table Supabase schema, canonical GitHub OAuth, authenticated tab
-creation, and exactly-nine-tool non-value MCP probe are proven. Durable
+The [DoraHacks BUIDL](https://dorahacks.io/buidl/47656) is submitted and
+`Under Review`; its Best Onboarding UX Improvement bounty application is saved.
+V2 deployment, one value-moving V2 settlement, the hardened 31-table Supabase
+schema, canonical GitHub OAuth, authenticated tab creation, exactly-nine-tool
+non-value MCP proof, and the public product film are proven. Durable
 spend-reservation controls and sensitive provider variables are configured.
-The real microphone/readback lifecycle, final video, public video URL, and
-DoraHacks confirmation are still pending. Current truth lives in
+The real microphone/readback lifecycle remains unproven. Current truth lives in
 [release/status.md](release/status.md).
 
 The live DoraHacks project page was inspected on 2026-08-11. Its authoritative
@@ -33,7 +34,7 @@ Infrastructure**
 |---|---|
 | Blockchain, Web3, DeFi, Onchain | An exact-source-matched V2 contract on Base Sepolia, EIP-3009 and full-plan consent, atomic testnet-USDC execution, KeeperHub orchestration, and independent event verification. A deliberately minimal one-atomic-unit V2 run is retained with exact event and balance proof. |
 | AI Agents, MCP, Autonomous Agents | Exactly nine authenticated production MCP tools let external agents allocate, net, prepare, simulate, orchestrate, and verify. The first-party workspace adds a fixed, attested four-stage review before Freeze. Autonomy is bounded: every debtor signs externally and a permitted human wallet signs a short-lived broadcast approval before value can move. |
-| Infrastructure | OpenAPI, discovery metadata, a KeeperHub workflow package, scoped authentication, a shared durable UI/REST/MCP submission journal, fail-closed proof tooling, and a provisioned London Supabase schema make the rail reusable from other clients and agent systems. The hosted baseline, additive, financial-cutover, and owner-select migrations are verified at 29/29 public RLS tables with server-only sensitive mutation RPCs. |
+| Infrastructure | OpenAPI, discovery metadata, a KeeperHub workflow package, scoped authentication, a shared durable UI/REST/MCP submission journal, fail-closed proof tooling, and a provisioned London Supabase schema make the rail reusable from other clients and agent systems. The hosted baseline, additive, financial-cutover, and owner-select migrations are verified at 31/31 public RLS tables with server-only sensitive mutation RPCs. |
 
 ## Description
 
@@ -91,6 +92,10 @@ sensitive Vercel Production variables. The capability must not be described as
 live until its microphone, `Begin`/`Termination`, readback, quota, and text
 fallback paths pass a real provider probe.
 
+The product-film narration is separate from browser voice. It was generated
+locally with Kokoro. The no-charge ElevenLabs preflight made one quota-check
+GET, was denied, made zero synthesis POSTs, and was not retried.
+
 ## Current V2 deployment proof
 
 `FinalTabBatchSettlementV2` is deployed at
@@ -135,8 +140,9 @@ that distinction visible.
 `finaltab-production` is active in London (`eu-west-2`) on the free plan under
 project ref `yoavihmldqbkuxinrsih`. The baseline and ordered additive migrations
 `20260811052236`, `20260811060000`, `20260811064822`, `20260811073000`, and
-`20260811074000` are applied remotely, followed by the financial-truth cutover
-and `tab_owner_select_returning` repair. Verification found 29/29 public tables
+`20260811074000`, plus `20260812023200` and `20260812090000`, are applied
+remotely, followed by the financial-truth cutover
+and `tab_owner_select_returning` repair. Verification found 31/31 public tables
 with RLS enabled. Sensitive mutation RPCs, legacy direct financial writes, and
 the old quota RPC deny browser roles; `reserve_voice_budget_service` allows only
 `service_role`. Advisors report zero error-level findings, with reviewed
@@ -160,13 +166,14 @@ Hook are configured.
 
 ## Links
 
-- Live product: <https://finaltab.vercel.app> — `ready`; deployment `dpl_EYEXUVqto8UDcUqoqWKcE1Ui1kPa`; commit `2d808c7a589385e2f8494189978da64d982fb0cc`; canonical Playwright 14/14
+- Live product: <https://finaltab.vercel.app> — `READY`; deployment `dpl_F5PgMqo7A9zecQW2LKos2FcCNVMs`; commit `039582fc44901d1f436b61a426f1523a936427f9`
 - Source: <https://github.com/vaibhav4046/finaltab>
 - MCP endpoint: <https://finaltab.vercel.app/api/mcp> — authenticated exactly-nine-tool list plus non-value calculation/preparation live-proven; no submission called
 - V2 contract: <https://sepolia.basescan.org/address/0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB>
 - V2 deployment transaction: <https://sepolia.basescan.org/tx/0x904ec881ef7c2ec7375c20887b4181cf58224b44162d837743fa869b0a598e8f>
 - V2 settlement transaction: <https://sepolia.basescan.org/tx/0x7a6fb760f691954a41c71d5d508629c58aa09207bba0de4eaf164f097c59a789>
-- V2 product video: **PENDING — no rendered or public artifact yet**
+- V2 product video: <https://youtu.be/eXZACnOdt5w> — 90.005s; 3840×2160 at 60 fps; 5,400 H.264 video frames with AAC audio; 35,617,576 bytes; SHA-256 `a14cfef364c0fe7d4c62e2f9cfb73ca228a692e8738a85d5a6f615e361b09c69`
+- DoraHacks: <https://dorahacks.io/buidl/47656> — submitted and `Under Review`; Best Onboarding UX Improvement bounty application saved
 
 ## MCP V2 surface
 
@@ -184,42 +191,40 @@ current production source.
 
 - V2 deployment through KeeperHub: proven.
 - V2 runtime and creation source exact match through Sourcify: proven.
-- Canonical release: deployment `dpl_EYEXUVqto8UDcUqoqWKcE1Ui1kPa` serves
-  commit `2d808c7a589385e2f8494189978da64d982fb0cc`; health is `ready`, exact-SHA
-  GitHub Actions is green, and canonical Playwright passed 14/14. Volatile local
-  aggregate counts wait for the final post-video rerun.
+- Canonical release: deployment `dpl_F5PgMqo7A9zecQW2LKos2FcCNVMs` serves
+  commit `039582fc44901d1f436b61a426f1523a936427f9` and is `READY`.
 - Authenticated MCP: production listed exactly nine tools and passed non-value
   calculation and arbitrary-participant V2 preparation. No submission call was
   made; the retained value proof is separately labeled.
 - Hybrid voice: code and budget controls are deployed/configured, but the real
-  microphone/readback lifecycle remains pending. The final 4K/60 product-film
-  render is also pending.
+  microphone/readback lifecycle remains pending. The verified public 4K/60
+  product film uses local Kokoro narration, not a live browser voice lifecycle.
 - V2 value-moving rail through KeeperHub: live-proven at execution
   `3hmlqi36zweiwg6fc5o2u`, tx `0x7a6fb760…a789`, block `45327128`, with verified
   dual signatures, receipt, exact V2 event binding, and conserved balances.
 - Supabase production infrastructure: baseline/additive/cutover/owner-select
-  schema is applied; all 29 public tables have RLS, sensitive mutation RPCs and
+  schema is applied; all 31 public tables have RLS, sensitive mutation RPCs and
   legacy writes deny browser roles, and error-level advisor findings are zero
   with reviewed warnings remaining. GitHub OAuth/reload and authenticated tab creation are
   live-proven. Email fallback is disabled/unproven; two-identity isolation,
   HMAC flow provenance, and shared-journal crash recovery remain unclaimed.
 - Privy bridge: optional, code-complete, fail-closed, and deliberately disabled
   under the stop-before-charge constraint; it is not a submission blocker.
-- Unified production MCP human-approval trace: pending; the retained settlement
-  was a separately authorized simulate-then-single-broadcast proof run.
-- Final V2 product video and public URL: pending.
+- Unified production MCP human-approval trace: pending. The film stops before
+  signing, submission, broadcast, or value movement; the retained settlement
+  was a separate authorized simulate-then-single-broadcast proof run.
+- Final V2 product video and public URL: proven at
+  <https://youtu.be/eXZACnOdt5w>.
 
-## Onboarding contribution and bounty ambiguity
+## Onboarding contribution and bounty status
 
-[KeeperHub/cli PR #95](https://github.com/KeeperHub/cli/pull/95) adds
-fail-closed `--require-verified` behavior and a bounded `--timeout` to execution
-status polling. It should be described prominently in the main BUIDL as a
-reusable KeeperHub onboarding contribution and concrete integration finding.
+[KeeperHub/cli PR #95](https://github.com/KeeperHub/cli/pull/95) is open and
+unmerged. It adds only fail-closed `--require-verified` behavior. It is a
+reusable KeeperHub onboarding contribution and concrete integration finding;
+it must not be described as merged or as adding another flag.
 
-On 2026-08-11, the DoraHacks detail page advertised a stackable $1,000
-onboarding bounty for two winners, while the public Bounties tab rendered “No
-Bounties.” The authenticated Submit BUIDL flow must therefore be checked; this
-draft does not claim that a separate bounty entry or checkbox exists.
+The authenticated DoraHacks flow saved the Best Onboarding UX Improvement
+bounty application for BUIDL 47656. The BUIDL is submitted and `Under Review`.
 
 ## Historical V1 evidence
 
@@ -247,9 +252,9 @@ not the current deliverable. Neither file or a public URL is retained here.
 ## Best Onboarding UX bounty
 
 [KeeperHub/cli PR #95](https://github.com/KeeperHub/cli/pull/95) adds
-`--require-verified` and `--timeout` so automated status watching can fail
-closed. It was open and not merged when last checked. Recheck the live PR before
-submission and never describe it as merged unless GitHub reports that state.
+only `--require-verified` so automated status watching can fail closed. It is
+open and unmerged. Never describe it as merged or expand its scope unless the
+live PR changes.
 
 ## Judging evidence map
 
@@ -259,4 +264,4 @@ submission and never describe it as merged unless GitHub reports that state.
 | Contract integrity | V2 plan binding, dual signatures, replay controls, atomic execution, exact Sourcify match |
 | MCP safety | Scoped auth, external-wallet and signed-human-approval boundaries in source/tests, simulate-first flow, independent proof; live broadcast trace still pending |
 | Product usefulness | Receipt-to-settlement workflow with deterministic money rules |
-| Still required | Real voice lifecycle, final video/public URL, required form links, form confirmation |
+| Still required | Real browser microphone/readback lifecycle and a live production MCP human-approval/submission trace; neither is implied by the submitted film |

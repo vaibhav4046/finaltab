@@ -43,7 +43,7 @@ maintained in [release/status.md](release/status.md).
 
 ### KeeperHub CLI contribution — SHIPPED
 
-- PR open: https://github.com/KeeperHub/cli/pull/95 (`--require-verified` + `--timeout` for `execute status`). Open, **not merged**; it will not be described as merged unless GitHub shows it merged.
+- PR open: https://github.com/KeeperHub/cli/pull/95 (`--require-verified` for `execute status`). Open, **not merged**; the initially proposed `--timeout` option was removed, and the PR will not be described as merged unless GitHub shows it merged.
 
 ### Historical V1 ElevenLabs voiceover — DONE
 
@@ -141,7 +141,8 @@ rather than being done autonomously.
   (`eu-west-2`) on the free plan, with verified monthly cost `0`.
 - The baseline migrations plus ordered additive migrations
   `20260811052236`, `20260811060000`, `20260811064822`, `20260811073000`, and
-  `20260811074000` are applied. Verification found 29/29 public tables with RLS;
+  `20260811074000`, plus `20260812023200` and `20260812090000`, are applied.
+  Verification found 31/31 public tables with RLS;
   every sensitive new mutation RPC denies `PUBLIC`, `anon`, and
   `authenticated` and allows `service_role`. Database advisors report no
   error-level findings, and `60000` clears the remaining unindexed agent-event

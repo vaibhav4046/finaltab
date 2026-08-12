@@ -7,20 +7,21 @@
 > state. Re-run the gates before promoting any historical count or service
 > result to a current claim.
 
-> **Current V2 override (2026-08-11):** V2 is deployed at
+> **Current V2 override (2026-08-12):** V2 is deployed at
 > `0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB` through KeeperHub execution
 > `xasakw5nfxkh2s0fh4stn`, tx `0x904ec881…e8f`, block `45321107`, with a
 > verified receipt and Sourcify exact-match ID `43497805`. A separate V2 run
 > moved one atomic unit of USDC through KeeperHub execution
 > `3hmlqi36zweiwg6fc5o2u`, tx `0x7a6fb760…a789`, block `45327128`, with verified
-> dual signatures, exact event binding, and conserved balances. The V2 video is
-> still pending. Canonical deployment `dpl_EYEXUVqto8UDcUqoqWKcE1Ui1kPa`
-> serves commit `2d808c7a589385e2f8494189978da64d982fb0cc`: health is `ready`,
-> exact-SHA GitHub Actions is green, and canonical Playwright passed 14/14.
+> dual signatures, exact event binding, and conserved balances. Canonical
+> deployment `dpl_F5PgMqo7A9zecQW2LKos2FcCNVMs` serves commit
+> `039582fc44901d1f436b61a426f1523a936427f9` and is `READY`; current-commit CI
+> and Playwright are not inferred from the prior deployment.
 > Supabase project
 > `yoavihmldqbkuxinrsih` is provisioned in London on the free plan. Its four
 > baseline migrations plus additive `52236`, `60000`, `64822`, `73000`, and
-> `74000`, financial-truth cutover, and owner-select repair are applied: all 29
+> `74000`, the V3 narration journal (`20260812023200`), durable pre-Freeze drafts
+> (`20260812090000`), financial-truth cutover, and owner-select repair are applied: all 31
 > public tables have RLS, sensitive mutation RPCs and legacy writes deny browser
 > roles, and the remaining unindexed-FK warning is cleared. Advisors have zero
 > error-level findings, with reviewed RLS/function warnings and the
@@ -34,7 +35,18 @@
 > the stored successful simulation and deterministic idempotency key under a
 > bounded approval expiry. The paid Privy bridge is optional and deliberately
 > disabled; email fallback is disabled/unproven; two-user durability probes,
-> final voice lifecycle, real captures, and the 4K/60 render remain open.
+> cross-channel recovery, the final browser voice lifecycle, and a production
+> MCP value-path probe remain open. The public film is
+> <https://youtu.be/eXZACnOdt5w>: 90.005s, 3840×2160/60 fps, 5,400 H.264 video
+> frames with AAC audio, 35,617,576 bytes, SHA-256
+> `a14cfef364c0fe7d4c62e2f9cfb73ca228a692e8738a85d5a6f615e361b09c69`.
+> Narration was generated locally with Kokoro; ElevenLabs received one denied
+> quota-check GET, zero synthesis POSTs, and no retry. The film's MCP sequence
+> performs no signing, submission, broadcast, or value movement; its retained
+> settlement lane is separate. [DoraHacks BUIDL 47656](https://dorahacks.io/buidl/47656)
+> is submitted and `Under Review`, with its Best Onboarding UX Improvement
+> bounty application saved. KeeperHub CLI PR #95 is open/unmerged and adds only
+> `--require-verified`.
 > Every “end-to-end” or `confirm: true` statement below describes
 > the historical V1 system only.
 

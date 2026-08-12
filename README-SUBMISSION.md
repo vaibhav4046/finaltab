@@ -6,17 +6,22 @@ claims previously drifted across several documents, including conflicting
 
 - Canonical submission copy: [docs/submission.md](docs/submission.md)
 - Source-of-truth status: [docs/release/status.md](docs/release/status.md)
-- Pre-submit checklist:
+- Submission record and remaining gates:
   [docs/release/SUBMISSION_CHECKLIST.md](docs/release/SUBMISSION_CHECKLIST.md)
 - Evidence labels: [docs/release/truth-snapshot.md](docs/release/truth-snapshot.md)
 
-Current gates: **the real production microphone/readback lifecycle, final 4K/60
-video and public URL, and human submission are pending**. The V2
-one-atomic-unit settlement, 29-table RLS schema, post-promotion financial
-cutover, sensitive provider configuration, canonical GitHub OAuth round trip,
-authenticated collaboration create/read, and exactly-nine-tool non-value MCP
-probe are proven. Canonical deployment `dpl_EYEXUVqto8UDcUqoqWKcE1Ui1kPa` at
-commit `2d808c7a589385e2f8494189978da64d982fb0cc` is healthy, its exact-SHA CI is
-green, and canonical Playwright passed 14/14. No MCP value submission was made
-during that probe, and the retained settlement must not be relabeled as one.
-Volatile local test totals wait for the final post-video rerun.
+Current state: [DoraHacks BUIDL 47656](https://dorahacks.io/buidl/47656) is
+submitted and `Under Review`; the Best Onboarding UX Improvement bounty
+application is saved. Canonical deployment
+`dpl_F5PgMqo7A9zecQW2LKos2FcCNVMs` serves commit
+`039582fc44901d1f436b61a426f1523a936427f9` and is `READY`. The verified public
+film is <https://youtu.be/eXZACnOdt5w>: 90.005s, 3840×2160/60 fps, 5,400 H.264
+frames with AAC audio, 35,617,576 bytes, SHA-256
+`a14cfef364c0fe7d4c62e2f9cfb73ca228a692e8738a85d5a6f615e361b09c69`.
+Narration was generated locally with Kokoro; ElevenLabs received one denied
+quota-check GET and zero synthesis POSTs, with no retry. The production browser
+voice lifecycle remains unproven. The filmed MCP flow performed no signing,
+submission, broadcast, or value movement, and the separately retained
+settlement must not be relabeled as that run. KeeperHub CLI
+[PR #95](https://github.com/KeeperHub/cli/pull/95) is open and unmerged and adds
+only `--require-verified`.

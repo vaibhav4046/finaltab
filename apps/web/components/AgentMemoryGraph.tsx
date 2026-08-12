@@ -140,13 +140,16 @@ export function AgentMemoryGraph({ run, hasRuns, firstRunId, detailIssue }: Prop
           </div>
         </div>
       ) : (
-        <div className="overflow-x-auto px-5 py-6 sm:px-6" tabIndex={0} role="region" aria-label="Scrollable run evidence graph">
-          <ol className="grid gap-3 lg:min-w-max lg:grid-flow-col lg:auto-cols-[minmax(13rem,1fr)]" aria-label={`Evidence graph for run ${graph.runId}`}>
+        <div className="px-5 py-6 sm:px-6">
+          <ol
+            className="grid gap-3 md:grid-cols-2 xl:grid-cols-3 min-[2200px]:grid-cols-none min-[2200px]:grid-flow-col min-[2200px]:auto-cols-[minmax(13rem,1fr)]"
+            aria-label={`Evidence graph for run ${graph.runId}`}
+          >
             {graph.nodes.map((node, index) => (
               <li
                 key={node.id}
                 data-connected-from={incoming.get(node.id)}
-                className={`entry-slide relative min-w-0 rounded-2xl border border-quiet-soft bg-surface-2 p-4 ${index > 0 ? "before:absolute before:-top-3 before:left-6 before:h-3 before:w-px before:bg-info/45 lg:before:-left-3 lg:before:top-1/2 lg:before:h-px lg:before:w-3" : ""}`}
+                className={`entry-slide relative min-w-0 rounded-2xl border border-quiet-soft bg-surface-2 p-4 ${index > 0 ? "before:absolute before:-top-3 before:left-6 before:h-3 before:w-px before:bg-info/45 md:before:hidden min-[2200px]:before:-left-3 min-[2200px]:before:top-1/2 min-[2200px]:before:block min-[2200px]:before:h-px min-[2200px]:before:w-3" : ""}`}
                 aria-label={`${nodeKind(node)}: ${node.label}, ${node.status}`}
               >
                 <div className="flex flex-wrap items-start justify-between gap-2">

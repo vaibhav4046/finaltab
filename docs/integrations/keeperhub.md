@@ -55,8 +55,10 @@ microphone/readback probe passes.
 
 The routes and OpenAPI contract describe configuration-gated capability on the
 current deployment; they do not claim a successful provider lifecycle. The
-prerecorded product-film narration is a separate asset generated with ElevenLabs
-only. AssemblyAI is used for interactive transcription, not film narration.
+prerecorded product-film narration is a separate asset generated locally with
+Kokoro. Its no-charge ElevenLabs preflight made one quota-check GET, was denied,
+made zero synthesis POSTs, and was not retried. AssemblyAI is used for
+interactive transcription, not film narration.
 
 Authoritative references:
 
@@ -88,12 +90,14 @@ transaction hash or contract address. It accepts the execution ID plus the expec
 The observer is replay-safe because it is read-only. It neither broadcasts nor
 changes a settlement. Keep its returned observation in the caller's audit log.
 The Supabase production project has its four baseline plus additive `52236`,
-`60000`, `64822`, `73000`, and `74000` migrations applied and schema-verified at
-29/29 public RLS tables. Sensitive mutation RPCs are service-role-only, the
+`60000`, `64822`, `73000`, `74000`, `20260812023200`, and `20260812090000`
+migrations applied and schema-verified at 31/31 public RLS tables. The new
+narration-generation and tab-draft tables have zero policies and fail closed to
+browser roles. Sensitive mutation RPCs are service-role-only, the
 unindexed-FK warning is cleared, and advisors have zero error-level findings
 with reviewed warnings remaining. Post-promotion cutover `74500` is applied.
-Canonical deployment `dpl_EYEXUVqto8UDcUqoqWKcE1Ui1kPa` at commit
-`2d808c7a589385e2f8494189978da64d982fb0cc` is live and `ready`; the observer's
+Canonical deployment `dpl_F5PgMqo7A9zecQW2LKos2FcCNVMs` at commit
+`039582fc44901d1f436b61a426f1523a936427f9` is `READY`; the observer's
 callback/audit path remains unclaimed until separately live-probed.
 
 Value-moving first-party UI, REST, and MCP calls are separate from this read-only
@@ -190,9 +194,11 @@ iframe support remains deliberately undeclared.
 
 - KeeperHub organization access to import, validate, enable, and optionally
   publish the workflow.
-- A redacted production MCP/status capture bound to the retained V2 settlement;
-  the live one-atomic-unit run proves the rail but did not exercise the MCP human
-  broadcast-challenge path.
+- A live production MCP human-approval and submission probe remains unclaimed.
+  The public film stops before signing, submission, broadcast, or value movement;
+  its read-only retained-settlement lane is separate. The live one-atomic-unit
+  run proves the rail but did not exercise the MCP human broadcast-challenge
+  path.
 - Production `kh_` and scoped FINALTab credentials, entered server-side/by the
   KeeperHub owner and never committed.
 - A post-deploy Supabase callback/audit persistence probe if durable callback

@@ -189,15 +189,6 @@ export function ExecutionRail({
     }
   };
 
-  const doUnfreeze = () => {
-    if (pollTimer.current) clearTimeout(pollTimer.current);
-    setRail({ frozen: null, flowId: null, signed: null, executionId: null, proofCapability: null, verdict: null, simDetail: null, lastStatus: null });
-    setError(null);
-    setBlocked(null);
-    onStage("idle");
-    onLocked(false);
-  };
-
   const doSign = async () => {
     if (!rail.frozen) return;
     setBusy(true);
@@ -469,10 +460,17 @@ export function ExecutionRail({
                         <p className="break-all font-mono text-xs text-paper-dim">{rail.frozen.ledgerHash}</p>
                         <p className="pt-1 font-mono text-xs uppercase tracking-wider text-fog-dim">settlementId</p>
                         <p className="break-all font-mono text-xs text-paper-dim">{rail.frozen.settlementId}</p>
-                        <div className="pt-1.5">
-                          <Button variant="ghost" onClick={doUnfreeze}>
-                            Start revised plan · retain audit record
-                          </Button>
+                        <div className="space-y-2 pt-1.5">
+                          <p className="text-xs leading-5 text-fog">
+                            This tab is durably frozen. Revisions require a separate tab.
+                          </p>
+                          {/* Full navigation remounts the same-path room without retaining this tab query. */}
+                          <a
+                            href="/app/tab"
+                            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md border border-edge bg-transparent px-4 py-2 font-mono text-xs font-semibold uppercase tracking-wider text-paper transition-colors hover:border-fog focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-signal"
+                          >
+                            Start a new tab
+                          </a>
                         </div>
                       </div>
                     )}

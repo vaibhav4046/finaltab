@@ -4,8 +4,8 @@ Status: implemented in source and applied at the database layer through ordered
 migrations `52236`, `60000`, `73000`, and `74000`. All affected public tables
 have RLS, sensitive mutation RPCs are service-role-only, and `60000` clears the
 agent-event composite-FK index warning. Canonical deployment
-`dpl_EYEXUVqto8UDcUqoqWKcE1Ui1kPa` at commit
-`2d808c7a589385e2f8494189978da64d982fb0cc` is live and `ready`, and
+`dpl_F5PgMqo7A9zecQW2LKos2FcCNVMs` at commit
+`039582fc44901d1f436b61a426f1523a936427f9` is `READY`, and
 post-promotion cutover `74500` is applied. The complete four-stage control-plane
 sequence remains source/test/schema-proven until separately exercised live.
 
@@ -37,7 +37,7 @@ insert or update evidence tables. Sensitive narrow security-definer mutation
 RPCs deny `PUBLIC`, `anon`, and `authenticated`, allow `service_role`, and
 enforce the supplied verified user identity, tab edit access, fixed stage order,
 bounded JSON, and durable domain references. This privilege matrix and the
-29/29-public-table RLS state are hosted schema facts; they are not a live
+31/31-public-table RLS state are hosted schema facts; they are not a live
 application-flow probe.
 
 RPC reachability alone is not treated as server provenance. The Next.js server
@@ -86,6 +86,11 @@ This mandatory gate applies to FINALTab's first-party workspace. Authenticated
 external MCP callers use the separately documented signed-payload contract; it
 still requires external debtor signatures, exact simulation, short-lived human
 broadcast approval, and independent proof.
+
+The public product film demonstrates only the pre-value MCP boundary: it stops
+before any wallet signature, `submit_signed_settlement` invocation, broadcast,
+or value movement. Its read-only retained-settlement lane is separate from the
+filmed MCP run and does not prove that this control plane executed live.
 
 The first-party UI, REST execute endpoint, and MCP submission tool share the
 `74000` service-authored submission journal. A durably accepted retry skips

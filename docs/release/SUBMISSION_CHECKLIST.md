@@ -1,14 +1,14 @@
-# KeeperHub Agents Onchain — pre-submission checklist
+# KeeperHub Agents Onchain — submission record and remaining gates
 
-**Current state:** the one-atomic-unit V2 rail settlement, 29-table RLS Supabase
+**Current state:** the one-atomic-unit V2 rail settlement, 31-table RLS Supabase
 schema/cutover, canonical GitHub OAuth, authenticated tab creation, durable
 voice budget controls, sensitive provider configuration, and exactly-nine-tool
-non-value MCP probe are proven. The real voice-provider lifecycle, final 4K/60
-V2 video and public URL, and human form submission remain blocking. Deployment
-`dpl_EYEXUVqto8UDcUqoqWKcE1Ui1kPa` at commit
-`2d808c7a589385e2f8494189978da64d982fb0cc` is healthy, exact-SHA CI is green,
-and canonical Playwright passed 14/14. Repeat every release gate on the final
-submission commit.
+non-value MCP probe are proven. The verified 4K/60 product film is public, and
+[DoraHacks BUIDL 47656](https://dorahacks.io/buidl/47656) is submitted and
+`Under Review`; its Best Onboarding UX Improvement bounty application is saved.
+The real browser voice-provider lifecycle remains unproven. Deployment
+`dpl_F5PgMqo7A9zecQW2LKos2FcCNVMs` at commit
+`039582fc44901d1f436b61a426f1523a936427f9` is `READY`.
 
 The live DoraHacks detail page was verified on 2026-08-11. It states all times
 are UTC+2 and sets the deadline at **2026-08-13 12:00 UTC+2**
@@ -18,9 +18,9 @@ link. Ten finalists are scheduled to pitch August 17–19.
 
 ## 1. Repository and CI
 
-Canonical release evidence: exact-SHA CI green and Playwright 14/14. The boxes
-below intentionally remain open until the final submission commit reproduces
-the full clean-checkout baseline.
+Canonical release evidence: deployment `dpl_F5PgMqo7A9zecQW2LKos2FcCNVMs`
+at commit `039582fc44901d1f436b61a426f1523a936427f9` is `READY`. The boxes below
+remain open where a current-commit clean-checkout result is not recorded.
 
 - [ ] Submitted commit is pushed and the public repository is readable logged out.
 - [ ] MIT `LICENSE`, `SECURITY.md`, and `CONTRIBUTING.md` render on GitHub.
@@ -100,10 +100,12 @@ Historical V1 settlements at `0xCcf6…7e64`, including execution
 - [x] Entrant approved organization `xjpjpoxicyvmdfzmrdkk`, London `eu-west-2`,
       and free plan with verified monthly cost `0` before creation.
 - [x] `finaltab-production` (`yoavihmldqbkuxinrsih`) is `ACTIVE_HEALTHY`; the four
-      baseline migrations and five ordered additive migrations are applied.
+      baseline migrations and seven ordered additive migrations are applied.
 - [x] Additive order is `20260811052236`, `20260811060000`, `20260811064822`,
-      `20260811073000`, then `20260811074000`.
-- [x] Schema verification found 29/29 public tables with RLS. Sensitive new
+      `20260811073000`, `20260811074000`, `20260812023200`, then `20260812090000`.
+- [x] Schema verification found 31/31 public tables with RLS. The new
+      `finaltab_v3_narration_generations` and `tab_drafts` tables have zero
+      policies and therefore fail closed to browser roles. Sensitive new
       mutation RPCs deny `PUBLIC`, `anon`, and `authenticated` and allow
       `service_role`; advisors report zero error-level findings with reviewed
       warnings remaining, and the unindexed-FK warning is cleared.
@@ -121,8 +123,9 @@ single-owner collaboration path but not two-user, cross-device, or provider
 behavior.
 
 - [x] Apply additive migrations `20260811052236`, `20260811060000`,
-      `20260811064822`, `20260811073000`, and `20260811074000` individually and
-      in order; remeasure RLS, RPC grants, advisors, and foreign-key indexes.
+      `20260811064822`, `20260811073000`, `20260811074000`,
+      `20260812023200`, and `20260812090000` individually and in order;
+      remeasure RLS, RPC grants, advisors, and foreign-key indexes.
 - [x] Post-promotion migration `20260811074500` is applied; legacy direct
       financial writes, `consume_voice_quota(text)`, and browser-role elevated
       schema privileges are denied.
@@ -162,34 +165,43 @@ behavior.
       readbacks.
 - [x] AssemblyAI and ElevenLabs keys are stored as sensitive Vercel Production
       variables after explicit entrant authorization.
+- [x] Product-film narration was generated locally with Kokoro. The no-charge
+      ElevenLabs preflight made one denied quota-check GET, zero synthesis
+      POSTs, and no retry.
 - [ ] A deployed browser probe exercises microphone permission, validated
       provider `Begin`, final-turn shutdown, `Termination`, buffered readback,
       mute, captions, and text fallback without exposing a credential.
 
-## 7. V2 video — blocking
+## 7. V2 video — public and verified
 
-- [ ] Video follows [../demo-storyboard.md](../demo-storyboard.md) and the trace
+- [x] Video follows [../demo-storyboard.md](../demo-storyboard.md) and the trace
       contract in [MCP_TRACE_SPEC.md](MCP_TRACE_SPEC.md).
-- [ ] Logo, architecture, use case, product workflow, authenticated MCP agent,
-      external wallets, approval challenge, KeeperHub execution, and proof are
-      legible and narratively connected.
-- [ ] The settlement shown is the same V2 run as the published trace.
-- [ ] Captions and voiceover are synchronized and understandable independently.
-- [ ] No credential, private key, bearer header, cookie, private dashboard, or
+- [x] Logo, architecture, use case, product workflow, authenticated MCP agent,
+      approval boundary, and retained proof are legible and narratively
+      connected.
+- [x] The filmed MCP flow stops before signing, submission, broadcast, or value
+      movement. The retained settlement is visibly separate and matches its
+      published proof identifiers.
+- [x] Captions and voiceover are synchronized and understandable independently.
+- [x] No credential, private key, bearer header, cookie, private dashboard, or
       unrelated personal data appears in any frame or audio.
-- [ ] Final encoded file is watched end to end.
-- [ ] Duration, resolution, frame rate, codecs, byte size, and SHA-256 are
+- [x] Final encoded file was decoded and reviewed end to end.
+- [x] Duration, resolution, frame rate, codecs, byte size, and SHA-256 are
       measured from the final file rather than copied from a plan.
-- [ ] Final delivery is measured at 3840×2160 and 60 fps; no 1080p reference
+- [x] Final delivery is 90.005s, 3840×2160 at 60 fps, 5,400 H.264 video frames
+      with AAC audio, 35,617,576 bytes, SHA-256
+      `a14cfef364c0fe7d4c62e2f9cfb73ca228a692e8738a85d5a6f615e361b09c69`;
+      no 1080p reference
       render is submitted as the master.
-- [ ] Public video URL works while logged out.
-- [ ] Every `PENDING` video marker is replaced with that real URL and metadata.
+- [x] Public video URL is <https://youtu.be/eXZACnOdt5w>.
+- [x] Stale `PENDING` video markers are replaced with the real URL and metadata.
 
 The historical 101.64-second V1 and older 92.7-second cut are not V2 media.
 
 ## 8. DoraHacks form
 
-- [ ] Correct entrant/team account is authenticated.
+- [x] [BUIDL 47656](https://dorahacks.io/buidl/47656) is submitted and
+      `Under Review`.
 - [x] Exact cutoff and timezone recorded from the live form on 2026-08-11:
       2026-08-13 12:00 UTC+2 (10:00 UTC / 11:00 BST).
 - [ ] Eligibility and jurisdiction terms are reviewed by the entrant.
@@ -202,13 +214,12 @@ The historical 101.64-second V1 and older 92.7-second cut are not V2 media.
 - [ ] Main-track description matches [../submission.md](../submission.md).
 - [ ] PR #95 and its actionable KeeperHub integration feedback are prominent in
       the main BUIDL, regardless of bounty UI state.
-- [ ] Authenticated Submit BUIDL flow is checked for a bounty control. The
-      detail page advertises a stackable $1,000 onboarding bounty for two
-      winners, but the public Bounties tab rendered “No Bounties” on
-      2026-08-11; do not assume a selectable checkbox.
-- [ ] PR #95 live state is rechecked and described exactly.
-- [ ] Final preview contains no `PENDING`, placeholder, or local path.
-- [ ] Submission confirmation page/email is retained.
+- [x] Best Onboarding UX Improvement bounty application is saved.
+- [x] PR #95 is described exactly as open/unmerged and adding only
+      `--require-verified`.
+- [x] Stale media/submission placeholders are removed. Genuine unproven feature
+      boundaries remain explicitly marked pending.
+- [x] Submitted/`Under Review` state and public BUIDL URL are retained.
 
 ## Current values and pending fields
 
@@ -222,10 +233,9 @@ V2_DEPLOYMENT_EXECUTION_ID=xasakw5nfxkh2s0fh4stn
 V2_DEPLOYMENT_TX=0x904ec881ef7c2ec7375c20887b4181cf58224b44162d837743fa869b0a598e8f
 V2_DEPLOYMENT_BLOCK=45321107
 SOURCIFY_MATCH_ID=43497805
-CANONICAL_COMMIT=2d808c7a589385e2f8494189978da64d982fb0cc
-CANONICAL_VERCEL_DEPLOYMENT_ID=dpl_EYEXUVqto8UDcUqoqWKcE1Ui1kPa
-CANONICAL_HEALTH=ready
-CANONICAL_PLAYWRIGHT=14/14
+CANONICAL_COMMIT=039582fc44901d1f436b61a426f1523a936427f9
+CANONICAL_VERCEL_DEPLOYMENT_ID=dpl_F5PgMqo7A9zecQW2LKos2FcCNVMs
+CANONICAL_HEALTH=READY
 SUPABASE_PROJECT_REF=yoavihmldqbkuxinrsih
 SUPABASE_REGION=eu-west-2
 SUPABASE_PLAN=free
@@ -247,6 +257,19 @@ PRIVY_PRODUCTION_STATE=OPTIONAL_DISABLED_PAID_CUSTOM_AUTH_NOT_AUTHORIZED
 BRANDED_INBOUND_EMAIL=PENDING_VERIFIED_DOMAIN_AND_CUSTOM_SMTP_OR_SEND_EMAIL_HOOK
 AGENT_CONTROL_MIGRATION=APPLIED
 FINANCIAL_TRUTH_CUTOVER=APPLIED_AND_BROWSER_ROLE_DENIAL_VERIFIED
-V2_VIDEO_URL=PENDING
+V2_VIDEO_URL=https://youtu.be/eXZACnOdt5w
+V2_VIDEO_DURATION_SECONDS=90.005
+V2_VIDEO_RESOLUTION=3840x2160
+V2_VIDEO_FPS=60
+V2_VIDEO_FRAMES=5400
+V2_VIDEO_AUDIO_CODEC=AAC
+V2_VIDEO_BYTES=35617576
+V2_VIDEO_SHA256=a14cfef364c0fe7d4c62e2f9cfb73ca228a692e8738a85d5a6f615e361b09c69
+V2_VIDEO_NARRATION=LOCAL_KOKORO
+ELEVENLABS_FILM_PREFLIGHT=ONE_DENIED_QUOTA_GET_ZERO_SYNTHESIS_POSTS_NO_RETRY
+DORAHACKS_URL=https://dorahacks.io/buidl/47656
+DORAHACKS_STATE=SUBMITTED_UNDER_REVIEW
+DORAHACKS_BEST_ONBOARDING_UX_APPLICATION=SAVED
 ONBOARDING_PR=https://github.com/KeeperHub/cli/pull/95
+ONBOARDING_PR_STATE=OPEN_UNMERGED_REQUIRE_VERIFIED_ONLY
 ```

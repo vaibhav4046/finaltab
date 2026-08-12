@@ -87,8 +87,9 @@ commits and local demo builds are not maintained security releases.
   change code, prompts, policy, or authorization rules.
 - The hosted Supabase project now has the baseline, ordered additive migrations
   `20260811052236`, `20260811060000`, `20260811064822`, `20260811073000`, and
-  `20260811074000`, the financial-truth cutover, and the
-  `tab_owner_select_returning` repair. All 29 public tables have RLS. Every
+  `20260811074000`, plus `20260812023200` and `20260812090000`, the
+  financial-truth cutover, and the
+  `tab_owner_select_returning` repair. All 31 public tables have RLS. Every
   sensitive new mutation RPC denies `PUBLIC`, `anon`, and `authenticated` and
   allows `service_role`; authenticated direct financial writes and the legacy
   quota RPC are revoked. Database advisors report zero error-level findings,

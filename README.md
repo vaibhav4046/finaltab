@@ -8,6 +8,61 @@ Built for KeeperHub Agents Onchain. Current submission readiness is tracked in
 [docs/release/status.md](docs/release/status.md); historical evidence does not
 override that file.
 
+## Finalist evidence
+
+The live product, retained onchain proof, agent memory lineage, and developer
+surface are captured below from the verified release package. The retained
+KeeperHub settlement is an earlier authorized run; it was **not** created by the
+filmed non-value MCP test.
+
+| Product surface | Bounded agent memory |
+|---|---|
+| ![FINALTab authenticated settlement workspace](video/finaltab-winner/assets/capture-v3/source/app-home-live.png) | ![FINALTab run-to-evidence-to-memory graph](video/finaltab-winner/assets/capture-v3/source/agents-memory-live.png) |
+
+| Nine-tool developer surface | Retained proof: one atomic moved, contract retained zero |
+|---|---|
+| ![FINALTab production MCP execution rail and all nine tools](video/finaltab-winner/assets/capture/C07-live-tools-list.png) | ![Earlier authorized KeeperHub settlement independently verified on Base Sepolia](video/finaltab-winner/assets/capture-v3/C08-retained-proof.png) |
+
+### Complex task evidence
+
+![Sanitized live MCP receipt with 19 lines, eight participants, USD 172.04, exact allocation, and a no-value hard stop](docs/assets/readme/complex-task.png)
+
+The sanitized live MCP lane reconciled 19 lines across eight caller-labelled
+participants to exactly USD 172.04. It stopped with no signature, submission,
+broadcast, or value movement; the retained settlement proof above is a separate
+earlier authorized run.
+
+### Proof-carrying architecture
+
+![FINALTab six-step proof-carrying architecture rail](docs/assets/readme/architecture-rail.png)
+
+```mermaid
+flowchart LR
+  A[Receipt intent] --> B[AI proposes structure]
+  B --> C[Integer allocation + exact reconciliation]
+  C --> D[Four bounded reviews]
+  D --> R[Attested run + ordered stage events]
+  R --> M[Bounded expiring audit memory]
+  D --> E[Frozen ledger + payout plan]
+  E --> F[External wallet dual consent]
+  F --> G[KeeperHub simulate + execute]
+  G --> H[Independent Base Sepolia receipt + event check]
+  H --> I[VERIFIED_SETTLED]
+
+```
+
+The memory graph is evidence lineage, not self-modifying intelligence: it is
+derived from loaded run inputs, recorded stage events, evidence hashes, and
+compact retained audit records. It cannot rewrite settlement policy, source
+code, or wallet authorization.
+
+- Live product: [finaltab.vercel.app](https://finaltab.vercel.app/)
+- 90-second film: [YouTube](https://youtu.be/eXZACnOdt5w)
+- DoraHacks submission: [FINALTab BUIDL #47656](https://dorahacks.io/buidl/47656)
+- Finalist deck: [docs/pitch/FINALTab-Finalist-Pitch.pptx](docs/pitch/FINALTab-Finalist-Pitch.pptx)
+- Finalist talk track and demo runbook: [docs/pitch/FINALIST_PITCH.md](docs/pitch/FINALIST_PITCH.md)
+- Judge Q&A: [docs/pitch/JUDGE_QA.md](docs/pitch/JUDGE_QA.md)
+
 ## Hackathon category map
 
 | Category | Evidence | Boundary |
@@ -19,7 +74,7 @@ override that file.
 | **Onchain** | KeeperHub execution is paired with independent Base Sepolia receipt and indexed-event checks. | A transaction hash or `completed` string alone is never proof. |
 | **MCP** | Production exposes exactly nine authenticated tools for calculation, preparation, execution safety, and proof. Authenticated `initialize`/`tools/list`, `split_equal`, and arbitrary-participant V2 preparation passed against the canonical release. | These were non-value probes. The retained one-atomic-unit settlement was a separately authorized runner, not an MCP broadcast-challenge trace. |
 | **Autonomous Agents** | The first-party settlement room runs a fixed four-stage review over receipt validity, allocation arithmetic, consent risk, and proof preflight before Freeze can unlock. | The memory is bounded, HMAC-attested audit memory—not self-modifying policy or code. External MCP callers use the explicit signed-payload contract instead of bypassing wallet consent. |
-| **Infrastructure** | OpenAPI, discovery metadata, a KeeperHub workflow package, scoped MCP auth, a shared durable submission journal, proof tooling, and a provisioned London Supabase project make the rail reusable. | The hosted schema is verified at 29/29 public tables under RLS. The financial-truth cutover is applied; advisors have zero error-level findings, with reviewed warnings still disclosed. |
+| **Infrastructure** | OpenAPI, discovery metadata, a KeeperHub workflow package, scoped MCP auth, a shared durable submission journal, proof tooling, and a provisioned London Supabase project make the rail reusable. | The hosted schema is verified at 31/31 public tables under RLS. The financial-truth cutover is applied; advisors have zero error-level findings, with reviewed warnings still disclosed. |
 
 ## Product flow
 
@@ -131,8 +186,10 @@ The settlement workspace includes an optional, text-first voice layer:
 - **ElevenLabs readback** generates a short spoken confirmation through a
   bounded server proxy. Text remains visible and editable, and no transcript
   can allocate, sign, or submit value by itself.
-- **Product-film narration** is a separate nine-scene ElevenLabs-only asset with
-  provider character timings driving the caption track.
+- **Product-film narration** is a separate eight-scene local Kokoro asset with
+  offline alignment driving the caption track. The release made one
+  ElevenLabs quota-check request, received a fail-closed denial, made zero
+  ElevenLabs synthesis requests, and did not retry.
 
 These paths are deployed and their provider keys are stored as sensitive Vercel
 Production variables. Supabase enforces durable per-user quotas of 8
@@ -167,8 +224,10 @@ records pre-signature proof as honestly skipped. The hosted database now has the
 baseline plus the ordered additive migrations `20260811052236` (agent control),
 `20260811060000` (agent-event composite-FK coverage), `20260811064822` (voice
 spend reservations), `20260811073000` (first-party settlement flow), and
-`20260811074000` (shared submission intents), followed by the financial-truth
-cutover and `tab_owner_select_returning` repair: 29/29 public tables have RLS, the
+`20260811074000` (shared submission intents), plus `20260812023200` (V3
+narration-generation journal) and `20260812090000` (durable pre-Freeze tab
+drafts), followed by the financial-truth
+cutover and `tab_owner_select_returning` repair: 31/31 public tables have RLS, the
 sensitive mutation RPCs deny `PUBLIC`, `anon`, and `authenticated` while allowing
 `service_role`, the unindexed-FK warning is cleared, and authenticated direct
 financial writes plus the legacy quota RPC are revoked. Database advisors have
@@ -219,9 +278,9 @@ Copy `.env.example` to the web deployment's environment and supply secrets
 server-side. The example pins the public V2 address and protocol version. The
 current production source contains no fixed-wallet money tools.
 
-The canonical release is Vercel deployment
-`dpl_EYEXUVqto8UDcUqoqWKcE1Ui1kPa` at commit
-[`2d808c7a589385e2f8494189978da64d982fb0cc`](https://github.com/vaibhav4046/finaltab/commit/2d808c7a589385e2f8494189978da64d982fb0cc).
+The canonical production release is Vercel deployment
+`dpl_F5PgMqo7A9zecQW2LKos2FcCNVMs` at commit
+[`039582fc44901d1f436b61a426f1523a936427f9`](https://github.com/vaibhav4046/finaltab/commit/039582fc44901d1f436b61a426f1523a936427f9).
 Its exact-SHA GitHub Actions run is green, `/api/health` reports `ready`, and
 Playwright passed **14/14** desktop-and-mobile journeys against
 `https://finaltab.vercel.app`. Volatile local test totals are intentionally not
@@ -240,12 +299,11 @@ Those records remain evidence of V1 behavior only. Current V2 proof comes from
 the separate 2026-08-11 one-atomic-unit run above. Likewise, the historical
 101.64-second video and older 92.7-second cut are not current submission media.
 
-## Current blockers
+## Current boundaries and next gates
 
 - Keep the canonical non-value MCP probe and retained V2 settlement visibly
   separate; do not imply the standalone runner exercised the MCP human
   broadcast-challenge path.
-- Render, review, upload, and publish the final V2 video URL.
 - Complete a real production microphone/readback lifecycle before advertising
   hybrid voice as live; the release and durable server-side budget controls are
   deployed, but the browser microphone did not complete its permission flow.
@@ -255,15 +313,15 @@ the separate 2026-08-11 one-atomic-unit run above. Likewise, the historical
 - Keep the optional Privy bridge disabled unless a future paid-plan decision is
   explicitly authorized. A verified sender domain plus custom SMTP or a Send Email Hook is separately
   required before claiming a branded inbound authentication email.
-- Submit as a human entrant before 2026-08-13 12:00 UTC+2
-  (10:00 UTC / 11:00 BST); retain the confirmation.
+- The [DoraHacks BUIDL](https://dorahacks.io/buidl/47656) is submitted and under
+  review, and the stackable Best Onboarding UX Improvement bounty application
+  is saved. Monitor the submitted Telegram and Discord contacts for judge
+  follow-up.
 
 ## KeeperHub onboarding contribution
 
 [KeeperHub/cli PR #95](https://github.com/KeeperHub/cli/pull/95) adds
-`--require-verified` and `--timeout` to fail closed on unverified execution
-status. It was open and not merged when last checked; recheck GitHub before
-using its state in the final submission. The DoraHacks detail page advertises
-an onboarding bounty, but its Bounties tab rendered “No Bounties” on
-2026-08-11. Include the contribution in the main BUIDL and verify the
-authenticated submit flow instead of assuming a separate bounty selector.
+`--require-verified` to fail closed on unverified execution status. It was open
+and not merged when last checked; recheck GitHub before using its state in a
+future announcement. FINALTab is also attached to the stackable DoraHacks Best
+Onboarding UX Improvement bounty.

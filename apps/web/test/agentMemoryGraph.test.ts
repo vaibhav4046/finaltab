@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import type {
   SettlementAgentEvent,
@@ -129,5 +131,16 @@ describe("agent memory graph", () => {
       eventCount: 0,
       memoryCount: 0,
     });
+  });
+
+  it("wraps the complete lineage at ordinary desktop widths", () => {
+    const source = readFileSync(fileURLToPath(new URL("../components/AgentMemoryGraph.tsx", import.meta.url)), "utf8");
+
+    expect(source).toContain("md:grid-cols-2 xl:grid-cols-3");
+    expect(source).toContain("min-[2200px]:grid-cols-none min-[2200px]:grid-flow-col");
+    expect(source).toContain("md:before:hidden");
+    expect(source).toContain("min-[2200px]:before:block");
+    expect(source).not.toContain("lg:min-w-max lg:grid-flow-col");
+    expect(source).not.toContain("Scrollable run evidence graph");
   });
 });

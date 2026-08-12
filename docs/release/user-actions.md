@@ -11,7 +11,6 @@ tested; they are gated on inputs only a human can supply.
 |---|---|---|---|---|
 | 1 | Purge a deployer private key from **unreachable** objects in your local `.git` | Deleting git objects is irreversible | Low | Local disk hygiene. Not reachable from any commit, so not exposed by clone or push |
 | 4 | Optionally publish V2 source on BaseScan | Sourcify exact match is already proven; BaseScan requires its own account/API flow | Low | BaseScan-native readability only |
-| 5 | Render/upload the V2 video and submit to DoraHacks | Account and publication actions | High | Submission itself |
 | 6 | Rotate the Alchemy API key | Rotating a credential is never autonomous | Medium | Nothing functional — the repo no longer needs it |
 | 7 | Optionally authorize a paid Privy Custom Authentication plan in the future | The authenticated dashboard showed Custom Authentication on Scale ($499/month) and production activation requested payment details; the current instruction is stop before charge | Low | Optional linked-wallet provisioning only; core Supabase Auth/RLS remains complete |
 | 8 | Provide a verified sender domain and configure custom SMTP or a Send Email Hook | Supabase default mail cannot prove the requested branded inbound email | Medium | Branded authentication email; the branded return page already exists |
@@ -24,7 +23,7 @@ tested; they are gated on inputs only a human can supply.
   event binding, and conserved balances. Do not rebroadcast it.
 - Supabase: `finaltab-production` (`yoavihmldqbkuxinrsih`), London `eu-west-2`,
   free plan; baseline/additive, financial-cutover, and owner-select migrations
-  applied. All 29 public tables have RLS; sensitive mutation RPCs and legacy
+  applied. All 31 public tables have RLS; sensitive mutation RPCs and legacy
   direct writes deny browser roles. Advisors report zero error-level findings with reviewed
   warnings remaining. Canonical GitHub OAuth/reload and an authenticated owner
   tab create/read passed; multi-identity/cross-device behavior remains separate.
@@ -166,10 +165,12 @@ mocked receipt.
 ## 3. Supabase project — resolved infrastructure, bounded behavior proof
 
 `finaltab-production` is active under project ref `yoavihmldqbkuxinrsih` in
-London (`eu-west-2`) on the free plan. The baseline plus five ordered additive,
+London (`eu-west-2`) on the free plan. The baseline plus seven ordered additive,
 financial-cutover, and owner-select migrations are applied remotely, including
-`20260811060000_cover_agent_event_composite_fk.sql`. Schema verification found
-29/29 public tables with RLS. Sensitive new mutation RPCs deny `PUBLIC`, `anon`,
+`20260811060000_cover_agent_event_composite_fk.sql`,
+`20260812023200_v3_narration_generation_journal.sql`, and
+`20260812090000_durable_prefreeze_tab_drafts.sql`. Schema verification found
+31/31 public tables with RLS. Sensitive new mutation RPCs deny `PUBLIC`, `anon`,
 and `authenticated` and allow `service_role`; legacy direct writes and the old
 voice RPC deny browser roles. Advisors report zero error-level findings, with reviewed
 RLS/function and leaked-password-protection warnings remaining. Public
@@ -202,18 +203,19 @@ BaseScan.”
 
 ---
 
-## 5. Submission actions
+## 5. Submission state and follow-up
 
-Explicitly outside autonomous scope, per the operating constraints for this work:
+- [DoraHacks BUIDL 47656](https://dorahacks.io/buidl/47656) is submitted and
+  `Under Review`; its Best Onboarding UX Improvement bounty application is saved.
+- The verified public film is <https://youtu.be/eXZACnOdt5w> and its measured
+  metadata and SHA-256 are recorded in the canonical submission documents.
+- [KeeperHub CLI PR #95](https://github.com/KeeperHub/cli/pull/95) is open and
+  unmerged and adds only `--require-verified`.
 
-- Submit the entry on DoraHacks.
-- Publish/open the KeeperHub CLI PR.
-- Render and upload the new V2 agent/MCP video from that same proof package,
-  then record its real public URL in `docs/submission.md`.
-
-`docs/submission.md` deliberately says the V2 URL is pending. Do not replace
-that state until the uploaded link works while logged out, and do not submit
-with it hand-waved.
+Monitor the review and PR states without upgrading either claim unless the
+respective public service reports a change. The real production browser voice
+lifecycle and production MCP human-approval/submission path remain separate,
+unproven gates.
 
 ---
 

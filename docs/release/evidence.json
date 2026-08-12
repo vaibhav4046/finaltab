@@ -7,43 +7,43 @@
     "Claims measured on 2026-08-10 below are historical V1 evidence unless explicitly scoped otherwise.",
     "Current V2 deployment and value-moving proof are recorded in currentRelease and their separate manifests."
   ],
-  "generatedAt": "2026-08-11",
+  "generatedAt": "2026-08-12",
   "scope": "Current V2 release plus explicitly archived V1 evidence",
   "historicalEvidenceCommit": "d4dfb7e+dirty",
   "historicalEvidenceCommitNote": "Measured against commit d4dfb7e PLUS an uncommitted working tree (7 modified tracked files, 3 untracked at the time of the run: the MCP agent-settlement path and this docs pass). Not a clean-checkout result: re-running these commands on a fresh clone of d4dfb7e produces the pre-MCP numbers, not these.",
   "historicalVerificationHost": "local (win32), Node + pnpm workspace",
   "currentRelease": {
     "protocol": "V2",
-    "measuredAt": "2026-08-11",
-    "deployedBaselineCommit": "2d808c7a589385e2f8494189978da64d982fb0cc",
-    "candidateCommit": "2d808c7a589385e2f8494189978da64d982fb0cc",
+    "measuredAt": "2026-08-12",
+    "deployedBaselineCommit": "039582fc44901d1f436b61a426f1523a936427f9",
+    "candidateCommit": "039582fc44901d1f436b61a426f1523a936427f9",
     "releaseBaseline": {
       "state": "LIVE_PROVEN",
-      "githubCiJobs": "2/2 green",
-      "tests": "Exact-SHA GitHub Actions quality and browser jobs green; volatile local aggregate intentionally omitted pending the final post-video rerun",
-      "playwright": "14/14 passing against the canonical production alias",
-      "health": "ready",
+      "githubCiJobs": "NOT_REASSERTED_FOR_CURRENT_COMMIT",
+      "tests": "No current-commit aggregate or CI result is inferred from the prior deployment",
+      "playwright": "NOT_REASSERTED_FOR_CURRENT_COMMIT",
+      "health": "READY",
       "protectedProbe": {
-        "result": "Canonical public, auth, MCP, and collaboration probes passed within their disclosed boundaries",
-        "immutableDeploymentId": "dpl_EYEXUVqto8UDcUqoqWKcE1Ui1kPa",
-        "immutableUrl": "https://finaltab-4p632zd2n-vaibhav4046s-projects.vercel.app",
+        "result": "Canonical Vercel deployment is READY; current-commit CI and Playwright are not inferred from the prior deployment",
+        "immutableDeploymentId": "dpl_F5PgMqo7A9zecQW2LKos2FcCNVMs",
+        "immutableUrl": null,
         "publicAlias": "https://finaltab.vercel.app"
       },
-      "caveat": "The production microphone/readback provider lifecycle, two-identity isolation, cross-channel recovery, final video, and submission remain unproven."
+      "caveat": "The production microphone/readback provider lifecycle, production MCP value path, two-identity isolation, and cross-channel recovery remain unproven. The video is public and the DoraHacks BUIDL is submitted."
     },
     "localCandidate": {
-      "state": "POST_DEPLOY_WORKTREE_CHANGED",
-      "tests": "Final aggregate pending clean post-video rerun",
-      "productionBuildPages": "Pending final clean post-video rerun",
-      "playwright": "14/14 canonical production journeys passed before post-deploy test/migration/video edits",
+      "state": "SOURCE_AND_RELEASE_DOCS_CHANGED_AFTER_READY_DEPLOY",
+      "tests": "NOT_REASSERTED_FOR_CURRENT_COMMIT",
+      "productionBuildPages": "NOT_REASSERTED_FOR_CURRENT_COMMIT",
+      "playwright": "NOT_REASSERTED_FOR_CURRENT_COMMIT",
       "voice": {
         "productMode": "AssemblyAI live STT plus buffered ElevenLabs readback",
-        "productFilmNarration": "ElevenLabs only; final render still pending",
+        "productFilmNarration": "Local Kokoro; one denied ElevenLabs quota-check GET; zero synthesis POSTs; no retry",
         "durableQuota": "Supabase service-role reservation path; 8 transcription sessions and 20 readbacks per user per minute",
         "providerSecrets": "Stored as sensitive Vercel Production variables; values not recorded",
         "deploymentState": "DEPLOYED_CONFIGURED_PENDING_LIVE_PROVIDER_PROBE"
       },
-      "caveat": "Do not publish a final aggregate test count or media metadata until the post-video worktree is cleanly rerun and measured."
+      "caveat": "Do not infer a current-commit aggregate test, CI, or Playwright result. Final media metadata is independently measured and recorded below."
     },
     "deployment": {
       "state": "LIVE_PROVEN",
@@ -74,7 +74,7 @@
         "preparedRecovery": "reuses the stored successful simulation and deterministic idempotency key under a bounded persisted approval expiry",
         "freshFirstPartyFinalGates": ["current database approvals", "wallet-signed approval"]
       },
-      "deployedBaselineProbe": "The canonical 2d808c7 deployment authenticated, initialized, listed exactly nine tools, and passed cent-perfect split_equal plus arbitrary-participant V2 preparation. No value submission was called.",
+      "deployedBaselineProbe": "The filmed production MCP client authenticated, listed exactly nine tools, allocated and prepared the receipt, created an approval challenge, and then stopped. It performed no signing, submission, broadcast, or value movement.",
       "liveNonValueCalls": {
         "split_equal": "54.01 -> 18.01, 18.00, 18.00",
         "prepare_receipt_settlement": "chain 84532; exact V2 contract; two external-wallet signature requests; canonical hashes returned"
@@ -129,11 +129,17 @@
         "20260811073000_durable_first_party_settlement_flow",
         "20260811074000_durable_submission_intents",
         "20260811074500_financial_truth_post_promotion_cutover",
-        "20260811140612_tab_owner_select_returning"
+        "20260811140612_tab_owner_select_returning",
+        "20260812023200_v3_narration_generation_journal",
+        "20260812090000_durable_prefreeze_tab_drafts"
       ],
-      "migrationsPending": [],
-      "tables": 29,
-      "tablesWithRls": 29,
+      "migrationsPending": [
+        "20260812154647",
+        "20260812164505",
+        "20260812165823"
+      ],
+      "tables": 31,
+      "tablesWithRls": 31,
       "sensitiveMutationRpcPrivileges": {
         "PUBLIC": false,
         "anon": false,
@@ -179,7 +185,7 @@
       "sensitiveVoiceProviderVariablesConfigured": true,
       "finalApplicationDeploymentProbed": true,
       "collaborationOwnerPathProbed": true,
-      "caveat": "The baseline/additive/cutover/owner-select migrations, 29-table RLS schema, browser-role denial matrix, GitHub OAuth/reload, and one authenticated owner collaboration path are proven. Advisor warnings remain. Two-identity isolation, shared-journal recovery, cross-device behavior, email delivery, and voice-provider behavior remain unclaimed."
+      "caveat": "The baseline/additive/cutover/owner-select migrations, 31-table RLS schema, browser-role denial matrix, GitHub OAuth/reload, and one authenticated owner collaboration path are proven. The finaltab_v3_narration_generations and tab_drafts tables have zero policies and fail closed to browser roles. Advisor warnings remain. Two-identity isolation, shared-journal recovery, cross-device behavior, email delivery, and voice-provider behavior remain unclaimed."
     },
     "identity": {
       "canonicalAccount": "Supabase Auth / auth.uid()",
@@ -227,12 +233,36 @@
       "crossDeviceResumeProbed": false
     },
     "video": {
-      "state": "PENDING",
-      "target": "3840x2160 at 60 fps",
-      "captures": "PENDING_FINAL_ASSET_VERIFICATION",
-      "narration": "PENDING_FINAL_RENDER_VERIFICATION",
-      "publicUrl": null,
-      "measuredMetadata": null
+      "state": "PUBLIC_VERIFIED",
+      "publicUrl": "https://youtu.be/eXZACnOdt5w",
+      "durationSeconds": 90.005,
+      "width": 3840,
+      "height": 2160,
+      "framesPerSecond": 60,
+      "videoFrames": 5400,
+      "videoCodec": "h264",
+      "audioCodec": "aac",
+      "bytes": 35617576,
+      "sha256": "a14cfef364c0fe7d4c62e2f9cfb73ca228a692e8738a85d5a6f615e361b09c69",
+      "narration": {
+        "engine": "local Kokoro",
+        "elevenLabsQuotaCheckGets": 1,
+        "elevenLabsQuotaCheckResult": "DENIED",
+        "elevenLabsSynthesisPosts": 0,
+        "elevenLabsRetry": false
+      },
+      "mcpBoundary": "The filmed run performed no signing, submit call, broadcast, or value movement; the retained settlement is separate."
+    },
+    "submission": {
+      "state": "SUBMITTED_UNDER_REVIEW",
+      "doraHacksUrl": "https://dorahacks.io/buidl/47656",
+      "bestOnboardingUxImprovementApplication": "SAVED",
+      "keeperHubCliPullRequest": {
+        "url": "https://github.com/KeeperHub/cli/pull/95",
+        "state": "OPEN",
+        "merged": false,
+        "change": "--require-verified only"
+      }
     }
   },
   "labels": {
@@ -435,14 +465,20 @@
         "region": "eu-west-2",
         "plan": "free",
         "monthlyCost": 0,
-        "tables": 29,
-        "tablesWithRls": 29,
+        "tables": 31,
+        "tablesWithRls": 31,
         "appliedAdditiveMigrations": [
           "20260811052236_settlement_agent_control_plane",
           "20260811060000_cover_agent_event_composite_fk",
           "20260811064822_voice_spend_reservations",
           "20260811073000_durable_first_party_settlement_flow",
-          "20260811074000_durable_submission_intents"
+          "20260811074000_durable_submission_intents",
+          "20260812023200_v3_narration_generation_journal",
+          "20260812090000_durable_prefreeze_tab_drafts"
+        ],
+        "failClosedZeroPolicyTables": [
+          "finaltab_v3_narration_generations",
+          "tab_drafts"
         ],
         "financialTruthCutoverApplied": true,
         "tabOwnerSelectReturningApplied": true,
@@ -533,26 +569,26 @@
       "id": "cli.contribution",
       "claim": "A KeeperHub CLI onboarding contribution was submitted upstream",
       "state": "LIVE_PROVEN",
-      "measuredAt": "2026-08-10",
+      "measuredAt": "2026-08-12",
       "value": {
         "url": "https://github.com/KeeperHub/cli/pull/95",
         "number": 95,
-        "title": "feat(execute): add --require-verified and --timeout to execute status",
+        "title": "feat(execute): require chain-verified receipts in status",
         "author": "vaibhav4046",
         "state": "open",
         "merged": false,
         "draft": false,
         "createdAt": "2026-08-09T06:21:00Z",
-        "commits": 1,
-        "additions": 336,
+        "commits": 2,
+        "additions": 295,
         "deletions": 15,
         "changedFiles": 2,
         "base": "KeeperHub:main",
         "head": "vaibhav4046:feat/execute-status-require-verified",
-        "newTests": 7
+        "newTests": 6
       },
-      "method": "GET https://api.github.com/repos/KeeperHub/cli/pulls/95 and /files, queried 2026-08-10. The 7-test figure is a count of top-level Go Test funcs added in cmd/execute/status_verified_test.go (+246/-0), not an estimate.",
-      "caveat": "Open and under review. NOT merged, and it is not described as merged anywhere in this repo. Merge is the upstream maintainers' decision and is outside this project's control.",
+      "method": "GET https://api.github.com/repos/KeeperHub/cli/pulls/95 and /files, queried 2026-08-12. The current two-commit patch changes two files (+295/-15) and retains six top-level Go test functions.",
+      "caveat": "Open and unmerged. The current patch adds only --require-verified; --timeout was removed in the second commit. Merge is the upstream maintainers' decision and is outside this project's control.",
       "correction": "An earlier pass of this file marked this claim BLOCKED and asserted the PR URL 'was never real'. That assertion was itself wrong - it was written without querying GitHub. The PR exists and has existed since 2026-08-09. The original citation was accurate and is restored."
     },
     {

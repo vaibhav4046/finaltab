@@ -119,6 +119,6 @@ The shared journal covers the first-party UI, `POST /api/settle/execute`, and MC
 current database-backed participant approvals, and all fresh submissions
 recheck the wallet-signed approval at the final pre-broadcast boundary.
 Migrations `20260811073000` and `20260811074000` are applied and their tables are
-inside the verified 29/29-public-table RLS posture. Journal and first-party flow
+inside the verified 31/31-public-table RLS posture. Journal and first-party flow
 behavior remain source/test-only claims until tenant isolation and crash recovery
 are probed on the candidate deployment.

@@ -100,6 +100,17 @@ describe("production surface retirement gate", () => {
     expect(rail).not.toContain('receiptId ?? "receipt-1"');
   });
 
+  it("keeps a durable freeze immutable in the execution UI", () => {
+    const rail = readFileSync(join(WEB_ROOT, "components", "ExecutionRail.tsx"), "utf8");
+
+    expect(rail).toContain("This tab is durably frozen. Revisions require a separate tab.");
+    expect(rail).toMatch(/<a\s+href="\/app\/tab"/);
+    expect(rail).toContain("Start a new tab");
+    expect(rail).not.toContain("doUnfreeze");
+    expect(rail).not.toContain("Start revised plan");
+    expect(rail).not.toContain("onLocked(false)");
+  });
+
   it("keeps the install surface on transparent current-brand assets", () => {
     const manifest = readFileSync(join(WEB_ROOT, "public", "manifest.webmanifest"), "utf8");
     const icon = readFileSync(join(WEB_ROOT, "public", "icon.svg"), "utf8");

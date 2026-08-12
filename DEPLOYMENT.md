@@ -43,16 +43,20 @@ unless the operator has separately verified email delivery. That second flag is
 only a UI gate, not an address allowlist. See
 [`docs/integrations/github-auth.md`](docs/integrations/github-auth.md).
 
-The hosted Supabase project has the baseline plus these five additive
+The hosted Supabase project has the baseline plus these seven additive
 migrations applied and verified in order:
 
 1. `20260811052236_settlement_agent_control_plane.sql`;
 2. `20260811060000_cover_agent_event_composite_fk.sql`;
 3. `20260811064822_voice_spend_reservations.sql`;
-4. `20260811073000_durable_first_party_settlement_flow.sql`; and
-5. `20260811074000_durable_submission_intents.sql`.
+4. `20260811073000_durable_first_party_settlement_flow.sql`;
+5. `20260811074000_durable_submission_intents.sql`;
+6. `20260812023200_v3_narration_generation_journal.sql`; and
+7. `20260812090000_durable_prefreeze_tab_drafts.sql`.
 
-The resulting hosted schema has 29/29 public tables under RLS. Every sensitive
+The resulting hosted schema has 31/31 public tables under RLS. The new
+`finaltab_v3_narration_generations` and `tab_drafts` tables have zero policies,
+so browser access fails closed. Every sensitive
 new mutation RPC denies `PUBLIC`, `anon`, and `authenticated` and allows only
 `service_role`; database advisors report zero error-level findings with
 reviewed warnings remaining, and the additive
@@ -74,18 +78,15 @@ successful simulation and deterministic KeeperHub idempotency key under the
 bounded approval expiry. New first-party work must still pass its current
 database approval check and wallet approval immediately before broadcast.
 
-Canonical deployment `dpl_EYEXUVqto8UDcUqoqWKcE1Ui1kPa` at commit
-`2d808c7a589385e2f8494189978da64d982fb0cc` has completed these release checks:
+Canonical deployment `dpl_F5PgMqo7A9zecQW2LKos2FcCNVMs` at commit
+`039582fc44901d1f436b61a426f1523a936427f9` is `READY`. Do not infer a
+current-commit CI or Playwright result from the prior deployment. Retained
+evidence separately proves the canonical GitHub OAuth/reload and one-owner tab
+path. The public film's scoped MCP client initializes, lists exactly nine tools,
+allocates and prepares the receipt, creates an approval challenge, and then
+stops before signing, submission, broadcast, or value movement.
 
-1. `/api/health` reports `ready` and discovery reports the V2 address;
-2. a scoped redacted token initializes and lists exactly nine MCP tools;
-3. non-value `split_equal` and arbitrary-participant V2 preparation calls pass;
-4. canonical Playwright passes 14/14 desktop-and-mobile journeys;
-5. GitHub OAuth returns through the branded page to `/app` and survives reload;
-6. an authenticated production tab create/read, owner membership, participant
-   add, and audit record pass after the owner-select repair.
-
-No MCP value submission was called during that release probe. First-party stale
+No MCP value submission was called during the filmed release probe. First-party stale
 review rejection, cross-channel journal recovery, two-identity isolation, and a
 real voice-provider lifecycle remain distinct probes rather than inferred
 successes.
@@ -114,26 +115,24 @@ Base Sepolia V2 proof has now closed the value-moving rail gate:
 | Result | verified receipt, exact V2 event binding, debtor `-1`, creditor `+1`, contract `0`, conservation delta `0` |
 | Evidence | `docs/release/evidence/v2-live-settlement-2026-08-11T04-28-59-530Z.json` |
 
-Do not rebroadcast that run. For the final production MCP capture, exercise the
-non-destructive status/proof surfaces against its retained identifiers and show
-the product authorization sequence accurately:
+Do not rebroadcast that run. The public film shows this pre-value MCP sequence:
 
 ```text
-allocate_receipt
+initialize
+→ tools/list (exactly nine tools)
+→ allocate_receipt
 → prepare_receipt_settlement
-→ debtor wallets sign both typed-data payloads
-→ simulate_signed_settlement
 → create_broadcast_approval_challenge
-→ permitted human wallet personal_sign
-→ submit_signed_settlement
-→ settlement_status
+→ HARD STOP
 ```
 
-Retain the redacted trace alongside the existing KeeperHub execution/receipt,
-independent Base Sepolia receipt, V2 event, and exact balance deltas. The proof
-run used an explicitly authorized simulate-then-single-broadcast runner; do not
-imply it exercised the production MCP human broadcast challenge. Follow
-`docs/release/MCP_TRACE_SPEC.md` and keep that boundary visible.
+It performs no wallet signing, `submit_signed_settlement` call, broadcast, or
+value movement. The separate read-only lane references the retained KeeperHub
+execution/receipt, independent Base Sepolia receipt, V2 event, and exact balance
+deltas. That proof run used an explicitly authorized
+simulate-then-single-broadcast runner; it did not exercise the production MCP
+human broadcast challenge. A live production MCP value-path probe therefore
+remains pending.
 
 ## Verification commands
 
@@ -150,14 +149,19 @@ pnpm test:e2e
 Record the fresh results from the final commit. Historical V1 counts and video
 metadata are not current release evidence.
 
-## Video and submission — pending human actions
+## Video and submission — complete, review pending
 
-Render the final video only from the proven V2 settlement package. Measure its
-actual metadata and SHA-256, upload it to a URL that opens logged out, update
-the canonical release docs, and submit once before 2026-08-13 12:00 UTC+2
-(10:00 UTC / 11:00 BST). The live form was checked on 2026-08-11 and requires
-a source link, a short video showing the agent executing onchain through
-KeeperHub, and a transaction link. No current public video URL is claimed.
+The verified public film is <https://youtu.be/eXZACnOdt5w>: 90.005s,
+3840×2160 at 60 fps, 5,400 H.264 video frames with AAC audio, 35,617,576 bytes,
+SHA-256 `a14cfef364c0fe7d4c62e2f9cfb73ca228a692e8738a85d5a6f615e361b09c69`.
+Narration was generated locally with Kokoro. The no-charge ElevenLabs preflight
+made one denied quota-check GET, zero synthesis POSTs, and no retry. This does
+not prove the production browser microphone/readback lifecycle.
+
+[DoraHacks BUIDL 47656](https://dorahacks.io/buidl/47656) is submitted and
+`Under Review`; its Best Onboarding UX Improvement bounty application is saved.
+[KeeperHub CLI PR #95](https://github.com/KeeperHub/cli/pull/95) is open and
+unmerged and adds only `--require-verified`.
 
 ## Historical V1 note
 

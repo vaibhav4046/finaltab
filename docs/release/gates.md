@@ -6,19 +6,28 @@
 > `0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB`, KeeperHub deployment execution
 > `xasakw5nfxkh2s0fh4stn`, tx `0x904ec881…e8f`, block `45321107`, Sourcify exact
 > match `43497805`. Canonical deployment
-> `dpl_EYEXUVqto8UDcUqoqWKcE1Ui1kPa` at commit
-> `2d808c7a589385e2f8494189978da64d982fb0cc` supersedes the archived CI
-> numbers: health is `ready`, exact-SHA GitHub Actions is green, and canonical
-> Playwright passed 14/14. Current V2 additions: KeeperHub execution
+> `dpl_F5PgMqo7A9zecQW2LKos2FcCNVMs` at commit
+> `039582fc44901d1f436b61a426f1523a936427f9` supersedes the archived release:
+> Vercel reports `READY`, while current-commit CI and Playwright are not inferred
+> from the prior deployment. Current V2 additions: KeeperHub execution
 > `3hmlqi36zweiwg6fc5o2u` moved one atomic unit of USDC in tx
 > `0x7a6fb760…a789` at block `45327128`, with exact event/balance proof; Supabase
 > project `yoavihmldqbkuxinrsih` is provisioned and schema-verified with its four
-> baseline/additive, financial cutover, and owner-select migrations: 29/29
+> baseline/additive, financial cutover, and owner-select migrations: 31/31
 > public tables have RLS, sensitive mutation RPCs and legacy writes deny browser
 > roles, and advisors report zero error-level findings with reviewed warnings remaining. A
 > real GitHub OAuth/reload, owner tab create/read, exactly-nine-tool list, and
-> non-value MCP calculation/preparation passed. A real voice lifecycle and the
-> 4K/60 video remain pending. Use
+> non-value MCP calculation/preparation passed. The public product film is
+> <https://youtu.be/eXZACnOdt5w>: 90.005s, 3840×2160/60 fps, 5,400 H.264 video
+> frames plus AAC audio, 35,617,576 bytes, SHA-256
+> `a14cfef364c0fe7d4c62e2f9cfb73ca228a692e8738a85d5a6f615e361b09c69`.
+> Its narration is local Kokoro; the denied ElevenLabs preflight made one quota
+> GET, zero synthesis POSTs, and no retry. The filmed MCP flow performs no sign,
+> submit, broadcast, or value action; the retained settlement is separate. A
+> real browser voice lifecycle remains pending. DoraHacks
+> [BUIDL 47656](https://dorahacks.io/buidl/47656) is submitted and `Under Review`
+> with its Best Onboarding UX Improvement bounty application saved. KeeperHub
+> CLI PR #95 is open/unmerged and adds only `--require-verified`. Use
 > [status.md](status.md) and [SUBMISSION_CHECKLIST.md](SUBMISSION_CHECKLIST.md).
 
 Every row was run on **2026-08-10**. Gates 1–16 were measured against a clean tree at commit

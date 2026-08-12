@@ -128,6 +128,8 @@ export function ReceiptPanel({ receipt, onReceipt, locked = false }: ReceiptPane
           imageDataUrl: "",
           confirmedAt: undefined,
         });
+        // Provider consent is one-shot: replacing this image requires a fresh confirmation.
+        setConsent(false);
       } catch (cause) {
         if (cause instanceof DOMException && cause.name === "AbortError") return;
         setError(cause instanceof Error ? cause.message : "Upload failed.");
@@ -274,6 +276,18 @@ export function ReceiptPanel({ receipt, onReceipt, locked = false }: ReceiptPane
             )}
             <Badge tone="fog">{receipt.attempts} extraction pass{receipt.attempts === 1 ? "" : "es"}</Badge>
           </div>
+          <label className="flex min-h-11 items-start gap-2 rounded-lg border border-edge-soft bg-panel-2 p-3 text-sm text-fog">
+            <input
+              type="checkbox"
+              checked={consent}
+              disabled={busy || locked}
+              onChange={(event) => setConsent(event.target.checked)}
+              className="mt-0.5 h-5 w-5 shrink-0 accent-signal"
+            />
+            <span>
+              I consent to sending the next replacement image to the configured vision provider for extraction.
+            </span>
+          </label>
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
             <Button variant="ghost" onClick={() => setDraft(structuredClone(parsed))} disabled={busy || locked}>
               Edit receipt

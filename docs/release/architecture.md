@@ -11,8 +11,9 @@
 > Current overrides: the V2 rail moved one atomic unit through KeeperHub
 > execution `3hmlqi36zweiwg6fc5o2u`, and Supabase project
 > `yoavihmldqbkuxinrsih` has the baseline plus additive
-> `52236`/`60000`/`64822`/`73000`/`74000`, financial cutover, and owner-select
-> repair applied: 29/29 public tables use RLS, sensitive mutation RPCs and legacy
+> `52236`/`60000`/`64822`/`73000`/`74000`/`20260812023200`/`20260812090000`,
+> financial cutover, and owner-select
+> repair applied: 31/31 public tables use RLS, sensitive mutation RPCs and legacy
 > writes deny browser roles, advisors report zero error-level findings with reviewed warnings
 > remaining, and the unindexed-FK warning is cleared. Production lists exactly
 > nine MCP tools, external-wallet dual signing, and a mandatory attested

@@ -13,7 +13,8 @@
     "test:e2e:ui": "playwright test --ui",
     "build": "pnpm -r --if-present build",
     "kh:proof": "node packages/keeperhub-flight-recorder/bin/kh-proof.mjs",
-    "mcp:bootstrap-token": "node scripts/bootstrap-mcp-token.mjs"
+    "mcp:bootstrap-token": "node scripts/bootstrap-mcp-token.mjs",
+    "probe:anon-authorization": "node scripts/probe-anon-authorization.mjs"
   },
   "devDependencies": {
     "@eslint/eslintrc": "3.3.6",

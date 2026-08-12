@@ -127,6 +127,14 @@ Playwright result from the prior deployment's evidence.
   select repair are applied and schema-verified at 31/31 public RLS tables. A
   real authenticated owner create/read passed; two-identity isolation,
   cross-channel recovery, and cross-device behavior remain unclaimed.
+- The **anonymous** authorization boundary is live-proven against production.
+  `pnpm probe:anon-authorization` reads the table and function inventory out of
+  `supabase/migrations` and calls all 61 surfaces with the same publishable key
+  the browser ships: 31/31 tables and 30/30 callable functions answer
+  `401 {"code":"42501"}`. The 31st function, `set_updated_at`, returns `trigger`,
+  which PostgREST cannot expose at all. Denial lands at the GRANT layer, before
+  any policy is consulted. This proves nothing about the `authenticated` role —
+  the two-identity claim above stays unclaimed until a real second session runs.
 - Groq has historical live evidence; other model-provider fallback legs should
   remain described according to their current measured state.
 - Sourcify exact matching is proven. BaseScan source verification is not

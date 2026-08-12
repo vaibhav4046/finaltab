@@ -4,7 +4,7 @@
  *
  * This repository's documented claims have drifted from the code before, and a
  * judge reading a stale number cannot tell the difference between a typo and a
- * lie. Three classes of claim are checked, chosen because each one has actually
+ * lie. Four classes of claim are checked, chosen because each one has actually
  * gone stale here:
  *
  *   1. The MCP tool count. Derived from the production route, so the docs are
@@ -15,6 +15,12 @@
  *      count to be current would break CI on every legitimately added test.
  *      They are checked for attribution: a total must say when it was measured
  *      or admit that it is historical.
+ *   4. The live V2 settlement contract address. Checking that V1 is disclaimed
+ *      says nothing about whether the address presented as current is right:
+ *      a wrong V2 address in the docs passed this gate silently until it was
+ *      tested for. The address is also written out in three places, so the
+ *      same check covers the code, where nothing previously tied the landing
+ *      page's copy to the server's.
  *
  * Only tracked files are read, because only tracked files exist in a clone.
  * Fenced blocks are exempt throughout: they hold verbatim captured output, and
@@ -33,6 +39,44 @@ const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 const MCP_ROUTE = "apps/web/app/api/mcp/route.ts";
 const V1_ADDRESS = "0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64";
+
+/** The one place the live contract is declared; every other copy is checked against it. */
+const CONTRACT_MODULE = "apps/web/lib/server/health.ts";
+const CONTRACT_EXPORT = /export const VERIFIED_V2_CONTRACT\s*=\s*"(0x[0-9a-fA-F]{40})"/u;
+
+const ADDRESS = /0x[0-9a-fA-F]{40}\b/gu;
+
+/**
+ * An address bound to a settlement-contract-shaped name. Anchoring on the name
+ * rather than on the 40-byte shape is what keeps the USDC token address, the
+ * deployer and the participant wallets out of the check: those are addresses
+ * too, and demanding they equal the settlement contract would be nonsense.
+ */
+const CONTRACT_BINDING = /\b\w*contract\w*\b\s*[:=]\s*"?(0x[0-9a-fA-F]{40})\b/giu;
+
+/**
+ * Prose asserting which contract is live. Same reasoning as CONTRACT_BINDING:
+ * an address only has to match when the surrounding sentence says it is the
+ * settlement contract, so evidence files listing a counterparty wallet beside a
+ * proof are untouched.
+ */
+const CONTRACT_CLAIM =
+  /\b(?:settlement\s+contract|FinalTabBatchSettlementV2|V2\s+contract|contract\s+address|NEXT_PUBLIC_SETTLEMENT_CONTRACT)\b/iu;
+
+/**
+ * How far back to look for a bare "contract" introducing an address.
+ *
+ * CONTRACT_CLAIM is line-scoped, which misses the wrapped case: `docs/blockers.md`
+ * ends one line with "resolved: contract" and starts the next with the address,
+ * and that sentence went stale-proof for exactly that reason. Widening the claim
+ * test to the whole unit was tried and rejected — it flagged the deployer wallet
+ * in the blast-radius paragraph, whose unit says "deployed the settlement
+ * contract" three lines later. A word that TRAILS an address does not name it.
+ * So the bare word only counts when it sits immediately before the address,
+ * across at most one line break.
+ */
+const CONTRACT_LEAD_WINDOW = 60;
+const CONTRACT_LEAD = /\bcontract\b/iu;
 
 const NUMBER_WORDS = [
   "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
@@ -134,6 +178,12 @@ function fencedLines(lines) {
  * list item and a table row are self-contained: without that split, the
  * "Historical V1 deployment" bullet in a status list would silently vouch for
  * every other bullet beside it.
+ *
+ * Returns each line's whole unit and, separately, only the part of the unit
+ * that PRECEDES it. The contract check needs the second form: the paragraph in
+ * `docs/blockers.md` that states the live V2 address ends by saying everything
+ * BELOW it is V1-era, and read as one blob that trailing sentence excused a
+ * wrong address sitting four lines above it.
  */
 function unitTexts(lines) {
   const startsUnit = /^\s*(?:[-*+]\s|\d+[.)]\s|\||#{1,6}\s|>)/u;
@@ -150,11 +200,19 @@ function unitTexts(lines) {
   });
 
   const byId = new Map();
+  const before = [];
   lines.forEach((line, index) => {
-    if (ids[index] === -1) return;
+    if (ids[index] === -1) {
+      before[index] = "";
+      return;
+    }
+    before[index] = byId.get(ids[index]) ?? "";
     byId.set(ids[index], `${byId.get(ids[index]) ?? ""}\n${line}`);
   });
-  return lines.map((_, index) => (ids[index] === -1 ? "" : byId.get(ids[index])));
+  return {
+    texts: lines.map((_, index) => (ids[index] === -1 ? "" : byId.get(ids[index]))),
+    before,
+  };
 }
 
 /** The document's own title, or "" when it has no top-level heading. */
@@ -170,20 +228,75 @@ function registeredToolCount() {
   return matches.length;
 }
 
+/** The live settlement contract, read from the module that declares it. */
+function canonicalContract() {
+  const source = readFileSync(join(REPO_ROOT, CONTRACT_MODULE), "utf8");
+  const match = CONTRACT_EXPORT.exec(source);
+  if (match === null) fail(`no VERIFIED_V2_CONTRACT export found in ${CONTRACT_MODULE}; the gate cannot derive the address`);
+  return match[1];
+}
+
+/**
+ * Tracked source, excluding tests. Test files bind contract-shaped names to
+ * `0x1111…` fixtures on purpose, and a fixture is not a claim about what is
+ * deployed; forcing them to the real address would make every test read as if
+ * it were talking to production.
+ */
+function trackedSource() {
+  const output = execFileSync("git", ["ls-files", "-z", "*.ts", "*.tsx", "*.mjs", "*.js", "*.sol", ".env.example"], {
+    cwd: REPO_ROOT,
+    encoding: "utf8",
+    maxBuffer: 32 * 1024 * 1024,
+  });
+  return output
+    .split("\0")
+    .filter((file) => file.length > 0)
+    .filter((file) => !/(?:^|\/)tests?\/|\.test\.|(?:^|\/)test-/u.test(file));
+}
+
 function main() {
   const expected = registeredToolCount();
+  const contract = canonicalContract();
+
+  const problems = [];
+  let bindings = 0;
+
+  // Code first: a landing page advertising a contract the server no longer
+  // uses is the failure this half exists to catch, and nothing connected the
+  // two copies before.
+  for (const file of trackedSource()) {
+    const lines = readFileSync(join(REPO_ROOT, file), "utf8").split(/\r?\n/u);
+    lines.forEach((line, index) => {
+      for (const match of line.matchAll(CONTRACT_BINDING)) {
+        bindings += 1;
+        if (match[1].toLowerCase() === contract.toLowerCase()) continue;
+        problems.push({
+          file,
+          number: index + 1,
+          detail: `binds a contract-shaped name to ${match[1]}, but ${CONTRACT_MODULE} declares ${contract}`,
+        });
+      }
+    });
+  }
+
+  // The declaration in CONTRACT_MODULE is itself a contract-shaped binding, so
+  // a zero here does not mean the code is clean: it means the file list or the
+  // pattern stopped matching and the code half is checking nothing.
+  if (bindings === 0) {
+    fail(`no contract-shaped bindings found in tracked source; the code half of this gate is not checking anything`);
+  }
+
   const expectedWord = NUMBER_WORDS[expected] ?? null;
   const accepted = new Set([String(expected), expectedWord].filter((value) => value !== null));
 
   const files = trackedMarkdown();
-  const problems = [];
   let claims = 0;
 
   for (const file of files) {
     const source = readFileSync(join(REPO_ROOT, file), "utf8");
     const lines = source.split(/\r?\n/u);
     const fenced = fencedLines(lines);
-    const units = unitTexts(lines);
+    const { texts: units, before: unitsBefore } = unitTexts(lines);
     const archival = ARCHIVAL.test(title(lines));
 
     lines.forEach((line, index) => {
@@ -213,6 +326,25 @@ function main() {
         }
       }
 
+      // A line that says which contract is live must name the live one. The
+      // qualifier escape is the same one V1 gets: documented history may quote
+      // the address it was written against, it just may not present it as now.
+      const named = CONTRACT_CLAIM.test(line);
+      for (const found of line.matchAll(ADDRESS)) {
+        const before = `${lines[index - 1] ?? ""}\n${line.slice(0, found.index)}`;
+        if (!named && !CONTRACT_LEAD.test(before.slice(-CONTRACT_LEAD_WINDOW))) continue;
+        if (found[0] === V1_ADDRESS) continue; // already judged by the V1 rule above
+        claims += 1;
+        if (found[0].toLowerCase() === contract.toLowerCase()) continue;
+        const qualified = `${unitsBefore[index]}\n${line.slice(0, found.index)}`;
+        if (archival || NOT_CURRENT.test(qualified) || NOT_ASSERTED.test(qualified)) continue;
+        problems.push({
+          file,
+          number,
+          detail: `presents ${found[0]} as the settlement contract, but ${CONTRACT_MODULE} declares ${contract}`,
+        });
+      }
+
       if (TEST_TOTAL.test(line)) {
         claims += 1;
         if (
@@ -238,7 +370,7 @@ function main() {
   }
 
   process.stdout.write(
-    `truth-consistency: ${claims} claims across ${files.length} tracked markdown files agree with the code (${expected} MCP tools)\n`,
+    `truth-consistency: ${claims} claims across ${files.length} tracked markdown files and ${bindings} contract bindings in tracked source agree with the code (${expected} MCP tools, settlement contract ${contract})\n`,
   );
 }
 

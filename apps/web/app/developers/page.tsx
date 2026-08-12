@@ -142,7 +142,9 @@ export default function DevelopersPage() {
               <span className="border border-signal/40 bg-signal/10 px-3 py-2 font-mono text-xs uppercase tracking-wider text-signal">9 production tools</span>
             </div>
 
-            <ol className="tool-progress lab-scroll" aria-label="Settlement tool progression">
+            {/* tabIndex makes the horizontal scroller reachable by keyboard; without it the
+                seven tool steps are only readable with a pointer. */}
+            <ol className="tool-progress lab-scroll" tabIndex={0} aria-label="Settlement tool progression">
               {JOURNEY.map(([number, title, body]) => (
                 <li key={number} className="tool-progress-item">
                   <span className="tool-progress-marker">{number}</span>

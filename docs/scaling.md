@@ -172,8 +172,9 @@ Mainnet honestly:
 - KeeperHub's gas-refuel on mainnet is a paid x402 flow; sponsorship terms for
   production apps are a business conversation, not an API call (checked: no free
   mainnet faucet/funding route exists in their REST surface).
-- The `FinalTabBatchSettlement` contract (Hardhat-tested, 11 passing tests)
-  batches transfers so per-tab cost approaches one transaction regardless of
+- The batch settlement contracts (Hardhat-tested; 27 passing tests measured
+  2026-08-12, 16 of them against the current `FinalTabBatchSettlementV2`)
+  batch transfers so per-tab cost approaches one transaction regardless of
   group size.
 
 The fail-closed verifier is the part that scales *because* it is conservative:

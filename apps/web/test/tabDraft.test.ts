@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { SaveTabDraftSchema } from "@/lib/tabDraft";
-import { tabDraftRouteInternals } from "@/app/api/tabs/[id]/draft/route";
+import { validateReconciledDraft } from "@/lib/server/tabDraftValidation";
 
 const PAYER = "00000000-0000-4000-8000-000000000001";
 const DINER = "00000000-0000-4000-8000-000000000002";
@@ -46,7 +46,7 @@ function validDraft() {
 describe("durable pre-freeze tab drafts", () => {
   it("accepts only confirmed, image-free, bounded receipt and reconciled allocation state", () => {
     const parsed = SaveTabDraftSchema.parse(validDraft());
-    expect(tabDraftRouteInternals.validateReconciledDraft(parsed)).toBeNull();
+    expect(validateReconciledDraft(parsed)).toBeNull();
 
     expect(() => SaveTabDraftSchema.parse({
       ...validDraft(),
@@ -65,12 +65,12 @@ describe("durable pre-freeze tab drafts", () => {
       { id: PAYER, fiatMinor: "499" },
       { id: DINER, fiatMinor: "501" },
     ];
-    expect(tabDraftRouteInternals.validateReconciledDraft(SaveTabDraftSchema.parse(wrongShares)))
+    expect(validateReconciledDraft(SaveTabDraftSchema.parse(wrongShares)))
       .toContain("reconciler output");
 
     const wrongDebt = validDraft();
     wrongDebt.allocationState.debts = [{ debtor: DINER, creditor: PAYER, usdcMinor: "4990000" }];
-    expect(tabDraftRouteInternals.validateReconciledDraft(SaveTabDraftSchema.parse(wrongDebt)))
+    expect(validateReconciledDraft(SaveTabDraftSchema.parse(wrongDebt)))
       .toContain("debt graph");
   });
 
@@ -121,12 +121,14 @@ describe("durable pre-freeze tab drafts", () => {
 
   it("uses same-origin authenticated routes and never reaches a value action", () => {
     const route = readFileSync(fileURLToPath(new URL("../app/api/tabs/[id]/draft/route.ts", import.meta.url)), "utf8");
+    const validation = readFileSync(fileURLToPath(new URL("../lib/server/tabDraftValidation.ts", import.meta.url)), "utf8");
     expect(route).toContain("rejectCrossOriginMutation(request)");
     expect(route).toContain("requireCloudUser()");
     expect(route).toContain("MAX_DRAFT_REQUEST_BYTES");
-    expect(route).toContain("checkReceiptArithmetic");
-    expect(route).toContain("reconcileAllocation");
-    expect(route).toContain("sharesToDebts");
+    expect(route).toContain("validateReconciledDraft(body)");
+    expect(validation).toContain("checkReceiptArithmetic");
+    expect(validation).toContain("reconcileAllocation");
+    expect(validation).toContain("sharesToDebts");
     expect(route).toContain('.rpc("get_tab_draft"');
     expect(route).toContain('.rpc("upsert_tab_draft"');
     expect(route).not.toContain('.from("tab_drafts")');

@@ -190,8 +190,8 @@ export function CloudCollaborationPanel({ tabId, locked, onWalletParticipants }:
         <span className="inline-flex min-h-8 items-center gap-2 self-start rounded-full border border-verified/30 bg-verified/10 px-3 font-mono text-xs font-semibold uppercase tracking-wide text-verified"><Check size={14} aria-hidden="true" /> synced</span>
       </div>
 
-      <div className="mt-5 grid gap-3 lg:grid-cols-[1.1fr_0.9fr]">
-        <div className="rounded-xl border border-quiet-soft bg-canvas/40 p-4">
+      <div className="mt-5 grid min-w-0 gap-3 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+        <div className="min-w-0 rounded-xl border border-quiet-soft bg-canvas/40 p-4">
           <div className="flex items-center gap-2"><Users size={17} className="text-info" aria-hidden="true" /><h3 className="font-semibold text-txt">People and invitations</h3></div>
           <ul className="mt-3 space-y-2">
             {tab.participants.map((participant) => (
@@ -209,7 +209,7 @@ export function CloudCollaborationPanel({ tabId, locked, onWalletParticipants }:
           {canEdit ? <div className="mt-4 border-t border-quiet-soft pt-4"><div className="flex items-center gap-2"><UserPlus size={16} className="text-signal" aria-hidden="true" /><h4 className="font-medium text-txt">Add a participant</h4></div><div className="mt-3 grid gap-2 sm:grid-cols-2"><label className="text-sm text-muted">Display name<input value={name} onChange={(event) => setName(event.target.value)} disabled={locked} maxLength={64} className="mt-1 min-h-11 w-full rounded-xl border border-quiet bg-surface-2 px-3 text-base text-txt outline-none focus-visible:ring-2 focus-visible:ring-signal" /></label><label className="text-sm text-muted">Wallet, optional<input value={wallet} onChange={(event) => setWallet(event.target.value)} disabled={locked} placeholder="0x…" spellCheck={false} className="mt-1 min-h-11 w-full rounded-xl border border-quiet bg-surface-2 px-3 font-mono text-sm text-txt outline-none focus-visible:ring-2 focus-visible:ring-signal" /></label></div><label className="mt-3 flex min-h-11 items-center gap-3 text-sm text-muted"><input type="checkbox" checked={attachSelf} onChange={(event) => setAttachSelf(event.target.checked)} disabled={locked} className="h-5 w-5 accent-[var(--signal)]" /> This participant is my signed-in account</label><button type="button" onClick={() => void addParticipant()} disabled={locked || busy !== null || !name.trim()} className="touch-target mt-3 rounded-xl bg-signal px-5 text-sm font-semibold text-ink disabled:opacity-50">{busy === "add" ? "Saving…" : "Add to shared tab"}</button><p className="mt-2 text-xs leading-5 text-muted">A listed address is descriptive only. Spending remains impossible until that exact wallet signs the frozen EIP-3009 authorization and payout-plan consent.</p></div> : <p className="mt-4 text-sm text-muted">Viewer access is read-only.</p>}
         </div>
 
-        <div className="space-y-3">
+        <div className="min-w-0 space-y-3">
           <div className="rounded-xl border border-quiet-soft bg-canvas/40 p-4">
             <div className="flex items-center gap-2"><ShieldAlert size={17} className="text-warn" aria-hidden="true" /><h3 className="font-semibold text-txt">Debtor approvals</h3></div>
             <p className="mt-2 text-sm leading-6 text-muted">This panel reports stored wallet-bound state. It cannot create a “signed” approval; only verified signature ingestion may do that.</p>
@@ -225,7 +225,7 @@ export function CloudCollaborationPanel({ tabId, locked, onWalletParticipants }:
           <div className="rounded-xl border border-quiet-soft bg-canvas/40 p-4">
             <h3 className="font-semibold text-txt">Recent audit trail</h3>
             <ol className="mt-3 space-y-2">
-              {tab.audit.slice(0, 6).map((event) => <li key={event.id} className="flex items-start justify-between gap-3 text-sm"><span className="text-muted">{event.action.replaceAll(".", " ")}</span><time className="shrink-0 font-mono text-xs text-faint" dateTime={event.createdAt}>{new Date(event.createdAt).toLocaleString()}</time></li>)}
+              {tab.audit.slice(0, 6).map((event) => <li key={event.id} className="flex min-w-0 flex-col items-start justify-between gap-1 text-sm sm:flex-row sm:gap-3"><span className="min-w-0 text-muted">{event.action.replaceAll(".", " ")}</span><time className="font-mono text-xs text-faint sm:shrink-0" dateTime={event.createdAt}>{new Date(event.createdAt).toLocaleString()}</time></li>)}
               {tab.audit.length === 0 ? <li className="text-sm text-muted">No committed cloud mutations yet.</li> : null}
             </ol>
           </div>

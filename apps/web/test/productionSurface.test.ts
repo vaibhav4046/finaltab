@@ -145,6 +145,7 @@ describe("production surface retirement gate", () => {
     const split = readFileSync(join(WEB_ROOT, "components", "SplitPanel.tsx"), "utf8");
     const rail = readFileSync(join(WEB_ROOT, "components", "ExecutionRail.tsx"), "utf8");
     const room = readFileSync(join(WEB_ROOT, "components", "Lab.tsx"), "utf8");
+    const collaboration = readFileSync(join(WEB_ROOT, "components", "CloudCollaborationPanel.tsx"), "utf8");
     const globals = readFileSync(join(WEB_ROOT, "app", "globals.css"), "utf8");
     const notes = readFileSync(join(WEB_ROOT, "components", "ui.tsx"), "utf8");
     const joinPanel = readFileSync(join(WEB_ROOT, "components", "JoinInvitePanel.tsx"), "utf8");
@@ -171,6 +172,10 @@ describe("production surface retirement gate", () => {
     expect(room).toContain("workspace-page workspace-page-wide settlement-room-shell");
     expect(room).toContain("xl:grid-cols-3");
     expect(room).not.toContain("lg:grid-cols-3");
+    expect(collaboration).toContain("lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]");
+    expect(collaboration).toContain("min-w-0 space-y-3");
+    expect(collaboration).toContain("flex min-w-0 flex-col");
+    expect(collaboration).toContain("sm:flex-row sm:gap-3");
     expect(globals).toMatch(/\.workspace-page-wide\s*\{[^}]*max-width:\s*90rem/s);
     expect(globals).not.toMatch(/\.app-shell \.settlement-room-shell\s*\{[^}]*max-width:\s*128rem/s);
     expect(notes).toContain('role="alert"');

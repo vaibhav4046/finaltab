@@ -15,6 +15,7 @@
     "assets:check": "node scripts/asset-integrity.mjs",
     "bundle:budget": "node scripts/bundle-budget.mjs",
     "deps:check": "node scripts/dependency-integrity.mjs",
+    "deps:advisories": "node scripts/dependency-advisories.mjs",
     "truth:check": "node scripts/truth-consistency.mjs",
     "kh:proof": "node packages/keeperhub-flight-recorder/bin/kh-proof.mjs",
     "mcp:bootstrap-token": "node scripts/bootstrap-mcp-token.mjs",
@@ -31,5 +32,13 @@
     "ethers": "6.17.0",
     "typescript": "5.9.3"
   },
-  "packageManager": "pnpm@10.33.2"
+  "packageManager": "pnpm@10.33.2",
+  "pnpm": {
+    "overrides": {
+      "axios@>=1.15.2 <1.18.0": "^1.18.0",
+      "postcss@<8.5.18": "^8.5.18",
+      "sharp@<0.35.0": "^0.35.0",
+      "ws@>=8.0.0 <8.21.0": "^8.21.0"
+    }
+  }
 }

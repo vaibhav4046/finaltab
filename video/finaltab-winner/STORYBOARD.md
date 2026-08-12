@@ -26,7 +26,7 @@ music: none
 - duration: 4s
 - poster: 3.2s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames-v3/01-logo.html
 - type: product_intro
 - persuasion: Category clarity
@@ -53,7 +53,7 @@ keyMessage: FINALTab is one clear settlement surface.
 - duration: 8s
 - poster: 6.8s
 - transition_in: zoom-through 0.4s
-- status: outline
+- status: animated
 - src: compositions/frames-v3/02-product-thesis.html
 - type: benefit_highlight
 - persuasion: Feature-to-benefit translation
@@ -81,7 +81,7 @@ keyMessage: The product takes a bill from input to public proof.
 - duration: 8s
 - poster: 6.9s
 - transition_in: push-slide LEFT 0.4s
-- status: outline
+- status: animated
 - src: compositions/frames-v3/03-use-cases.html
 - type: benefit_highlight
 - persuasion: Breadth through concrete examples
@@ -103,11 +103,11 @@ keyMessage: The same clear record works across real shared expenses.
 ## Scene 4 — How it works
 
 - scene: six simple stages explain the architecture without unexplained vocabulary
-- voiceover: "Vision reads the bill. Math checks every cent. Reviewers check the split and wallet safety. KeeperHub, the execution service, runs it. Base Sepolia, the public test network, confirms it."
+- voiceover: "Vision reads the bill. Math checks every cent. Reviewers check the split and wallet safety. A service runs it. Public test records confirm it."
 - duration: 10s
 - poster: 8.8s
 - transition_in: crossfade 0.4s
-- status: outline
+- status: animated
 - src: compositions/frames-v3/04-simple-architecture.html
 - type: feature_showcase
 - persuasion: Mechanism made understandable
@@ -131,11 +131,11 @@ keyMessage: Read, check, review, execute, and publish proof.
 ## Scene 5 — Real final-site demonstration
 
 - scene: one real signed-in product capture moves from account entry to a locked plan
-- voiceover: "Watch the product: sign in, create a tab, upload and correct a receipt, add people, assign items, include tax and tip, run four checks, inspect balances and memory, then lock the plan."
+- voiceover: "Watch the product: sign in, create a tab, upload and correct a receipt, add people, assign items, include tax and tip, run four checks, inspect balances and memory, then lock the plan in one clear, traceable workflow."
 - duration: 20s
 - poster: 17.0s
 - transition_in: zoom-through 0.4s
-- status: outline
+- status: animated
 - src: compositions/frames-v3/05-real-site-demo.html
 - type: feature_showcase
 - persuasion: Show-don't-tell proof
@@ -160,11 +160,11 @@ keyMessage: The full receipt-to-plan path works in the real UI.
 ## Scene 6 — Complex voice and agent task
 
 - scene: a real difficult instruction becomes a checked allocation and a real memory graph
-- voiceover: "Now give it a hard request: weighted items, shared service, exclusions, and a payer correction. Voice captures it. The model suggests assignments. Math balances every cent. Four reviewers record what passed and why. Memory keeps a compact audit summary."
+- voiceover: "Now try a hard request: weighted items, shared service, exclusions, and a payer correction. Voice reads it back. The model suggests assignments. Math balances every cent. Four reviewers record what passed and why. Memory keeps a compact audit summary."
 - duration: 18s
 - poster: 15.6s
 - transition_in: push-slide LEFT 0.4s
-- status: outline
+- status: animated
 - src: compositions/frames-v3/06-complex-agent-task.html
 - type: feature_showcase
 - persuasion: Hard-case proof
@@ -188,11 +188,11 @@ keyMessage: The agent can handle complexity while leaving reviewable evidence.
 ## Scene 7 — Authenticated MCP hard stop
 
 - scene: a real MCP tool connection performs a complex non-broadcast run and earns trust by stopping
-- voiceover: "MCP, the tool connection, signs in, lists nine tools, allocates the receipt, prepares a wallet request, and creates an approval challenge. Then hard stop: no signature, submit, or money moved. A read-only check verifies the earlier authorized settlement."
+- voiceover: "MCP, the tool connection, signs in, lists nine tools, allocates the receipt, prepares wallet details, and asks for approval. Then it stops: no signing, no sending, and no money moves. A read-only check verifies the earlier authorized settlement."
 - duration: 17s
 - poster: 14.6s
 - transition_in: zoom-through 0.4s
-- status: outline
+- status: animated
 - src: compositions/frames-v3/07-mcp-nonbroadcast.html
 - type: feature_showcase
 - persuasion: Safety boundary demonstrated
@@ -221,7 +221,7 @@ keyMessage: The filmed MCP test prepares work and stops before value can move.
 - duration: 5s
 - poster: 3.8s
 - transition_in: crossfade 0.4s
-- status: outline
+- status: animated
 - src: compositions/frames-v3/08-proof-cta.html
 - type: cta
 - persuasion: Independent verification

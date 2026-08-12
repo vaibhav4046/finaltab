@@ -1,0 +1,61 @@
+{
+  "receipt": {
+    "id": "north-line-kitchen-v3",
+    "currency": "USD",
+    "lines": [
+      { "id": "rice_bowl", "label": "Rice Bowl", "amountUsd": "12.00" },
+      { "id": "veg_curry", "label": "Veg Curry", "amountUsd": "14.50" },
+      { "id": "tofu_grill", "label": "Tofu Grill", "amountUsd": "13.75" },
+      { "id": "noodle_bowl", "label": "Noodle Bowl", "amountUsd": "11.25" },
+      { "id": "dumplings", "label": "Dumplings", "amountUsd": "9.50" },
+      { "id": "salad", "label": "Salad", "amountUsd": "8.25" },
+      { "id": "flatbread", "label": "Flatbread", "amountUsd": "6.00" },
+      { "id": "soup", "label": "Soup", "amountUsd": "7.75" },
+      { "id": "lemonade", "label": "Lemonade", "amountUsd": "4.50" },
+      { "id": "sparkling_water", "label": "Sparkling Water", "amountUsd": "3.25" },
+      { "id": "dessert_a", "label": "Dessert Alpha", "amountUsd": "8.50" },
+      { "id": "dessert_b", "label": "Dessert B", "amountUsd": "8.50" },
+      { "id": "shared_platter", "label": "Shared Platter", "amountUsd": "18.00" },
+      { "id": "extra_sauce", "label": "Extra Sauce", "amountUsd": "2.50" },
+      { "id": "tea", "label": "Tea", "amountUsd": "3.00" },
+      { "id": "coffee", "label": "Coffee", "amountUsd": "3.50" },
+      { "id": "service", "label": "Service", "amountUsd": "16.17" },
+      { "id": "tax", "label": "Tax", "amountUsd": "11.12" },
+      { "id": "tip", "label": "Tip", "amountUsd": "10.00" }
+    ],
+    "statedTotalUsd": "172.04"
+  },
+  "participants": [
+    { "id": "p01", "name": "Participant 01", "address": "0x0000000000000000000000000000000000000101" },
+    { "id": "p02", "name": "Participant 02", "address": "0x0000000000000000000000000000000000000102" },
+    { "id": "p03", "name": "Participant 03", "address": "0x0000000000000000000000000000000000000103" },
+    { "id": "p04", "name": "Participant 04", "address": "0x0000000000000000000000000000000000000104" },
+    { "id": "p05", "name": "Participant 05", "address": "0x0000000000000000000000000000000000000105" },
+    { "id": "p06", "name": "Participant 06", "address": "0x0000000000000000000000000000000000000106" },
+    { "id": "p07", "name": "Participant 07", "address": "0x0000000000000000000000000000000000000107" },
+    { "id": "p08", "name": "Participant 08", "address": "0x0000000000000000000000000000000000000108" }
+  ],
+  "assignments": [
+    { "lineId": "rice_bowl", "weights": [{ "participantId": "p01", "weight": 2 }, { "participantId": "p02", "weight": 1 }] },
+    { "lineId": "veg_curry", "weights": [{ "participantId": "p03", "weight": 1 }] },
+    { "lineId": "tofu_grill", "weights": [{ "participantId": "p04", "weight": 1 }, { "participantId": "p05", "weight": 1 }] },
+    { "lineId": "noodle_bowl", "weights": [{ "participantId": "p06", "weight": 1 }] },
+    { "lineId": "dumplings", "weights": [{ "participantId": "p07", "weight": 1 }, { "participantId": "p08", "weight": 1 }] },
+    { "lineId": "salad", "weights": [{ "participantId": "p01", "weight": 1 }, { "participantId": "p03", "weight": 1 }, { "participantId": "p05", "weight": 1 }] },
+    { "lineId": "flatbread", "weights": [{ "participantId": "p01", "weight": 1 }, { "participantId": "p02", "weight": 1 }, { "participantId": "p03", "weight": 1 }, { "participantId": "p04", "weight": 1 }, { "participantId": "p05", "weight": 1 }, { "participantId": "p06", "weight": 1 }, { "participantId": "p07", "weight": 1 }] },
+    { "lineId": "soup", "weights": [{ "participantId": "p02", "weight": 1 }, { "participantId": "p06", "weight": 1 }] },
+    { "lineId": "lemonade", "weights": [{ "participantId": "p04", "weight": 1 }] },
+    { "lineId": "sparkling_water", "weights": [{ "participantId": "p07", "weight": 1 }] },
+    { "lineId": "dessert_a", "weights": [{ "participantId": "p01", "weight": 1 }, { "participantId": "p02", "weight": 1 }, { "participantId": "p03", "weight": 1 }, { "participantId": "p04", "weight": 1 }] },
+    { "lineId": "dessert_b", "weights": [{ "participantId": "p05", "weight": 1 }, { "participantId": "p06", "weight": 1 }, { "participantId": "p07", "weight": 1 }, { "participantId": "p08", "weight": 1 }] },
+    { "lineId": "shared_platter", "weights": [{ "participantId": "p01", "weight": 3 }, { "participantId": "p02", "weight": 2 }, { "participantId": "p03", "weight": 1 }, { "participantId": "p04", "weight": 1 }] },
+    { "lineId": "extra_sauce", "weights": [{ "participantId": "p01", "weight": 1 }, { "participantId": "p02", "weight": 1 }, { "participantId": "p03", "weight": 1 }, { "participantId": "p04", "weight": 1 }, { "participantId": "p05", "weight": 1 }, { "participantId": "p06", "weight": 1 }, { "participantId": "p07", "weight": 1 }, { "participantId": "p08", "weight": 1 }] },
+    { "lineId": "tea", "weights": [{ "participantId": "p08", "weight": 1 }] },
+    { "lineId": "coffee", "weights": [{ "participantId": "p05", "weight": 1 }] },
+    { "lineId": "service", "weights": [{ "participantId": "p01", "weight": 1 }, { "participantId": "p02", "weight": 1 }, { "participantId": "p03", "weight": 1 }, { "participantId": "p04", "weight": 1 }, { "participantId": "p05", "weight": 1 }, { "participantId": "p06", "weight": 1 }, { "participantId": "p07", "weight": 1 }] },
+    { "lineId": "tax", "weights": [{ "participantId": "p01", "weight": 1 }, { "participantId": "p02", "weight": 1 }, { "participantId": "p03", "weight": 1 }, { "participantId": "p04", "weight": 1 }, { "participantId": "p05", "weight": 1 }, { "participantId": "p06", "weight": 1 }, { "participantId": "p07", "weight": 1 }, { "participantId": "p08", "weight": 1 }] },
+    { "lineId": "tip", "weights": [{ "participantId": "p01", "weight": 1 }, { "participantId": "p02", "weight": 1 }, { "participantId": "p03", "weight": 1 }, { "participantId": "p04", "weight": 1 }] }
+  ],
+  "payerId": "p02",
+  "challengeApproverParticipantId": "p01"
+}

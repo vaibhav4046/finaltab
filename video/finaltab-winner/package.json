@@ -7,11 +7,27 @@
     "check": "npx --yes hyperframes@0.7.106 check",
     "check:enhanced": "npx --yes hyperframes@0.7.106 check --samples 15 --at-transitions --caption-zone \"x0=0;y0=.83;x1=1;y1=1;severity=error;seek=.25,1\" --frame-check",
     "check:source": "node verify-video-gates.mjs --allow-placeholders",
+    "capture:check": "node capture-evidence.mjs",
+    "capture:init-review": "node capture-evidence.mjs --init-attestations",
+    "capture:promote": "node capture-evidence.mjs --promote",
+    "test:mcp-capture": "node --test scripts/test-mcp-capture-v3.mjs",
+    "test:tooling": "node --test scripts/test-v3-execution-tooling.mjs",
+    "capture:mcp:v3": "node scripts/capture-mcp-v3.mjs",
     "gate:render": "node verify-video-gates.mjs",
     "voice:check": "node scripts/sync-route-voice-manifest.mjs",
+    "voice:generate": "node generate-voiceover.mjs --check-contract",
+    "voice:preflight": "node generate-voiceover.mjs --preflight-only --acknowledge-one-no-charge-subscription-get",
+    "voice:runtime:preflight": "node scripts/run-runtime-narration.mjs --preflight --acknowledge-one-no-charge-subscription-get",
+    "voice:runtime:generate": "node scripts/run-runtime-narration.mjs --generate --acknowledge-one-provider-call",
+    "voice:align": "python scripts/align-narration.py",
     "captions": "node build-captions.mjs",
+    "runtime:check": "node scripts/resolve-media-tools.mjs",
     "render": "node scripts/render-final.mjs",
     "render:final": "node scripts/render-final.mjs",
     "publish": "npx --yes hyperframes@0.7.106 publish"
+  },
+  "devDependencies": {
+    "@derhuerst/ffprobe-static": "5.3.0",
+    "ffmpeg-static": "5.3.0"
   }
 }

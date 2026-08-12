@@ -7,7 +7,7 @@
 - Canvas and delivery: 3840×2160
 - Frame rate: 60 fps
 - HyperFrames pin: 0.7.106
-- Current build state: V3 source locked; new captures, narration, captions, and all eight scene compositions pending
+- Current build state: all eight V3 scene compositions and seven source transitions are authored; promoted captures, narration, aligned captions, and final media verification remain pending
 - Design truth: [frame.md](frame.md)
 - Source truth: [data/v3-source-contract.json](data/v3-source-contract.json)
 

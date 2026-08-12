@@ -40,6 +40,19 @@ npm run render:final
 
 Later, after the strict gate passes, renders the raw 4K60 composition, masters the complete program to −14.0 LUFS, and checks resolution, fps, runtime, integrated loudness, and true peak. Do not run it while any prerequisite is pending.
 
+## Guarded execution order
+
+These tools do not navigate a browser or perform MCP/wallet/value actions. The capture tool only validates and promotes already-created local files.
+
+1. Create a review worksheet with `npm run capture:init-review -- data/capture-attestations.json`. Watch all four local artifacts, change every exact assertion to `true`, add reviewer/time, and set the worksheet status to `approved-human-review`.
+2. Promote only after review: `npm run capture:promote -- --attestations data/capture-attestations.json`. This probes dimensions, frame rate, duration, bytes, hashes, and rejected-V2 reuse before atomically updating the capture lock.
+3. Validate narration without a provider call: `npm run voice:generate`. Direct local synthesis is retired. After the draft migration/route and the two-capability operator setup are separately approved and deployed, run `npm run voice:runtime:preflight`, then `npm run voice:runtime:generate`. The runner requires the existing scoped bearer plus the dedicated ignored narration capability described in `scripts/ELEVENLABS_QUOTA_PREFLIGHT.md`.
+4. Produce word-level JSON for the raw response with offline faster-whisper. Then run `python scripts/align-narration.py --execute --transcript <word-json>`. The helper requires raw ASR WER ≤15%, deterministically maps all 188 locked words to a complete monotonic timing sequence, and permits only a bounded per-scene `atempo` factor from 1.00 through 1.12 before building the 90-second master without a provider call.
+5. Run `npm run captions`, `npm run check:source`, and `npm run gate:render`. Captions use block spans, carry `data-layout-allow-caption-zone`, and contain neither `<br>` nor `translateX`.
+6. After the strict gate passes, run the enhanced HyperFrames check and visually inspect snapshots. Render only after approval. `npm run render:final` performs the 4K60 render, two-pass loudness master, and the final technical/transcript gate.
+
+`npm run runtime:check` resolves project-local FFmpeg/FFprobe binaries first and reports exact versions; runtime scripts do not assume global PATH installation.
+
 ## Required truth labels
 
 - `MCP · TOOL CONNECTION`

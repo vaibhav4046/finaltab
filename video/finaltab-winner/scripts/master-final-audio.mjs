@@ -2,15 +2,17 @@ import { existsSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import { resolveMediaTools } from "./resolve-media-tools.mjs";
 
 const projectDir = dirname(dirname(fileURLToPath(import.meta.url)));
 const input = resolve(projectDir, process.argv[2] ?? "");
 const output = resolve(projectDir, process.argv[3] ?? "");
 if (!process.argv[2] || !process.argv[3]) throw new Error("Usage: node scripts/master-final-audio.mjs <raw.mp4> <final.mp4>");
 if (!existsSync(input)) throw new Error(`Raw render is missing: ${input}`);
+const { ffmpeg } = resolveMediaTools();
 
 const sink = process.platform === "win32" ? "NUL" : "/dev/null";
-const analyze = spawnSync("ffmpeg", [
+const analyze = spawnSync(ffmpeg.path, [
   "-hide_banner", "-nostats", "-i", input,
   "-af", "loudnorm=I=-14:LRA=7:TP=-1:print_format=json",
   "-f", "null", sink,
@@ -29,7 +31,7 @@ const filter = [
   "linear=true",
   "print_format=summary",
 ].join(":");
-const master = spawnSync("ffmpeg", [
+const master = spawnSync(ffmpeg.path, [
   "-hide_banner", "-y", "-i", input,
   "-map", "0:v:0", "-map", "0:a:0",
   "-c:v", "copy",

@@ -21,6 +21,11 @@ invariant(manifest.scenes.length === 8 && manifest.scenes.every((scene, index) =
 if (manifest.status === "pending-v3-single-batch") {
   invariant(manifest.selectedProviderCalls === 0 && ledger.status === "pending-v3-single-batch", "Pending V3 voice state is inconsistent");
   process.stdout.write("VOICE SOURCE CONTRACT PASSED · one new George multilingual-v2 complete-script batch is still pending\n");
+} else if (manifest.status === "generated-v3-single-batch") {
+  invariant(ledger.status === "generated-v3-single-batch", "Generated V3 voice states differ");
+  invariant(manifest.selectedProviderCalls === 1 && ledger.callSummary.selectedProviderCalls === 1, "Generated V3 package must bind exactly one provider response");
+  invariant(manifest.rawProviderResponse?.sha256 === ledger.selectedBatch?.sha256, "Generated V3 provider response hashes differ");
+  process.stdout.write("VOICE GENERATION CONTRACT PASSED · one George multilingual-v2 response recorded · offline alignment pending\n");
 } else {
   invariant(manifest.status === "approved-v3-single-batch" && ledger.status === "approved-v3-single-batch", "Approved V3 voice states differ");
   invariant(manifest.selectedProviderCalls === 1 && ledger.callSummary.selectedProviderCalls === 1, "Approved V3 package must bind one selected provider call");

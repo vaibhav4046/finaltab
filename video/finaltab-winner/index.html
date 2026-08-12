@@ -3,14 +3,15 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>FINALTab V3 — 90s source-locked prebuild</title>
+  <title>FINALTab V3 — 90-second judge film</title>
   <script src="assets/vendor/gsap-3.14.2.min.js"></script>
   <style>
+    @font-face{font-family:Geist;src:url("assets/fonts/Geist-Variable.woff2") format("woff2");font-weight:100 900}
+    @font-face{font-family:GeistMono;src:url("assets/fonts/GeistMono-Regular.woff2") format("woff2");font-weight:400}
     html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#050706}
-    #root{position:relative;width:3840px;height:2160px;overflow:hidden;color:#F4F8F1}
-    .clip{position:absolute;inset:0;overflow:hidden}
-    .master-ground{background:#050706}
-    .source-note{display:grid;place-items:center;font:700 40px/1 Geist Mono,monospace;color:#B7C0B8}
+    #root{position:relative;width:3840px;height:2160px;overflow:hidden;color:#F4F8F1;background:#050706}
+    .clip{position:absolute;inset:0;overflow:hidden}.master-ground{background:#050706}
+    .handoff{pointer-events:none}.handoff-inner{position:absolute;inset:0;background:#45AFFF}.handoff-inner:after{content:"";position:absolute;top:0;bottom:0;left:0;width:28px;background:#C8FF3D;box-shadow:0 0 70px rgba(200,255,61,.5)}
   </style>
 </head>
 <body>
@@ -24,13 +25,39 @@
     <div id="host-v3-06" class="clip" data-composition-id="finaltab-v3-complex-agent-task" data-composition-src="compositions/frames-v3/06-complex-agent-task.html" data-start="50" data-duration="18" data-track-index="10" data-width="3840" data-height="2160"></div>
     <div id="host-v3-07" class="clip" data-composition-id="finaltab-v3-mcp-nonbroadcast" data-composition-src="compositions/frames-v3/07-mcp-nonbroadcast.html" data-start="68" data-duration="17" data-track-index="10" data-width="3840" data-height="2160"></div>
     <div id="host-v3-08" class="clip" data-composition-id="finaltab-v3-proof-cta" data-composition-src="compositions/frames-v3/08-proof-cta.html" data-start="85" data-duration="5" data-track-index="10" data-width="3840" data-height="2160"></div>
+
+    <section id="handoff-01" class="clip handoff" data-start="3.6" data-duration="0.4" data-track-index="15"><div class="handoff-inner"></div></section>
+    <section id="handoff-02" class="clip handoff" data-start="11.6" data-duration="0.4" data-track-index="15"><div class="handoff-inner"></div></section>
+    <section id="handoff-03" class="clip handoff" data-start="19.6" data-duration="0.4" data-track-index="15"><div class="handoff-inner"></div></section>
+    <section id="handoff-04" class="clip handoff" data-start="29.6" data-duration="0.4" data-track-index="15"><div class="handoff-inner"></div></section>
+    <section id="handoff-05" class="clip handoff" data-start="49.6" data-duration="0.4" data-track-index="15"><div class="handoff-inner"></div></section>
+    <section id="handoff-06" class="clip handoff" data-start="67.6" data-duration="0.4" data-track-index="15"><div class="handoff-inner"></div></section>
+    <section id="handoff-07" class="clip handoff" data-start="84.6" data-duration="0.4" data-track-index="15"><div class="handoff-inner"></div></section>
+
+    <audio id="sfx-handoff-01" src="assets/audio/sfx/whoosh-short.mp3" preload="auto" data-start="3.78" data-duration="0.57" data-volume="0.12" data-track-index="32"></audio>
+    <audio id="sfx-handoff-02" src="assets/audio/sfx/whoosh-short.mp3" preload="auto" data-start="11.78" data-duration="0.57" data-volume="0.12" data-track-index="32"></audio>
+    <audio id="sfx-handoff-03" src="assets/audio/sfx/whoosh-short.mp3" preload="auto" data-start="19.78" data-duration="0.57" data-volume="0.12" data-track-index="32"></audio>
+    <audio id="sfx-handoff-04" src="assets/audio/sfx/whoosh-short.mp3" preload="auto" data-start="29.78" data-duration="0.57" data-volume="0.12" data-track-index="32"></audio>
+    <audio id="sfx-handoff-05" src="assets/audio/sfx/whoosh-short.mp3" preload="auto" data-start="49.78" data-duration="0.57" data-volume="0.12" data-track-index="32"></audio>
+    <audio id="sfx-handoff-06" src="assets/audio/sfx/whoosh-short.mp3" preload="auto" data-start="67.78" data-duration="0.57" data-volume="0.12" data-track-index="32"></audio>
+    <audio id="sfx-mcp-stop" src="assets/audio/sfx/click-soft.mp3" preload="auto" data-start="79.4" data-duration="0.37" data-volume="0.16" data-track-index="33"></audio>
+    <audio id="sfx-handoff-07" src="assets/audio/sfx/whoosh-short.mp3" preload="auto" data-start="84.78" data-duration="0.57" data-volume="0.12" data-track-index="32"></audio>
+    <audio id="sfx-proof-ping" src="assets/audio/sfx/ping.mp3" preload="auto" data-start="86.4" data-duration="1.32" data-volume="0.18" data-track-index="33"></audio>
+
     <!-- V3_CAPTIONS_START -->
-    <!-- V3 captions pending approved single-batch narration alignment. -->
+    <!-- Approved word-aligned caption groups are injected here by build-captions.mjs. -->
     <!-- V3_CAPTIONS_END -->
+
   </div>
   <script>
     window.__timelines=window.__timelines||{};
-    window.__timelines["finaltab-winner"]=gsap.timeline({paused:true});
+    const tl=gsap.timeline({paused:true});
+    [3.6,11.6,19.6,29.6,49.6,67.6,84.6].forEach((at,index)=>{
+      const target=`#handoff-0${index+1} .handoff-inner`;
+      tl.fromTo(target,{x:-3840},{x:0,duration:.22,ease:"power3.in"},at)
+        .to(target,{x:3840,duration:.18,ease:"power3.out"},at+.22);
+    });
+    window.__timelines["finaltab-winner"]=tl;
   </script>
 </body>
 </html>

@@ -1,0 +1,6 @@
+{
+  "schemaVersion": 3,
+  "status": "pending-human-review",
+  "instructions": "Copy this file, set status to approved-human-review, and attest every exact required/forbidden statement from capture-contracts.json after watching the artifact. The promoter rejects omitted assertions.",
+  "captures": []
+}

@@ -42,10 +42,12 @@ Build only from the retained KeeperHub receipt and public Base Sepolia transacti
 
 ## Promotion
 
-1. Inspect each V3 artifact against its contract.
-2. Record only the four V3 paths, byte sizes, and SHA-256 values in `data/capture-lock.json`.
-3. Set its status to `approved-v3-captures` with an approval time.
-4. Confirm no new hash matches `data/superseded-v2-assets.json`.
+1. Run `npm run capture:init-review -- data/capture-attestations.json` to create an exact contract-derived review worksheet.
+2. Inspect each V3 artifact, complete every assertion, set reviewer/time, and change the worksheet status to `approved-human-review`.
+3. Run `npm run capture:promote -- --attestations data/capture-attestations.json`.
+4. The promoter probes local media, rejects missing/undersized/short files and superseded V2 hashes, then records only the four canonical paths, byte sizes, SHA-256 values, media facts, review hash, and approval time in `data/capture-lock.json`.
 5. Run `npm run check:source`, then `npm run gate:render`.
+
+`capture-evidence.mjs` performs no browser automation, network request, MCP operation, wallet action, or value movement. Semantic truth remains a named human review; technical/hash checks are automatic and fail closed.
 
 The final gate remains blocked while any V3 path, truth check, or hash is pending.

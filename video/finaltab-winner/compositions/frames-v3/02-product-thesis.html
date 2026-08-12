@@ -1,43 +1,29 @@
 <!doctype html>
-<html lang="en">
-<head><meta charset="UTF-8"/><title>FINALTab V3 — 02 · WHAT IT DOES</title></head>
-<body>
+<html lang="en"><head><meta charset="UTF-8"/><title>FINALTab V3 — What it does</title></head><body>
 <template>
   <style>
-    @font-face{font-family:Geist;src:url("assets/fonts/Geist-Variable.woff2") format("woff2");font-weight:100 900}
-    @font-face{font-family:GeistMono;src:url("assets/fonts/GeistMono-Regular.woff2") format("woff2");font-weight:400}
-    @font-face{font-family:GeistMono;src:url("assets/fonts/GeistMono-Bold.woff2") format("woff2");font-weight:700}
-    #v3-02-root{position:absolute;inset:0;width:3840px;height:2160px;overflow:hidden;color:#F4F8F1}
-    .clip{position:absolute;inset:0;overflow:hidden}
-    .ground{background:#050706}
-    .ground:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(69,175,255,.055) 2px,transparent 2px),linear-gradient(rgba(200,255,61,.035) 2px,transparent 2px);background-size:192px 192px}
-    .stage{box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;gap:52px;padding:192px 240px 332px}
-    .eyebrow{font:700 36px/1 GeistMono,monospace;letter-spacing:.14em;color:#B7C0B8}
-    .title{max-width:3300px;font:760 190px/.92 Geist,Arial,sans-serif;letter-spacing:-.055em;color:#45AFFF}
-    .copy{max-width:3200px;font:650 62px/1.25 Geist,Arial,sans-serif;letter-spacing:-.025em;color:#F4F8F1}
-    .rule{width:100%;height:4px;background:linear-gradient(90deg,#45AFFF 0 72%,#C8FF3D 72% 100%);transform-origin:0 50%}
-    .pending{align-self:flex-start;border:2px solid rgba(183,192,184,.5);border-radius:999px;padding:20px 30px;font:700 30px/1 GeistMono,monospace;letter-spacing:.09em;color:#B7C0B8}
+    @font-face{font-family:Geist;src:url("assets/fonts/Geist-Variable.woff2") format("woff2");font-weight:100 900}@font-face{font-family:GeistMono;src:url("assets/fonts/GeistMono-Regular.woff2") format("woff2");font-weight:400}@font-face{font-family:GeistMono;src:url("assets/fonts/GeistMono-Bold.woff2") format("woff2");font-weight:700}
+    #v3-02-root{position:absolute;inset:0;width:3840px;height:2160px;overflow:hidden;color:#F4F8F1}.clip{position:absolute;inset:0;overflow:hidden}.ground{background:#050706}.grid{position:absolute;inset:0;background-image:linear-gradient(rgba(183,192,184,.07) 2px,transparent 2px),linear-gradient(90deg,rgba(183,192,184,.07) 2px,transparent 2px);background-size:192px 192px}
+    .stage{box-sizing:border-box;padding:180px 220px 330px}.top{display:flex;align-items:flex-end;justify-content:space-between}.eyebrow{font:700 34px/1 GeistMono,monospace;letter-spacing:.14em;color:#C8FF3D}.title{max-width:2200px;margin-top:40px;font:760 132px/.98 Geist,Arial,sans-serif;letter-spacing:-.055em}.side{font:700 30px/1.4 GeistMono,monospace;color:#B7C0B8;text-align:right}
+    .rail{position:relative;margin-top:138px;display:grid;grid-template-columns:640px repeat(4,1fr);align-items:center;gap:44px}.path{position:absolute;left:520px;right:120px;top:230px;height:6px;background:#26312B}.path-fill{width:100%;height:100%;background:#45AFFF;transform-origin:0 50%}.receipt{position:relative;width:540px;height:850px;border:4px solid #F4F8F1;border-radius:18px;background:#0A0E0C;box-shadow:32px 32px 0 #0F1916}.receipt:after{content:"";position:absolute;left:54px;right:54px;top:132px;height:420px;background:repeating-linear-gradient(to bottom,#31403A 0 12px,transparent 12px 62px)}.receipt-kicker{padding:54px;font:700 34px/1 GeistMono,monospace;color:#B7C0B8}.receipt-label{position:absolute;left:54px;bottom:60px;font:760 56px/1 Geist,Arial,sans-serif;color:#F4F8F1}
+    .station{position:relative;z-index:2;align-self:center;min-height:420px;padding:58px 44px;border-top:6px solid #26312B;background:#090D0B}.station .num{font:700 30px/1 GeistMono,monospace;color:#B7C0B8}.station .name{margin-top:46px;font:740 64px/1.05 Geist,Arial,sans-serif;letter-spacing:-.035em}.station .state{margin-top:34px;font:600 30px/1.3 GeistMono,monospace;color:#45AFFF}.station.proof{border-color:#B8FF5C}.station.proof .state{color:#B8FF5C}.dot{position:absolute;left:44px;top:210px;width:26px;height:26px;border-radius:50%;background:#45AFFF;box-shadow:0 0 0 16px #050706}.proof .dot{background:#B8FF5C}
+    .promise{position:absolute;left:1000px;right:220px;bottom:330px;display:flex;justify-content:space-between;padding-top:36px;border-top:2px solid #31403A;font:700 32px/1 GeistMono,monospace;letter-spacing:.06em;color:#B7C0B8}.promise b{color:#C8FF3D}
   </style>
   <div id="v3-02-root" data-composition-id="finaltab-v3-product-thesis" data-start="0" data-width="3840" data-height="2160" data-duration="8">
-    <section id="v3-02-ground" class="clip ground" data-start="0" data-duration="8" data-track-index="0"></section>
+    <section id="v3-02-ground" class="clip ground" data-start="0" data-duration="8" data-track-index="0"><div class="grid"></div></section>
     <section id="v3-02-stage" class="clip stage" data-start="0" data-duration="8" data-track-index="1">
-      <div id="v3-02-eyebrow" class="eyebrow">02 · WHAT IT DOES</div>
-      <div id="v3-02-title" class="title">RECEIPT → SPLIT → APPROVALS</div>
-      <div id="v3-02-rule" class="rule"></div>
-      <div id="v3-02-copy" class="copy">ONE TEST-NETWORK RUN · PUBLIC PROOF</div>
-      <div id="v3-02-pending" class="pending">V3 SOURCE LOCK · FINAL FRAME PENDING</div>
+      <div class="top"><div><div id="v3-02-eyebrow" class="eyebrow">02 / WHAT IT DOES</div><div id="v3-02-title" class="title">ONE BILL. ONE PATH TO PROOF.</div></div><div class="side">INPUT → AGREEMENT → TEST NETWORK<br/>NO HIDDEN STEP</div></div>
+      <div class="rail"><div id="v3-02-path" class="path"><div class="path-fill"></div></div><div id="v3-02-receipt" class="receipt"><div class="receipt-kicker">SHARED RECEIPT</div><div class="receipt-label">RECEIPT IN</div></div><div id="v3-02-split" class="station"><span class="dot"></span><div class="num">01</div><div class="name">EXACT<br/>SPLIT</div><div class="state">EVERY CENT ASSIGNED</div></div><div id="v3-02-approve" class="station"><span class="dot"></span><div class="num">02</div><div class="name">EVERYONE<br/>APPROVES</div><div class="state">AMOUNTS STAY VISIBLE</div></div><div id="v3-02-run" class="station"><span class="dot"></span><div class="num">03</div><div class="name">ONE TEST-<br/>NETWORK RUN</div><div class="state">ONE CONTROLLED CALL</div></div><div id="v3-02-proof" class="station proof"><span class="dot"></span><div class="num">04</div><div class="name">PUBLIC<br/>PROOF</div><div class="state">READY TO INSPECT</div></div></div>
+      <div id="v3-02-copy" class="promise"><span>SHARED RECEIPT</span><span>GATHER APPROVALS</span><b>LEAVE PUBLIC PROOF</b></div>
     </section>
   </div>
   <script>
-    window.__timelines=window.__timelines||{};
-    const tl=gsap.timeline({paused:true});
-    tl.fromTo("#v3-02-eyebrow",{opacity:0,x:-40},{opacity:1,x:0,duration:.5,ease:"power3.out"},.15);
-    tl.fromTo("#v3-02-title",{opacity:0,y:48},{opacity:1,y:0,duration:.7,ease:"power3.out"},.55);
-    tl.fromTo("#v3-02-rule",{opacity:0,scaleX:0},{opacity:1,scaleX:1,duration:.7,ease:"power3.out"},1.1);
-    tl.fromTo("#v3-02-copy",{opacity:0,y:32},{opacity:1,y:0,duration:.62,ease:"power3.out"},1.80);
-    tl.fromTo("#v3-02-pending",{opacity:0},{opacity:1,duration:.35,ease:"sine.out"},4.96);
+    window.__timelines=window.__timelines||{};const tl=gsap.timeline({paused:true});
+    tl.fromTo("#v3-02-eyebrow",{x:-50,opacity:0},{x:0,opacity:1,duration:.5,ease:"power3.out"},.1).fromTo("#v3-02-title",{y:56,opacity:0},{y:0,opacity:1,duration:.75,ease:"expo.out"},.4)
+      .fromTo("#v3-02-receipt",{x:-160,opacity:0,rotation:-3},{x:0,opacity:1,rotation:0,duration:.8,ease:"power3.out"},.9).fromTo("#v3-02-path .path-fill",{scaleX:0},{scaleX:1,duration:5.4,ease:"none"},1.45)
+      .fromTo("#v3-02-split",{y:70,opacity:0},{y:0,opacity:1,duration:.62,ease:"power3.out"},1.65).fromTo("#v3-02-approve",{y:70,opacity:0},{y:0,opacity:1,duration:.62,ease:"power3.out"},3.05)
+      .fromTo("#v3-02-run",{y:70,opacity:0},{y:0,opacity:1,duration:.62,ease:"power3.out"},4.55).fromTo("#v3-02-proof",{y:70,opacity:0},{y:0,opacity:1,duration:.62,ease:"power3.out"},6.25)
+      .fromTo("#v3-02-copy",{opacity:0},{opacity:1,duration:.45,ease:"sine.out"},6.72);
     window.__timelines["finaltab-v3-product-thesis"]=tl;
   </script>
-</template>
-</body>
-</html>
+</template></body></html>

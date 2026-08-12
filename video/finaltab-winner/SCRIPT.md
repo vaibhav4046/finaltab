@@ -36,28 +36,28 @@
 **Time:** 00:20.200 – 00:29.750
 **Delivery:** Plain, steady, and slightly quicker through the two translated names.
 
-    Vision reads the bill. Math checks every cent. Reviewers check the split and wallet safety. KeeperHub, the execution service, runs it. Base Sepolia, the public test network, confirms it.
+    Vision reads the bill. Math checks every cent. Reviewers check the split and wallet safety. A service runs it. Public test records confirm it.
 
 ## Line 5 — Real product (Scene 5)
 
 **Time:** 00:30.250 – 00:49.650
 **Delivery:** Active demonstration. Each short action should match the real capture.
 
-    Watch the product: sign in, create a tab, upload and correct a receipt, add people, assign items, include tax and tip, run four checks, inspect balances and memory, then lock the plan.
+    Watch the product: sign in, create a tab, upload and correct a receipt, add people, assign items, include tax and tip, run four checks, inspect balances and memory, then lock the plan in one clear, traceable workflow.
 
 ## Line 6 — Complex agent task (Scene 6)
 
 **Time:** 00:50.200 – 01:07.750
 **Delivery:** Build momentum through the task, then settle on the compact memory summary.
 
-    Now give it a hard request: weighted items, shared service, exclusions, and a payer correction. Voice captures it. The model suggests assignments. Math balances every cent. Four reviewers record what passed and why. Memory keeps a compact audit summary.
+    Now try a hard request: weighted items, shared service, exclusions, and a payer correction. Voice reads it back. The model suggests assignments. Math balances every cent. Four reviewers record what passed and why. Memory keeps a compact audit summary.
 
 ## Line 7 — MCP hard stop (Scene 7)
 
 **Time:** 01:08.200 – 01:24.700
 **Delivery:** Present tense and factual. Pause after “approval challenge,” then make the stop the climax.
 
-    MCP, the tool connection, signs in, lists nine tools, allocates the receipt, prepares a wallet request, and creates an approval challenge. Then hard stop: no signature, submit, or money moved. A read-only check verifies the earlier authorized settlement.
+    MCP, the tool connection, signs in, lists nine tools, allocates the receipt, prepares wallet details, and asks for approval. Then it stops: no signing, no sending, and no money moves. A read-only check verifies the earlier authorized settlement.
 
 ## Line 8 — Proof CTA (Scene 8)
 
@@ -73,8 +73,8 @@
 | 01 | 6 | 4s |
 | 02 | 18 | 8s |
 | 03 | 15 | 8s |
-| 04 | 29 | 10s |
-| 05 | 32 | 20s |
+| 04 | 24 | 10s |
+| 05 | 37 | 20s |
 | 06 | 39 | 18s |
 | 07 | 38 | 17s |
 | 08 | 11 | 5s |

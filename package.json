@@ -20,7 +20,8 @@
     "kh:proof": "node packages/keeperhub-flight-recorder/bin/kh-proof.mjs",
     "mcp:bootstrap-token": "node scripts/bootstrap-mcp-token.mjs",
     "probe:anon-authorization": "node scripts/probe-anon-authorization.mjs",
-    "probe:settlement-replay": "node scripts/probe-settlement-replay.mjs"
+    "probe:settlement-replay": "node scripts/probe-settlement-replay.mjs",
+    "probe:voice-surface": "node scripts/probe-voice-surface.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",

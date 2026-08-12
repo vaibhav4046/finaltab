@@ -1,0 +1,215 @@
+{
+  "tool": "probe-voice-surface",
+  "version": 2,
+  "startedAt": "2026-08-12T20:54:50.824Z",
+  "mode": "read-only",
+  "baseUrl": "https://finaltab.vercel.app",
+  "bundleDir": "apps/web/.next/static",
+  "routes": [
+    {
+      "route": "/",
+      "status": 200,
+      "location": null,
+      "bytes": 65819
+    },
+    {
+      "route": "/join",
+      "status": 200,
+      "location": null,
+      "bytes": 16376
+    },
+    {
+      "route": "/auth",
+      "status": 200,
+      "location": null,
+      "bytes": 26679
+    },
+    {
+      "route": "/developers",
+      "status": 200,
+      "location": null,
+      "bytes": 75640
+    },
+    {
+      "route": "/open-source",
+      "status": 200,
+      "location": null,
+      "bytes": 38103
+    }
+  ],
+  "gate": {
+    "route": "/app/tab",
+    "status": 307,
+    "location": "/auth?error=session-required&next=%2Fapp%2Ftab",
+    "redirectsToAuth": true
+  },
+  "live": {
+    "filesScanned": 26,
+    "bytesScanned": 1034723,
+    "controls": [
+      {
+        "name": "assets-fetched",
+        "ok": true,
+        "detail": "26 files"
+      },
+      {
+        "name": "bytes-scanned",
+        "ok": true,
+        "detail": "1034723 bytes"
+      }
+    ],
+    "detectors": [
+      {
+        "name": "elevenlabs-direct-origin",
+        "why": "the browser must reach ElevenLabs only through the bounded server proxy",
+        "offenders": []
+      },
+      {
+        "name": "assemblyai-token-mint-endpoint",
+        "why": "minting a temporary token requires the permanent key, so that call must never be client-side",
+        "offenders": []
+      },
+      {
+        "name": "provider-key-header",
+        "why": "xi-api-key is the header that carries the permanent ElevenLabs key",
+        "offenders": []
+      },
+      {
+        "name": "provider-key-env-name",
+        "why": "a server-only variable appearing client-side means it was inlined into the bundle",
+        "offenders": []
+      },
+      {
+        "name": "elevenlabs-key-shape",
+        "why": "ElevenLabs keys are sk_ followed by a long hex run",
+        "offenders": []
+      },
+      {
+        "name": "hex-secret-near-assemblyai",
+        "why": "an AssemblyAI key is 32 hex; near the provider name that is not a build hash",
+        "offenders": []
+      },
+      {
+        "name": "hex-secret-near-elevenlabs",
+        "why": "same test for the readback provider",
+        "offenders": []
+      },
+      {
+        "name": "elevenlabs-key-exact-value",
+        "why": "the strongest form of this check: the literal configured key",
+        "offenders": []
+      }
+    ],
+    "voiceClientReachableAnonymously": false
+  },
+  "bundle": {
+    "filesScanned": 256,
+    "bytesScanned": 7247427,
+    "controls": [
+      {
+        "name": "approved-websocket-host",
+        "needle": "streaming.eu.assemblyai.com",
+        "filesContaining": 1
+      },
+      {
+        "name": "approved-websocket-path",
+        "needle": "/v3/ws",
+        "filesContaining": 1
+      },
+      {
+        "name": "voice-token-route",
+        "needle": "/api/voice/token",
+        "filesContaining": 1
+      }
+    ],
+    "detectors": [
+      {
+        "name": "elevenlabs-direct-origin",
+        "why": "the browser must reach ElevenLabs only through the bounded server proxy",
+        "offenders": []
+      },
+      {
+        "name": "assemblyai-token-mint-endpoint",
+        "why": "minting a temporary token requires the permanent key, so that call must never be client-side",
+        "offenders": []
+      },
+      {
+        "name": "provider-key-header",
+        "why": "xi-api-key is the header that carries the permanent ElevenLabs key",
+        "offenders": []
+      },
+      {
+        "name": "provider-key-env-name",
+        "why": "a server-only variable appearing client-side means it was inlined into the bundle",
+        "offenders": []
+      },
+      {
+        "name": "elevenlabs-key-shape",
+        "why": "ElevenLabs keys are sk_ followed by a long hex run",
+        "offenders": []
+      },
+      {
+        "name": "hex-secret-near-assemblyai",
+        "why": "an AssemblyAI key is 32 hex; near the provider name that is not a build hash",
+        "offenders": []
+      },
+      {
+        "name": "hex-secret-near-elevenlabs",
+        "why": "same test for the readback provider",
+        "offenders": []
+      },
+      {
+        "name": "elevenlabs-key-exact-value",
+        "why": "the strongest form of this check: the literal configured key",
+        "offenders": []
+      }
+    ]
+  },
+  "routeProbes": [
+    {
+      "method": "POST",
+      "path": "/api/voice/token",
+      "status": 401,
+      "error": "AUTH_REQUIRED",
+      "wwwAuthenticate": "Bearer",
+      "bodyCarriedKeyMaterial": false,
+      "expected": {
+        "status": 401,
+        "error": "AUTH_REQUIRED"
+      },
+      "ok": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/voice/speak",
+      "status": 401,
+      "error": "AUTH_REQUIRED",
+      "wwwAuthenticate": "Bearer",
+      "bodyCarriedKeyMaterial": false,
+      "expected": {
+        "status": 401,
+        "error": "AUTH_REQUIRED"
+      },
+      "ok": true
+    }
+  ],
+  "limits": [
+    "ASSEMBLYAI_API_KEY absent from the environment; the AssemblyAI check ran structurally, not by exact value"
+  ],
+  "provenHere": [
+    "the voice surface is not served to an anonymous visitor",
+    "no permanent provider credential is present in the built client bundle",
+    "both voice routes reject an unauthenticated caller before any provider call or budget reservation"
+  ],
+  "notProvenHere": [
+    "microphone capture and the AssemblyAI streaming lifecycle",
+    "abort and reconnect UI states",
+    "durable quota reservation and concurrency behaviour",
+    "the temporary-token response shape, which requires a session"
+  ],
+  "providerSessionsMinted": 0,
+  "providerCharges": 0,
+  "finishedAt": "2026-08-12T20:54:57.400Z",
+  "verdict": "NO_PERMANENT_CREDENTIAL_REACHES_THE_BROWSER",
+  "failures": []
+}

@@ -164,6 +164,19 @@ Playwright result from the prior deployment's evidence.
   requires a real signed-in Supabase session, which cannot be produced without a
   human completing GitHub OAuth or email OTP. See section 7 of
   `docs/release/user-actions.md`.
+- What *is* live-proven about voice is the production surface an anonymous
+  visitor can reach. `pnpm probe:voice-surface` records that `/app/tab` answers
+  `307 -> /auth?error=session-required`, that both voice routes answer
+  `401 AUTH_REQUIRED` before any provider call or budget reservation, and that
+  no permanent provider credential appears in the 1.03 MB an anonymous visitor
+  can fetch or in the 7.2 MB built client bundle. The run is retained at
+  [evidence/voice-surface-probe.json](evidence/voice-surface-probe.json). Both
+  scopes carry positive controls, because a scan that reaches no voice code
+  reports a perfect pass: the bundle scope fails unless it finds the approved
+  WebSocket host, its `/v3/ws` path and the `/api/voice/token` route. This says
+  nothing about microphone capture, abort/reconnect states or quota behaviour,
+  all of which still need the session above. The probe mints no provider
+  session and makes no billable call.
 - Product-film narration was generated locally with Kokoro. The no-charge
   ElevenLabs preflight made one denied quota-check GET, zero synthesis POSTs,
   and no retry.

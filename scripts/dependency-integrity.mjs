@@ -49,7 +49,23 @@ const EXEMPT = new Map([
   ["client-only", "Next.js bundler alias (next/dist/compiled/client-only)"],
 ]);
 
-const BUILTIN = new Set([...builtinModules, ...builtinModules.map((name) => `node:${name}`)]);
+/** Node reserves the `node:` scheme; nothing can be installed under it. */
+const NODE_SCHEME = /^node:/u;
+
+/**
+ * Bare builtin names, for imports written without the scheme (`import "fs"`).
+ *
+ * Prefix-only modules are filtered out rather than folded in, and the scheme is
+ * matched by prefix rather than by lookup, because `builtinModules` is not a
+ * stable answer to "is this a builtin". The modules that exist only with the
+ * prefix, currently `node:test`, `node:test/reporters`, `node:sqlite` and
+ * `node:sea`, are listed on Node 24 but absent on Node 22. Deriving either set
+ * from those entries makes the verdict depend on the Node version that happens
+ * to run the gate, which is how `node:test` was classified as a third-party
+ * package on CI while passing locally: precisely the pass-here-fail-there
+ * failure this gate exists to prevent.
+ */
+const BUILTIN = new Set(builtinModules.filter((name) => !NODE_SCHEME.test(name)));
 
 /**
  * Matches static import/export sources, `require(...)` and dynamic `import(...)`.
@@ -147,6 +163,7 @@ function main() {
       const source = readFileSync(file, "utf8");
       for (const match of source.matchAll(SPECIFIER)) {
         const specifier = match[1] ?? match[2] ?? match[3];
+        if (NODE_SCHEME.test(specifier)) continue;
         const name = packageOf(specifier);
         if (name === null) continue;
         if (BUILTIN.has(name) || EXEMPT.has(name) || declared.has(name)) continue;

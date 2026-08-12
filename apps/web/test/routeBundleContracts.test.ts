@@ -75,6 +75,30 @@ describe("route and bundle contracts", () => {
     expect(runtimeSources).toContain("stage-swap");
   });
 
+  it("keeps the Supabase browser SDK out of first-load JS", () => {
+    // Every browser caller reaches the SDK from a click handler or a mount
+    // effect, so a static import only has the effect of putting the whole
+    // client — including the realtime transport this application never opens —
+    // into the first load of every page that renders a sign-in form.
+    const clientFactory = readFileSync(join(WEB_ROOT, "lib", "supabase", "client.ts"), "utf8");
+
+    expect(clientFactory).toContain('await import("@supabase/ssr")');
+    expect(clientFactory).toContain("appendPkceFlowIdToRedirects: true");
+    expect(clientFactory).not.toMatch(/^import\s+(?!type\b)[^;]*from\s+["']@supabase\//m);
+
+    const clientSources = [
+      ...filesUnder(join(WEB_ROOT, "app"), ".tsx"),
+      ...filesUnder(join(WEB_ROOT, "components"), ".tsx"),
+      join(WEB_ROOT, "lib", "supabase", "client.ts"),
+    ];
+
+    for (const sourceFile of clientSources) {
+      const source = readFileSync(sourceFile, "utf8");
+      const staticValueImport = source.match(/^import\s+(?!type\b)[^;]*from\s+["']@supabase\/[^"']+["']/m);
+      expect(staticValueImport?.[0], `Static @supabase import in ${relative(WEB_ROOT, sourceFile)}`).toBeUndefined();
+    }
+  });
+
   it("keeps the root and Vercel development commands wired to the web workspace", () => {
     const rootPackage = JSON.parse(readFileSync(join(REPO_ROOT, "package.json"), "utf8")) as {
       scripts?: Record<string, string>;

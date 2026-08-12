@@ -4,7 +4,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { safeNextPath } from "@/lib/auth/navigation";
-import { createBrowserSupabaseClient } from "@/lib/supabase/client";
+import { loadBrowserSupabaseClient } from "@/lib/supabase/client";
 import {
   connectWallet,
   hasInjectedWallet,
@@ -107,14 +107,16 @@ export function CloudAccessPanel({
   };
 
   const continueWithGitHub = async () => {
-    const client = createBrowserSupabaseClient();
-    if (!client || !githubOAuthEnabled || busy !== null) return;
+    // Claimed before the await so a double click cannot start two flows.
+    if (!githubOAuthEnabled || busy !== null) return;
 
     setBusy("github");
     setError(null);
     setNotice(null);
     let redirectStarted = false;
     try {
+      const client = await loadBrowserSupabaseClient();
+      if (!client) throw new Error("Supabase is not configured for this deployment");
       const callback = new URL("/auth/callback", window.location.origin);
       callback.searchParams.set("next", requestedNextPath());
       const { data, error: authError } = await client.auth.signInWithOAuth({
@@ -136,14 +138,15 @@ export function CloudAccessPanel({
 
   const sendEmail = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const client = createBrowserSupabaseClient();
     const normalizedEmail = email.trim().toLowerCase();
-    if (!client || !teamEmailAuthEnabled || !normalizedEmail || busy !== null) return;
+    if (!teamEmailAuthEnabled || !normalizedEmail || busy !== null) return;
 
     setBusy("email");
     setError(null);
     setNotice(null);
     try {
+      const client = await loadBrowserSupabaseClient();
+      if (!client) throw new Error("Supabase is not configured for this deployment");
       const callback = new URL("/auth/callback", window.location.origin);
       callback.searchParams.set("next", requestedNextPath());
       const { error: authError } = await client.auth.signInWithOtp({
@@ -175,11 +178,9 @@ export function CloudAccessPanel({
 
   const verifyEmailCode = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const client = createBrowserSupabaseClient();
     const normalizedEmail = email.trim().toLowerCase();
     const normalizedOtp = otp.replaceAll(/\s/g, "");
     if (
-      !client ||
       !teamEmailAuthEnabled ||
       !normalizedEmail ||
       !/^\d{6,8}$/.test(normalizedOtp) ||
@@ -190,6 +191,8 @@ export function CloudAccessPanel({
     setError(null);
     let verified = false;
     try {
+      const client = await loadBrowserSupabaseClient();
+      if (!client) throw new Error("Supabase is not configured for this deployment");
       const { error: authError } = await client.auth.verifyOtp({
         email: normalizedEmail,
         token: normalizedOtp,

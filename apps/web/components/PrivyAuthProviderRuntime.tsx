@@ -10,7 +10,7 @@ import {
 import { PrivyProvider, useSubscribeToJwtAuthWithFlag } from "@privy-io/react-auth";
 import type { AuthChangeEvent, Session, SupabaseClient } from "@supabase/supabase-js";
 import type { Chain } from "viem";
-import { createBrowserSupabaseClient } from "@/lib/supabase/client";
+import { loadBrowserSupabaseClient } from "@/lib/supabase/client";
 import {
   PrivyBridgeContext,
   type PrivyBridgeState,
@@ -41,7 +41,17 @@ function BridgeRuntime({ children }: { children: ReactNode }) {
   const [syncError, setSyncError] = useState<string | null>(null);
 
   useEffect(() => {
-    setSupabase(createBrowserSupabaseClient());
+    let active = true;
+    void loadBrowserSupabaseClient()
+      // A client that cannot be loaded is treated exactly like an unconfigured
+      // deployment: the bridge stays unauthenticated rather than half-open.
+      .catch(() => null)
+      .then((client) => {
+        if (active) setSupabase(client);
+      });
+    return () => {
+      active = false;
+    };
   }, []);
 
   useEffect(() => {

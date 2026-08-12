@@ -13,6 +13,7 @@
     "test:e2e:ui": "playwright test --ui",
     "build": "pnpm -r --if-present build",
     "bundle:budget": "node scripts/bundle-budget.mjs",
+    "deps:check": "node scripts/dependency-integrity.mjs",
     "kh:proof": "node packages/keeperhub-flight-recorder/bin/kh-proof.mjs",
     "mcp:bootstrap-token": "node scripts/bootstrap-mcp-token.mjs",
     "probe:anon-authorization": "node scripts/probe-anon-authorization.mjs",
@@ -25,6 +26,7 @@
     "@types/node": "22.7.5",
     "eslint": "9.39.5",
     "eslint-config-next": "15.5.23",
+    "ethers": "6.17.0",
     "typescript": "5.9.3"
   },
   "packageManager": "pnpm@10.33.2"

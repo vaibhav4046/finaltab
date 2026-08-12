@@ -20,6 +20,7 @@ import type {
   SettlementAgentRun,
   SettlementAgentRunDetail,
   SettlementBalanceRow,
+  SettlementLineageFlow,
 } from "@/lib/agentControl";
 
 interface Props {
@@ -118,6 +119,8 @@ export function AgentControlCenter({ runId }: Props) {
   const [selected, setSelected] = useState<SettlementAgentRunDetail | null>(null);
   const [graphRun, setGraphRun] = useState<SettlementAgentRunDetail | null>(null);
   const [graphIssue, setGraphIssue] = useState<string | null>(null);
+  const [graphFlow, setGraphFlow] = useState<SettlementLineageFlow | null>(null);
+  const [graphFlowIssue, setGraphFlowIssue] = useState<string | null>(null);
   const [memory, setMemory] = useState<SettlementAgentMemory[]>([]);
   const [message, setMessage] = useState<string | null>(null);
   const [messageKind, setMessageKind] = useState<"info" | "error">("info");
@@ -128,6 +131,7 @@ export function AgentControlCenter({ runId }: Props) {
     setMessage(null);
     setMessageKind("info");
     setGraphIssue(null);
+    setGraphFlowIssue(null);
     setConfirmingDelete(null);
     try {
       const sessionRequest = fetch("/api/session", { cache: "no-store" });
@@ -150,17 +154,30 @@ export function AgentControlCenter({ runId }: Props) {
       setMemory((bodies[1]!.memory ?? []) as SettlementAgentMemory[]);
       setSelected(loadedSelected);
       setGraphRun(loadedSelected);
+      // Settlement evidence is optional and arrives beside the run. A null flow
+      // means the run has no attested settlement, which the graph renders as a
+      // missing step rather than filling in.
+      setGraphFlow(runId ? ((bodies[2]!.flow ?? null) as SettlementLineageFlow | null) : null);
+      setGraphFlowIssue(runId ? ((bodies[2]!.flowIssue ?? null) as string | null) : null);
 
       if (!loadedSelected && loadedRuns[0]) {
         try {
           const graphResponse = await fetch(`/api/agents/runs/${encodeURIComponent(loadedRuns[0].id)}`, { cache: "no-store" });
-          const graphBody = await graphResponse.json() as { run?: SettlementAgentRunDetail; message?: string };
+          const graphBody = await graphResponse.json() as {
+            run?: SettlementAgentRunDetail;
+            flow?: SettlementLineageFlow | null;
+            flowIssue?: string | null;
+            message?: string;
+          };
           if (!graphResponse.ok || !graphBody.run) {
             throw new Error(graphBody.message ?? "The latest run detail could not be loaded.");
           }
           setGraphRun(graphBody.run);
+          setGraphFlow(graphBody.flow ?? null);
+          setGraphFlowIssue(graphBody.flowIssue ?? null);
         } catch (error) {
           setGraphRun(null);
+          setGraphFlow(null);
           setGraphIssue(error instanceof Error ? error.message : "The latest run detail could not be loaded.");
         }
       }
@@ -169,6 +186,7 @@ export function AgentControlCenter({ runId }: Props) {
       setAvailability("error");
       setMessageKind("error");
       setGraphRun(null);
+      setGraphFlow(null);
       setMessage(error instanceof Error ? error.message : "Agent control data could not be loaded.");
     }
   }, [runId]);
@@ -238,7 +256,10 @@ export function AgentControlCenter({ runId }: Props) {
         run={selected ?? graphRun}
         hasRuns={runs.length > 0}
         firstRunId={runs[0]?.id}
+        flow={graphFlow}
         detailIssue={graphIssue}
+        flowIssue={graphFlowIssue}
+        viewingRunId={selected?.id ?? null}
       />
 
       {selected ? (

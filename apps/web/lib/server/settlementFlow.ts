@@ -174,7 +174,10 @@ export interface DurableSettlementFlow {
   contractAddress: `0x${string}`;
   state: FlowState;
   revision: number;
+  signedBodyHash: string | null;
+  simulationHash: string | null;
   executionId: string | null;
+  executionHash: string | null;
   proofVerified: boolean;
   receiptCount: number;
   proofCheckedAt: string | null;
@@ -363,7 +366,10 @@ function publicFlow(row: FlowRow, events: FlowEventRow[]): DurableSettlementFlow
     contractAddress: row.contract_address.toLowerCase() as `0x${string}`,
     state: row.state,
     revision: Number(row.revision),
+    signedBodyHash: row.signed_body_hash,
+    simulationHash: row.simulation_hash,
     executionId: row.execution_id,
+    executionHash: row.execution_hash,
     proofVerified: row.state === "verified_settled" && proof.verified === true,
     receiptCount: receipts.length,
     proofCheckedAt: typeof proof.checkedAt === "string" ? proof.checkedAt : null,

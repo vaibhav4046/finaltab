@@ -81,3 +81,48 @@ export interface SettlementAgentRunDetail extends SettlementAgentRun {
   events: SettlementAgentEvent[];
   memory: SettlementAgentMemory[];
 }
+
+export type SettlementLineageState =
+  | "frozen"
+  | "simulated"
+  | "submitted"
+  | "completed_unverified"
+  | "verified_settled"
+  | "failed"
+  | "timeout";
+
+export type SettlementLineageEventKind = "frozen" | "simulated" | "submitted" | "terminal" | "reconciled";
+
+/**
+ * Client-safe mirror of the attested `DurableSettlementFlow` returned by
+ * `lib/server/settlementFlow.ts`, which is `server-only` and therefore cannot be
+ * imported here. The server assigns its own type to this one, so a renamed or
+ * removed field is a compile error rather than a silently missing value.
+ */
+export interface SettlementLineageFlow {
+  id: string;
+  runId: string;
+  ledgerId: string;
+  settlementRecordId: string;
+  ledgerHash: string;
+  settlementId: string;
+  chainId: number;
+  contractAddress: string;
+  state: SettlementLineageState;
+  revision: number;
+  signedBodyHash: string | null;
+  simulationHash: string | null;
+  executionId: string | null;
+  executionHash: string | null;
+  proofVerified: boolean;
+  receiptCount: number;
+  proofCheckedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  events: Array<{
+    revision: number;
+    kind: SettlementLineageEventKind;
+    state: SettlementLineageState;
+    createdAt: string;
+  }>;
+}

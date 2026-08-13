@@ -127,6 +127,24 @@ Playwright result from the prior deployment's evidence.
   select repair are applied and schema-verified at 31/31 public RLS tables. A
   real authenticated owner create/read passed; two-identity isolation,
   cross-channel recovery, and cross-device behavior remain unclaimed.
+- **Invite acceptance is broken in the deployed canonical commit and fixed on
+  the branch.** `public.accept_tab_invite` declared `out tab_id` and inserted
+  into `tab_members(tab_id, user_id)` with `on conflict (tab_id, user_id)`. A
+  plpgsql OUT parameter is a variable, and PostgreSQL resolves an `ON CONFLICT`
+  inference clause against those variables as well as the target table, so the
+  statement failed with SQLSTATE `42702` on every path that reached the INSERT.
+  Guard rejections returned before that line and behaved correctly, which is why
+  the defect shipped: only a *successful* acceptance hit it, so
+  `POST /api/invites/join` could not complete one. Migration
+  `20260813000000_fix_on_conflict_out_parameter_shadowing.sql` names the
+  constraint instead, and fixes one latent sibling in
+  `reserve_finaltab_v3_narration_generation` found by sweeping all sixteen
+  migrations for the same class. The fix is proven by
+  `apps/web/test/tabInviteLifecycleEnforcement.test.ts`, nine tests that run the
+  invite lifecycle under two authenticated identities on a real PostgreSQL
+  engine; reverting the fix kills exactly the four of them that reach a
+  successful acceptance. **This migration is not applied to the production
+  project**, so the deployed instance still carries the defect until it is.
 - The **anonymous** authorization boundary is live-proven against production.
   `pnpm probe:anon-authorization` reads the table and function inventory out of
   `supabase/migrations` and calls all 61 surfaces with the same publishable key

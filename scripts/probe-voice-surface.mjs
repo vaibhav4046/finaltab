@@ -90,18 +90,28 @@ const windowedHex = (body, provider) => {
   return hits;
 };
 
+// A bare `body.includes("api.elevenlabs.io")` treats a host as a substring, so
+// `notapi.elevenlabs.io.example.com` counts as a hit and the detector reports a
+// host reference the asset never made. Anchoring on host boundaries makes a hit
+// mean what the detector name claims it means.
+const hostMention = (host) => new RegExp(`(?<![\\w.-])${host.replace(/\./g, "\\.")}(?![\\w.-])`, "i");
+
+const ELEVENLABS_ORIGIN = hostMention("api.elevenlabs.io");
+const ASSEMBLYAI_ORIGIN = hostMention("streaming.eu.assemblyai.com");
+const ASSEMBLYAI_TOKEN_MINT = /(?<![\w.-])streaming\.eu\.assemblyai\.com\/v3\/token(?![\w-])/i;
+
 const elevenLabsKey = process.env.ELEVENLABS_API_KEY?.trim();
 
 const DETECTORS = [
   {
     name: "elevenlabs-direct-origin",
     why: "the browser must reach ElevenLabs only through the bounded server proxy",
-    find: (body) => (body.includes("api.elevenlabs.io") ? ["api.elevenlabs.io"] : []),
+    find: (body) => (ELEVENLABS_ORIGIN.test(body) ? ["api.elevenlabs.io"] : []),
   },
   {
     name: "assemblyai-token-mint-endpoint",
     why: "minting a temporary token requires the permanent key, so that call must never be client-side",
-    find: (body) => (body.includes("streaming.eu.assemblyai.com/v3/token") ? ["/v3/token"] : []),
+    find: (body) => (ASSEMBLYAI_TOKEN_MINT.test(body) ? ["/v3/token"] : []),
   },
   {
     name: "provider-key-header",
@@ -216,7 +226,7 @@ for (const control of liveControls) {
 }
 
 const liveDetectors = runDetectors("live", liveFiles);
-const voiceReachableAnonymously = liveFiles.some((file) => file.body.includes("streaming.eu.assemblyai.com"));
+const voiceReachableAnonymously = liveFiles.some((file) => ASSEMBLYAI_ORIGIN.test(file.body));
 if (voiceReachableAnonymously) {
   failures.push("the voice client is reachable anonymously; the /app gate is not holding");
 }

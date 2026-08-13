@@ -93,11 +93,12 @@ const windowedHex = (body, provider) => {
 // A bare `body.includes("api.elevenlabs.io")` treats a host as a substring, so
 // `notapi.elevenlabs.io.example.com` counts as a hit and the detector reports a
 // host reference the asset never made. Anchoring on host boundaries makes a hit
-// mean what the detector name claims it means.
-const hostMention = (host) => new RegExp(`(?<![\\w.-])${host.replace(/\./g, "\\.")}(?![\\w.-])`, "i");
-
-const ELEVENLABS_ORIGIN = hostMention("api.elevenlabs.io");
-const ASSEMBLYAI_ORIGIN = hostMention("streaming.eu.assemblyai.com");
+// mean what the detector name claims it means. These are written as literals
+// with every dot escaped rather than built from a host string: a builder that
+// escapes at runtime reads as a sanitizer, and both a human reviewer and CodeQL
+// then have to trust the escaping instead of seeing the pattern.
+const ELEVENLABS_ORIGIN = /(?<![\w.-])api\.elevenlabs\.io(?![\w.-])/i;
+const ASSEMBLYAI_ORIGIN = /(?<![\w.-])streaming\.eu\.assemblyai\.com(?![\w.-])/i;
 const ASSEMBLYAI_TOKEN_MINT = /(?<![\w.-])streaming\.eu\.assemblyai\.com\/v3\/token(?![\w-])/i;
 
 const elevenLabsKey = process.env.ELEVENLABS_API_KEY?.trim();

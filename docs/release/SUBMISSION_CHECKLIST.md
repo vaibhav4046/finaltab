@@ -16,6 +16,12 @@ are UTC+2 and sets the deadline at **2026-08-13 12:00 UTC+2**
 video showing the agent executing onchain through KeeperHub, and a transaction
 link. Ten finalists are scheduled to pitch August 17–19.
 
+**Elapsed-deadline note (2026-08-14).** That cutoff has passed. The submission
+was recorded below as made and `Under Review` on 2026-08-11, inside the window;
+that status is not re-readable from the logged-out BUIDL page, so confirm it
+signed in. The August 17–19 pitch window is still ahead. Full note in
+[status.md](status.md).
+
 ## 1. Repository and CI
 
 Canonical release evidence: deployment `dpl_F5PgMqo7A9zecQW2LKos2FcCNVMs`
@@ -44,8 +50,17 @@ remain open where a current-commit clean-checkout result is not recorded.
 - [ ] Retained receipt says `verified: true` and `receiptStatus: "success"`.
 - [ ] Sourcify reports exact creation and runtime matches for chain `84532`,
       address `0x7b58791c…cCDB`, match ID `43497805`.
-- [ ] Copy says “Sourcify exact match,” not “BaseScan source verified,” unless
-      BaseScan has independently changed.
+- [ ] Blockscout reports `is_verified: true` and `is_fully_verified: true` for
+      the same address on chain `84532`, verified `2026-08-14T00:24:16Z`
+      through the Verifier Alliance route. Read those fields, not
+      `is_verified_via_sourcify` — that one is `false` because the
+      verification did not arrive through Sourcify's ingest, and a
+      Sourcify-only query therefore reads as unverified. Capture:
+      [evidence/blockscout-verification.json](evidence/blockscout-verification.json).
+- [ ] Copy says “Sourcify exact match” and “Blockscout verified source,” and
+      never “BaseScan source verified.” BaseScan verification was never
+      submitted and cannot be re-checked here: the Etherscan V2 API answers
+      `Missing/Invalid API Key` without a key.
 
 ## 3. Production MCP V2
 

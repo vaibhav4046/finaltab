@@ -15,6 +15,11 @@ source link, a short demo video showing the agent executing onchain through
 KeeperHub, and a transaction link. Ten finalists are scheduled to pitch from
 August 17 through August 19.
 
+**Elapsed-deadline note (2026-08-14).** That deadline has passed. The
+submission is recorded as made and `Under Review` on 2026-08-11, inside the
+window, and the pitch window remains ahead. See
+[release/status.md](release/status.md) for the full correction and its limits.
+
 ## Title
 
 FINALTab — externally signed receipt settlement through KeeperHub
@@ -105,6 +110,10 @@ KeeperHub deployment execution `xasakw5nfxkh2s0fh4stn` landed in
 at block `45321107`, with a verified successful receipt. Sourcify reports exact
 creation and runtime matches, match ID `43497805`:
 <https://repo.sourcify.dev/84532/0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB>.
+Blockscout independently reports the source as fully verified, arriving through
+the Verifier Alliance route at `2026-08-14T00:24:16Z`, which is what makes the
+settlement events decode in the explorer:
+<https://base-sepolia.blockscout.com/address/0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB?tab=contract>.
 
 This deployment transaction created the contract; it did not settle a receipt
 or move participant USDC.
@@ -172,6 +181,7 @@ Hook are configured.
 - V2 contract: <https://sepolia.basescan.org/address/0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB>
 - V2 deployment transaction: <https://sepolia.basescan.org/tx/0x904ec881ef7c2ec7375c20887b4181cf58224b44162d837743fa869b0a598e8f>
 - V2 settlement transaction: <https://sepolia.basescan.org/tx/0x7a6fb760f691954a41c71d5d508629c58aa09207bba0de4eaf164f097c59a789>
+- V2 verified source and decoded settlement events on Blockscout: <https://base-sepolia.blockscout.com/address/0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB?tab=contract> and <https://base-sepolia.blockscout.com/tx/0x7a6fb760f691954a41c71d5d508629c58aa09207bba0de4eaf164f097c59a789?tab=logs>
 - V2 product video: <https://youtu.be/eXZACnOdt5w> — 90.005s; 3840×2160 at 60 fps; 5,400 H.264 video frames with AAC audio; 35,617,576 bytes; SHA-256 `a14cfef364c0fe7d4c62e2f9cfb73ca228a692e8738a85d5a6f615e361b09c69`
 - DoraHacks: <https://dorahacks.io/buidl/47656> — submitted and `Under Review`; Best Onboarding UX Improvement bounty application saved
 
@@ -191,6 +201,10 @@ current production source.
 
 - V2 deployment through KeeperHub: proven.
 - V2 runtime and creation source exact match through Sourcify: proven.
+- V2 source verification on the Blockscout explorer: proven, through the
+  Verifier Alliance route rather than Sourcify's, so a Sourcify-only re-check
+  misreads it as unverified. All six logs of the retained settlement
+  transaction decode. Not verified on BaseScan.
 - Canonical release: deployment `dpl_F5PgMqo7A9zecQW2LKos2FcCNVMs` serves
   commit `039582fc44901d1f436b61a426f1523a936427f9` and is `READY`.
 - Authenticated MCP: production listed exactly nine tools and passed non-value
@@ -246,8 +260,8 @@ not the current deliverable. Neither file or a public URL is retained here.
   path.
 - Production identity is proven for one canonical GitHub account and one
   authenticated owner tab; no two-user or cross-device inference is made.
-- Sourcify exact matching is proven; BaseScan source verification is not
-  implied.
+- Sourcify exact matching and Blockscout source verification are both proven;
+  BaseScan source verification is not implied and was never submitted.
 
 ## Best Onboarding UX bounty
 
@@ -261,7 +275,7 @@ live PR changes.
 | Criterion | Current evidence |
 |---|---|
 | KeeperHub execution | Verified V2 deployment `xasakw5nfxkh2s0fh4stn` plus value-moving execution `3hmlqi36zweiwg6fc5o2u` |
-| Contract integrity | V2 plan binding, dual signatures, replay controls, atomic execution, exact Sourcify match |
+| Contract integrity | V2 plan binding, dual signatures, replay controls, atomic execution, exact Sourcify match, Blockscout-verified source with decoding settlement events |
 | MCP safety | Scoped auth, external-wallet and signed-human-approval boundaries in source/tests, simulate-first flow, independent proof; live broadcast trace still pending |
 | Product usefulness | Receipt-to-settlement workflow with deterministic money rules |
 | Still required | Real browser microphone/readback lifecycle and a live production MCP human-approval/submission trace; neither is implied by the submitted film |

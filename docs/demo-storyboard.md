@@ -1,8 +1,28 @@
-# FINALTab V2 product video storyboard — value proof retained, render pending
+# FINALTab V2 product video storyboard — value proof retained, master rendered, not yet published
 
-This is a recording plan, not evidence. Target timing is editorial guidance and
-must never be copied into submission metadata. The final duration, checksum,
-and public URL remain **PENDING** until a completed render is measured.
+This is a recording plan, not evidence. Target timing below is editorial
+guidance and must never be copied into submission metadata.
+
+**Render status (measured 2026-08-14).** A master exists locally at
+`proof-output/finaltab-demo.mp4` and was measured with `ffprobe`, not estimated:
+
+| Property | Measured |
+|---|---|
+| Duration | 101.64 s |
+| Resolution | 1920×1080 |
+| Frame rate | 25 fps |
+| Codecs | h264 + aac |
+| Size | 7,472,357 bytes |
+| SHA-256 | `de8aa3018f690cbf31ce1737924a0e59a1ca30bdd715489db5ff46459262fbb7` |
+
+Two things about that master are not what the creative target below asks for:
+it is 1080p25, not 3840×2160 at 60 fps, and it runs 101.64 s against a 96 s
+target. The target is retained as the editorial intent; the table is what was
+actually produced. Do not describe the master as 4K.
+
+`proof-output/` is gitignored, so this file is **not** obtainable from the
+repository. The **public URL remains PENDING** — no upload has been performed,
+and no URL may be put in submission metadata until one has.
 
 The canonical video must anchor its onchain proof in the retained V2 settlement
 and follow the trace discipline in
@@ -17,8 +37,8 @@ V1” label.
 
 Target: 96 seconds, 3840×2160 at 60 fps, premium carbon/acid/blue ledger
 aesthetic, decisive pacing, captions that work without audio, and narration
-synchronized to visible state. Real captures begin only after the final
-production/auth/security probe.
+synchronized to visible state. The delivered master differs from this target on
+duration and format — see the measured table above.
 
 | Target | Beat | Required on-screen truth |
 |---|---|---|

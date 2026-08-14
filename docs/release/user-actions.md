@@ -221,15 +221,15 @@ unproven gates.
 
 ## 6. Alchemy API key
 
-A live Alchemy API key was hardcoded in four files, including
-`CLAUDE-EXTENSION-SETUP.md`, which a judge would plausibly read. All four are
+A live Alchemy API key was hardcoded in four files, including a local setup
+note that a judge would plausibly read. All four are
 redacted in the working tree:
 
 - `contracts/hardhat.config.js` — now `process.env.BASE_SEPOLIA_RPC_URL`, falling
   back to the public `https://sepolia.base.org` endpoint. Contract tests still
   pass (11/11) after the change, because they run against the local Hardhat
   network.
-- `deploy.cmd`, `CLAUDE-EXTENSION-SETUP.md`, `proof-template.json` — placeholder
+- `deploy.cmd`, that local setup note, `proof-template.json` — placeholder
   `<YOUR_ALCHEMY_KEY>`.
 
 As with the deployer key, the surviving copies are in **unreachable** objects

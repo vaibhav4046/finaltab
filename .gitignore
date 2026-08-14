@@ -20,8 +20,7 @@ proof-output/
 .vercel
 supabase/.temp/
 
-# Harness/authoring artifacts — not part of the product, never published
-CLAUDE-EXTENSION-SETUP.md
-CLAUDE-PROMPT.md
-CLAUDE_EXTENSION.md
+# Local scratch notes and working files — not part of the product
+*EXTENSION*.md
+*PROMPT*.md
 .planning/

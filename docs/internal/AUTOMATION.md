@@ -3,7 +3,7 @@
 > **Do not use this runbook for V2.** It predates scoped MCP authentication,
 > external-wallet dual signatures, the wallet-signed broadcast challenge, and
 > the KeeperHub-deployed V2 contract. Current deployment and release steps are
-> in [DEPLOYMENT.md](DEPLOYMENT.md). The commands and status below are retained
+> in [DEPLOYMENT.md](../../DEPLOYMENT.md). The commands and status below are retained
 > only as V1 history.
 
 End-to-end CLI automation: deploy → settle → collect proof → submit.
@@ -86,7 +86,7 @@ Faucet: https://www.coinbase.com/faucets/base-ethereum-sepolia-faucet
 
 **Alchemy network not enabled:**
 ```
-Dashboard: https://dashboard.alchemy.com/apps/0ywa7ovevv84upnw/networks
+Dashboard: the Alchemy dashboard for the project's app -> Networks
 Enable: Base Sepolia
 ```
 

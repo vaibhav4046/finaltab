@@ -13,7 +13,18 @@ Nothing here is faked in the app: blocked paths render as blocked, unproven stat
   live-proven (a bodyless authenticated `POST /api/voice/token` returns `200`
   with a real provider session and durable quota headers, while a declared
   request body is still refused with `413`), but the browser microphone
-  permission flow did not complete.
+  permission flow did not complete. On 2026-08-14 the two failure paths were
+  exercised against production with a **simulated** `getUserMedia`, not a real
+  device: a denial (`NotAllowedError`) leaves the panel at `NEEDS ATTENTION`
+  with `Start listening` re-enabled, no `Stop` button, no `/api/voice/*`
+  request and no console error, so refusing the microphone mints no provider
+  credential; an unanswered prompt recovers through the 12s acquisition
+  timeout to that same terminal state. Both are now regression-covered by
+  `apps/web/test/voiceMicrophoneLifecycle.test.ts`. Still unproven is a real
+  hardware grant end-to-end: the operator probe
+  `tests/e2e/voice-lifecycle.spec.ts` needs `E2E_VOICE_STORAGE_STATE`, and a
+  live browser session cannot export one because the app's `connect-src 'self'`
+  CSP blocks both a blob download and a loopback POST from the page.
 - Keep the live non-value MCP probe separate from the retained value proof. The
   canonical release lists exactly nine tools and passed calculation/preparation;
   it did not call MCP submission, and the standalone settlement must not be

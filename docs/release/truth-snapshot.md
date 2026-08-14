@@ -29,16 +29,19 @@
 > leaked-password-protection warning remaining. A real GitHub OAuth/reload,
 > authenticated owner tab create/read, exactly-nine-tool list, and non-value MCP
 > calculation/preparation probe passed. The deployed voice path, spend
-> reservations, and sensitive provider configuration are ready but a real
-> microphone/readback lifecycle is not proven; `tests/e2e/voice-lifecycle.spec.ts`
-> is the gated probe for it and skips without an operator-supplied session.
+> reservations, and sensitive provider configuration are ready, and the real
+> microphone-capture lifecycle is proven on a device against production
+> (2026-08-14: grant, live `429` budget refusal, `200` mint, `LISTENING`, clean
+> release); in-app readback is still unproven and no dictation was spoken.
+> `tests/e2e/voice-lifecycle.spec.ts` remains the automated probe and still
+> skips without an operator-supplied session.
 > UI, REST, and MCP value submissions share one durable journal in source: an
 > accepted retry skips simulation and execution, while prepared recovery reuses
 > the stored successful simulation and deterministic idempotency key under a
 > bounded approval expiry. The paid Privy bridge is optional and deliberately
 > disabled; email fallback is disabled/unproven; two-user durability probes,
-> cross-channel recovery, the final browser voice lifecycle, and a production
-> MCP value-path probe remain open. The public film is
+> cross-channel recovery, the transcript/readback half of the browser voice
+> lifecycle, and a production MCP value-path probe remain open. The public film is
 > <https://youtu.be/eXZACnOdt5w>: 90.005s, 3840×2160/60 fps, 5,400 H.264 video
 > frames with AAC audio, 35,617,576 bytes, SHA-256
 > `a14cfef364c0fe7d4c62e2f9cfb73ca228a692e8738a85d5a6f615e361b09c69`.

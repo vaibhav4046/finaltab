@@ -40,8 +40,11 @@ are no longer blockers.
   observation is BUIDL 47656 `Under Review` on 2026-08-11, inside the window.
   Read the deadline section below before trusting any date here. Remaining work
   is engineering-side only and lives in
-  [../blockers.md](../blockers.md) — chiefly the real browser microphone
-  lifecycle and two-identity isolation, both gated on human sign-in.
+  [../blockers.md](../blockers.md). The real browser microphone lifecycle was
+  closed on 2026-08-14 — acquisition, token mint, budget refusal and release
+  were all exercised on real hardware against production. The one remaining
+  engineering gap is two-identity isolation, which is not gated on sign-in but
+  on the absence of a *second, distinct* account to sign in as.
 
 ## Deadline — read this before trusting any date in these documents
 

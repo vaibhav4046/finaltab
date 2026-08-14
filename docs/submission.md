@@ -6,7 +6,8 @@ V2 deployment, one value-moving V2 settlement, the hardened 31-table Supabase
 schema, canonical GitHub OAuth, authenticated tab creation, exactly-nine-tool
 non-value MCP proof, and the public product film are proven. Durable
 spend-reservation controls and sensitive provider variables are configured.
-The real microphone/readback lifecycle remains unproven. Current truth lives in
+The real microphone-capture lifecycle is proven on a device against production;
+in-app readback remains unproven. Current truth lives in
 [release/status.md](release/status.md).
 
 The live DoraHacks project page was inspected on 2026-08-11. Its authoritative
@@ -93,9 +94,12 @@ signs, or submits by itself. Permanent provider keys remain server-side. This
 path is deployed and source-tested. Supabase provides durable per-user budget
 controls fixed at 8 transcription sessions and 20 readbacks per minute through
 service-role-only spend reservations, and both provider keys are stored as
-sensitive Vercel Production variables. The capability must not be described as
-live until its microphone, `Begin`/`Termination`, readback, quota, and text
-fallback paths pass a real provider probe.
+sensitive Vercel Production variables. Its microphone-capture and quota paths
+passed a real probe on 2026-08-14 — permission grant, a live `429`
+`VOICE_CONCURRENCY_LIMITED` refusal, a `200` mint, `LISTENING`, clean release.
+The capability must still not be described as fully live: `Begin`/`Termination`,
+readback, and text fallback have not been observed against a real provider
+stream, because no dictation was spoken during that run.
 
 The product-film narration is separate from browser voice. It was generated
 locally with Kokoro. The no-charge ElevenLabs preflight made one quota-check
@@ -215,9 +219,10 @@ current production source.
   production session minting is live-proven — a bodyless authenticated
   `POST /api/voice/token` returns `200` with a real provider session and durable
   quota headers, while a declared request body is still refused with `413`. The
-  real microphone-capture and readback lifecycle remains pending. The verified
-  public 4K/60 product film uses local Kokoro narration, not a live browser
-  voice lifecycle.
+  real microphone-capture lifecycle is live-proven as well (2026-08-14, real
+  device: grant, `429` budget refusal, `200` mint, `LISTENING`, clean release);
+  in-app readback remains pending. The verified public 4K/60 product film uses
+  local Kokoro narration, not a live browser voice lifecycle.
 - V2 value-moving rail through KeeperHub: live-proven at execution
   `3hmlqi36zweiwg6fc5o2u`, tx `0x7a6fb760…a789`, block `45327128`, with verified
   dual signatures, receipt, exact V2 event binding, and conserved balances.
@@ -283,4 +288,4 @@ live PR changes.
 | Contract integrity | V2 plan binding, dual signatures, replay controls, atomic execution, exact Sourcify match, Blockscout-verified source with decoding settlement events |
 | MCP safety | Scoped auth, external-wallet and signed-human-approval boundaries in source/tests, simulate-first flow, independent proof; live broadcast trace still pending |
 | Product usefulness | Receipt-to-settlement workflow with deterministic money rules |
-| Still required | Real browser microphone/readback lifecycle and a live production MCP human-approval/submission trace; neither is implied by the submitted film |
+| Still required | In-app ElevenLabs readback and a live production MCP human-approval/submission trace; neither is implied by the submitted film. The browser microphone-capture lifecycle is no longer outstanding — it was proven on a real device on 2026-08-14 |

@@ -79,9 +79,14 @@ cutover `20260811074500` — see
 fails closed before a provider call if any prerequisite is absent. Production
 session minting is live-proven: a bodyless authenticated
 `POST /api/voice/token` returns `200` with a real provider session and durable
-quota headers, and a declared request body is still refused with `413`. A
-production microphone-capture/readback lifecycle probe is still pending, so this
-document does not claim that either provider path is live end to end.
+quota headers, and a declared request body is still refused with `413`. The
+browser microphone-capture lifecycle is live-proven as of 2026-08-14 against
+production on a real device with an operator-granted permission: acquisition, a
+live `429` `VOICE_CONCURRENCY_LIMITED` refusal from the reservation RPC, a `200`
+mint on retry after the lease expired, the `LISTENING` state, and a clean device
+release on `Stop`. No dictation was spoken, so transcript delivery is still only
+source- and test-proven, and in-app ElevenLabs readback is unproven — the
+deployed app has issued no synthesis request.
 
 Provider contracts used by this policy:
 

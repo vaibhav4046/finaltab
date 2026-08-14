@@ -2,35 +2,73 @@
 
 Nothing here is faked in the app: blocked paths render as blocked, unproven states render as unproven.
 
-## CURRENT V2 BLOCKERS — 2026-08-11
+## CURRENT V2 BLOCKERS — 2026-08-14
 
 - Configure a verified-domain SMTP provider or Send Email Hook before claiming
   branded inbound email. The paid Privy custom-auth bridge is optional and is
   deliberately disabled under the stop-before-charge constraint.
-- Complete a real production microphone/readback lifecycle before claiming
-  hybrid voice live. The release, provider variables, and server-side budget
-  controls are deployed/configured, and production session minting is now
-  live-proven (a bodyless authenticated `POST /api/voice/token` returns `200`
-  with a real provider session and durable quota headers, while a declared
-  request body is still refused with `413`), but the browser microphone
-  permission flow did not complete. On 2026-08-14 the two failure paths were
-  exercised against production with a **simulated** `getUserMedia`, not a real
-  device: a denial (`NotAllowedError`) leaves the panel at `NEEDS ATTENTION`
-  with `Start listening` re-enabled, no `Stop` button, no `/api/voice/*`
-  request and no console error, so refusing the microphone mints no provider
-  credential; an unanswered prompt recovers through the 12s acquisition
-  timeout to that same terminal state. Both are now regression-covered by
-  `apps/web/test/voiceMicrophoneLifecycle.test.ts`. Still unproven is a real
-  hardware grant end-to-end: the operator probe
+- ~~Complete a real production microphone lifecycle.~~ **RESOLVED 2026-08-14.**
+  The capture lifecycle was exercised against production on real hardware, in a
+  signed-in Chrome session, with an operator-granted microphone permission
+  (`navigator.permissions.query({name:'microphone'})` reporting `granted` and
+  four audio inputs exposing labels). Sequence, in order, all observed live:
+  1. First `Start listening` after the grant minted through to the budget layer
+     and was refused: `POST /api/voice/token` returned **429** and the panel
+     showed `NEEDS ATTENTION` with `VOICE_CONCURRENCY_LIMITED`, `Start
+     listening` re-enabled and no `Stop` button. That is the configured limit
+     doing its job — `user_concurrency_limit` is `1` with a `session_seconds`
+     lease of 180 in `20260811064822_voice_spend_reservations.sql`, and a lease
+     from an earlier mint still held the only slot. This is the first live
+     production demonstration of the voice rate limiter, not a simulation.
+  2. After the lease expired, `Start listening` returned **200** from
+     `POST /api/voice/token`, the panel advanced to `LISTENING`, and the `Stop`
+     control appeared.
+  3. `Stop` returned the panel to `READY` with `Start listening` re-enabled and
+     `Use transcript` / `Clear voice transcript` disabled, and a subsequent
+     `getUserMedia` acquired a live track, so the app released the capture
+     device rather than leaking it.
+
+  No dictation was spoken during the session, so the transcript stayed empty:
+  this proves acquisition, minting, budget enforcement and release, and it does
+  **not** newly prove transcript-to-allocation behavior, which remains
+  source- and test-proven.
+
+  The failure paths were exercised on the same real device earlier the same
+  day, before the grant: leaving the native permission prompt unanswered
+  recovers through the 12s acquisition timeout to `NEEDS ATTENTION` with
+  `Start listening` re-enabled, no `Stop` button, and **zero** `/api/voice/*`
+  requests — refusing or ignoring the microphone mints no provider credential
+  and costs no provider spend. This supersedes the earlier record of the same
+  paths, which had used a **simulated** `getUserMedia`. Both remain
+  regression-covered by `apps/web/test/voiceMicrophoneLifecycle.test.ts`.
+
+  Separately live-verified on the deployed bundle: no permanent provider API
+  key reaches the browser. All 11 same-origin scripts (515,245 bytes) were
+  fetched and scanned — zero ElevenLabs `sk_` shapes and zero AssemblyAI
+  32-hex-key shapes. The nine generic 32-hex matches in the DOM are Next.js
+  per-request CSP nonces on font and style preloads, classified without
+  printing any value.
+
+  Still true, and unrelated to the grant: the headless operator probe
   `tests/e2e/voice-lifecycle.spec.ts` needs `E2E_VOICE_STORAGE_STATE`, and a
   live browser session cannot export one because the app's `connect-src 'self'`
-  CSP blocks both a blob download and a loopback POST from the page.
+  CSP blocks both a blob download and a loopback POST from the page. The
+  lifecycle above was proven by driving the real UI instead.
 - Keep the live non-value MCP probe separate from the retained value proof. The
   canonical release lists exactly nine tools and passed calculation/preparation;
   it did not call MCP submission, and the standalone settlement must not be
   relabeled as one.
+- Do not call hybrid voice live end to end. Capture is proven (above), but no
+  dictation has ever been spoken into the deployed app, so transcript delivery,
+  provider `Begin`/`Termination`, and in-app ElevenLabs readback have never been
+  observed live. They stay source- and test-proven. Speaking into the app costs
+  AssemblyAI streaming seconds and a readback costs ElevenLabs characters, so
+  closing this gap is a spend decision, not an engineering one.
 - Keep two-identity isolation, review invalidation, and cross-channel journal
   recovery labeled source/test/schema-proven until separately exercised.
+  Two-identity isolation is not gated on sign-in — one account is signed in —
+  but on the absence of a second, distinct Supabase identity to test against.
+
 The video and the submission are no longer blockers. The 4K/60 master is
 published at <https://youtu.be/eXZACnOdt5w> (90.005 s, 3840×2160/60, 5,400 H.264
 frames, sha256 `a14cfef3…b09c69`, visibility Unlisted) and DoraHacks

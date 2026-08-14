@@ -253,23 +253,33 @@ it silently could break a deploy you had in flight.
 
 ---
 
-## 7. Production browser voice lifecycle — blocked on a human sign-in
+## 7. Production browser voice lifecycle — capture done, transcript half open
 
-`tests/e2e/voice-lifecycle.spec.ts` is the runnable probe for the last open
-voice gate. It drives the real settlement room: create a durable tab, start the
-microphone, capture a live AssemblyAI transcript, push it through **Use
-transcript**, and confirm that the transcript stops at the instruction textarea
+**Capture is no longer blocked.** On 2026-08-14, in your signed-in Chrome with a
+real granted microphone, the deployed settlement room was driven end to end:
+permission `granted` with four labelled audio inputs, a first `Start listening`
+that reached the budget layer and was refused with a live `429`
+`VOICE_CONCURRENCY_LIMITED` (the reservation RPC allows one concurrent user
+session on a 180-second lease), a `200` token mint once that lease expired, the
+`LISTENING` state with `Stop` rendered, and a clean `Stop` that returned the
+panel to `READY` and released the device — a subsequent independent
+`getUserMedia` acquired a live track. No dictation was spoken, deliberately,
+because AssemblyAI bills on streaming seconds.
+
+`tests/e2e/voice-lifecycle.spec.ts` remains the probe for what that run did not
+cover: capturing a live AssemblyAI transcript, pushing it through **Use
+transcript**, and confirming the transcript stops at the instruction textarea
 instead of reaching allocation. It also asserts the abort path leaves no stuck
 control, and inspects the live `POST /api/voice/token` response for durable
 quota headers and for any permanent provider key.
 
-**It cannot be run autonomously, and the blocker is not a missing script.**
+**It still cannot be run autonomously, but the reason has changed.**
 `apps/web/lib/server/voiceQuota.ts` accepts only a principal whose `source` is
 `session` or `bearer-jwt` with a UUID subject, so no machine or API token can
-mint an AssemblyAI streaming credential. Production sign-in offers GitHub OAuth
-and email OTP only, and `teamEmailAuth` is disabled with delivery unproven.
-Producing a session therefore means authenticating as you, which is outside
-autonomous scope.
+mint an AssemblyAI streaming credential. A live signed-in browser session exists
+now, but it cannot be exported into a Playwright storage state from inside the
+page: the app's `connect-src 'self'` CSP blocks both a blob download and a
+loopback POST. Producing the file therefore needs the manual steps below.
 
 **To run it yourself:**
 
@@ -292,5 +302,6 @@ touches participant funds, and cannot broadcast anything — the probe stops at
 the instruction textarea, and allocation stays gated on a confirmed receipt.
 
 Until that run passes, hybrid voice stays at
-`DEPLOYED/CONFIG PROVEN; PROVIDER LIFECYCLE PENDING`. Do not upgrade the claim
-on the strength of the probe existing.
+`CAPTURE LIFECYCLE LIVE-PROVEN; READBACK PENDING`. Do not upgrade the claim on
+the strength of the probe existing, and do not read the capture run above as
+proof of transcript delivery or of an ElevenLabs synthesis request.

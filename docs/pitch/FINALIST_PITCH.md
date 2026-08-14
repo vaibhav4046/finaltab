@@ -12,7 +12,11 @@ KeeperHub executes, and independent chain proof closes the tab.
 - 90-second film: [YouTube](https://youtu.be/eXZACnOdt5w)
 - DoraHacks: [FINALTab BUIDL #47656](https://dorahacks.io/buidl/47656)
 - Repository: [vaibhav4046/finaltab](https://github.com/vaibhav4046/finaltab)
-- Retained Base Sepolia proof: [transaction `0x7a6fb760…a789`](https://sepolia.basescan.org/tx/0x7a6fb760f691954a41c71d5d508629c58aa09207bba0de4eaf164f097c59a789)
+- Retained Base Sepolia proof: [transaction `0x7a6fb760…a789`](https://base-sepolia.blockscout.com/tx/0x7a6fb760f691954a41c71d5d508629c58aa09207bba0de4eaf164f097c59a789)
+  ([same transaction on BaseScan](https://sepolia.basescan.org/tx/0x7a6fb760f691954a41c71d5d508629c58aa09207bba0de4eaf164f097c59a789))
+- Verified settlement source: [`FinalTabBatchSettlementV2` on Blockscout](https://base-sepolia.blockscout.com/address/0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB?tab=contract) —
+  verified via Verifier Alliance, compiler `0.8.24+commit.e11b9ed9`. The V2 source
+  is **not** verified on BaseScan, so send judges to Blockscout for source.
 - KeeperHub onboarding contribution: [CLI PR #95](https://github.com/KeeperHub/cli/pull/95)
 
 ## Three-minute talk track
@@ -107,8 +111,11 @@ Target: 90 seconds. Keep the browser at 100% zoom and preload every route.
    → Consent risk → Proof readiness lineage and bounded memory record.
 4. Open **Developers**. Show the nine-tool manifest; explain that the filmed MCP
    session stops at the approval challenge.
-5. Open the retained proof image or BaseScan transaction. State clearly:
-   “Earlier authorized run, separate from the filmed MCP test.”
+5. Open the retained proof image or the Blockscout transaction. State clearly:
+   “Earlier authorized run, separate from the filmed MCP test.” Use Blockscout,
+   not BaseScan: it renders both the receipt and the verified V2 source, so a
+   judge who clicks through to the contract sees real code rather than an
+   unverified-source page.
 6. End on the transaction block and exact conservation result.
 
 Never attempt a wallet signature, simulation, submission, or broadcast during
@@ -118,8 +125,9 @@ the pitch.
 
 - If production is slow: use the real screenshots embedded in the pitch deck.
 - If authentication expires: show the public Developers page and retained proof.
-- If BaseScan is slow: show the retained proof plate, then give the transaction
-  URL verbally.
+- If Blockscout is slow: show the retained proof plate, then give the transaction
+  URL verbally. BaseScan serves the same receipt as a second fallback, but do not
+  open its contract tab, which shows the V2 source as unverified.
 - If audio fails: continue from the deck; every proof claim is visible.
 
 ## Evidence numbers to memorize

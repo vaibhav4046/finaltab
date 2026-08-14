@@ -42,6 +42,7 @@ Best Onboarding UX Improvement bounty application saved.
 | V2 contract | `LIVE_PROVEN` | [`0x7b58791c…cCDB`](https://sepolia.basescan.org/address/0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB) |
 | KeeperHub V2 deployment | `LIVE_PROVEN` | execution `xasakw5nfxkh2s0fh4stn`; [tx `0x904ec881…e8f`](https://sepolia.basescan.org/tx/0x904ec881ef7c2ec7375c20887b4181cf58224b44162d837743fa869b0a598e8f); block `45321107`; verified receipt |
 | V2 source | `LIVE_PROVEN` | Sourcify exact creation/runtime match, match ID `43497805`; [repository entry](https://repo.sourcify.dev/84532/0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB) |
+| V2 explorer verification | `LIVE_PROVEN` | Blockscout reports `is_verified: true` and `is_fully_verified: true`, verified at `2026-08-14T00:24:16Z` through the Verifier Alliance route: [contract source](https://base-sepolia.blockscout.com/address/0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB?tab=contract) on chain `84532`, compiler `0.8.24+commit.e11b9ed9`, 37 ABI entries. All six logs of the retained settlement transaction decode. Capture: [evidence/blockscout-verification.json](evidence/blockscout-verification.json) |
 | Authenticated MCP V2 surface | `LIVE_PROVEN — NON-VALUE PROBE` | A scoped token initialized and listed exactly nine tools; `split_equal` and arbitrary-participant V2 preparation passed. No submission call was made. |
 | Canonical release | `LIVE_PROVEN` | Deployment `dpl_F5PgMqo7A9zecQW2LKos2FcCNVMs` serves commit `039582fc44901d1f436b61a426f1523a936427f9` and is `READY`. |
 | Hybrid voice candidate | `DEPLOYED/CONFIG PROVEN; PROVIDER LIFECYCLE PENDING` | AssemblyAI temp-token STT + buffered ElevenLabs readback code is deployed; sensitive provider variables and server-side budget reservations are configured/applied; real microphone/readback lifecycle pending. |
@@ -172,8 +173,18 @@ Playwright result from the prior deployment's evidence.
   onchain guard, with the journal recording — not gating — that boundary.
 - Groq has historical live evidence; other model-provider fallback legs should
   remain described according to their current measured state.
-- Sourcify exact matching is proven. BaseScan source verification is not
-  claimed unless BaseScan itself reports it.
+- Explorer verification is proven on Blockscout and on Sourcify, and is not
+  claimed on BaseScan. Blockscout arrived at its verification through the
+  Verifier Alliance database, so `is_verified_via_verifier_alliance` is `true`
+  while `is_verified_via_sourcify` is `false` and `sourcify_repo_url` is
+  `null`. Anyone re-checking with a Sourcify-only query will therefore read
+  that as unverified; the fields that answer the question are `is_verified`
+  and `is_fully_verified`, both `true`. Sourcify's own repository holds a
+  separate exact creation/runtime match, ID `43497805`. BaseScan source
+  verification was never submitted, and it cannot be re-checked from here:
+  the Etherscan V2 API answers `Missing/Invalid API Key` without a key, and
+  no key is available. Capture:
+  [evidence/blockscout-verification.json](evidence/blockscout-verification.json).
 - AssemblyAI and ElevenLabs are deployed/configured. Their sensitive Production
   variables and Supabase budget controls are present, but a real
   microphone/readback lifecycle must pass before calling hybrid voice live.
@@ -228,6 +239,14 @@ browser's BST locale, consistent with that conversion. The form requires a
 source link, a short demo video showing the agent executing onchain through
 KeeperHub, and a transaction link. Ten finalists are scheduled to pitch from
 August 17 through August 19. Do not replace this with a countdown estimate.
+
+**Elapsed-deadline note (2026-08-14).** That cutoff is now in the past. The
+submission was recorded as made and `Under Review` on 2026-08-11, inside the
+window — see [SUBMISSION_CHECKLIST.md](SUBMISSION_CHECKLIST.md). That status
+cannot be re-read from the logged-out BUIDL page, which exposes no submission
+state, so re-check it signed in before treating it as current. The finalist
+pitch window of August 17–19 is still ahead. Nothing above is rewritten; this
+paragraph is the correction.
 
 ## Completion gates
 

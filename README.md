@@ -15,6 +15,7 @@ landed.
 ## Start here
 
 - Live product: [finaltab.vercel.app](https://finaltab.vercel.app/)
+- Onchain proof: [verified contract](https://base-sepolia.blockscout.com/address/0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB?tab=contract) and [the USDC settlement it executed](https://base-sepolia.blockscout.com/tx/0x7a6fb760f691954a41c71d5d508629c58aa09207bba0de4eaf164f097c59a789), both on Base Sepolia Blockscout
 - 90-second film: [YouTube](https://youtu.be/eXZACnOdt5w)
 - DoraHacks submission: [FINALTab BUIDL #47656](https://dorahacks.io/buidl/47656)
 - How it is built, in six diagrams: [docs/architecture.md](docs/architecture.md)
@@ -101,7 +102,7 @@ authority to **stop** a settlement, never to release one.
 
 | Category | Evidence | Boundary |
 |---|---|---|
-| **Blockchain** | `FinalTabBatchSettlementV2` is deployed on Base Sepolia through KeeperHub and is an exact Sourcify creation/runtime match. | Deployment and a one-atomic-unit value-moving V2 run are independently proven. |
+| **Blockchain** | `FinalTabBatchSettlementV2` is deployed on Base Sepolia through KeeperHub, is a fully verified source on Blockscout, and is an exact Sourcify creation/runtime match. | Deployment and a one-atomic-unit value-moving V2 run are independently proven. |
 | **Web3** | Debtors use external wallets for EIP-3009 and full-plan `SettlementConsent` signatures. | The server does not hold arbitrary participant keys. |
 | **DeFi** | The V2 rail pulled and paid one atomic unit of testnet USDC atomically, with exact before/after conservation, and fails the entire batch on invalid consent, replay, or imbalance. | No mainnet claim is made; this is a deliberately minimal Base Sepolia proof. |
 | **AI Agents** | Models interpret receipts; deterministic code performs allocation, netting, hashing, and settlement validation. | A model never chooses or authorizes value movement. |
@@ -155,6 +156,7 @@ authority to **stop** a settlement, never to release one.
 | Block | `45321107` |
 | KeeperHub receipt | `verified: true`, `receiptStatus: "success"` |
 | Source | [Sourcify exact creation/runtime match](https://repo.sourcify.dev/84532/0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB), match ID `43497805` |
+| Explorer | [Blockscout verified source](https://base-sepolia.blockscout.com/address/0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB?tab=contract), full match through the Verifier Alliance route on `2026-08-14`; the settlement transaction's events decode there |
 
 Retained manifest:
 [docs/release/evidence/v2-deployment-2026-08-11T01-08-17-421Z.json](docs/release/evidence/v2-deployment-2026-08-11T01-08-17-421Z.json).

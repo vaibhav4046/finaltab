@@ -35,7 +35,7 @@ maintained in [release/status.md](release/status.md).
   - executionId `g0w11wukbk1v0psyditx4`
   - https://sepolia.basescan.org/tx/0x11300427473e95d241d924891b2cc0131b0047263e461787c27a2f854c39278c (block 45243955, `verified: true`, `receiptStatus: "success"`)
 - Full reports in `proof-output/first-flight-*.json`.
-- API-shape discovery from the live probes is committed to the client, the web settle route, and the flight script. The encoding rule, corrected after a signature-mismatch bug: `functionArgs` **and** `abi` are both JSON-encoded strings, and `functionName` is the **bare** name (`executeSettlement`) whenever `abi` is supplied explicitly. The full canonical signature is only needed when KeeperHub has to auto-fetch the ABI — which it cannot do here, because the contract is not verified on Basescan. See `apps/web/lib/server/settlement.ts` and the 4 selector tests in `packages/engine/test/settlementAbi.test.ts`.
+- API-shape discovery from the live probes is committed to the client, the web settle route, and the flight script. The encoding rule, corrected after a signature-mismatch bug: `functionArgs` **and** `abi` are both JSON-encoded strings, and `functionName` is the **bare** name (`executeSettlement`) whenever `abi` is supplied explicitly. The full canonical signature is only needed when KeeperHub has to auto-fetch the ABI — which it cannot do here, because the contract is not verified on Basescan. Basescan is still not verified; the V2 source was separately verified on Blockscout on 2026-08-14, after this entry was written. See `apps/web/lib/server/settlement.ts` and the 4 selector tests in `packages/engine/test/settlementAbi.test.ts`.
 
 ### Vercel deploy — RESOLVED
 

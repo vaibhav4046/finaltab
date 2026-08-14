@@ -78,9 +78,22 @@ successful simulation and deterministic KeeperHub idempotency key under the
 bounded approval expiry. New first-party work must still pass its current
 database approval check and wallet approval immediately before broadcast.
 
-Canonical deployment `dpl_F5PgMqo7A9zecQW2LKos2FcCNVMs` at commit
-`039582fc44901d1f436b61a426f1523a936427f9` is `READY`. Do not infer a
-current-commit CI or Playwright result from the prior deployment. Retained
+Canonical deployment `dpl_FWLzoyni3SExLtnQ2gLPJu8PjTKb` at commit `47a1ff248495`
+is `READY` and was promoted onto `finaltab.vercel.app` on 2026-08-14. Promotion
+was verified against the live alias rather than inferred from the CLI result:
+`/` returns `200` and `/api/health` reports `status: ready` with every required
+check `true`. The superseded deployment `dpl_F5PgMqo7A9zecQW2LKos2FcCNVMs` at
+commit `039582fc44901d1f436b61a426f1523a936427f9` is the rollback target.
+
+This Vercel project is not linked to the GitHub repository, so a merge to `main`
+does not deploy anything. Release the current commit explicitly:
+
+```bash
+vercel deploy --prod --skip-domain --yes   # build with production env, alias untouched
+vercel promote <deployment-url>            # move the alias only after the build is READY
+```
+
+Do not infer a current-commit CI or Playwright result from a prior deployment. Retained
 evidence separately proves the canonical GitHub OAuth/reload and one-owner tab
 path. The public film's scoped MCP client initializes, lists exactly nine tools,
 allocates and prepares the receipt, creates an approval challenge, and then

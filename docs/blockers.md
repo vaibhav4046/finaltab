@@ -9,8 +9,11 @@ Nothing here is faked in the app: blocked paths render as blocked, unproven stat
   deliberately disabled under the stop-before-charge constraint.
 - Complete a real production microphone/readback lifecycle before claiming
   hybrid voice live. The release, provider variables, and server-side budget
-  controls are deployed/configured, but the browser microphone permission flow
-  did not complete.
+  controls are deployed/configured, and production session minting is now
+  live-proven (a bodyless authenticated `POST /api/voice/token` returns `200`
+  with a real provider session and durable quota headers, while a declared
+  request body is still refused with `413`), but the browser microphone
+  permission flow did not complete.
 - Keep the live non-value MCP probe separate from the retained value proof. The
   canonical release lists exactly nine tools and passed calculation/preparation;
   it did not call MCP submission, and the standalone settlement must not be

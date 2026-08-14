@@ -319,11 +319,17 @@ server-side. The example pins the public V2 address and protocol version. The
 current production source contains no fixed-wallet money tools.
 
 The canonical production release is Vercel deployment
-`dpl_F5PgMqo7A9zecQW2LKos2FcCNVMs` at commit
-[`039582fc44901d1f436b61a426f1523a936427f9`](https://github.com/vaibhav4046/finaltab/commit/039582fc44901d1f436b61a426f1523a936427f9).
-Its exact-SHA GitHub Actions run is green, `/api/health` reports `ready`, and
-Playwright passed **14/14** desktop-and-mobile journeys against
-`https://finaltab.vercel.app`. Volatile local test totals are intentionally not
+`dpl_58fvFVcAAUFpP55Pi1aYTp3ot6Fi` at commit
+[`cb8b6484427d30cb31a0a2dd511e617ff42dda06`](https://github.com/vaibhav4046/finaltab/commit/cb8b6484427d30cb31a0a2dd511e617ff42dda06).
+Its five exact-SHA GitHub Actions check runs completed `success`, and
+`/api/health` reports `ready` while echoing `commit: cb8b6484427d`, so the alias
+names the deployed commit instead of leaving it inferred. Commits after that SHA
+are documentation-only:
+`git diff --stat cb8b6484427d..HEAD -- apps packages contracts supabase scripts`
+prints nothing. The **14/14** desktop-and-mobile Playwright journeys against
+`https://finaltab.vercel.app` were measured on the earlier release
+`039582fc44901d1f436b61a426f1523a936427f9` and are deliberately not
+re-attributed to this commit. Volatile local test totals are intentionally not
 promoted here until the final post-video worktree is rerun.
 
 ## Historical V1 evidence

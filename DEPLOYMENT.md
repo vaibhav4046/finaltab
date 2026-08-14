@@ -78,12 +78,17 @@ successful simulation and deterministic KeeperHub idempotency key under the
 bounded approval expiry. New first-party work must still pass its current
 database approval check and wallet approval immediately before broadcast.
 
-Canonical deployment `dpl_FWLzoyni3SExLtnQ2gLPJu8PjTKb` at commit `47a1ff248495`
-is `READY` and was promoted onto `finaltab.vercel.app` on 2026-08-14. Promotion
-was verified against the live alias rather than inferred from the CLI result:
-`/` returns `200` and `/api/health` reports `status: ready` with every required
-check `true`. The superseded deployment `dpl_F5PgMqo7A9zecQW2LKos2FcCNVMs` at
-commit `039582fc44901d1f436b61a426f1523a936427f9` is the rollback target.
+Canonical deployment `dpl_58fvFVcAAUFpP55Pi1aYTp3ot6Fi` at commit
+`cb8b6484427d30cb31a0a2dd511e617ff42dda06` is `READY` and was promoted onto
+`finaltab.vercel.app` on 2026-08-14. Promotion was verified against the live
+alias rather than inferred from the CLI result: `/` returns `200`, and
+`/api/health` reports `status: ready`, every required check `true`, and
+`commit: cb8b6484427d` — the alias names the deployed commit itself rather than
+leaving it inferred. Commits after that SHA are documentation-only; confirm with
+`git diff --stat cb8b6484427d..HEAD -- apps packages contracts supabase scripts`,
+which prints nothing. The superseded deployment
+`dpl_FWLzoyni3SExLtnQ2gLPJu8PjTKb` at commit `47a1ff248495` is the rollback
+target.
 
 This Vercel project is not linked to the GitHub repository, so a merge to `main`
 does not deploy anything. Release the current commit explicitly:

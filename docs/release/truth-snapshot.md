@@ -14,9 +14,10 @@
 > moved one atomic unit of USDC through KeeperHub execution
 > `3hmlqi36zweiwg6fc5o2u`, tx `0x7a6fb760…a789`, block `45327128`, with verified
 > dual signatures, exact event binding, and conserved balances. Canonical
-> deployment `dpl_F5PgMqo7A9zecQW2LKos2FcCNVMs` serves commit
-> `039582fc44901d1f436b61a426f1523a936427f9` and is `READY`; current-commit CI
-> and Playwright are not inferred from the prior deployment.
+> deployment `dpl_58fvFVcAAUFpP55Pi1aYTp3ot6Fi` serves commit
+> `cb8b6484427d30cb31a0a2dd511e617ff42dda06` and is `READY`, with the live alias
+> reporting `commit: cb8b6484427d` and later commits documentation-only; CI
+> and Playwright for a newer commit are not inferred from that deployment.
 > Supabase project
 > `yoavihmldqbkuxinrsih` is provisioned in London on the free plan. Its four
 > baseline migrations plus additive `52236`, `60000`, `64822`, `73000`, and

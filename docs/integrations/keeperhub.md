@@ -50,8 +50,11 @@ generation. All backing tables are RLS-protected with direct anonymous and
 authenticated access revoked. Safe budget and request headers survive subsequent
 provider errors. If the store is unavailable, the provider is not called. See
 [voice.md](voice.md) for exact cap semantics. These are deployed configuration
-facts; the live provider lifecycle remains unproven until a real
-microphone/readback probe passes.
+facts. Production session minting is separately live-proven — a bodyless
+authenticated `POST /api/voice/token` returns `200` with a real provider session
+and durable quota headers, and a declared request body is still refused with
+`413` — while the rest of the live provider lifecycle remains unproven until a
+real microphone-capture/readback probe passes.
 
 The routes and OpenAPI contract describe configuration-gated capability on the
 current deployment; they do not claim a successful provider lifecycle. The
@@ -96,8 +99,8 @@ narration-generation and tab-draft tables have zero policies and fail closed to
 browser roles. Sensitive mutation RPCs are service-role-only, the
 unindexed-FK warning is cleared, and advisors have zero error-level findings
 with reviewed warnings remaining. Post-promotion cutover `74500` is applied.
-Canonical deployment `dpl_F5PgMqo7A9zecQW2LKos2FcCNVMs` at commit
-`039582fc44901d1f436b61a426f1523a936427f9` is `READY`; the observer's
+Canonical deployment `dpl_58fvFVcAAUFpP55Pi1aYTp3ot6Fi` at commit
+`cb8b6484427d30cb31a0a2dd511e617ff42dda06` is `READY`; the observer's
 callback/audit path remains unclaimed until separately live-probed.
 
 Value-moving first-party UI, REST, and MCP calls are separate from this read-only

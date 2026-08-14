@@ -24,11 +24,15 @@ cutover, and owner-select repair produce 31 public tables, all under RLS.
 Sensitive mutation RPCs, legacy direct financial writes, and the old voice RPC
 deny browser roles. Advisors report zero error-level findings, with reviewed
 RLS/function warnings and the leaked-password-protection warning still present.
-Canonical deployment `dpl_F5PgMqo7A9zecQW2LKos2FcCNVMs` serves commit
-`039582fc44901d1f436b61a426f1523a936427f9` and is `READY`. A real GitHub OAuth round trip,
+Canonical deployment `dpl_58fvFVcAAUFpP55Pi1aYTp3ot6Fi` serves commit
+`cb8b6484427d30cb31a0a2dd511e617ff42dda06` and is `READY`; the live alias reports that
+commit itself. A real GitHub OAuth round trip,
 reload, authenticated tab creation, nine-tool MCP listing, and non-value MCP
-calculation/preparation calls passed. Hybrid voice is deployed/configured but
-its real microphone/readback lifecycle remains unproven. The verified public
+calculation/preparation calls passed. Hybrid voice is deployed and its
+production session minting is live-proven — a bodyless authenticated
+`POST /api/voice/token` returns `200` with a real provider session and durable
+quota headers, and a declared request body is still refused with `413` — while
+its real microphone-capture and readback lifecycle remains unproven. The verified public
 film is live, and DoraHacks BUIDL 47656 is submitted and `Under Review` with its
 Best Onboarding UX Improvement bounty application saved.
 
@@ -38,14 +42,14 @@ Best Onboarding UX Improvement bounty application saved.
 |---|---|---|
 | Public repository | `READY` | <https://github.com/vaibhav4046/finaltab> |
 | MIT license and contribution/security docs | `READY` | Repository root |
-| Live product URL | `LIVE_PROVEN` | <https://finaltab.vercel.app>; deployment `dpl_FWLzoyni3SExLtnQ2gLPJu8PjTKb`; commit `47a1ff248495`; state `READY`; promoted 2026-08-14. Verified after promotion, not inferred from the CLI exit code: `/` returns `200` and `/api/health` returns `status: ready` with all twelve required checks `true` and only the two optional checks (`privyIdentityBridge`, `teamEmailAuth`) `false`. Prior canonical deployment `dpl_F5PgMqo7A9zecQW2LKos2FcCNVMs` at commit `039582fc44901d1f436b61a426f1523a936427f9` remains available as the rollback target. |
+| Live product URL | `LIVE_PROVEN` | <https://finaltab.vercel.app>; deployment `dpl_58fvFVcAAUFpP55Pi1aYTp3ot6Fi`; commit `cb8b6484427d30cb31a0a2dd511e617ff42dda06`; state `READY`; promoted 2026-08-14. Verified after promotion, not inferred from the CLI exit code: `/` returns `200` and `/api/health` returns `status: ready` with all twelve required checks `true`, only the two optional checks (`privyIdentityBridge`, `teamEmailAuth`) `false`, and `commit: cb8b6484427d` — the alias names its own deployed commit instead of leaving it inferred. Commits after that SHA are documentation-only: `git diff --stat cb8b6484427d..HEAD -- apps packages contracts supabase scripts` prints nothing. The superseded deployment `dpl_FWLzoyni3SExLtnQ2gLPJu8PjTKb` at commit `47a1ff248495` remains available as the rollback target. |
 | V2 contract | `LIVE_PROVEN` | [`0x7b58791c…cCDB`](https://sepolia.basescan.org/address/0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB) |
 | KeeperHub V2 deployment | `LIVE_PROVEN` | execution `xasakw5nfxkh2s0fh4stn`; [tx `0x904ec881…e8f`](https://sepolia.basescan.org/tx/0x904ec881ef7c2ec7375c20887b4181cf58224b44162d837743fa869b0a598e8f); block `45321107`; verified receipt |
 | V2 source | `LIVE_PROVEN` | Sourcify exact creation/runtime match, match ID `43497805`; [repository entry](https://repo.sourcify.dev/84532/0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB) |
 | V2 explorer verification | `LIVE_PROVEN` | Blockscout reports `is_verified: true` and `is_fully_verified: true`, verified at `2026-08-14T00:24:16Z` through the Verifier Alliance route: [contract source](https://base-sepolia.blockscout.com/address/0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB?tab=contract) on chain `84532`, compiler `0.8.24+commit.e11b9ed9`, 37 ABI entries. All six logs of the retained settlement transaction decode. Capture: [evidence/blockscout-verification.json](evidence/blockscout-verification.json) |
 | Authenticated MCP V2 surface | `LIVE_PROVEN — NON-VALUE PROBE` | A scoped token initialized and listed exactly nine tools; `split_equal` and arbitrary-participant V2 preparation passed. No submission call was made. |
-| Canonical release | `LIVE_PROVEN` | Deployment `dpl_FWLzoyni3SExLtnQ2gLPJu8PjTKb` serves commit `47a1ff248495` and is `READY`. That commit is the tip of `agent/finaltab-voice-hybrid`, which merged into `main` as merge commit `36876869be8595c37cc2f454b9b7b5131dbb11d9`; `git diff --stat` between the two trees is empty, so the deployed content matches `main`. The Vercel project is not connected to the GitHub repository (`repos/vaibhav4046/finaltab/deployments` is empty and no webhooks exist), so merging never triggers a deploy — every production release is a deliberate CLI promotion. |
-| Hybrid voice candidate | `DEPLOYED/CONFIG PROVEN; PROVIDER LIFECYCLE PENDING` | AssemblyAI temp-token STT + buffered ElevenLabs readback code is deployed; sensitive provider variables and server-side budget reservations are configured/applied; real microphone/readback lifecycle pending. |
+| Canonical release | `LIVE_PROVEN` | Deployment `dpl_58fvFVcAAUFpP55Pi1aYTp3ot6Fi` serves commit `cb8b6484427d30cb31a0a2dd511e617ff42dda06` and is `READY`; the live alias reports that commit itself. That SHA is the PR #13 merge commit on `main` and the tip of `agent/finaltab-voice-hybrid`, and its five GitHub Actions check runs (`Lint, types, tests, and build`, `Dependency, asset, truth, and secret integrity`, `Browser smoke tests`, `Analyze actions`, `Analyze javascript-typescript`) all completed `success`. The Vercel project is not connected to the GitHub repository (`repos/vaibhav4046/finaltab/deployments` is empty and no webhooks exist), so merging never triggers a deploy — every production release is a deliberate CLI promotion. |
+| Hybrid voice candidate | `SESSION MINTING LIVE-PROVEN; CAPTURE LIFECYCLE PENDING` | AssemblyAI temp-token STT + buffered ElevenLabs readback code is deployed; sensitive provider variables and server-side budget reservations are configured/applied. A defect that rejected every real browser session was found and fixed: the route treated the Node runtime's always-present request-body stream as a forbidden payload, so authenticated bodyless `POST /api/voice/token` calls returned `400 BODY_NOT_ALLOWED` and no production voice session could be minted. The guard now tests the `transfer-encoding` header instead, and production now returns `200` with a real provider session and durable quota headers while a declared body is still refused with `413`. Real microphone-capture and readback lifecycle pending. |
 | Settlement durability | `ONCHAIN GUARD LIVE-PROVEN; JOURNAL ENGINE-PROVEN; HOSTED-INSTANCE PROBE PENDING` | Fixed four-stage review; first-party Freeze requires a current HMAC-attested run; UI/REST/MCP share a durable submission journal; accepted recovery skips simulation/execute; prepared recovery reuses its stored successful simulation and deterministic idempotency key under a bounded approval expiry. The **third** duplicate guard — the contract's own `executed` mapping — is live-proven read-only: `pnpm probe:settlement-replay` rebuilds the broadcast calldata for `3hmlqi36zweiwg6fc5o2u`, matches its retained keccak256 byte for byte, and replays it by `eth_call`, which reverts `AlreadyExecuted(0x8b670800…b9db)` at head while the identical bytes do not revert at block `45327127`. The journal's own accepted-replay and prepared-recovery paths are now proven by enforcement rather than by schema presence: `apps/web/test/durableSubmissionJournalEnforcement.test.ts` (14 tests) and `apps/web/test/durableSubmissionApplicationReplay.test.ts` (3 tests) apply these migrations to a real PostgreSQL engine and make the database refuse the calls. Two limits stay on that claim — the engine is the PostgreSQL that PGlite ships, not the version the hosted project runs, and it proves what the migrations in this repository enforce, not what the deployed project's own configuration enforces. A probe against the hosted instance remains outstanding. |
 | Supabase identity + optional Privy bridge | `GITHUB LIVE_PROVEN; PRIVY OPTIONAL/DISABLED` | GitHub OAuth, branded return, `/app`, reload, and an authenticated tab create/read passed. Privy remains fail-closed and hidden under the stop-before-charge constraint. Email fallback UI is disabled and delivery unproven. |
 | V2 USDC settlement rail | `LIVE_PROVEN` | KeeperHub `3hmlqi36zweiwg6fc5o2u`; [tx `0x7a6fb760…a789`](https://sepolia.basescan.org/tx/0x7a6fb760f691954a41c71d5d508629c58aa09207bba0de4eaf164f097c59a789); block `45327128`; 1 atomic USDC; exact V2 event binding and balance conservation |
@@ -111,9 +115,12 @@ current public submission URL.
 
 The old `212 passed, 1 skipped` and `b084497` results are historical baselines.
 The current canonical release is deployment
-`dpl_F5PgMqo7A9zecQW2LKos2FcCNVMs` at commit
-[`039582fc44901d1f436b61a426f1523a936427f9`](https://github.com/vaibhav4046/finaltab/commit/039582fc44901d1f436b61a426f1523a936427f9).
-Vercel reports it `READY`. This snapshot does not infer a current-commit CI or
+`dpl_58fvFVcAAUFpP55Pi1aYTp3ot6Fi` at commit
+[`cb8b6484427d30cb31a0a2dd511e617ff42dda06`](https://github.com/vaibhav4046/finaltab/commit/cb8b6484427d30cb31a0a2dd511e617ff42dda06).
+Vercel reports it `READY` and the live alias echoes `commit: cb8b6484427d`.
+Commits after that SHA are documentation-only, which
+`git diff --stat cb8b6484427d..HEAD -- apps packages contracts supabase scripts`
+confirms by printing nothing. This snapshot does not infer a current-commit CI or
 Playwright result from the prior deployment's evidence.
 
 ## Remaining disclosure
@@ -186,8 +193,10 @@ Playwright result from the prior deployment's evidence.
   no key is available. Capture:
   [evidence/blockscout-verification.json](evidence/blockscout-verification.json).
 - AssemblyAI and ElevenLabs are deployed/configured. Their sensitive Production
-  variables and Supabase budget controls are present, but a real
-  microphone/readback lifecycle must pass before calling hybrid voice live.
+  variables and Supabase budget controls are present, and production session
+  minting is live-proven after the `BODY_NOT_ALLOWED` defect was fixed, but a
+  real microphone-capture/readback lifecycle must still pass before calling
+  hybrid voice live end to end.
   `tests/e2e/voice-lifecycle.spec.ts` is the runnable probe for that gate. It
   skips by default and states its own blocker: minting a capture credential
   requires a real signed-in Supabase session, which cannot be produced without a
@@ -250,8 +259,8 @@ paragraph is the correction.
 
 ## Completion gates
 
-1. Preserve canonical deployment `dpl_F5PgMqo7A9zecQW2LKos2FcCNVMs`, commit
-   `039582fc44901d1f436b61a426f1523a936427f9`, and Vercel `READY` state.
+1. Preserve canonical deployment `dpl_58fvFVcAAUFpP55Pi1aYTp3ot6Fi`, commit
+   `cb8b6484427d30cb31a0a2dd511e617ff42dda06`, and Vercel `READY` state.
 2. Preserve the retained V2 settlement manifest and its exact KeeperHub/chain
    identifiers; do not rebroadcast it.
 3. Preserve the applied cutover and owner-select policy proof. Keep stale-review
@@ -261,8 +270,9 @@ paragraph is the correction.
    human-approval/submission trace pending unless it is separately exercised.
 5. Retain the canonical GitHub OAuth/reload and collaboration-create evidence;
    do not expand it into an untested two-user or cross-device claim.
-6. Keep the production browser microphone/readback lifecycle pending until a
-   real provider probe passes; server-side budget controls remain configured.
+6. Keep the production browser microphone-capture/readback lifecycle pending
+   until a real capture probe passes; server-side budget controls remain
+   configured and production session minting is live-proven.
 7. Preserve the public film URL, exact measured media metadata and SHA-256, and
    local Kokoro narration provenance. Do not imply an ElevenLabs synthesis POST.
 8. Monitor [BUIDL 47656](https://dorahacks.io/buidl/47656) from its submitted

@@ -15,24 +15,24 @@
   "currentRelease": {
     "protocol": "V2",
     "measuredAt": "2026-08-12",
-    "deployedBaselineCommit": "039582fc44901d1f436b61a426f1523a936427f9",
-    "candidateCommit": "039582fc44901d1f436b61a426f1523a936427f9",
+    "deployedBaselineCommit": "cb8b6484427d30cb31a0a2dd511e617ff42dda06",
+    "candidateCommit": "cb8b6484427d30cb31a0a2dd511e617ff42dda06",
     "releaseBaseline": {
       "state": "LIVE_PROVEN",
-      "githubCiJobs": "NOT_REASSERTED_FOR_CURRENT_COMMIT",
-      "tests": "No current-commit aggregate or CI result is inferred from the prior deployment",
-      "playwright": "NOT_REASSERTED_FOR_CURRENT_COMMIT",
-      "health": "READY",
+      "githubCiJobs": "Five exact-SHA check runs on cb8b6484427d30cb31a0a2dd511e617ff42dda06 completed success",
+      "tests": "No current-commit aggregate is inferred from the deployment itself",
+      "playwright": "Local-only for this commit (default baseURL http://127.0.0.1:3017); the 14/14 production run belongs to 039582fc44901d1f436b61a426f1523a936427f9",
+      "health": "READY, and the live alias reports commit: cb8b6484427d",
       "protectedProbe": {
-        "result": "Canonical Vercel deployment is READY; current-commit CI and Playwright are not inferred from the prior deployment",
-        "immutableDeploymentId": "dpl_F5PgMqo7A9zecQW2LKos2FcCNVMs",
+        "result": "Canonical Vercel deployment is READY and the live alias echoes its own deployed commit; production Playwright is not inferred from that deployment",
+        "immutableDeploymentId": "dpl_58fvFVcAAUFpP55Pi1aYTp3ot6Fi",
         "immutableUrl": null,
         "publicAlias": "https://finaltab.vercel.app"
       },
-      "caveat": "The production microphone/readback provider lifecycle, production MCP value path, two-identity isolation, and cross-channel recovery remain unproven. The video is public and the DoraHacks BUIDL is submitted."
+      "caveat": "The production microphone-capture/readback provider lifecycle (session minting is separately live-proven), production MCP value path, two-identity isolation, and cross-channel recovery remain unproven. The video is public and the DoraHacks BUIDL is submitted."
     },
     "localCandidate": {
-      "state": "SOURCE_AND_RELEASE_DOCS_CHANGED_AFTER_READY_DEPLOY",
+      "state": "RELEASE_DOCS_ONLY_CHANGED_AFTER_READY_DEPLOY",
       "tests": "NOT_REASSERTED_FOR_CURRENT_COMMIT",
       "productionBuildPages": "NOT_REASSERTED_FOR_CURRENT_COMMIT",
       "playwright": "NOT_REASSERTED_FOR_CURRENT_COMMIT",
@@ -41,7 +41,8 @@
         "productFilmNarration": "Local Kokoro; one denied ElevenLabs quota-check GET; zero synthesis POSTs; no retry",
         "durableQuota": "Supabase service-role reservation path; 8 transcription sessions and 20 readbacks per user per minute",
         "providerSecrets": "Stored as sensitive Vercel Production variables; values not recorded",
-        "deploymentState": "DEPLOYED_CONFIGURED_PENDING_LIVE_PROVIDER_PROBE"
+        "deploymentState": "SESSION_MINTING_LIVE_PROVEN_PENDING_CAPTURE_LIFECYCLE",
+        "sessionMintProbe": "Bodyless authenticated POST /api/voice/token on production returns 200 with a real provider session and durable quota headers; a declared request body is still refused with 413"
       },
       "caveat": "Do not infer a current-commit aggregate test, CI, or Playwright result. Final media metadata is independently measured and recorded below."
     },

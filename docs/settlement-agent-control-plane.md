@@ -4,8 +4,8 @@ Status: implemented in source and applied at the database layer through ordered
 migrations `52236`, `60000`, `73000`, and `74000`. All affected public tables
 have RLS, sensitive mutation RPCs are service-role-only, and `60000` clears the
 agent-event composite-FK index warning. Canonical deployment
-`dpl_F5PgMqo7A9zecQW2LKos2FcCNVMs` at commit
-`039582fc44901d1f436b61a426f1523a936427f9` is `READY`, and
+`dpl_58fvFVcAAUFpP55Pi1aYTp3ot6Fi` at commit
+`cb8b6484427d30cb31a0a2dd511e617ff42dda06` is `READY`, and
 post-promotion cutover `74500` is applied. The complete four-stage control-plane
 sequence remains source/test/schema-proven until separately exercised live.
 

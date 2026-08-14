@@ -6,9 +6,13 @@ voice budget controls, sensitive provider configuration, and exactly-nine-tool
 non-value MCP probe are proven. The verified 4K/60 product film is public, and
 [DoraHacks BUIDL 47656](https://dorahacks.io/buidl/47656) is submitted and
 `Under Review`; its Best Onboarding UX Improvement bounty application is saved.
-The real browser voice-provider lifecycle remains unproven. Deployment
-`dpl_F5PgMqo7A9zecQW2LKos2FcCNVMs` at commit
-`039582fc44901d1f436b61a426f1523a936427f9` is `READY`.
+Production voice-session minting is live-proven — a bodyless authenticated
+`POST /api/voice/token` returns `200` with a real provider session and durable
+quota headers, and a declared request body is still refused with `413` — while
+the real browser microphone-capture and readback lifecycle remains unproven.
+Deployment `dpl_58fvFVcAAUFpP55Pi1aYTp3ot6Fi` at commit
+`cb8b6484427d30cb31a0a2dd511e617ff42dda06` is `READY`, and the live alias
+reports `commit: cb8b6484427d`.
 
 The live DoraHacks detail page was verified on 2026-08-11. It states all times
 are UTC+2 and sets the deadline at **2026-08-13 12:00 UTC+2**
@@ -24,8 +28,9 @@ signed in. The August 17–19 pitch window is still ahead. Full note in
 
 ## 1. Repository and CI
 
-Canonical release evidence: deployment `dpl_F5PgMqo7A9zecQW2LKos2FcCNVMs`
-at commit `039582fc44901d1f436b61a426f1523a936427f9` is `READY`. The boxes below
+Canonical release evidence: deployment `dpl_58fvFVcAAUFpP55Pi1aYTp3ot6Fi`
+at commit `cb8b6484427d30cb31a0a2dd511e617ff42dda06` is `READY`, and that
+commit's five GitHub Actions check runs completed `success`. The boxes below
 remain open where a current-commit clean-checkout result is not recorded.
 
 - [ ] Submitted commit is pushed and the public repository is readable logged out.
@@ -248,8 +253,8 @@ V2_DEPLOYMENT_EXECUTION_ID=xasakw5nfxkh2s0fh4stn
 V2_DEPLOYMENT_TX=0x904ec881ef7c2ec7375c20887b4181cf58224b44162d837743fa869b0a598e8f
 V2_DEPLOYMENT_BLOCK=45321107
 SOURCIFY_MATCH_ID=43497805
-CANONICAL_COMMIT=039582fc44901d1f436b61a426f1523a936427f9
-CANONICAL_VERCEL_DEPLOYMENT_ID=dpl_F5PgMqo7A9zecQW2LKos2FcCNVMs
+CANONICAL_COMMIT=cb8b6484427d30cb31a0a2dd511e617ff42dda06
+CANONICAL_VERCEL_DEPLOYMENT_ID=dpl_58fvFVcAAUFpP55Pi1aYTp3ot6Fi
 CANONICAL_HEALTH=READY
 SUPABASE_PROJECT_REF=yoavihmldqbkuxinrsih
 SUPABASE_REGION=eu-west-2

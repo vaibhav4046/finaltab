@@ -6,10 +6,10 @@
 > `0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB`, KeeperHub deployment execution
 > `xasakw5nfxkh2s0fh4stn`, tx `0x904ec881…e8f`, block `45321107`, Sourcify exact
 > match `43497805`. Canonical deployment
-> `dpl_F5PgMqo7A9zecQW2LKos2FcCNVMs` at commit
-> `039582fc44901d1f436b61a426f1523a936427f9` supersedes the archived release:
-> Vercel reports `READY`, while current-commit CI and Playwright are not inferred
-> from the prior deployment. Current V2 additions: KeeperHub execution
+> `dpl_58fvFVcAAUFpP55Pi1aYTp3ot6Fi` at commit
+> `cb8b6484427d30cb31a0a2dd511e617ff42dda06` supersedes the archived release:
+> Vercel reports `READY` and the live alias echoes `commit: cb8b6484427d`, while
+> CI and Playwright for a newer commit are not inferred from that deployment. Current V2 additions: KeeperHub execution
 > `3hmlqi36zweiwg6fc5o2u` moved one atomic unit of USDC in tx
 > `0x7a6fb760…a789` at block `45327128`, with exact event/balance proof; Supabase
 > project `yoavihmldqbkuxinrsih` is provisioned and schema-verified with its four

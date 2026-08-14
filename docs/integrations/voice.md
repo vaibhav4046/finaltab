@@ -73,11 +73,15 @@ precise project-wide remaining budgets.
 
 Set `FINALTAB_VOICE_DURABLE_QUOTA=supabase` and keep the configured
 `SUPABASE_SECRET_KEY` server-only when deploying these routes. The committed
-spend-reservation migration is applied; the separate post-promotion cutover
-`20260811074500` is not. Code fails closed before a provider call if any
-prerequisite is absent. A production microphone/readback lifecycle probe is
-still pending, so this document does not claim that either provider path is
-live.
+spend-reservation migration is applied, and so is the separate post-promotion
+cutover `20260811074500` — see
+[docs/release/status.md](../release/status.md) for the operational record. Code
+fails closed before a provider call if any prerequisite is absent. Production
+session minting is live-proven: a bodyless authenticated
+`POST /api/voice/token` returns `200` with a real provider session and durable
+quota headers, and a declared request body is still refused with `413`. A
+production microphone-capture/readback lifecycle probe is still pending, so this
+document does not claim that either provider path is live end to end.
 
 Provider contracts used by this policy:
 

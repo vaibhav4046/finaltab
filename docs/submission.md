@@ -175,7 +175,7 @@ Hook are configured.
 
 ## Links
 
-- Live product: <https://finaltab.vercel.app> — `READY`; deployment `dpl_F5PgMqo7A9zecQW2LKos2FcCNVMs`; commit `039582fc44901d1f436b61a426f1523a936427f9`
+- Live product: <https://finaltab.vercel.app> — `READY`; deployment `dpl_58fvFVcAAUFpP55Pi1aYTp3ot6Fi`; commit `cb8b6484427d30cb31a0a2dd511e617ff42dda06`, echoed by `/api/health` as `commit: cb8b6484427d`
 - Source: <https://github.com/vaibhav4046/finaltab>
 - MCP endpoint: <https://finaltab.vercel.app/api/mcp> — authenticated exactly-nine-tool list plus non-value calculation/preparation live-proven; no submission called
 - V2 contract: <https://sepolia.basescan.org/address/0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB>
@@ -205,14 +205,19 @@ current production source.
   Verifier Alliance route rather than Sourcify's, so a Sourcify-only re-check
   misreads it as unverified. All six logs of the retained settlement
   transaction decode. Not verified on BaseScan.
-- Canonical release: deployment `dpl_F5PgMqo7A9zecQW2LKos2FcCNVMs` serves
-  commit `039582fc44901d1f436b61a426f1523a936427f9` and is `READY`.
+- Canonical release: deployment `dpl_58fvFVcAAUFpP55Pi1aYTp3ot6Fi` serves
+  commit `cb8b6484427d30cb31a0a2dd511e617ff42dda06` and is `READY`; the live
+  alias reports that commit, and later commits are documentation-only.
 - Authenticated MCP: production listed exactly nine tools and passed non-value
   calculation and arbitrary-participant V2 preparation. No submission call was
   made; the retained value proof is separately labeled.
-- Hybrid voice: code and budget controls are deployed/configured, but the real
-  microphone/readback lifecycle remains pending. The verified public 4K/60
-  product film uses local Kokoro narration, not a live browser voice lifecycle.
+- Hybrid voice: code and budget controls are deployed/configured, and
+  production session minting is live-proven — a bodyless authenticated
+  `POST /api/voice/token` returns `200` with a real provider session and durable
+  quota headers, while a declared request body is still refused with `413`. The
+  real microphone-capture and readback lifecycle remains pending. The verified
+  public 4K/60 product film uses local Kokoro narration, not a live browser
+  voice lifecycle.
 - V2 value-moving rail through KeeperHub: live-proven at execution
   `3hmlqi36zweiwg6fc5o2u`, tx `0x7a6fb760…a789`, block `45327128`, with verified
   dual signatures, receipt, exact V2 event binding, and conserved balances.

@@ -2,10 +2,12 @@
 
 How the current V2 system is put together, in six diagrams.
 
-This document describes the code on `agent/finaltab-voice-hybrid`. It is not a
-deployment claim: [docs/release/status.md](release/status.md) is the operational
-source of truth for what is running, and production currently serves commit
-`039582fc44901d1f436b61a426f1523a936427f9`. The archived V1 map lives in
+This document describes the code on `agent/finaltab-voice-hybrid`, whose tip is
+also the `main` tip. It is not a deployment claim:
+[docs/release/status.md](release/status.md) is the operational source of truth
+for what is running, and production currently serves commit
+`cb8b6484427d30cb31a0a2dd511e617ff42dda06`, which the live `/api/health`
+reports as `commit: cb8b6484427d`. The archived V1 map lives in
 [docs/release/architecture.md](release/architecture.md) and is kept as history
 rather than updated.
 

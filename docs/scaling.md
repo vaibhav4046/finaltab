@@ -31,9 +31,9 @@ authorized standalone runner did not exercise the production MCP short-lived
 human approval boundary, so the complete value-moving MCP loop remains
 unproven.
 
-Canonical deployment `dpl_F5PgMqo7A9zecQW2LKos2FcCNVMs` at commit
-`039582fc44901d1f436b61a426f1523a936427f9` is `READY` at
-`finaltab.vercel.app`. The public film's authenticated MCP run initialized,
+Canonical deployment `dpl_58fvFVcAAUFpP55Pi1aYTp3ot6Fi` at commit
+`cb8b6484427d30cb31a0a2dd511e617ff42dda06` is `READY` at
+`finaltab.vercel.app`, whose `/api/health` echoes `commit: cb8b6484427d`. The public film's authenticated MCP run initialized,
 listed exactly nine production tools, allocated and prepared the complex
 receipt, created an approval challenge, and then stopped. No signing,
 submission, broadcast, or value movement occurred.

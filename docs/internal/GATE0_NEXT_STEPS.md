@@ -35,8 +35,13 @@ are no longer blockers.
 
 ## What is still outstanding
 
-- **Human submission on DoraHacks.** This is a human-only action; see
-  [../release/user-actions.md](../release/user-actions.md).
+- **Nothing in the submission path.** The DoraHacks entry was a human-only
+  action and the operator confirmed on 2026-08-14 that it is done; the recorded
+  observation is BUIDL 47656 `Under Review` on 2026-08-11, inside the window.
+  Read the deadline section below before trusting any date here. Remaining work
+  is engineering-side only and lives in
+  [../blockers.md](../blockers.md) — chiefly the real browser microphone
+  lifecycle and two-identity isolation, both gated on human sign-in.
 
 ## Deadline — read this before trusting any date in these documents
 

@@ -31,8 +31,14 @@ Nothing here is faked in the app: blocked paths render as blocked, unproven stat
   relabeled as one.
 - Keep two-identity isolation, review invalidation, and cross-channel journal
   recovery labeled source/test/schema-proven until separately exercised.
-- Finish and review the final 4K/60 product video from truthful live captures.
-- Upload that video and complete the human DoraHacks form.
+The video and the submission are no longer blockers. The 4K/60 master is
+published at <https://youtu.be/eXZACnOdt5w> (90.005 s, 3840×2160/60, 5,400 H.264
+frames, sha256 `a14cfef3…b09c69`, visibility Unlisted) and DoraHacks
+[BUIDL 47656](https://dorahacks.io/buidl/47656) is submitted, observed
+`Under Review` on the live page on 2026-08-11 and confirmed submitted by the
+operator on 2026-08-14. That status line is not re-verifiable logged out: the
+public BUIDL page renders the full entry but exposes no submission-status field.
+See [release/SUBMISSION_CHECKLIST.md](release/SUBMISSION_CHECKLIST.md).
 
 V2 deployment itself is resolved: contract
 `0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB`, KeeperHub execution

@@ -1,29 +1,102 @@
 import { NextResponse } from "next/server";
+import type { EmailOtpType } from "@supabase/supabase-js";
+import { canonicalAppOrigin, safeNextPath } from "@/lib/auth/navigation";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
-function safeNext(value: string | null): string {
-  return value?.startsWith("/") && !value.startsWith("//") ? value : "/app";
+const EMAIL_OTP_TYPES = new Set<EmailOtpType>([
+  "email",
+  "signup",
+  "invite",
+  "magiclink",
+  "recovery",
+  "email_change",
+]);
+
+function emailOtpType(value: string | null): EmailOtpType | null {
+  return value && EMAIL_OTP_TYPES.has(value as EmailOtpType)
+    ? (value as EmailOtpType)
+    : null;
+}
+
+function authRedirect(origin: string, path: string): NextResponse {
+  const response = NextResponse.redirect(new URL(path, origin));
+  response.headers.set("Cache-Control", "private, no-store");
+  response.headers.set("Referrer-Policy", "no-referrer");
+  return response;
+}
+
+function oneQueryValue(url: URL, key: string): string | null {
+  const values = url.searchParams.getAll(key);
+  return values.length === 1 ? values[0] ?? null : null;
+}
+
+function pkceFlowId(value: string | null): string | null {
+  return value && /^[A-Za-z0-9_-]{8,64}$/.test(value) ? value : null;
 }
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
-  const code = url.searchParams.get("code");
-  const next = safeNext(url.searchParams.get("next"));
+  const origin = canonicalAppOrigin(request);
+  const code = oneQueryValue(url, "code");
+  const tokenHash = oneQueryValue(url, "token_hash");
+  const type = emailOtpType(oneQueryValue(url, "type"));
+  const rawFlowId = oneQueryValue(url, "sb_flow_id");
+  const flowId = pkceFlowId(rawFlowId);
+  const next = safeNextPath(url.searchParams.get("next"));
   const client = await createServerSupabaseClient();
 
   if (!client) {
-    return NextResponse.redirect(new URL("/auth?error=cloud-not-configured", url.origin));
+    return authRedirect(
+      origin,
+      `/auth?error=cloud-not-configured&next=${encodeURIComponent(next)}`,
+    );
   }
-  if (!code) {
-    return NextResponse.redirect(new URL("/auth?error=missing-code", url.origin));
+  if (
+    url.searchParams.has("error") ||
+    url.searchParams.has("error_code") ||
+    url.searchParams.has("error_description")
+  ) {
+    return authRedirect(
+      origin,
+      `/auth?error=oauth-provider-error&next=${encodeURIComponent(next)}`,
+    );
+  }
+  if (
+    (code && tokenHash) ||
+    (!code && !tokenHash) ||
+    (code && !flowId) ||
+    (tokenHash && !type) ||
+    url.searchParams.getAll("code").length > 1 ||
+    url.searchParams.getAll("token_hash").length > 1 ||
+    url.searchParams.getAll("type").length > 1 ||
+    url.searchParams.getAll("sb_flow_id").length > 1 ||
+    url.searchParams.getAll("next").length > 1 ||
+    (rawFlowId !== null && flowId === null)
+  ) {
+    return authRedirect(
+      origin,
+      `/auth?error=missing-or-ambiguous-code&next=${encodeURIComponent(next)}`,
+    );
   }
 
-  const { error } = await client.auth.exchangeCodeForSession(code);
+  let error: unknown;
+  try {
+    const result = code
+      ? await client.auth.exchangeCodeForSession(code, { flowId: flowId! })
+      : await client.auth.verifyOtp({ token_hash: tokenHash!, type: type! });
+    error = result.error;
+  } catch {
+    error = new Error("Auth exchange unavailable");
+  }
   if (error) {
-    return NextResponse.redirect(new URL("/auth?error=invalid-or-expired-link", url.origin));
+    return authRedirect(
+      origin,
+      `/auth?error=invalid-or-expired-link&next=${encodeURIComponent(next)}`,
+    );
   }
 
-  const response = NextResponse.redirect(new URL(next, url.origin));
-  response.headers.set("Cache-Control", "private, no-store");
-  return response;
+  return authRedirect(
+    origin,
+    `/auth/complete?next=${encodeURIComponent(next)}`,
+  );
 }

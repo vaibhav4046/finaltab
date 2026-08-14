@@ -1,12 +1,12 @@
 import "server-only";
-import { GroqClient } from "@finaltab/vision";
+import { GroqClient, type GroqClientOptions } from "@finaltab/vision";
 import { KeeperHubClient, KeeperHubError } from "@finaltab/keeperhub";
 
 /** Server-side Groq client, or null when GROQ_API_KEY is not configured. */
-export function groqClient(): GroqClient | null {
+export function groqClient(options: Pick<GroqClientOptions, "maxCompletionTokens" | "timeoutMs"> = {}): GroqClient | null {
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) return null;
-  return new GroqClient({ apiKey });
+  return new GroqClient({ apiKey, ...options });
 }
 
 /**

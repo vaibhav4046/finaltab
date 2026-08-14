@@ -1,0 +1,49 @@
+name: CodeQL
+
+# Kept in its own workflow on purpose. Uploading results needs
+# security-events: write, and that permission has no business being granted to
+# the job that installs dependencies and runs the test suite. Splitting the
+# file is what keeps the CI job's token read-only.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    # Weekly, so newly published queries reach unchanged code. Without this,
+    # analysis only ever runs against commits that happen to be pushed.
+    - cron: "37 5 * * 1"
+
+concurrency:
+  group: codeql-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze:
+    name: Analyze ${{ matrix.language }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        # The Solidity contracts are covered by contracts/ Hardhat tests
+        # instead: CodeQL has no Solidity extractor, and claiming otherwise
+        # would be a false assurance about the money path.
+        language: [javascript-typescript, actions]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          language: ${{ matrix.language }}
+
+      # No build step. The web app is analyzed from source, so analysis cannot
+      # be silently skipped by a build failure that the quality job already
+      # reports on its own.
+      - name: Analyze
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: /language:${{ matrix.language }}

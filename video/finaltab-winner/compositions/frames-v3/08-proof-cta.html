@@ -1,0 +1,26 @@
+<!doctype html><html lang="en"><head><meta charset="UTF-8"/><title>FINALTab V3 — Public proof</title></head><body>
+<template>
+  <style>
+    @font-face{font-family:Geist;src:url("assets/fonts/Geist-Variable.woff2") format("woff2");font-weight:100 900}@font-face{font-family:GeistMono;src:url("assets/fonts/GeistMono-Regular.woff2") format("woff2");font-weight:400}@font-face{font-family:GeistMono;src:url("assets/fonts/GeistMono-Bold.woff2") format("woff2");font-weight:700}
+    #v3-08-root{position:absolute;inset:0;width:3840px;height:2160px;overflow:hidden;color:#F4F8F1}.clip{position:absolute;inset:0;overflow:hidden}.ground{background:#050706}.grid{position:absolute;inset:0;background-image:linear-gradient(rgba(184,255,92,.07) 2px,transparent 2px),linear-gradient(90deg,rgba(184,255,92,.07) 2px,transparent 2px);background-size:192px 192px;mask-image:radial-gradient(circle at 70% 50%,#000 0,transparent 70%)}
+    .stage{box-sizing:border-box;padding:185px 220px 330px;display:grid;grid-template-columns:1.08fr .92fr;gap:150px;align-items:center}.left{align-self:center}.eyebrow{font:700 34px/1 GeistMono,monospace;letter-spacing:.14em;color:#B8FF5C}.wordmark{margin-top:54px;font:790 250px/.86 Geist,Arial,sans-serif;letter-spacing:-.075em;color:#F4F8F1}.wordmark span{color:#45AFFF}.title{margin-top:76px;max-width:1600px;font:750 92px/.98 Geist,Arial,sans-serif;letter-spacing:-.05em}.title b{color:#C8FF3D}.paths{display:flex;gap:30px;margin-top:78px}.path{padding:24px 28px;border:2px solid #31403A;font:700 25px/1 GeistMono,monospace;letter-spacing:.07em;color:#B7C0B8}.path:first-child{border-color:#C8FF3D;color:#F4F8F1}
+    .proof-shell{position:relative;height:1280px;border:4px solid #B8FF5C;background:#090D0B;overflow:hidden;box-shadow:42px 42px 0 #0B1411}.proof-fallback{position:absolute;z-index:0;inset:0;display:grid;place-items:center;text-align:center;background:repeating-linear-gradient(135deg,#0A0F0D 0 28px,#0C1310 28px 56px);font:700 30px/1.5 GeistMono,monospace;color:#B7C0B8}.proof-fallback b{display:block;font:750 60px/1 Geist,Arial,sans-serif;color:#F4F8F1;letter-spacing:-.035em}.proof-fallback em{display:block;margin-top:26px;color:#B8FF5C;font-style:normal}.proof-image{position:absolute;z-index:2;inset:0;width:100%;height:100%;object-fit:contain;background:#090D0B}.proof-head{position:absolute;z-index:3;left:0;right:0;top:0;padding:30px 36px;background:#B8FF5C;font:800 26px/1 GeistMono,monospace;letter-spacing:.08em;color:#050706}.stamp{position:absolute;z-index:4;right:44px;bottom:42px;padding:26px 34px;border:5px solid #B8FF5C;background:#050706;font:800 30px/1 GeistMono,monospace;color:#B8FF5C;letter-spacing:.08em}
+    .copy{position:absolute;left:220px;right:220px;bottom:350px;display:flex;justify-content:space-between;padding-top:36px;border-top:2px solid #31403A;font:700 29px/1 GeistMono,monospace;letter-spacing:.08em;color:#B7C0B8}.copy b{color:#B8FF5C}
+  </style>
+  <div id="v3-08-root" data-composition-id="finaltab-v3-proof-cta" data-start="0" data-width="3840" data-height="2160" data-duration="5">
+    <section id="v3-08-ground" class="clip ground" data-start="0" data-duration="5" data-track-index="0"><div class="grid"></div></section>
+    <section id="v3-08-stage" class="clip stage" data-layout-allow-occlusion data-start="0" data-duration="5" data-track-index="2">
+      <div class="left"><div id="v3-08-eyebrow" class="eyebrow">08 / EARLIER AUTHORIZED RUN · READ ONLY</div><div id="v3-08-title" class="wordmark">FINAL<span>Tab</span></div><div class="title">PEOPLE APPROVE.<br/><b>ANYONE CAN VERIFY.</b></div><div class="paths"><span class="path">finaltab.vercel.app</span><span class="path">SOURCE</span><span class="path">PUBLIC TRANSACTION</span></div></div>
+      <div id="v3-08-proof" class="proof-shell"><div class="proof-fallback" data-layout-allow-occlusion><div><b>RETAINED PUBLIC PROOF</b><em>C08 · RELEASE-GATED STILL</em></div></div><img id="v3-08-proof-image" class="proof-image" src="assets/capture-v3/C08-retained-proof.png" alt="Sanitized retained settlement proof"/><div class="proof-head">EARLIER AUTHORIZED RUN · NOT CREATED BY THIS MCP TEST</div><div class="stamp">VERIFIED · SETTLED</div></div>
+      <div id="v3-08-copy" class="copy"><span>ONE EARLIER EXECUTION · PUBLICLY CHECKABLE</span><b>PROOF, NOT PROMISES.</b></div>
+    </section>
+  </div>
+  <script>
+    window.__timelines=window.__timelines||{};const tl=gsap.timeline({paused:true});
+    tl.fromTo("#v3-08-eyebrow",{x:-48,opacity:0},{x:0,opacity:1,duration:.45,ease:"power3.out"},.06).fromTo("#v3-08-title",{y:56,opacity:0},{y:0,opacity:1,duration:.68,ease:"expo.out"},.32)
+      .fromTo("#v3-08-root .title",{y:40,opacity:0},{y:0,opacity:1,duration:.55,ease:"power3.out"},.8).fromTo("#v3-08-proof",{x:100,opacity:0},{x:0,opacity:1,duration:.72,ease:"power3.out"},1.25)
+      .fromTo("#v3-08-root .stamp",{scale:.82,opacity:0},{scale:1,opacity:1,duration:.5,ease:"power3.out"},2.15).fromTo("#v3-08-root .paths .path",{y:28,opacity:0},{y:0,opacity:1,duration:.4,stagger:.12,ease:"power3.out"},2.5)
+      .fromTo("#v3-08-copy",{opacity:0},{opacity:1,duration:.4},3.25);
+    window.__timelines["finaltab-v3-proof-cta"]=tl;
+  </script>
+</template></body></html>

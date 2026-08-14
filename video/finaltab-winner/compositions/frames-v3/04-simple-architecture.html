@@ -1,0 +1,35 @@
+<!doctype html><html lang="en"><head><meta charset="UTF-8"/><title>FINALTab V3 — How it works</title></head><body>
+<template>
+  <style>
+    @font-face{font-family:Geist;src:url("assets/fonts/Geist-Variable.woff2") format("woff2");font-weight:100 900}@font-face{font-family:GeistMono;src:url("assets/fonts/GeistMono-Regular.woff2") format("woff2");font-weight:400}@font-face{font-family:GeistMono;src:url("assets/fonts/GeistMono-Bold.woff2") format("woff2");font-weight:700}
+    #v3-04-root{position:absolute;inset:0;width:3840px;height:2160px;overflow:hidden;color:#F4F8F1}.clip{position:absolute;inset:0;overflow:hidden}.ground{background:#050706}.grid{position:absolute;inset:0;background-image:linear-gradient(90deg,transparent 0 191px,rgba(69,175,255,.075) 191px 193px),linear-gradient(transparent 0 191px,rgba(69,175,255,.075) 191px 193px);background-size:192px 192px}
+    .stage{box-sizing:border-box;padding:180px 220px 330px}.header{display:flex;justify-content:space-between;align-items:flex-end}.eyebrow{font:700 34px/1 GeistMono,monospace;letter-spacing:.14em;color:#C8FF3D}.title{margin-top:42px;font:770 132px/.96 Geist,Arial,sans-serif;letter-spacing:-.055em}.hint{max-width:740px;text-align:right;font:600 34px/1.35 Geist,Arial,sans-serif;color:#B7C0B8}
+    .architecture{position:relative;margin-top:150px;display:grid;grid-template-columns:repeat(6,1fr);gap:32px}.flow{position:absolute;left:160px;right:160px;top:172px;height:8px;background:#25302A}.flow-line{width:100%;height:100%;background:#45AFFF;transform-origin:0 50%}.stage-card{position:relative;z-index:2;min-height:520px;padding:52px 38px 42px;border:2px solid #31403A;background:#090D0B}.stage-card .n{font:700 30px/1 GeistMono,monospace;color:#B7C0B8}.node{width:36px;height:36px;margin-top:78px;border:8px solid #45AFFF;border-radius:50%;background:#050706}.stage-card h2{margin:52px 0 0;font:730 58px/1.02 Geist,Arial,sans-serif;letter-spacing:-.035em}.stage-card p{margin:26px 0 0;font:600 28px/1.35 GeistMono,monospace;color:#B7C0B8}.stage-card.exec{border-color:#C8FF3D}.stage-card.exec .node{border-color:#C8FF3D}.stage-card.proof{border-color:#B8FF5C}.stage-card.proof .node{border-color:#B8FF5C}.stage-card.proof p{color:#B8FF5C}
+    .plain{position:absolute;left:220px;right:220px;bottom:350px;display:grid;grid-template-columns:1fr auto;align-items:center;padding-top:36px;border-top:2px solid #31403A;font:700 32px/1 GeistMono,monospace;letter-spacing:.07em;color:#B7C0B8}.plain strong{font:760 48px/1 Geist,Arial,sans-serif;color:#F4F8F1;letter-spacing:-.03em}
+  </style>
+  <div id="v3-04-root" data-composition-id="finaltab-v3-simple-architecture" data-start="0" data-width="3840" data-height="2160" data-duration="10">
+    <section id="v3-04-ground" class="clip ground" data-start="0" data-duration="10" data-track-index="0"><div class="grid"></div></section>
+    <section id="v3-04-stage" class="clip stage" data-layout-allow-occlusion data-start="0" data-duration="10" data-track-index="1">
+      <div class="header"><div><div id="v3-04-eyebrow" class="eyebrow">04 / HOW IT WORKS</div><div id="v3-04-title" class="title">SIX PLAIN STEPS.</div></div><div class="hint">The system does the technical work.<br/>People keep the decision.</div></div>
+      <div class="architecture"><div class="flow"><div id="v3-04-flow" class="flow-line"></div></div>
+        <article id="v3-04-a" class="stage-card"><div class="n">01</div><div class="node"></div><h2>READ THE<br/>BILL</h2><p>VISION</p></article>
+        <article id="v3-04-b" class="stage-card"><div class="n">02</div><div class="node"></div><h2>CHECK<br/>EVERY CENT</h2><p>MATH</p></article>
+        <article id="v3-04-c" class="stage-card"><div class="n">03</div><div class="node"></div><h2>REVIEW THE<br/>SPLIT</h2><p>ALLOCATION</p></article>
+        <article id="v3-04-d" class="stage-card"><div class="n">04</div><div class="node"></div><h2>CHECK WALLET<br/>SAFETY</h2><p>REVIEW</p></article>
+        <article id="v3-04-e" class="stage-card exec"><div class="n">05</div><div class="node"></div><h2>RUN THE<br/>PLAN</h2><p>KEEPERHUB · EXECUTION SERVICE</p></article>
+        <article id="v3-04-f" class="stage-card proof"><div class="n">06</div><div class="node"></div><h2>RECORD<br/>PROOF</h2><p>BASE SEPOLIA · PUBLIC TEST NETWORK</p></article>
+      </div>
+      <div id="v3-04-copy" class="plain"><strong>READ → CHECK → REVIEW → RUN → CONFIRM</strong><span>PROOF RECORDED</span></div>
+    </section>
+  </div>
+  <script>
+    window.__timelines=window.__timelines||{};const tl=gsap.timeline({paused:true});
+    tl.fromTo("#v3-04-eyebrow",{x:-50,opacity:0},{x:0,opacity:1,duration:.5,ease:"power3.out"},.08).fromTo("#v3-04-title",{y:52,opacity:0},{y:0,opacity:1,duration:.7,ease:"expo.out"},.35)
+      .fromTo("#v3-04-flow",{scaleX:0},{scaleX:1,duration:7.4,ease:"none"},1.15)
+      .fromTo("#v3-04-a",{y:60,opacity:0},{y:0,opacity:1,duration:.56,ease:"power3.out"},1.0).fromTo("#v3-04-b",{y:60,opacity:0},{y:0,opacity:1,duration:.56,ease:"power3.out"},1.9)
+      .fromTo("#v3-04-c",{y:60,opacity:0},{y:0,opacity:1,duration:.56,ease:"power3.out"},3.0).fromTo("#v3-04-d",{y:60,opacity:0},{y:0,opacity:1,duration:.56,ease:"power3.out"},4.05)
+      .fromTo("#v3-04-e",{y:60,opacity:0},{y:0,opacity:1,duration:.62,ease:"power3.out"},5.45).fromTo("#v3-04-f",{y:60,opacity:0},{y:0,opacity:1,duration:.62,ease:"power3.out"},7.22)
+      .fromTo("#v3-04-copy",{opacity:0},{opacity:1,duration:.48,ease:"sine.out"},8.35);
+    window.__timelines["finaltab-v3-simple-architecture"]=tl;
+  </script>
+</template></body></html>

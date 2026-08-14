@@ -8,6 +8,7 @@ export async function GET() {
     {
       configured,
       authenticated: Boolean(user),
+      walletLinkConfigured: Boolean(process.env.SUPABASE_SECRET_KEY?.trim()),
       user: user ? { id: user.id, email: user.email ?? null } : null,
     },
     { headers: { "cache-control": "private, no-store" } },

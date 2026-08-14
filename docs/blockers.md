@@ -4,9 +4,20 @@ Nothing here is faked in the app: blocked paths render as blocked, unproven stat
 
 ## CURRENT V2 BLOCKERS — 2026-08-11
 
-- Execute and retain one authenticated external-wallet V2 USDC settlement.
-- Bind the V2 MCP trace, KeeperHub receipt, independent V2 event/balance proof,
-  and final video to the same run.
+- Configure a verified-domain SMTP provider or Send Email Hook before claiming
+  branded inbound email. The paid Privy custom-auth bridge is optional and is
+  deliberately disabled under the stop-before-charge constraint.
+- Complete a real production microphone/readback lifecycle before claiming
+  hybrid voice live. The release, provider variables, and server-side budget
+  controls are deployed/configured, but the browser microphone permission flow
+  did not complete.
+- Keep the live non-value MCP probe separate from the retained value proof. The
+  canonical release lists exactly nine tools and passed calculation/preparation;
+  it did not call MCP submission, and the standalone settlement must not be
+  relabeled as one.
+- Keep two-identity isolation, review invalidation, and cross-channel journal
+  recovery labeled source/test/schema-proven until separately exercised.
+- Finish and review the final 4K/60 product video from truthful live captures.
 - Upload that video and complete the human DoraHacks form.
 
 V2 deployment itself is resolved: contract
@@ -24,7 +35,7 @@ maintained in [release/status.md](release/status.md).
   - executionId `g0w11wukbk1v0psyditx4`
   - https://sepolia.basescan.org/tx/0x11300427473e95d241d924891b2cc0131b0047263e461787c27a2f854c39278c (block 45243955, `verified: true`, `receiptStatus: "success"`)
 - Full reports in `proof-output/first-flight-*.json`.
-- API-shape discovery from the live probes is committed to the client, the web settle route, and the flight script. The encoding rule, corrected after a signature-mismatch bug: `functionArgs` **and** `abi` are both JSON-encoded strings, and `functionName` is the **bare** name (`executeSettlement`) whenever `abi` is supplied explicitly. The full canonical signature is only needed when KeeperHub has to auto-fetch the ABI — which it cannot do here, because the contract is not verified on Basescan. See `apps/web/lib/server/settlement.ts` and the 4 selector tests in `packages/engine/test/settlementAbi.test.ts`.
+- API-shape discovery from the live probes is committed to the client, the web settle route, and the flight script. The encoding rule, corrected after a signature-mismatch bug: `functionArgs` **and** `abi` are both JSON-encoded strings, and `functionName` is the **bare** name (`executeSettlement`) whenever `abi` is supplied explicitly. The full canonical signature is only needed when KeeperHub has to auto-fetch the ABI — which it cannot do here, because the contract is not verified on Basescan. Basescan is still not verified; the V2 source was separately verified on Blockscout on 2026-08-14, after this entry was written. See `apps/web/lib/server/settlement.ts` and the 4 selector tests in `packages/engine/test/settlementAbi.test.ts`.
 
 ### Vercel deploy — RESOLVED
 
@@ -32,11 +43,14 @@ maintained in [release/status.md](release/status.md).
 
 ### KeeperHub CLI contribution — SHIPPED
 
-- PR open: https://github.com/KeeperHub/cli/pull/95 (`--require-verified` + `--timeout` for `execute status`). Open, **not merged**; it will not be described as merged unless GitHub shows it merged.
+- PR open: https://github.com/KeeperHub/cli/pull/95 (`--require-verified` for `execute status`). Open, **not merged**; the initially proposed `--timeout` option was removed, and the PR will not be described as merged unless GitHub shows it merged.
 
 ### Historical V1 ElevenLabs voiceover — DONE
 
-- Key provided; 8 scene mp3s generated to `proof-output/voiceover/` (gitignored). Storyboard in [demo-storyboard.md](demo-storyboard.md).
+- Key provided; 8 scene mp3s generated to `proof-output/voiceover/` (gitignored).
+  The superseded V1 recording plan is retained in
+  [DEMO_VIDEO_INSTRUCTIONS.md](release/DEMO_VIDEO_INSTRUCTIONS.md); the current
+  [demo-storyboard.md](demo-storyboard.md) is the V2 nine-scene capture contract.
 
 ### Historical V1 live executeSettlement — RESOLVED 2026-08-10 (VERIFIED_SETTLED)
 
@@ -121,11 +135,26 @@ rewrite is a destructive, irreversible choice, so it sits in
 [user-actions.md](release/user-actions.md#1-deployer-private-key-committed-to-git-history)
 rather than being done autonomously.
 
-### 2. Hosted Supabase project state
+### 2. Hosted Supabase project state — infrastructure resolved 2026-08-11
 
-- Production tenancy/approval migration complete at `supabase/migrations/20260811003158_production_tenancy_and_approvals.sql`, not applied to a hosted project.
-- Fix: create a free Supabase project, fill `SUPABASE_URL` + `SUPABASE_SECRET_KEY` (+ the two `NEXT_PUBLIC_*` values) in `apps/web/.env.local`, run the migration.
-- Until then cloud tabs, invitations, approval history, and cross-device resume are unavailable. Local draft editing remains available, while provider extraction and money APIs still require an authenticated session or correctly scoped token.
+- `finaltab-production` (`yoavihmldqbkuxinrsih`) is active in London
+  (`eu-west-2`) on the free plan, with verified monthly cost `0`.
+- The baseline migrations plus ordered additive migrations
+  `20260811052236`, `20260811060000`, `20260811064822`, `20260811073000`, and
+  `20260811074000`, plus `20260812023200` and `20260812090000`, are applied.
+  Verification found 31/31 public tables with RLS;
+  every sensitive new mutation RPC denies `PUBLIC`, `anon`, and
+  `authenticated` and allows `service_role`. Database advisors report no
+  error-level findings, and `60000` clears the remaining unindexed agent-event
+  composite-FK warning. Reviewed RLS/function warnings and the
+  leaked-password-protection warning remain.
+- Post-promotion cutover `20260811074500` and `tab_owner_select_returning` are
+  applied. Legacy direct financial writes and the old quota RPC deny browser
+  roles; the new spend-reservation RPC is service-role-only.
+- Canonical GitHub OAuth/reload and a real authenticated tab create/read,
+  owner membership, participant add, and audit record passed. Multi-identity,
+  invitation, durable journal recovery, and cross-device resume remain separate
+  probes rather than inferred behavior.
 
 ## Pre-existing upstream noise (not ours, disclosed)
 

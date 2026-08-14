@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "revision": "v3-90s-eight-scene",
+  "status": "approved-v3-motion",
+  "duration": 90,
+  "expectedAssertionCount": 24,
+  "assertions": [
+    { "kind": "appearsBy", "selector": "#v3-01-title", "bySec": 2 },
+    { "kind": "before", "a": "#v3-01-signal", "b": "#v3-01-final" },
+    { "kind": "staysInFrame", "selector": "#v3-01-copy" },
+
+    { "kind": "appearsBy", "selector": "#v3-02-title", "bySec": 6 },
+    { "kind": "before", "a": "#v3-02-receipt", "b": "#v3-02-proof" },
+    { "kind": "staysInFrame", "selector": "#v3-02-copy" },
+
+    { "kind": "appearsBy", "selector": "#v3-03-case-1", "bySec": 14 },
+    { "kind": "before", "a": "#v3-03-case-1", "b": "#v3-03-g1" },
+    { "kind": "staysInFrame", "selector": "#v3-03-copy" },
+
+    { "kind": "appearsBy", "selector": "#v3-04-title", "bySec": 22 },
+    { "kind": "before", "a": "#v3-04-a", "b": "#v3-04-f" },
+    { "kind": "staysInFrame", "selector": "#v3-04-copy" },
+
+    { "kind": "appearsBy", "selector": "#v3-05-media-shell", "bySec": 32 },
+    { "kind": "before", "a": "#v3-05-s1", "b": "#v3-05-s5" },
+    { "kind": "staysInFrame", "selector": "#v3-05-copy" },
+
+    { "kind": "appearsBy", "selector": "#v3-06-task", "bySec": 53 },
+    { "kind": "before", "a": "#v3-06-task", "b": "#v3-06-memory" },
+    { "kind": "staysInFrame", "selector": "#v3-06-memory" },
+
+    { "kind": "appearsBy", "selector": "#v3-07-media-shell", "bySec": 70 },
+    { "kind": "before", "a": "#v3-07-s1", "b": "#v3-07-stop" },
+    { "kind": "staysInFrame", "selector": "#v3-07-readonly" },
+
+    { "kind": "appearsBy", "selector": "#v3-08-title", "bySec": 87 },
+    { "kind": "before", "a": "#v3-08-title", "b": "#v3-08-proof" },
+    { "kind": "staysInFrame", "selector": "#v3-08-copy" }
+  ]
+}

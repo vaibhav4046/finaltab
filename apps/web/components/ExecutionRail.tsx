@@ -1,18 +1,19 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
-import { privateKeyToAccount } from "viem/accounts";
 import { Panel, Badge, Button, ErrorNote, Spinner, BlockedNote } from "./ui";
-import { freezeLedger, signAllTransfers, signPreparedDebit, shortHex, formatUsdcMinor } from "@/lib/flow";
+import { signPreparedDebit, shortHex, formatUsdcMinor } from "@/lib/flow";
+import { freezeReviewedLedger, reviewedReceiptId, type ReviewedSettlementBinding } from "@/lib/reviewGate";
 import { apiErrorText, revertText } from "@/lib/apiText";
 import type { Person, ExecutionStage, FrozenLedgerState, SignedTransfer } from "@/lib/types";
 import { connectWallet, getConnectedAccounts, signMessage } from "@/lib/wallet";
 
 interface ExecutionRailProps {
+  cloudTabId: string;
   people: Person[];
   netted: Array<{ debtor: string; creditor: string; usdcMinor: string }>;
-  receiptId: string | null;
+  review: ReviewedSettlementBinding | null;
+  reviewInputKey: string;
   /** Source ledger currency. Freeze refuses anything but USD — USDC is USD-denominated. */
   currency: string;
   stage: ExecutionStage;
@@ -22,12 +23,28 @@ interface ExecutionRailProps {
 
 interface RailState {
   frozen: FrozenLedgerState | null;
+  flowId: string | null;
   signed: SignedTransfer[] | null;
   executionId: string | null;
   proofCapability: string | null;
   verdict: string | null;
   simDetail: string | null;
   lastStatus: Record<string, unknown> | null;
+}
+
+interface DurableFlowSummary {
+  id: string;
+  runId: string;
+  ledgerId: string;
+  settlementRecordId: string;
+  ledgerHash: string;
+  settlementId: string;
+  state: "frozen" | "simulated" | "submitted" | "completed_unverified" | "verified_settled" | "failed" | "timeout";
+  revision: number;
+  executionId: string | null;
+  proofVerified: boolean;
+  receiptCount: number;
+  updatedAt: string;
 }
 
 const STAGE_LABELS: Array<{ key: string; label: string }> = [
@@ -62,9 +79,11 @@ function stageIndex(stage: ExecutionStage): number {
 }
 
 export function ExecutionRail({
+  cloudTabId,
   people,
   netted,
-  receiptId,
+  review,
+  reviewInputKey,
   currency,
   stage,
   onStage,
@@ -72,6 +91,7 @@ export function ExecutionRail({
 }: ExecutionRailProps) {
   const [rail, setRail] = useState<RailState>({
     frozen: null,
+    flowId: null,
     signed: null,
     executionId: null,
     proofCapability: null,
@@ -82,7 +102,10 @@ export function ExecutionRail({
   const [error, setError] = useState<string | null>(null);
   const [blocked, setBlocked] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [durableHistory, setDurableHistory] = useState<DurableFlowSummary[]>([]);
+  const [historyError, setHistoryError] = useState<string | null>(null);
   const pollTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const reviewReady = reviewedReceiptId(review, reviewInputKey) !== null;
 
   const nameOfAddress = useCallback(
     (addr: string) => people.find((p) => p.address.toLowerCase() === addr.toLowerCase())?.name ?? shortHex(addr, 4),
@@ -95,33 +118,75 @@ export function ExecutionRail({
     };
   }, []);
 
-  // Any change to the inputs after freeze invalidates everything downstream.
-  useEffect(() => {
-    if (stage !== "idle" && stage !== "verified" && stage !== "failed" && stage !== "unproven") return;
-    // no-op: freeze locks upstream panels instead
-  }, [stage]);
+  const rememberFlow = useCallback((flow: DurableFlowSummary) => {
+    setDurableHistory((current) => [flow, ...current.filter((item) => item.id !== flow.id)].slice(0, 10));
+  }, []);
 
-  const doFreeze = () => {
+  useEffect(() => {
+    const controller = new AbortController();
+    const load = async () => {
+      try {
+        const query = new URLSearchParams({ tabId: cloudTabId, limit: "10" });
+        const response = await fetch(`/api/settlement-flow?${query.toString()}`, { signal: controller.signal });
+        const body = await response.json() as { flows?: DurableFlowSummary[]; message?: string };
+        if (!response.ok) throw new Error(body.message ?? "Durable settlement history is unavailable.");
+        setDurableHistory(Array.isArray(body.flows) ? body.flows : []);
+        setHistoryError(null);
+      } catch (loadError) {
+        if (!(loadError instanceof DOMException && loadError.name === "AbortError")) {
+          setHistoryError(loadError instanceof Error ? loadError.message : "Durable settlement history is unavailable.");
+        }
+      }
+    };
+    void load();
+    return () => controller.abort();
+  }, [cloudTabId]);
+
+  const doFreeze = async () => {
     setError(null);
     setBlocked(null);
+    setBusy(true);
     try {
-      if (netted.length === 0) throw new Error("Net the debts first — nothing to freeze.");
-      const frozen = freezeLedger(people, netted, receiptId ?? "receipt-1", currency);
-      setRail((r) => ({ ...r, frozen, signed: null, executionId: null, proofCapability: null, verdict: null, simDetail: null }));
+      if (netted.length === 0) throw new Error("Net the debts first; nothing is available to freeze.");
+      if (!review) throw new Error("Complete the attested four-stage review before freezing.");
+      const expectedFrozen = freezeReviewedLedger(people, netted, review, currency, reviewInputKey);
+      const response = await fetch("/api/settlement-flow/freeze", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          runId: review.runId,
+          inputHash: review.inputHash,
+          receiptId: review.durableReceiptId,
+          allocationId: review.allocationId,
+          expectedFrozen,
+        }),
+      });
+      const body = await response.json() as {
+        frozen?: FrozenLedgerState;
+        flow?: DurableFlowSummary;
+        message?: string;
+      };
+      if (!response.ok || !body.frozen || !body.flow) {
+        throw new Error(body.message ?? "The reviewed ledger could not be committed durably.");
+      }
+      setRail((current) => ({
+        ...current,
+        frozen: body.frozen!,
+        flowId: body.flow!.id,
+        signed: null,
+        executionId: null,
+        proofCapability: null,
+        verdict: null,
+        simDetail: null,
+      }));
+      rememberFlow(body.flow);
       onStage("frozen");
       onLocked(true);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Freeze failed");
+    } catch (freezeError) {
+      setError(freezeError instanceof Error ? freezeError.message : "Freeze failed");
+    } finally {
+      setBusy(false);
     }
-  };
-
-  const doUnfreeze = () => {
-    if (pollTimer.current) clearTimeout(pollTimer.current);
-    setRail({ frozen: null, signed: null, executionId: null, proofCapability: null, verdict: null, simDetail: null, lastStatus: null });
-    setError(null);
-    setBlocked(null);
-    onStage("idle");
-    onLocked(false);
   };
 
   const doSign = async () => {
@@ -130,15 +195,7 @@ export function ExecutionRail({
     setError(null);
     try {
       const already = rail.signed ?? [];
-      const allDemo = rail.frozen.debits.every((debit) =>
-        people.some(
-          (person) =>
-            person.address.toLowerCase() === debit.debtor.toLowerCase() && Boolean(person.demoPrivateKey),
-        ),
-      );
-      const signed = allDemo
-        ? await signAllTransfers(people, rail.frozen)
-        : [...already, await signPreparedDebit(people, rail.frozen, already.length)];
+      const signed = [...already, await signPreparedDebit(people, rail.frozen, already.length)];
       setRail((current) => ({ ...current, signed }));
       if (signed.length === rail.frozen.debits.length) onStage("signed");
     } catch (e) {
@@ -158,11 +215,6 @@ export function ExecutionRail({
 
   const resolveBroadcastApprover = async (): Promise<`0x${string}`> => {
     const debtors = new Set((rail.signed ?? []).map((transfer) => transfer.from.toLowerCase()));
-    const demoSigner = people.find(
-      (person) => Boolean(person.demoPrivateKey) && debtors.has(person.address.toLowerCase()),
-    );
-    if (demoSigner) return demoSigner.address as `0x${string}`;
-
     let connected = await getConnectedAccounts();
     if (connected.length === 0) {
       const account = await connectWallet();
@@ -174,28 +226,28 @@ export function ExecutionRail({
   };
 
   const signBroadcastMessage = async (approver: `0x${string}`, message: string): Promise<`0x${string}`> => {
-    const person = people.find((candidate) => candidate.address.toLowerCase() === approver.toLowerCase());
-    if (person?.demoPrivateKey) {
-      return privateKeyToAccount(person.demoPrivateKey).signMessage({ message });
-    }
     const signature = await signMessage(approver, message);
     if (!signature) throw new Error("Broadcast approval was cancelled. Nothing was submitted.");
     return signature;
   };
 
   const doSimulate = async () => {
-    if (!rail.frozen || !rail.signed) return;
+    if (!rail.frozen || !rail.signed || !rail.flowId) return;
     setBusy(true);
     setError(null);
     setBlocked(null);
     onStage("simulating");
     try {
-      const res = await fetch("/api/settle/simulate", {
+      const res = await fetch("/api/settlement-flow/simulate", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify(settleBody()),
+        body: JSON.stringify({ flowId: rail.flowId, signedSettlement: settleBody() }),
       });
-      const json = await res.json();
+      const json = await res.json() as {
+        flow?: DurableFlowSummary;
+        detail?: unknown;
+        message?: string;
+      };
       if (res.status === 501) {
         setBlocked(apiErrorText(json, "KeeperHub is not configured."));
         onStage("signed");
@@ -211,6 +263,8 @@ export function ExecutionRail({
         onStage("signed");
         return;
       }
+      if (!json.flow) throw new Error("Simulation passed but its durable transition was not returned.");
+      rememberFlow(json.flow);
       setRail((r) => ({ ...r, simDetail: null }));
       onStage("simulating"); // stays here; execute button becomes available
     } catch (e) {
@@ -222,14 +276,20 @@ export function ExecutionRail({
   };
 
   const pollStatus = useCallback(
-    (executionId: string, settlementId: string, ledgerHash: string, proofCapability: string | null) => {
+    (flowId: string) => {
       const tick = async () => {
         try {
-          const proofQuery = new URLSearchParams({ settlementId, ledgerHash });
-          const res = await fetch(`/api/settle/status/${executionId}?${proofQuery.toString()}`, {
-            headers: proofCapability ? { "x-finaltab-proof-capability": proofCapability } : undefined,
+          const res = await fetch("/api/settlement-flow/status", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ flowId }),
           });
-          const json = await res.json();
+          const json = await res.json() as {
+            verdict?: string | { verdict?: string };
+            status?: Record<string, unknown>;
+            flow?: DurableFlowSummary;
+            pollHintMs?: number | null;
+          };
           if (!res.ok) {
             setError(apiErrorText(json, `Status check failed (HTTP ${res.status})`));
             onStage("unproven");
@@ -239,7 +299,8 @@ export function ExecutionRail({
           // Accept a bare string too so an older API shape cannot strand the rail in "pending".
           const verdict: string | null =
             typeof json.verdict === "string" ? json.verdict : (json.verdict?.verdict ?? null);
-          setRail((r) => ({ ...r, verdict, lastStatus: json.status }));
+          setRail((r) => ({ ...r, verdict, lastStatus: json.status ?? null }));
+          if (json.flow) rememberFlow(json.flow);
           if (verdict === "VERIFIED_SETTLED") {
             onStage("verified");
             return;
@@ -261,11 +322,11 @@ export function ExecutionRail({
       };
       void tick();
     },
-    [onStage],
+    [onStage, rememberFlow],
   );
 
   const doExecute = async () => {
-    if (!rail.frozen || !rail.signed) return;
+    if (!rail.frozen || !rail.signed || !rail.flowId) return;
     setBusy(true);
     setError(null);
     setBlocked(null);
@@ -311,15 +372,22 @@ export function ExecutionRail({
       }
       const signature = await signBroadcastMessage(approver, challengeJson.message);
 
-      const res = await fetch("/api/settle/execute", {
+      const res = await fetch("/api/settlement-flow/execute", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
+          flowId: rail.flowId,
           signedSettlement: settleBody(),
           approval: { ...challengeJson.artifact, signature },
         }),
       });
-      const json = await res.json();
+      const json = await res.json() as {
+        accepted?: { executionId?: string };
+        proofCapability?: string;
+        flow?: DurableFlowSummary;
+        detail?: unknown;
+        message?: string;
+      };
       if (res.status === 501) {
         setBlocked(apiErrorText(json, "KeeperHub is not configured."));
         onStage("simulating");
@@ -335,11 +403,13 @@ export function ExecutionRail({
         onStage("simulating");
         return;
       }
-      const executionId: string = json.accepted.executionId;
+      const executionId = json.accepted?.executionId ?? json.flow?.executionId;
+      if (!executionId || !json.flow) throw new Error("KeeperHub accepted the call but durable execution evidence is missing.");
       const proofCapability = typeof json.proofCapability === "string" ? json.proofCapability : null;
       setRail((r) => ({ ...r, executionId, proofCapability }));
+      rememberFlow(json.flow);
       onStage("pending");
-      pollStatus(executionId, rail.frozen.settlementId, rail.frozen.ledgerHash, proofCapability);
+      pollStatus(rail.flowId);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Execute failed");
       onStage("simulating");
@@ -381,24 +451,33 @@ export function ExecutionRail({
                 {s.key === "freeze" && (
                   <div className="mt-1.5">
                     {!rail.frozen ? (
-                      <Button onClick={doFreeze} disabled={netted.length === 0}>
-                        Freeze
+                      <Button onClick={() => void doFreeze()} disabled={netted.length === 0 || !reviewReady || busy}>
+                        {busy ? "Persisting…" : "Freeze durably"}
                       </Button>
                     ) : (
                       <div className="space-y-1 rounded-md border border-edge bg-panel-2 p-2.5">
-                        <p className="font-mono text-[9px] uppercase tracking-wider text-fog-dim">ledgerHash</p>
-                        <p className="break-all font-mono text-[10px] text-paper-dim">{rail.frozen.ledgerHash}</p>
-                        <p className="pt-1 font-mono text-[9px] uppercase tracking-wider text-fog-dim">settlementId</p>
-                        <p className="break-all font-mono text-[10px] text-paper-dim">{rail.frozen.settlementId}</p>
-                        <div className="pt-1.5">
-                          <Button variant="ghost" onClick={doUnfreeze}>
-                            Revise plan · discard approvals
-                          </Button>
+                        <p className="font-mono text-xs uppercase tracking-wider text-fog-dim">ledgerHash</p>
+                        <p className="break-all font-mono text-xs text-paper-dim">{rail.frozen.ledgerHash}</p>
+                        <p className="pt-1 font-mono text-xs uppercase tracking-wider text-fog-dim">settlementId</p>
+                        <p className="break-all font-mono text-xs text-paper-dim">{rail.frozen.settlementId}</p>
+                        <div className="space-y-2 pt-1.5">
+                          <p className="text-xs leading-5 text-fog">
+                            This tab is durably frozen. Revisions require a separate tab.
+                          </p>
+                          {/* Full navigation remounts the same-path room without retaining this tab query. */}
+                          <a
+                            href="/app/tab"
+                            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md border border-edge bg-transparent px-4 py-2 font-mono text-xs font-semibold uppercase tracking-wider text-paper transition-colors hover:border-fog focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-signal"
+                          >
+                            Start a new tab
+                          </a>
                         </div>
                       </div>
                     )}
-                    {netted.length === 0 && !rail.frozen && (
-                      <p className="mt-1 font-mono text-[9px] text-fog-dim">net the debts in panel 02 first</p>
+                    {(netted.length === 0 || !reviewReady) && !rail.frozen && (
+                      <p className="mt-1 font-mono text-xs text-fog-dim">
+                        {!reviewReady ? "complete the attested agent review first" : "net the debts in panel 02 first"}
+                      </p>
                     )}
                   </div>
                 )}
@@ -409,25 +488,23 @@ export function ExecutionRail({
                       <Button onClick={() => void doSign()} disabled={busy}>
                         {busy
                           ? "Waiting for wallet…"
-                          : people.every((person) => person.demoPrivateKey)
-                            ? `Run ${rail.frozen.debits.length} demo approval(s)`
-                            : `Collect approval ${(rail.signed?.length ?? 0) + 1}/${rail.frozen.debits.length}`}
+                          : `Collect approval ${(rail.signed?.length ?? 0) + 1}/${rail.frozen.debits.length}`}
                       </Button>
                     ) : null}
                     {rail.signed && rail.signed.length > 0 ? (
                       <div className="space-y-1.5">
                         {rail.signed.map((t, i2) => (
                           <div key={i2} className="rounded-md border border-edge bg-panel-2 px-2.5 py-1.5">
-                            <p className="font-mono text-[10px] text-paper">
+                            <p className="font-mono text-xs text-paper">
                               {nameOfAddress(t.from)} approved{" "}
                               <span className="text-lime">{formatUsdcMinor(t.value)} USDC</span>
                             </p>
-                            <p className="font-mono text-[9px] text-fog-dim">
+                            <p className="font-mono text-xs text-fog-dim">
                               USDC pull + complete payout-plan consent · nonce {shortHex(t.nonce, 5)}
                             </p>
                           </div>
                         ))}
-                        <p className="font-mono text-[9px] text-fog-dim">
+                        <p className="font-mono text-xs text-fog-dim">
                           V2 recomputes the plan hash onchain. Any debtor, payout, amount, ledger, chain, or contract
                           change invalidates approval.
                         </p>
@@ -440,10 +517,10 @@ export function ExecutionRail({
                   <div className="mt-1.5">
                     {stage === "sim_failed" ? (
                       <div className="rounded-md border border-coral/40 bg-coral/5 p-2.5">
-                        <p className="font-mono text-[10px] font-semibold uppercase tracking-wider text-coral">
+                        <p className="font-mono text-xs font-semibold uppercase tracking-wider text-coral">
                           Would revert — not broadcast
                         </p>
-                        <p className="mt-1 break-all font-mono text-[10px] text-coral/80">{rail.simDetail}</p>
+                        <p className="mt-1 break-all font-mono text-xs text-coral/80">{rail.simDetail}</p>
                         <div className="mt-2">
                           <Button variant="ghost" onClick={() => void doSimulate()} disabled={busy}>
                             Retry simulation
@@ -464,10 +541,10 @@ export function ExecutionRail({
                   <div className="mt-1.5">
                     {rail.executionId ? (
                       <div className="rounded-md border border-edge bg-panel-2 px-2.5 py-1.5">
-                        <p className="font-mono text-[9px] uppercase tracking-wider text-fog-dim">execution id</p>
-                        <p className="break-all font-mono text-[10px] text-paper-dim">{rail.executionId}</p>
+                        <p className="font-mono text-xs uppercase tracking-wider text-fog-dim">execution id</p>
+                        <p className="break-all font-mono text-xs text-paper-dim">{rail.executionId}</p>
                         {(stage === "pending" || stage === "executing") && (
-                          <p className="mt-1 flex items-center gap-2 font-mono text-[10px] text-fog">
+                          <p className="mt-1 flex items-center gap-2 font-mono text-xs text-fog">
                             <Spinner /> polling KeeperHub…
                           </p>
                         )}
@@ -483,15 +560,11 @@ export function ExecutionRail({
                 {s.key === "verify" && idx >= 4 && (
                   <div className="mt-1.5">
                     {stage === "verified" && (
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0.96 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="rounded-md border border-lime/50 bg-lime/10 p-3"
-                      >
+                      <div className="stage-swap rounded-md border border-lime/50 bg-lime/10 p-3">
                         <p className="font-mono text-sm font-bold uppercase tracking-widest text-lime">
                           Verified settled
                         </p>
-                        <p className="mt-1 font-mono text-[10px] leading-relaxed text-paper-dim">
+                        <p className="mt-1 font-mono text-xs leading-relaxed text-paper-dim">
                           Terminal success + onchain receipt exists + verified flag true. This banner only renders on
                           VERIFIED_SETTLED — there is no optimistic version of it.
                         </p>
@@ -501,17 +574,17 @@ export function ExecutionRail({
                               settlementId: rail.frozen?.settlementId ?? "",
                               ledgerHash: rail.frozen?.ledgerHash ?? "",
                             }).toString()}${rail.proofCapability ? `#proof=${encodeURIComponent(rail.proofCapability)}` : ""}`}
-                            className="mt-3 inline-flex min-h-11 items-center rounded-lg border border-lime/40 px-3 font-mono text-[10px] uppercase tracking-wider text-lime"
+                            className="mt-3 inline-flex min-h-11 items-center rounded-lg border border-lime/40 px-3 font-mono text-xs uppercase tracking-wider text-lime"
                           >
                             Open independently verified proof
                           </a>
                         ) : null}
-                      </motion.div>
+                      </div>
                     )}
                     {stage === "failed" && (
                       <div className="rounded-md border border-coral/40 bg-coral/5 p-3">
                         <p className="font-mono text-sm font-bold uppercase tracking-widest text-coral">Failed</p>
-                        <p className="mt-1 font-mono text-[10px] text-coral/80">
+                        <p className="mt-1 font-mono text-xs text-coral/80">
                           KeeperHub reported terminal failure. Nothing settled.
                         </p>
                       </div>
@@ -519,7 +592,7 @@ export function ExecutionRail({
                     {stage === "unproven" && (
                       <div className="rounded-md border border-amber/40 bg-amber/5 p-3">
                         <p className="font-mono text-sm font-bold uppercase tracking-widest text-amber">Unproven</p>
-                        <p className="mt-1 font-mono text-[10px] text-paper-dim">
+                        <p className="mt-1 font-mono text-xs text-paper-dim">
                           Execution reached a terminal state but the receipt could not be verified. We do not call this
                           settled.
                         </p>
@@ -535,20 +608,47 @@ export function ExecutionRail({
 
       {rail.lastStatus !== null && stage !== "idle" && (
         <details className="mt-3 rounded-md border border-edge bg-panel-2 p-2.5">
-          <summary className="cursor-pointer font-mono text-[10px] uppercase tracking-wider text-fog">
+          <summary className="cursor-pointer font-mono text-xs uppercase tracking-wider text-fog">
             Raw KeeperHub status
           </summary>
-          <pre className="lab-scroll mt-2 max-h-48 overflow-auto font-mono text-[10px] leading-relaxed text-fog">
+          <pre className="lab-scroll mt-2 max-h-48 overflow-auto font-mono text-xs leading-relaxed text-fog">
             {JSON.stringify(rail.lastStatus, null, 2)}
           </pre>
         </details>
       )}
 
+      {durableHistory.length > 0 && (
+        <details className="mt-3 rounded-md border border-info/25 bg-info/5 p-2.5">
+          <summary className="cursor-pointer font-mono text-xs uppercase tracking-wider text-info">
+            Refresh-safe history · {durableHistory.length} attested record{durableHistory.length === 1 ? "" : "s"}
+          </summary>
+          <div className="mt-2 space-y-2">
+            {durableHistory.map((flow) => (
+              <div key={flow.id} className="rounded-md border border-edge bg-panel-2 p-2.5">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <span className="font-mono text-xs font-semibold uppercase tracking-wider text-paper">
+                    {flow.state.replaceAll("_", " ")}
+                  </span>
+                  <span className="font-mono text-xs text-fog-dim">revision {flow.revision}/4</span>
+                </div>
+                <p className="mt-1 break-all font-mono text-xs text-fog">ledger {flow.ledgerHash}</p>
+                {flow.executionId ? <p className="mt-1 break-all font-mono text-xs text-fog">execution {flow.executionId}</p> : null}
+                <p className="mt-1 font-mono text-xs text-fog-dim">
+                  {flow.proofVerified ? `independently verified · ${flow.receiptCount} receipt${flow.receiptCount === 1 ? "" : "s"}` : "proof not verified"}
+                  {" · "}{new Date(flow.updatedAt).toLocaleString()}
+                </p>
+              </div>
+            ))}
+          </div>
+        </details>
+      )}
+      {historyError ? <p className="mt-2 font-mono text-xs text-warn">History unavailable: {historyError}</p> : null}
+
       {error && <ErrorNote message={error} />}
       {blocked && <BlockedNote message={blocked} />}
 
       {stage === "idle" && netted.length === 0 && (
-        <p className="mt-2 font-mono text-[10px] leading-relaxed text-fog-dim">
+        <p className="mt-2 font-mono text-xs leading-relaxed text-fog-dim">
           Nothing here is simulated UI. Every state — simulate, execute, verify — is a real KeeperHub API result, and
           the app refuses to show success it cannot prove.
         </p>

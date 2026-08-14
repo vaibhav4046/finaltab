@@ -1,5 +1,7 @@
 {
   "$comment": [
+    "ARCHIVED V1 EVIDENCE ONLY. These observations predate the verified V2 deployment and settlement.",
+    "Current V2 truth lives in evidence/v2-deployment-2026-08-11T01-08-17-421Z.json and evidence/v2-live-settlement-2026-08-11T04-28-59-530Z.json.",
     "Every KeeperHub surface this project touches, with the evidence that backs it.",
     "Labels are deliberately narrow. LIVE_PROVEN means a real request hit app.keeperhub.com in this",
     "project and the response is recorded in proof-output/. FIXTURE_PROVEN means the code path is",
@@ -7,6 +9,7 @@
     "still have failed - see execute.contract-call, which really ran and really returned an error.",
     "Nothing here is inferred from documentation."
   ],
+  "scope": "historical-v1",
   "generatedAt": "2026-08-10",
   "commit": "84e5397",
   "baseUrl": "https://app.keeperhub.com",

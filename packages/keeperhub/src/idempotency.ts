@@ -20,8 +20,15 @@ export function canonicalAmount(input: string): string {
     throw new Error(`canonicalAmount: not a plain decimal: "${input}"`);
   }
   const [wholeRaw = "", fracRaw = ""] = s.split(".");
+  // `^0+` is anchored, so it is attempted from one position and scans once.
+  // A trailing `0+$` is not anchored: the engine retries from every position
+  // inside a run of zeros, which is quadratic in the length of the fraction.
+  // The trailing zeros are therefore stripped by index instead. This is a
+  // value-bearing function, so the output must stay byte-identical.
   let whole = wholeRaw.replace(/^0+/, "");
-  const frac = fracRaw.replace(/0+$/, "");
+  let fracEnd = fracRaw.length;
+  while (fracEnd > 0 && fracRaw[fracEnd - 1] === "0") fracEnd -= 1;
+  const frac = fracRaw.slice(0, fracEnd);
   if (whole === "") whole = "0";
   const out = frac === "" ? whole : `${whole}.${frac}`;
   return out === "0." ? "0" : out;

@@ -1,0 +1,55 @@
+{
+  "tool": "finaltab-settlement-replay-rejection-probe",
+  "version": 1,
+  "startedAt": "2026-08-12T11:16:13.869Z",
+  "mode": "READ_ONLY_ETH_CALL",
+  "evidenceFile": "docs/release/evidence/v2-live-settlement-2026-08-11T04-28-59-530Z.json",
+  "rpcUrl": "https://sepolia.base.org",
+  "contract": "0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB",
+  "settlementId": "0x8b670800d9856a90baa7492adefaf06ae86ac345d053db3dc7f01b065aadb9db",
+  "checks": {
+    "calldataIdentity": {
+      "passed": true,
+      "rebuiltKeccak256": "0xe30a30a8d3c4452a37246558595cf6385648336b3e094a411c5767734601f728",
+      "retainedKeccak256": "0xe30a30a8d3c4452a37246558595cf6385648336b3e094a411c5767734601f728",
+      "rebuiltBytes": 644,
+      "retainedBytes": 644
+    },
+    "chainId": {
+      "passed": true,
+      "observed": 84532,
+      "expected": 84532
+    },
+    "executedFlagAtHead": {
+      "passed": true,
+      "observed": true,
+      "error": null
+    },
+    "replayRevertsAlreadyExecuted": {
+      "passed": true,
+      "returnedResult": null,
+      "revertData": "0xd1d36dcd8b670800d9856a90baa7492adefaf06ae86ac345d053db3dc7f01b065aadb9db",
+      "decoded": {
+        "errorName": "AlreadyExecuted",
+        "args": [
+          "0x8b670800d9856a90baa7492adefaf06ae86ac345d053db3dc7f01b065aadb9db"
+        ]
+      },
+      "rpcErrorMessage": "execution reverted"
+    },
+    "preExecutionControl": {
+      "block": 45327127,
+      "available": true,
+      "succeeded": true,
+      "rpcErrorMessage": null,
+      "note": "identical calldata does not revert one block before execution"
+    }
+  },
+  "headBlock": 45382543,
+  "finishedAt": "2026-08-12T11:16:14.620Z",
+  "verdict": "REPLAY_REJECTED_BY_ONCHAIN_STATE",
+  "failedChecks": [],
+  "valueMoved": false,
+  "transactionsSigned": 0,
+  "transactionsBroadcast": 0
+}

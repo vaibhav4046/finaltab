@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
 import { nettedTransfers, type Debt } from "@finaltab/engine";
 import { Panel, Badge, Button, ErrorNote, Spinner, BlockedNote, Mono } from "./ui";
+import { VoiceTape } from "./VoiceTape";
 import { apiErrorText, toDisplayText } from "@/lib/apiText";
 import { formatUsdcMinor, shortHex } from "@/lib/flow";
 import type { Person, ReceiptState, AllocationState } from "@/lib/types";
@@ -46,6 +46,10 @@ export function SplitPanel({
   const [issues, setIssues] = useState<string[]>([]);
   const [blocked, setBlocked] = useState<string | null>(null);
   const [showNetted, setShowNetted] = useState(false);
+
+  useEffect(() => {
+    if (allocation) setInstruction(allocation.instruction);
+  }, [allocation]);
 
   const nameOf = useMemo(() => {
     const m = new Map(people.map((p) => [p.id, p.name]));
@@ -119,6 +123,7 @@ export function SplitPanel({
       }
       onAllocation({
         proposal: json.proposal,
+        instruction,
         shares: json.shares,
         debts: json.debts,
         settlement: json.settlement,
@@ -151,11 +156,21 @@ export function SplitPanel({
     return extras > 0n ? extras.toString() : null;
   }, [receipt, receiptTotalMinor]);
 
+  const allocationReadback = useMemo(() => {
+    if (!allocation) return null;
+    const visibleShares = allocation.shares.slice(0, 5).map((share) =>
+      `${nameOf(share.id)} ${fiatMinorToDisplay(share.fiatMinor, currency)}`,
+    );
+    const remainder = allocation.shares.length - visibleShares.length;
+    const suffix = remainder > 0 ? `, plus ${remainder} more participant${remainder === 1 ? "" : "s"}` : "";
+    return `Allocation reconciled exactly to the receipt total. ${visibleShares.join(", ")}${suffix}.`;
+  }, [allocation, currency, nameOf]);
+
   return (
     <Panel title="Split & Graph" step="02 · Allocate">
       <div className="space-y-4">
         <div>
-          <p className="mb-2 font-mono text-[10px] uppercase tracking-wider text-fog-dim">Table</p>
+          <p className="mb-2 font-mono text-xs uppercase tracking-wider text-fog-dim">Table</p>
           <div className="flex flex-wrap gap-2">
             {people.map((p) => (
               <button
@@ -163,7 +178,7 @@ export function SplitPanel({
                 type="button"
                 disabled={locked}
                 onClick={() => onPayer(p.id)}
-                className={`rounded-md border px-3 py-1.5 text-left transition-colors disabled:cursor-not-allowed ${
+                className={`min-h-11 rounded-md border px-3 py-1.5 text-left transition-colors disabled:cursor-not-allowed ${
                   p.id === payerId ? "border-lime/50 bg-lime/10" : "border-edge bg-panel-2 hover:border-fog"
                 }`}
               >
@@ -171,27 +186,36 @@ export function SplitPanel({
                   {p.name}
                   {p.id === payerId ? " · paid" : ""}
                 </span>
-                <span className="block font-mono text-[9px] text-fog-dim">{shortHex(p.address, 4)}</span>
+                <span className="block font-mono text-xs text-fog-dim">{shortHex(p.address, 4)}</span>
               </button>
             ))}
           </div>
-          <p className="mt-1.5 font-mono text-[9px] text-warn">
-            Addresses shown here define this tab. Demo wallets are labelled in setup; live wallets require
-            ownership verification and an individual signature from each debtor.
+          <p className="mt-1.5 font-mono text-xs text-warn">
+            Addresses shown here define this tab. Each debtor must verify wallet ownership and approve the
+            exact settlement plan before funds can move.
           </p>
         </div>
 
         <div>
-          <p className="mb-2 font-mono text-[10px] uppercase tracking-wider text-fog-dim">Who had what — plain English</p>
+          <p className="mb-2 font-mono text-xs uppercase tracking-wider text-fog-dim">Who had what — plain English</p>
           <textarea
             value={instruction}
             onChange={(e) => setInstruction(e.target.value)}
             disabled={locked || busy}
             rows={3}
             className="w-full resize-none rounded-md border border-edge bg-panel-2 p-3 font-sans text-sm text-paper placeholder:text-fog-dim focus:border-lime/50 focus:outline-none disabled:opacity-60"
-            placeholder="e.g. Vee had the daal, Hem and Ravi shared the lamb, Ravi had two of the naan"
+            placeholder="Describe which participants shared each item and how tax, service, or tip should be divided."
           />
-          <p className="mt-1.5 font-mono text-[10px] leading-relaxed text-fog-dim">
+          <VoiceTape
+            disabled={locked || busy}
+            instruction={instruction}
+            readbackText={allocationReadback}
+            onUseTranscript={(transcript) => {
+              setInstruction(transcript);
+              setError(null);
+            }}
+          />
+          <p className="mt-1.5 font-mono text-xs leading-relaxed text-fog-dim">
             Instructions allocate <span className="text-fog">line items only</span>. Tax, service and tip are always
             spread in proportion to each person&apos;s item share — the engine does not take an instruction on extras.
           </p>
@@ -206,15 +230,15 @@ export function SplitPanel({
 
         {issues.length > 0 && (
           <div className="rounded-md border border-coral/30 bg-coral/5 p-3">
-            <p className="font-mono text-[10px] uppercase tracking-wider text-coral">Reconciler rejected the proposal</p>
+            <p className="font-mono text-xs uppercase tracking-wider text-coral">Reconciler rejected the proposal</p>
             <ul className="mt-1.5 space-y-1">
               {issues.map((iss, i) => (
-                <li key={i} className="font-mono text-[11px] text-coral/90">
+                <li key={i} className="font-mono text-xs text-coral/90">
                   {iss}
                 </li>
               ))}
             </ul>
-            <p className="mt-2 font-mono text-[10px] text-fog">
+            <p className="mt-2 font-mono text-xs text-fog">
               Nothing was accepted. The model only proposes — the deterministic engine decides.
             </p>
           </div>
@@ -223,7 +247,7 @@ export function SplitPanel({
         {allocation && (
           <div>
             <div className="mb-2 flex items-center justify-between">
-              <p className="font-mono text-[10px] uppercase tracking-wider text-fog-dim">Shares — cent-perfect</p>
+              <p className="font-mono text-xs uppercase tracking-wider text-fog-dim">Shares — cent-perfect</p>
               <Badge tone="lime">Σ = receipt total</Badge>
             </div>
             <table className="w-full">
@@ -232,7 +256,7 @@ export function SplitPanel({
                   <tr key={s.id} className="border-b border-edge-soft last:border-0">
                     <td className="py-1.5 font-mono text-xs text-paper">
                       {nameOf(s.id)}
-                      {s.id === payerId && <span className="ml-1.5 text-[9px] text-lime">PAID</span>}
+                      {s.id === payerId && <span className="ml-1.5 text-xs text-lime">PAID</span>}
                     </td>
                     <td className="py-1.5 text-right font-mono text-xs tabular-nums text-paper-dim">
                       {fiatMinorToDisplay(s.fiatMinor, currency)}
@@ -242,7 +266,7 @@ export function SplitPanel({
               </tbody>
             </table>
             {sharesTotalMinor !== null && receiptTotalMinor !== null && (
-              <p className="mt-2 flex items-baseline gap-2 font-mono text-[10px] text-fog-dim">
+              <p className="mt-2 flex items-baseline gap-2 font-mono text-xs text-fog-dim">
                 <span className="text-fog">
                   Σ shares {fiatMinorToDisplay(sharesTotalMinor, currency)}
                 </span>
@@ -255,7 +279,7 @@ export function SplitPanel({
               </p>
             )}
             {extrasMinor !== null && (
-              <p className="mt-1 font-mono text-[10px] text-fog-dim">
+              <p className="mt-1 font-mono text-xs text-fog-dim">
                 includes {fiatMinorToDisplay(extrasMinor, currency)} tax/service/tip, prorated by item share
               </p>
             )}
@@ -264,10 +288,10 @@ export function SplitPanel({
 
         {allocation && !allocation.settlement.eligible && (
           <div className="rounded-md border border-warn/30 bg-warn/5 p-3">
-            <p className="font-mono text-[10px] uppercase tracking-wider text-warn">
+            <p className="font-mono text-xs uppercase tracking-wider text-warn">
               Split only — not settleable onchain
             </p>
-            <p className="mt-1.5 font-mono text-[11px] leading-relaxed text-fog">
+            <p className="mt-1.5 font-mono text-xs leading-relaxed text-fog">
               {allocation.settlement.reason ??
                 `Receipt currency is ${allocation.settlement.currency}. USDC is USD-denominated, so settling this ledger would apply an unquoted 1:1 exchange rate.`}
             </p>
@@ -277,7 +301,7 @@ export function SplitPanel({
         {allocation && allocation.debts.length > 0 && (
           <div>
             <div className="mb-2 flex items-center justify-between">
-              <p className="font-mono text-[10px] uppercase tracking-wider text-fog-dim">
+              <p className="font-mono text-xs uppercase tracking-wider text-fog-dim">
                 {showNetted ? "Netted transfers" : "Debt graph"}
               </p>
               <div className="flex items-center gap-2">
@@ -289,17 +313,11 @@ export function SplitPanel({
                 </Button>
               </div>
             </div>
-            <AnimatePresence mode="popLayout">
-              <div className="space-y-1.5">
+            <div className="space-y-1.5">
                 {active.map((d) => (
-                  <motion.div
+                  <div
                     key={`${showNetted ? "n" : "r"}-${d.debtor}-${d.creditor}`}
-                    layout
-                    initial={{ opacity: 0, x: -12 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 12 }}
-                    transition={{ duration: 0.25 }}
-                    className="flex items-center justify-between rounded-md border border-edge bg-panel-2 px-3 py-2"
+                    className="stage-swap flex items-center justify-between rounded-md border border-edge bg-panel-2 px-3 py-2"
                   >
                     <span className="font-mono text-xs text-paper">
                       {nameOf(d.debtor)} <span className="text-fog-dim">→</span> {nameOf(d.creditor)}
@@ -307,18 +325,17 @@ export function SplitPanel({
                     <span className="font-mono text-xs font-semibold tabular-nums text-lime">
                       {formatUsdcMinor(d.usdcMinor)} USDC
                     </span>
-                  </motion.div>
+                  </div>
                 ))}
-              </div>
-            </AnimatePresence>
+            </div>
             {!showNetted && (
-              <p className="mt-1.5 font-mono text-[9px] text-fog-dim">
+              <p className="mt-1.5 font-mono text-xs text-fog-dim">
                 USD shares carry across at face value into test USDC on Base Sepolia — same number, no exchange
                 rate applied. Net it to minimize transfers, then freeze.
               </p>
             )}
             {showNetted && (
-              <p className="mt-1.5 font-mono text-[9px] text-fog-dim">
+              <p className="mt-1.5 font-mono text-xs text-fog-dim">
                 Same net position in at most n−1 deterministic transfers. Freeze on the right to lock this plan.
               </p>
             )}

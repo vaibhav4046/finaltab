@@ -32,6 +32,52 @@ jobs:
       - name: Contract tests (explicit gate)
         run: pnpm test:contracts
       - run: pnpm build
+      - name: First-load JS budget
+        run: pnpm bundle:budget
+
+  integrity:
+    name: Dependency, asset, truth, and secret integrity
+    runs-on: ubuntu-latest
+    steps:
+      # Full history: a secret deleted in a later commit is still published, so
+      # the scan has to see every commit rather than the diff.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # Deliberately no pnpm install. These three gates read manifests, git and
+      # markdown using only Node builtins, so running them with an empty
+      # node_modules is the strongest form of the clean-environment check:
+      # an import that only resolves because of a hoisted or parent-directory
+      # install cannot pass here. The pnpm setup above puts the CLI on PATH for
+      # the advisory gate and populates nothing, so that property is unchanged.
+      - name: Undeclared dependency gate
+        run: node scripts/dependency-integrity.mjs
+      - name: Broken asset and document reference gate
+        run: node scripts/asset-integrity.mjs
+      - name: Release-truth claim gate
+        run: node scripts/truth-consistency.mjs
+
+      - name: Secret scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_CONFIG: .gitleaks.toml
+
+      # actions/dependency-review-action used to sit here and failed every run
+      # with "Dependency review is not supported on this repository", because it
+      # is a front end for GitHub's Dependency-graph service rather than a
+      # scanner. This reads the same advisory data from the registry, runs on
+      # pushes as well as pull requests, and fails on an unreviewed high or
+      # critical advisory. See security/dependency-advisories.json.
+      - name: Dependency advisory gate
+        run: node scripts/dependency-advisories.mjs
 
   e2e:
     name: Browser smoke tests

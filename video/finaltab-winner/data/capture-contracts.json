@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 3,
+  "status": "locked-v3-truth-contracts",
+  "global": {
+    "canonicalOrigin": "https://finaltab.vercel.app",
+    "minimumVideo": { "width": 2560, "height": 1440, "fps": 60 },
+    "minimumStill": { "width": 3200, "height": 1800 },
+    "secrets": "No token, key, signature bytes, private email, or local secret may be visible.",
+    "identities": "No person is invented or inferred from receipt text.",
+    "valueMovement": "No capture may request a wallet signature or call a submit, sign, broadcast, or value-moving operation.",
+    "retainedRun": "Earlier-run proof is read only and visibly separate from the filmed MCP test."
+  },
+  "captures": [
+    {
+      "id": "C05",
+      "path": "assets/capture-v3/C05-final-site-demo.mp4",
+      "kind": "video",
+      "minimumDurationSeconds": 18,
+      "source": "canonical production product",
+      "required": [
+        "real canonical landing surface",
+        "authenticated Supabase-secured app state",
+        "durable tab creation boundary",
+        "newly created synced tab workspace",
+        "real agents and memory route",
+        "real proof lookup route",
+        "real developers route",
+        "real open-source route"
+      ],
+      "forbidden": [
+        "invented participant identity",
+        "fake receipt data presented as captured",
+        "synthetic product UI presented as captured",
+        "private account text",
+        "success overlay not present in the product"
+      ],
+      "humanContingency": "GitHub MFA or first sign-in consent only"
+    },
+    {
+      "id": "C06",
+      "path": "assets/capture-v3/C06-complex-agent-task.mp4",
+      "kind": "video",
+      "minimumDurationSeconds": 16,
+      "source": "canonical production Agent Control Center and real loaded run detail",
+      "required": [
+        "separate live MCP receipt facts for nineteen lines and eight people",
+        "real voice idle state with no success claim",
+        "exact USD 172.04 live MCP allocation",
+        "explicit separation from the retained product run",
+        "actual retained Extraction event",
+        "actual retained Allocation event",
+        "actual retained Consent risk event",
+        "actual retained Proof readiness event",
+        "loaded retained evidence lineage, balance sheet, and compact memory"
+      ],
+      "forbidden": [
+        "invented model response",
+        "invented review event",
+        "invented memory node or metric",
+        "claiming voice succeeded when no voice event exists",
+        "fake agent progress"
+      ],
+      "humanContingency": "none after authenticated session exists"
+    },
+    {
+      "id": "C07",
+      "path": "assets/capture-v3/C07-mcp-nonbroadcast.mp4",
+      "kind": "video",
+      "minimumDurationSeconds": 15,
+      "source": "real named MCP client against the canonical production endpoint",
+      "required": [
+        "authenticated initialize",
+        "tools/list with exactly nine current tools",
+        "allocate_receipt using the same complex receipt",
+        "prepare_receipt_settlement",
+        "create_broadcast_approval_challenge",
+        "visible hard stop before wallet action",
+        "separate retained-proof lane declared but not queried by this client"
+      ],
+      "forbidden": [
+        "token or authorization header",
+        "wallet signature",
+        "invocation of submit_signed_settlement",
+        "any sign operation",
+        "broadcast action",
+        "new value movement",
+        "claim that the earlier transaction came from this MCP test"
+      ],
+      "humanContingency": "none"
+    },
+    {
+      "id": "C08",
+      "path": "assets/capture-v3/C08-retained-proof.png",
+      "kind": "still",
+      "source": "sanitized earlier-run KeeperHub receipt plus public Base Sepolia transaction proof",
+      "required": [
+        "EARLIER AUTHORIZED RUN label",
+        "READ ONLY label",
+        "NOT CREATED BY THIS MCP TEST label",
+        "transaction hash",
+        "block 45327128",
+        "settlement ID",
+        "ledger hash",
+        "verified settled state"
+      ],
+      "forbidden": [
+        "signature bytes",
+        "private wallet material",
+        "deployment transaction substituted for the settlement",
+        "claim that C07 submitted the transaction"
+      ],
+      "humanContingency": "none"
+    }
+  ]
+}

@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "description": "AI-assisted shared-expense settlement with KeeperHub-verified onchain execution",
   "scripts": {
+    "dev": "pnpm --filter @finaltab/web dev",
     "lint": "eslint apps packages playwright.config.ts tests/e2e",
     "typecheck": "pnpm -r --if-present typecheck",
     "test": "pnpm --dir contracts build && pnpm -r --if-present test",
@@ -11,16 +12,34 @@
     "test:e2e": "pnpm --dir apps/web build && playwright test",
     "test:e2e:ui": "playwright test --ui",
     "build": "pnpm -r --if-present build",
+    "assets:check": "node scripts/asset-integrity.mjs",
+    "bundle:budget": "node scripts/bundle-budget.mjs",
+    "deps:check": "node scripts/dependency-integrity.mjs",
+    "deps:advisories": "node scripts/dependency-advisories.mjs",
+    "truth:check": "node scripts/truth-consistency.mjs",
     "kh:proof": "node packages/keeperhub-flight-recorder/bin/kh-proof.mjs",
-    "mcp:bootstrap-token": "node scripts/bootstrap-mcp-token.mjs"
+    "mcp:bootstrap-token": "node scripts/bootstrap-mcp-token.mjs",
+    "probe:anon-authorization": "node scripts/probe-anon-authorization.mjs",
+    "probe:settlement-replay": "node scripts/probe-settlement-replay.mjs",
+    "probe:voice-surface": "node scripts/probe-voice-surface.mjs"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
     "@eslint/eslintrc": "3.3.6",
     "@playwright/test": "1.62.1",
     "@types/node": "22.7.5",
     "eslint": "9.39.5",
     "eslint-config-next": "15.5.23",
+    "ethers": "6.17.0",
     "typescript": "5.9.3"
   },
-  "packageManager": "pnpm@10.33.2"
+  "packageManager": "pnpm@10.33.2",
+  "pnpm": {
+    "overrides": {
+      "axios@>=1.15.2 <1.18.0": "^1.18.0",
+      "postcss@<8.5.18": "^8.5.18",
+      "sharp@<0.35.0": "^0.35.0",
+      "ws@>=8.0.0 <8.21.0": "^8.21.0"
+    }
+  }
 }

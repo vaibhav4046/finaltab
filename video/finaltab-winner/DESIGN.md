@@ -1,47 +1,54 @@
-# FINALTab winner film — visual identity
+# FINALTab V3 — visual identity
 
-## Style prompt
+## One product, one brand
 
-**Ledger Noir**: the warmth of a late-night restaurant receipt meets the exactness of an institutional settlement ledger. Frames feel printed, tactile, and cinematic—not like a generic neon SaaS dashboard. Large editorial statements establish the human problem; disciplined monospaced evidence proves the machine result. Negative space is deliberate, while animated rules, receipt edges, signatures, and transaction paths keep every scene alive. The emotional arc moves from messy social debt to calm, independently verified closure.
+The film is the product at cinema scale: carbon-black surfaces, electric-blue activity, acid-green product signal, and verified green only for checked proof. The style is sleek and exact without becoming a fake terminal or a generic neon dashboard.
 
 ## Colors
 
-- `#0B0F12` — night canvas; persistent background
-- `#F4EEE2` — receipt paper and primary statement text
-- `#FF936A` — human action, scan, and approval accent
-- `#B7F5D8` — verified proof only; never decorative
-- `#91A0A8` — secondary metadata and grid rules
+- `#050706` — carbon canvas
+- `#F4F8F1` — primary text and receipt paper
+- `#45AFFF` — active work and transit
+- `#C8FF3D` — FINALTab signal and handoff
+- `#B8FF5C` — independently checked proof only
+- `#B7C0B8` — secondary metadata and rules
+- `#FF7B74` — a real failed or blocked state only
 
-No additional semantic colors are introduced. Failures use the product’s existing `#FF7B74` only when a real failed state is shown.
+No new semantic color is introduced. Verified green is never decorative.
 
 ## Typography
 
-- **Fraunces SemiBold** — editorial statements and logo moments, 72–150 px, tight tracking
-- **Geist Mono Regular/Bold** — evidence, addresses, amounts, tool calls, captions, and labels, 20–58 px with tabular numerals
+- **Geist Sans SemiBold/Bold** — FINALTab wordmark, headlines, plain-English explanations, and CTA; 72–220 px at 4K.
+- **Geist Mono Regular/Bold** — amounts, hashes, tool names, evidence, captions, and timestamps; 32–92 px at 4K.
 
-The serif voice is human and material; the mono voice is cryptographic and auditable. Never pair two display faces in one scene.
-
-## Motion
-
-- Deliberate premium entrances: 0.35–0.75 s, usually `expo.out`, `power3.out`, or `sine.out`
-- Primary scene handoff: editorial push/focus-pull, 0.35–0.5 s
-- Topic-change accent: receipt-edge wipe or restrained circle iris, 0.45–0.6 s
-- Proof climax: fast verified stamp plus one overexposure pulse; green appears only after the independently checked receipt lands
-- Every scene follows build → breathe → resolve, with no exit animation before its transition
-- Ambient motion is sparse: one slow paper drift, graph path draw, or scan line per scene; no infinite repeats
+V3 has no serif face, so the film and the live product read as one brand.
 
 ## Layout
 
-- 1920×1080 landscape, 60 fps final render
-- 96 px outer safety margin; captions remain inside the bottom 120 px safe zone
-- Two focal points and at least three visual layers per scene
-- Product footage is framed as evidence, not decoration: legible at hero moments, with precise callouts rather than fake cursor theatrics
-- Addresses and numbers use tabular figures and never shrink below 20 px
+- Native 3840×2160 at 60 fps; exact duration 90.000 seconds.
+- 192 px outer safety margin; bottom caption band remains clear.
+- Real product footage is a large, legible proof surface with guided crops, not a tiny browser pasted into a slide.
+- Every scene has a clear first focal point, a supporting proof point, and quiet structural depth.
+- Evidence never shrinks below 32 px at 4K; important identifiers never shrink below 40 px.
 
-## What not to do
+## Motion
 
-- No purple/cyan neon, glassmorphism, gradient text, floating identical cards, or generic AI-dashboard visuals
-- No decorative verified green; green always means a checked onchain fact
-- No jump cuts, frantic zoom spam, fake terminal typing, optimistic success, or prewritten proof
-- No tiny web UI pasted full-frame without guided focus
-- No unsupported claims such as “production mainnet,” “minimum transfers,” or “trustless” without the exact qualifying evidence on screen
+- Smooth long-tail entries and VO-timed sequential reveals.
+- No bounce, floating-card screensaver motion, slow back-half camera drift, infinite loop, or fake cursor theater.
+- Seven restrained transitions at 4, 12, 20, 30, 50, 68, and 85 seconds.
+- The Scene 7 hard stop is the energy peak. Scene 8 is deliberately calm and still.
+- Text-only logo assembly: no logo icon, badge, or separate mark.
+
+## Capture treatment
+
+- Preserve the real UI and its current theme. Use crops, masks, and motion framing only to improve legibility.
+- Never reconstruct a screen, response, memory node, tool output, or success state.
+- Redact private account text without hiding the route or product identity.
+- The retained-run proof is always labelled as earlier, authorized, read only, and not created by the filmed MCP test.
+
+## Audio
+
+- One newly generated, fully local Kokoro `bm_george` narration master.
+- No reused old scene audio and zero network/provider calls.
+- No BGM. Restrained local SFX sit well below speech.
+- Final master target: −14.0 LUFS integrated, ≤ −1.0 dBTP.

@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "status": "lock-ready",
+  "captureId": "C07",
+  "artifact": "C07-mcp-sanitized-transcript.json",
+  "artifactSha256": "1f09eb6c15bc25023e8516ee5ad7e91fcef92602b18766b807ac8063605cd78d",
+  "inputSha256": "b91ae5a71eb53f6ec645c5b6ef3c15a961496352a30c821defe268c07b72509c",
+  "endpoint": "https://finaltab.vercel.app/api/mcp",
+  "exactSequence": [
+    {
+      "rpcMethod": "initialize"
+    },
+    {
+      "rpcMethod": "tools/list"
+    },
+    {
+      "rpcMethod": "tools/call",
+      "toolName": "allocate_receipt"
+    },
+    {
+      "rpcMethod": "tools/call",
+      "toolName": "prepare_receipt_settlement"
+    },
+    {
+      "rpcMethod": "tools/call",
+      "toolName": "create_broadcast_approval_challenge"
+    }
+  ],
+  "hardStopAfter": "create_broadcast_approval_challenge",
+  "prohibitedActionsPerformed": false,
+  "credentialCopied": false,
+  "retainedProofLane": {
+    "captureId": "C08",
+    "separate": true,
+    "readOnly": true,
+    "queried": false
+  }
+}

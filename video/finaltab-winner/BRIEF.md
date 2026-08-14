@@ -1,45 +1,50 @@
----
-workflow: product-launch-video
-flow: automation
-storyboard: no
-message: "FINALTab turns a messy shared bill into consent-bound, KeeperHub-executed, independently verified onchain settlement—and gives agents the same safe path through MCP."
-destination: youtube
-aspect: 1920x1080
-language: en
-audience: "KeeperHub hackathon judges, agent builders, and bounty reviewers"
-length: 96s
-angle: proof-first product reveal
-narration: yes
-voice: "ElevenLabs George — warm, precise, restrained"
-vo_mode: restructured
----
+# BRIEF — FINALTab V3 judge film
 
-## Intent
+## Deliverable
 
-This is both a premium launch film and a judge-verifiable product walkthrough. Sell the human outcome first—one shared bill becomes one calm, auditable settlement—then show the real product, V2 consent design, KeeperHub execution, independent receipt verification, and an MCP agent completing the same flow. The pace should feel confident and fast, never breathless or slow.
+An exact 90.000-second, native 3840×2160, 60 fps product film. It opens on the text-only FINALTab wordmark, explains the product in plain English, shows the real signed-in product, proves a difficult voice-and-agent run, performs a real authenticated MCP tool-connection test that stops before any wallet action, and closes on independently checkable proof.
 
-## Assets
+## Audience and message
 
-- `https://finaltab.vercel.app` — capture the rebuilt product’s real landing, settlement room, proof capsule, developer surface, and MCP configuration after V2 ships.
-- `contracts/contracts/FinalTabBatchSettlementV2.sol` — source for the plan-binding architecture beat.
-- `docs/release/evidence/` — sanitized KeeperHub execution, transaction, block, and independent RPC evidence generated after the V2 deployment.
-- `docs/release/MCP_TRACE_SPEC.md` — source of truth for the final visible MCP call sequence.
-- `capture/recordings/` — new 1920×1080 product and MCP recordings; no legacy V1 footage is treated as current proof.
+Hackathon judges should leave with one sentence: FINALTab turns a shared receipt into an exact plan that people approve, executes an authorized test-network settlement once, and leaves proof anyone can inspect.
 
-## Customizations
+## Locked scene order
 
-- Open with a receipt-edge FINALTab logo animation.
-- Explain the architecture visually: receipt → deterministic ledger → per-debtor USDC pull plus full-plan consent → KeeperHub → independent RPC proof.
-- Show a genuinely complex bill: corrected extraction, multiple participants, cent-perfect allocation, graph netting, distributed approvals, simulate-first execution, and current proof capsule.
-- Make MCP the closing hero: list tools, prepare, show the explicit approval boundary, submit externally signed V2 payload, poll to `VERIFIED_SETTLED`, then show balance delta and explorer proof.
-- Use baked, word-timed captions plus a separate SRT/VTT deliverable; ElevenLabs narration must be synchronized to the actual edit.
-- Render 1920×1080 at 60 fps with H.264/AAC, then produce a smaller upload copy without changing content.
-- Use HyperFrames as the reproducible source and Supademo only where a guided interaction capture materially improves legibility.
+| Scene | Window | Job |
+| --- | --- | --- |
+| 01 | 00:00–00:04 | Text-only FINALTab logo animation |
+| 02 | 00:04–00:12 | What the product does |
+| 03 | 00:12–00:20 | Real use cases |
+| 04 | 00:20–00:30 | Simple architecture in plain English |
+| 05 | 00:30–00:50 | Real final-site demonstration |
+| 06 | 00:50–01:08 | Real complex voice, model, four-review, and memory-graph task |
+| 07 | 01:08–01:25 | Authenticated MCP non-broadcast test and hard stop |
+| 08 | 01:25–01:30 | Earlier-run proof and CTA |
 
-## Notes
+The windows are contiguous and total exactly 90.000 seconds.
 
-- Autonomous build: the user asked the agent to continue while they sleep and deliver the strongest truthful submission.
-- The old V1 contract failed adversarial review and must never appear as the current production rail. Every live claim and proof in this film must be V2-specific.
-- No fake typing, optimistic green states, server-hot-key flow presented as production, or unsupported “mainnet/production-ready/trustless” language.
-- Verified green appears only after both KeeperHub’s terminal receipt and the independent Base Sepolia RPC check pass.
-- Keep the final call to action practical: live product, GitHub, MCP endpoint, transaction proof, and KeeperHub integration package.
+## Truth boundaries
+
+- No fake product UI, terminal output, participant identity, model response, review event, memory record, tool result, or proof state.
+- Receipt names are never inferred. People shown in the product are entered by the user or safely redacted.
+- The filmed MCP session may authenticate, list tools, allocate the receipt, prepare a wallet request, and create an approval challenge. It must stop there.
+- The filmed MCP session never requests a wallet signature and never calls a submit, sign, broadcast, or value-moving operation.
+- The settled transaction shown at the end is an earlier authorized run. It is visibly separate from the filmed MCP test.
+- KeeperHub is introduced as the execution service. Base Sepolia is introduced as the public test network. MCP is introduced as a tool connection.
+
+## Visual system
+
+One product and one film brand: carbon-black surfaces, electric blue for activity, acid green for product signal, and verified green only for checked proof. FINALTab and all headlines use Geist Sans. Evidence uses Geist Mono. No serif face is part of V3.
+
+## Narration and audio
+
+- Locked script: 183 words.
+- Voice: George, British male (`bm_george`), synthesized locally with Kokoro-82M.
+- Model: `kokoro-v1.0` from the local offline cache.
+- Generation: one complete local build for all eight locked scenes; zero metered TTS provider calls and no reused narration assets.
+- Current state: the local narration master, timing map, and captions are approved. The earlier ElevenLabs quota check was denied, consumed its single allowed subscription GET, made zero synthesis POSTs, and must not be retried.
+- Final mix: integrated loudness −14.0 LUFS, true peak no higher than −1.0 dBTP, no background music, and restrained local SFX below the voice.
+
+## Release condition
+
+Source validation may pass with explicit placeholders. Final rendering stays blocked until all four V3 captures, the approved local narration package, alignment, captions, eight newly built scene compositions, capture hashes, and final audio checks pass. The rendered 4K60 MP4 must be exactly 90.000 seconds within one video frame.

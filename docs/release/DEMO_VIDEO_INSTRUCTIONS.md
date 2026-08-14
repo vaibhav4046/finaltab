@@ -7,9 +7,11 @@
 > not show the final MCP agent story. An older 92.7-second cut is also
 > superseded. Neither file is the current submission deliverable.
 >
-> The timings below are archived cue points. The V2 URL, duration, metadata,
-> and final scene plan remain pending until the new agent/MCP video is rendered.
-> Current status: [status.md](status.md). Capture contract:
+> The timings below are archived cue points. The V2 master is rendered and
+> published at <https://youtu.be/eXZACnOdt5w> (90.005 s, 3840×2160 at 60 fps,
+> sha256 `a14cfef3…`, visibility Unlisted), so nothing here is pending — see
+> [../demo-storyboard.md](../demo-storyboard.md) for the V2 plan it was cut
+> against. Current status: [status.md](status.md). Capture contract:
 > [MCP_TRACE_SPEC.md](MCP_TRACE_SPEC.md).
 
 **Original target**: 2:20–2:40 (one continuous, truthful, representative take)  

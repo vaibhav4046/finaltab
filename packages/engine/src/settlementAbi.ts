@@ -16,7 +16,8 @@ export const EXECUTE_SETTLEMENT_V1_SIGNATURE =
 
 /**
  * keccak256(EXECUTE_SETTLEMENT_V1_SIGNATURE)[0:4], verified present in the
- * runtime bytecode deployed at NEXT_PUBLIC_SETTLEMENT_CONTRACT on Base Sepolia.
+ * historical V1 runtime at 0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64 on
+ * Base Sepolia. The current NEXT_PUBLIC_SETTLEMENT_CONTRACT points to V2.
  */
 export const EXECUTE_SETTLEMENT_V1_SELECTOR = "0xab894f37";
 

@@ -1,6 +1,7 @@
 import "server-only";
 
 import { createHash, timingSafeEqual } from "node:crypto";
+import { canonicalAppOrigin } from "@/lib/auth/navigation";
 import { createClient } from "@supabase/supabase-js";
 import { authenticatedUser } from "@/lib/supabase/server";
 import { supabasePublicConfig } from "@/lib/supabase/config";
@@ -17,7 +18,7 @@ export interface ApiPrincipal {
   subject: string;
   name: string;
   scopes: ReadonlySet<ApiScope>;
-  source: "session" | "bearer-jwt" | "bearer-token" | "development";
+  source: "session" | "bearer-jwt" | "bearer-token";
   rateKey: string;
 }
 
@@ -180,21 +181,9 @@ export async function requestPrincipal(request: Request): Promise<ApiPrincipal |
   }
 
   const { configured, user } = await authenticatedUser();
-  if (!configured || !user) {
-    if (process.env.NODE_ENV !== "production") {
-      const origin = request.headers.get("origin");
-      if (!origin || origin === new URL(request.url).origin) {
-        return {
-          subject: "local-development",
-          name: "Local development",
-          scopes: new Set(VALID_SCOPES),
-          source: "development",
-          rateKey: sha256("local-development"),
-        };
-      }
-    }
-    return null;
-  }
+  // Development is not an authentication mechanism. Local callers must use a
+  // real Supabase session or an explicitly configured, least-privilege token.
+  if (!configured || !user) return null;
   return {
     subject: user.id,
     name: user.email ?? "Supabase user",
@@ -253,6 +242,16 @@ function principalHasRequiredScope(principal: ApiPrincipal, options: AccessOptio
     principal.scopes.has(options.sessionFallbackScope);
 }
 
+function hasCanonicalSessionOrigin(request: Request): boolean {
+  const origin = request.headers.get("origin");
+  if (!origin || origin === "null") return false;
+  try {
+    return new URL(origin).origin === canonicalAppOrigin(request);
+  } catch {
+    return false;
+  }
+}
+
 export type AccessResult =
   | { ok: true; principal: ApiPrincipal; headers: Headers }
   | { ok: false; response: Response };
@@ -288,12 +287,10 @@ export async function authorizeApiRequest(
   }
 
   if (
-    (principal.source === "session" || principal.source === "development") &&
+    principal.source === "session" &&
     options.requireSameOriginForSession !== false
   ) {
-    const origin = request.headers.get("origin");
-    const expected = process.env.FINALTAB_APP_ORIGIN ?? new URL(request.url).origin;
-    if (!origin || origin !== expected) {
+    if (!hasCanonicalSessionOrigin(request)) {
       return { ok: false, response: Response.json({ error: "ORIGIN_REJECTED" }, { status: 403 }) };
     }
   }
@@ -328,5 +325,6 @@ export const apiAccessInternals = {
   tokenPrincipal,
   scopesFromAppMetadata,
   principalHasRequiredScope,
+  hasCanonicalSessionOrigin,
   defaultSessionScopes: DEFAULT_SESSION_SCOPES,
 };

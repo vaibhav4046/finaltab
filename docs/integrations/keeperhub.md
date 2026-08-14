@@ -10,8 +10,10 @@ must not be pointed at the legacy V1 contract.
 | Surface | URL | Purpose |
 | --- | --- | --- |
 | Discovery | `/.well-known/finaltab.json` | FINALTab-owned capability document with live origin and V2 readiness |
-| OpenAPI | `/openapi.json` | Receipt, allocation, V2 settlement, proof, and callback contracts |
+| OpenAPI | `/openapi.json` | Receipt, allocation, configuration-gated voice, V2 settlement, proof, and callback contracts |
 | MCP | `/api/mcp` | Agent tool surface (described, but not reimplemented, by this package) |
+| Voice session | `/api/voice/token` | Configuration-gated AssemblyAI live-STT session bootstrap; returns only a short-lived browser credential |
+| Voice readback | `/api/voice/speak` | Configuration-gated ElevenLabs MP3 readback for short product confirmations |
 | Workflow export | `/integrations/keeperhub/workflow` | KeeperHub import/export schema v1 JSON download |
 | Observer | `/api/integrations/keeperhub/events` | Read-only callback target that re-fetches KeeperHub and independently verifies Base Sepolia |
 | Version-controlled template | `integrations/keeperhub/finaltab-proof-observer.workflow.json` | Reviewable Hub/import artifact with no credential material |
@@ -20,6 +22,43 @@ The well-known document is a **FINALTab convention**, not a claimed KeeperHub
 manifest standard. KeeperHub currently documents Workflow JSON import/export,
 Hub sharing, Marketplace publication, REST, MCP, and Webhook/Send Webhook nodes;
 it does not document a native third-party application or iframe manifest.
+
+## Optional hybrid voice
+
+Voice is an application convenience, not part of KeeperHub execution or proof.
+When the corresponding server configuration is present, AssemblyAI supplies
+live streaming speech-to-text and ElevenLabs supplies a short spoken readback.
+Both paid routes require a signed-in Supabase user: either the same-origin
+browser cookie session or a validated Supabase access JWT. A scoped opaque
+FINALTab (`ft_...`) bearer is intentionally insufficient even when it has the
+  nominal route scope, because it does not represent a verified Supabase user.
+`POST /api/voice/token` exposes only a short-lived AssemblyAI redemption
+credential and constrained WebSocket settings; `POST /api/voice/speak` streams
+the ElevenLabs response from the route, while the current browser client buffers
+the short MP3 before playback. Both permanent provider keys remain server-only.
+
+The production provider variables are stored as sensitive Vercel values. The
+production Supabase guard preserves the applied per-minute limits
+(8 transcription requests and 20 readbacks); applied migration `64822` adds
+atomic UTC-day/month user and project spend budgets through the service-role-only
+`reserve_voice_budget_service(uuid, text, bigint)`. The route passes only the exact
+  Supabase user ID it already verified; browsers cannot invoke the reservation
+  RPC directly. AssemblyAI reserves its
+full 180-second maximum before token mint and holds a 240-second, 1-user/
+4-project concurrency lease; ElevenLabs reserves 1–600 input characters before
+generation. All backing tables are RLS-protected with direct anonymous and
+authenticated access revoked. Safe budget and request headers survive subsequent
+provider errors. If the store is unavailable, the provider is not called. See
+[voice.md](voice.md) for exact cap semantics. These are deployed configuration
+facts; the live provider lifecycle remains unproven until a real
+microphone/readback probe passes.
+
+The routes and OpenAPI contract describe configuration-gated capability on the
+current deployment; they do not claim a successful provider lifecycle. The
+prerecorded product-film narration is a separate asset generated locally with
+Kokoro. Its no-charge ElevenLabs preflight made one quota-check GET, was denied,
+made zero synthesis POSTs, and was not retried. AssemblyAI is used for
+interactive transcription, not film narration.
 
 Authoritative references:
 
@@ -50,9 +89,24 @@ transaction hash or contract address. It accepts the execution ID plus the expec
 
 The observer is replay-safe because it is read-only. It neither broadcasts nor
 changes a settlement. Keep its returned observation in the caller's audit log.
-Durable FINALTab audit persistence remains dependent on applying the Supabase
-migrations and configuring a project; the observer does not claim persistence
-when that infrastructure is absent.
+The Supabase production project has its four baseline plus additive `52236`,
+`60000`, `64822`, `73000`, `74000`, `20260812023200`, and `20260812090000`
+migrations applied and schema-verified at 31/31 public RLS tables. The new
+narration-generation and tab-draft tables have zero policies and fail closed to
+browser roles. Sensitive mutation RPCs are service-role-only, the
+unindexed-FK warning is cleared, and advisors have zero error-level findings
+with reviewed warnings remaining. Post-promotion cutover `74500` is applied.
+Canonical deployment `dpl_F5PgMqo7A9zecQW2LKos2FcCNVMs` at commit
+`039582fc44901d1f436b61a426f1523a936427f9` is `READY`; the observer's
+callback/audit path remains unclaimed until separately live-probed.
+
+Value-moving first-party UI, REST, and MCP calls are separate from this read-only
+observer and converge on the applied `74000` durable-journal schema. A durably accepted
+retry returns its recorded execution without another simulation or execute; a
+prepared recovery reuses the stored successful simulation and deterministic
+KeeperHub idempotency key under a bounded approval expiry. New first-party work
+also requires current database approvals and a valid wallet approval at the
+final pre-broadcast gate.
 
 ## Configure a deployment
 
@@ -140,11 +194,13 @@ iframe support remains deliberately undeclared.
 
 - KeeperHub organization access to import, validate, enable, and optionally
   publish the workflow.
-- A post-deploy live check that the web/MCP deployment is configured for the
-  proven V2 address and version; V1 is not accepted.
-- One retained authenticated external-wallet V2 USDC settlement before the
-  integration is described as settlement-proven.
+- A live production MCP human-approval and submission probe remains unclaimed.
+  The public film stops before signing, submission, broadcast, or value movement;
+  its read-only retained-settlement lane is separate. The live one-atomic-unit
+  run proves the rail but did not exercise the MCP human broadcast-challenge
+  path.
 - Production `kh_` and scoped FINALTab credentials, entered server-side/by the
   KeeperHub owner and never committed.
-- Supabase provisioning if durable callback audit rows are required.
+- A post-deploy Supabase callback/audit persistence probe if durable callback
+  rows are claimed.
 - KeeperHub approval and a fixed parent origin for any iframe embedding.

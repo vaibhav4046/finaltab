@@ -66,6 +66,7 @@ export function Capsule({
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(Boolean(executionId));
   const [copied, setCopied] = useState(false);
+  const [copyError, setCopyError] = useState<string | null>(null);
   const [proofCapability, setProofCapability] = useState<string | null>(null);
   const [capabilityReady, setCapabilityReady] = useState(false);
 
@@ -214,6 +215,26 @@ export function Capsule({
     URL.revokeObjectURL(url);
   };
 
+  const copyProofUrl = async () => {
+    setCopyError(null);
+    setCopied(false);
+    try {
+      if (!navigator.clipboard?.writeText) throw new Error("Clipboard access is unavailable.");
+      await navigator.clipboard.writeText(window.location.href);
+      setCopied(true);
+    } catch {
+      setCopyError(
+        proofCapability
+          ? "Copy failed. Use the browser address bar, and share this scoped capability URL only with the intended recipient."
+          : "Copy failed. Use the browser address bar; this proof URL still requires an authorized FINALTab request.",
+      );
+    }
+  };
+
+  const copyLabel = proofCapability
+    ? copied ? "URL with capability copied" : "Copy URL with capability"
+    : copied ? "Authorization-required URL copied" : "Copy proof URL (authorization required)";
+
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:py-12">
       <p className="font-mono text-xs tracking-[0.25em] text-signal">SETTLEMENT CAPSULE · LIVE</p>
@@ -248,18 +269,27 @@ export function Capsule({
       <div className="mt-4 flex flex-wrap gap-2">
         <button
           type="button"
-          onClick={async () => {
-            await navigator.clipboard.writeText(window.location.href);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 1500);
-          }}
+          onClick={() => void copyProofUrl()}
           className="min-h-11 rounded-lg border border-quiet bg-surface-1 px-4 text-sm text-txt"
         >
-          {copied ? "Copied" : "Copy proof link"}
+          {copyLabel}
         </button>
         <button type="button" onClick={download} className="min-h-11 rounded-lg border border-quiet bg-surface-1 px-4 text-sm text-txt">Download JSON</button>
         {explorer ? <a href={explorer} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center rounded-lg bg-signal px-4 text-sm font-semibold text-ink">Open BaseScan ↗</a> : null}
       </div>
+      {copyError ? (
+        <p className="mt-3 text-sm text-danger" role="alert">{copyError}</p>
+      ) : (
+        <p className="mt-3 text-sm leading-6 text-muted" role="status" aria-live="polite">
+          {copied
+            ? proofCapability
+              ? "Capability-bearing URL copied. Treat the token as sensitive; the server validates its scope and expiry on every request."
+              : "Proof URL copied. No share capability was added, so the receiving request still needs authorization."
+            : proofCapability
+              ? "This URL contains a proof capability token. Treat it as sensitive; the server validates its scope and expiry on every request."
+              : "No proof capability is present. Copying this URL does not create one, and access still requires authorization."}
+        </p>
+      )}
 
       <section className="mt-8 rounded-2xl border border-quiet bg-surface-1 p-5" aria-labelledby="audit-title">
         <h2 id="audit-title" className="text-lg font-semibold text-txt">Independent audit checks</h2>

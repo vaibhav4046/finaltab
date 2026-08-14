@@ -1,8 +1,8 @@
 # USER ACTION REQUIRED
 
-Everything in this file needs a human. Each row is here because it requires a
-credential, a funded key, a destructive git operation, or an account action that
-must not be taken autonomously — not because it was too hard to finish.
+The active rows in this file need a human. The previously authorized V2
+one-atomic-unit settlement and free Supabase provisioning are retained below as
+resolved audit records, not repeated requests.
 
 Nothing below is a code defect. The code paths for all of these exist and are
 tested; they are gated on inputs only a human can supply.
@@ -10,11 +10,23 @@ tested; they are gated on inputs only a human can supply.
 | # | Action | Why it needs you | Severity | Blocks |
 |---|---|---|---|---|
 | 1 | Purge a deployer private key from **unreachable** objects in your local `.git` | Deleting git objects is irreversible | Low | Local disk hygiene. Not reachable from any commit, so not exposed by clone or push |
-| 2 | Execute and retain an authenticated external-wallet V2 USDC settlement | Requires funded testnet wallets and human signatures | High | Current product proof and video |
-| 3 | Create a Supabase project and fill 4 env vars | Requires an account you own | Medium | Persistence across sessions |
 | 4 | Optionally publish V2 source on BaseScan | Sourcify exact match is already proven; BaseScan requires its own account/API flow | Low | BaseScan-native readability only |
-| 5 | Render/upload the V2 video and submit to DoraHacks | Account and publication actions | High | Submission itself |
 | 6 | Rotate the Alchemy API key | Rotating a credential is never autonomous | Medium | Nothing functional — the repo no longer needs it |
+| 7 | Optionally authorize a paid Privy Custom Authentication plan in the future | The authenticated dashboard showed Custom Authentication on Scale ($499/month) and production activation requested payment details; the current instruction is stop before charge | Low | Optional linked-wallet provisioning only; core Supabase Auth/RLS remains complete |
+| 8 | Provide a verified sender domain and configure custom SMTP or a Send Email Hook | Supabase default mail cannot prove the requested branded inbound email | Medium | Branded authentication email; the branded return page already exists |
+
+## Resolved with explicit authorization on 2026-08-11
+
+- V2 value proof: KeeperHub execution `3hmlqi36zweiwg6fc5o2u`, tx
+  `0x7a6fb760f691954a41c71d5d508629c58aa09207bba0de4eaf164f097c59a789`,
+  block `45327128`, exactly `1` atomic USDC, with verified receipt, exact V2
+  event binding, and conserved balances. Do not rebroadcast it.
+- Supabase: `finaltab-production` (`yoavihmldqbkuxinrsih`), London `eu-west-2`,
+  free plan; baseline/additive, financial-cutover, and owner-select migrations
+  applied. All 31 public tables have RLS; sensitive mutation RPCs and legacy
+  direct writes deny browser roles. Advisors report zero error-level findings with reviewed
+  warnings remaining. Canonical GitHub OAuth/reload and an authenticated owner
+  tab create/read passed; multi-identity/cross-device behavior remains separate.
 
 ---
 
@@ -150,23 +162,30 @@ mocked receipt.
 
 ---
 
-## 3. Supabase project
+## 3. Supabase project — resolved infrastructure, bounded behavior proof
 
-The production tenancy and approval migration is complete at
-`supabase/migrations/20260811003158_production_tenancy_and_approvals.sql` and
-has not been applied to a hosted project.
+`finaltab-production` is active under project ref `yoavihmldqbkuxinrsih` in
+London (`eu-west-2`) on the free plan. The baseline plus seven ordered additive,
+financial-cutover, and owner-select migrations are applied remotely, including
+`20260811060000_cover_agent_event_composite_fk.sql`,
+`20260812023200_v3_narration_generation_journal.sql`, and
+`20260812090000_durable_prefreeze_tab_drafts.sql`. Schema verification found
+31/31 public tables with RLS. Sensitive new mutation RPCs deny `PUBLIC`, `anon`,
+and `authenticated` and allow `service_role`; legacy direct writes and the old
+voice RPC deny browser roles. Advisors report zero error-level findings, with reviewed
+RLS/function and leaked-password-protection warnings remaining. Public
+production configuration exposes no service-role value.
 
-Create a free project, then fill in `apps/web/.env.local`:
+The canonical deployment passed GitHub OAuth/reload and a real authenticated
+owner tab create/read, membership, participant add, and audit verification.
+Until a multi-identity browser probe passes, do not claim that cross-tenant
+invitations, approvals, shared history, or cross-device resume were live-tested.
 
-- `SUPABASE_URL`
-- `SUPABASE_SECRET_KEY` (server-only — must **not** carry a `NEXT_PUBLIC_` prefix)
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-
-Then run the migration. Until then cloud tabs, invitations, approval history,
-and cross-device resume stay unavailable. Local draft editing still works, but
-receipt extraction, simulation, and submission require an authenticated session
-or a correctly scoped API token; persistence is not an authentication bypass.
+The agent-control schema migration is applied, but HMAC provenance,
+stale-review invalidation, tenant isolation, and cross-device behavior must be
+separately exercised before the complete agent control plane is called
+production-live. Migration `20260811074500` is applied; its browser-role denials
+are verified.
 
 ---
 
@@ -184,33 +203,33 @@ BaseScan.”
 
 ---
 
-## 5. Submission actions
+## 5. Submission state and follow-up
 
-Explicitly outside autonomous scope, per the operating constraints for this work:
+- [DoraHacks BUIDL 47656](https://dorahacks.io/buidl/47656) is submitted and
+  `Under Review`; its Best Onboarding UX Improvement bounty application is saved.
+- The verified public film is <https://youtu.be/eXZACnOdt5w> and its measured
+  metadata and SHA-256 are recorded in the canonical submission documents.
+- [KeeperHub CLI PR #95](https://github.com/KeeperHub/cli/pull/95) is open and
+  unmerged and adds only `--require-verified`.
 
-- Submit the entry on DoraHacks.
-- Publish/open the KeeperHub CLI PR.
-- Execute and retain one authenticated external-wallet V2 USDC settlement.
-- Render and upload the new V2 agent/MCP video from that same proof package,
-  then record its real public URL in `docs/submission.md`.
-
-`docs/submission.md` deliberately says the V2 URL is pending. Do not replace
-that state until the uploaded link works while logged out, and do not submit
-with it hand-waved.
+Monitor the review and PR states without upgrading either claim unless the
+respective public service reports a change. The real production browser voice
+lifecycle and production MCP human-approval/submission path remain separate,
+unproven gates.
 
 ---
 
 ## 6. Alchemy API key
 
-A live Alchemy API key was hardcoded in four files, including
-`CLAUDE-EXTENSION-SETUP.md`, which a judge would plausibly read. All four are
+A live Alchemy API key was hardcoded in four files, including a local setup
+note that a judge would plausibly read. All four are
 redacted in the working tree:
 
 - `contracts/hardhat.config.js` — now `process.env.BASE_SEPOLIA_RPC_URL`, falling
   back to the public `https://sepolia.base.org` endpoint. Contract tests still
   pass (11/11) after the change, because they run against the local Hardhat
   network.
-- `deploy.cmd`, `CLAUDE-EXTENSION-SETUP.md`, `proof-template.json` — placeholder
+- `deploy.cmd`, that local setup note, `proof-template.json` — placeholder
   `<YOUR_ALCHEMY_KEY>`.
 
 As with the deployer key, the surviving copies are in **unreachable** objects
@@ -231,3 +250,47 @@ Alchemy endpoint back, put the new key in `BASE_SEPOLIA_RPC_URL` in an untracked
 
 I did not rotate it: rotating credentials is outside autonomous scope, and doing
 it silently could break a deploy you had in flight.
+
+---
+
+## 7. Production browser voice lifecycle — blocked on a human sign-in
+
+`tests/e2e/voice-lifecycle.spec.ts` is the runnable probe for the last open
+voice gate. It drives the real settlement room: create a durable tab, start the
+microphone, capture a live AssemblyAI transcript, push it through **Use
+transcript**, and confirm that the transcript stops at the instruction textarea
+instead of reaching allocation. It also asserts the abort path leaves no stuck
+control, and inspects the live `POST /api/voice/token` response for durable
+quota headers and for any permanent provider key.
+
+**It cannot be run autonomously, and the blocker is not a missing script.**
+`apps/web/lib/server/voiceQuota.ts` accepts only a principal whose `source` is
+`session` or `bearer-jwt` with a UUID subject, so no machine or API token can
+mint an AssemblyAI streaming credential. Production sign-in offers GitHub OAuth
+and email OTP only, and `teamEmailAuth` is disabled with delivery unproven.
+Producing a session therefore means authenticating as you, which is outside
+autonomous scope.
+
+**To run it yourself:**
+
+1. Sign in to <https://finaltab.vercel.app> in a browser, then save that browser
+   context as a Playwright storage state file (`pnpm exec playwright open
+   --save-storage=voice-session.json https://finaltab.vercel.app`, sign in, then
+   close the window). Keep the file untracked — it holds a live session.
+2. Run the probe against production:
+
+```bash
+E2E_VOICE_STORAGE_STATE=./voice-session.json E2E_BASE_URL=https://finaltab.vercel.app pnpm exec playwright test tests/e2e/voice-lifecycle.spec.ts --project=chromium
+```
+
+The microphone is a Chromium fake device fed by the retained locally generated
+Kokoro narration at
+`video/finaltab-winner/assets/audio/voice-v3/source-local/scene-01-kokoro.wav`;
+override it with `E2E_VOICE_FIXTURE_WAV`. A full run costs one AssemblyAI
+streaming session per test. It never triggers a paid ElevenLabs readback, never
+touches participant funds, and cannot broadcast anything — the probe stops at
+the instruction textarea, and allocation stays gated on a confirmed receipt.
+
+Until that run passes, hybrid voice stays at
+`DEPLOYED/CONFIG PROVEN; PROVIDER LIFECYCLE PENDING`. Do not upgrade the claim
+on the strength of the probe existing.

@@ -5,8 +5,30 @@
 > video measurement. Current V2 truth: contract
 > `0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB`, KeeperHub deployment execution
 > `xasakw5nfxkh2s0fh4stn`, tx `0x904ec881…e8f`, block `45321107`, Sourcify exact
-> match `43497805`. V2 USDC settlement, clean combined CI, and video remain
-> pending. Use [status.md](status.md) and [SUBMISSION_CHECKLIST.md](SUBMISSION_CHECKLIST.md).
+> match `43497805`. Canonical deployment
+> `dpl_F5PgMqo7A9zecQW2LKos2FcCNVMs` at commit
+> `039582fc44901d1f436b61a426f1523a936427f9` supersedes the archived release:
+> Vercel reports `READY`, while current-commit CI and Playwright are not inferred
+> from the prior deployment. Current V2 additions: KeeperHub execution
+> `3hmlqi36zweiwg6fc5o2u` moved one atomic unit of USDC in tx
+> `0x7a6fb760…a789` at block `45327128`, with exact event/balance proof; Supabase
+> project `yoavihmldqbkuxinrsih` is provisioned and schema-verified with its four
+> baseline/additive, financial cutover, and owner-select migrations: 31/31
+> public tables have RLS, sensitive mutation RPCs and legacy writes deny browser
+> roles, and advisors report zero error-level findings with reviewed warnings remaining. A
+> real GitHub OAuth/reload, owner tab create/read, exactly-nine-tool list, and
+> non-value MCP calculation/preparation passed. The public product film is
+> <https://youtu.be/eXZACnOdt5w>: 90.005s, 3840×2160/60 fps, 5,400 H.264 video
+> frames plus AAC audio, 35,617,576 bytes, SHA-256
+> `a14cfef364c0fe7d4c62e2f9cfb73ca228a692e8738a85d5a6f615e361b09c69`.
+> Its narration is local Kokoro; the denied ElevenLabs preflight made one quota
+> GET, zero synthesis POSTs, and no retry. The filmed MCP flow performs no sign,
+> submit, broadcast, or value action; the retained settlement is separate. A
+> real browser voice lifecycle remains pending. DoraHacks
+> [BUIDL 47656](https://dorahacks.io/buidl/47656) is submitted and `Under Review`
+> with its Best Onboarding UX Improvement bounty application saved. KeeperHub
+> CLI PR #95 is open/unmerged and adds only `--require-verified`. Use
+> [status.md](status.md) and [SUBMISSION_CHECKLIST.md](SUBMISSION_CHECKLIST.md).
 
 Every row was run on **2026-08-10**. Gates 1–16 were measured against a clean tree at commit
 `b258ec3` and re-measured unchanged against the tree this commit publishes; gates 17–18 were added by
@@ -77,6 +99,31 @@ and a fresh full `pnpm -r --if-present test` run measured **212 passing, 1 skipp
 including one driven end to end by an AI agent over MCP (tx `0x314189b4…c5eb`, block 45315909,
 executionId `69zzrj7z676u89ce1x76j`, 2.00 USDC, <3s). Gate 10's ffprobe line reflects the video
 cut current at run time; the master has since been re-recorded.
+
+**Second post-run annotation (2026-08-14).** The 2026-08-10 table above is left exactly as that run
+measured it. Two of its lines are now stale, and here is what a re-measurement on 2026-08-14
+produced instead:
+
+- **Gate 1 (tests).** `pnpm test` exits 0 with **524 passing, 1 skipped** — 497 Vitest (engine 60,
+  keeperhub 37, vision 37 +1 skipped, flight-recorder 7, `apps/web` 356 across 39 files) plus 27
+  Hardhat. Both the original 200 and the first annotation's 212 predate the voice, RLS, replay and
+  agent-control suites. `pnpm test` also builds `contracts` first, so it is still the single command
+  that produces the total.
+- **Gate 10 (video).** The published V2 master is <https://youtu.be/eXZACnOdt5w>, verified live on
+  2026-08-14 (title "FINALtab Product for KeeperHub - Agents Onchain Hackathon", player duration
+  90.021 s, visibility **Unlisted**). The render behind it measures **90.005 s, 3840×2160, 60 fps,
+  h264 + aac, 35,617,576 bytes**, sha256
+  `a14cfef364c0fe7d4c62e2f9cfb73ca228a692e8738a85d5a6f615e361b09c69`.
+
+  An earlier revision of this line described the gitignored working file
+  `proof-output/finaltab-demo.mp4` (**101.64 s, 1920×1080, 25 fps, h264 + aac, 7,472,357 bytes**,
+  sha256 `de8aa3018f690cbf31ce1737924a0e59a1ca30bdd715489db5ff46459262fbb7`) as the master and said
+  no public URL existed. That was wrong on both counts: it is a different file with a different
+  hash, and the master was already published. Neither file is obtainable from the repository,
+  because `proof-output/` is gitignored.
+
+Gate 14 (coverage) is still **NOT MEASURED** — no coverage run has been performed, and a larger test
+count is not a coverage figure.
 
 ## Gate 17 — the journey, as actually observed
 

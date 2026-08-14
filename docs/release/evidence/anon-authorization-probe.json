@@ -1,0 +1,481 @@
+{
+  "tool": "probe-anon-authorization",
+  "version": 1,
+  "startedAt": "2026-08-12T20:04:10.704Z",
+  "mode": "read-only",
+  "evidenceFile": "docs/release/evidence/anon-authorization-probe.json",
+  "supabaseUrl": "https://yoavihmldqbkuxinrsih.supabase.co",
+  "role": "anon",
+  "deniedCode": "42501",
+  "counts": {
+    "tables": 31,
+    "functions": 30,
+    "checked": 61,
+    "denied": 61
+  },
+  "surfaces": [
+    {
+      "kind": "table",
+      "name": "allocations",
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "table",
+      "name": "api_tokens",
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "table",
+      "name": "approval_challenges",
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "table",
+      "name": "audit_events",
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "table",
+      "name": "finaltab_v3_narration_generations",
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "table",
+      "name": "idempotency_records",
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "table",
+      "name": "ledgers",
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "table",
+      "name": "participants",
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "table",
+      "name": "profiles",
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "table",
+      "name": "receipt_items",
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "table",
+      "name": "receipts",
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "table",
+      "name": "settlement_agent_events",
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "table",
+      "name": "settlement_agent_memory",
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "table",
+      "name": "settlement_agent_runs",
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "table",
+      "name": "settlement_approvals",
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "table",
+      "name": "settlement_flow_events",
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "table",
+      "name": "settlement_flow_records",
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "table",
+      "name": "settlement_submission_events",
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "table",
+      "name": "settlement_submission_intents",
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "table",
+      "name": "settlements",
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "table",
+      "name": "signatures",
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "table",
+      "name": "tab_drafts",
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "table",
+      "name": "tab_members",
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "table",
+      "name": "tabs",
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "table",
+      "name": "transfers",
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "table",
+      "name": "voice_project_budget_windows",
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "table",
+      "name": "voice_quota_windows",
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "table",
+      "name": "voice_spend_reservations",
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "table",
+      "name": "voice_user_budget_windows",
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "table",
+      "name": "wallet_accounts",
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "table",
+      "name": "wallet_challenges",
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "function",
+      "name": "accept_tab_invite",
+      "args": 1,
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "function",
+      "name": "add_tab_participant",
+      "args": 4,
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "function",
+      "name": "assert_durable_settlement_observation_access",
+      "args": 7,
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "function",
+      "name": "assert_reviewed_settlement_approvals",
+      "args": 3,
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "function",
+      "name": "begin_settlement_agent_run",
+      "args": 7,
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "function",
+      "name": "complete_finaltab_v3_narration_generation",
+      "args": 6,
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "function",
+      "name": "consume_voice_quota",
+      "args": 1,
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "function",
+      "name": "create_tab_invite",
+      "args": 3,
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "function",
+      "name": "delete_expired_settlement_agent_memory",
+      "args": 0,
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "function",
+      "name": "fail_finaltab_v3_narration_generation",
+      "args": 4,
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "function",
+      "name": "finish_settlement_agent_run",
+      "args": 7,
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "function",
+      "name": "freeze_reviewed_settlement_flow",
+      "args": 22,
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "function",
+      "name": "get_tab_draft",
+      "args": 2,
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "function",
+      "name": "list_tab_approval_summaries",
+      "args": 1,
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "function",
+      "name": "prepare_durable_settlement_submission",
+      "args": 15,
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "function",
+      "name": "read_durable_settlement_submission_retry",
+      "args": 11,
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "function",
+      "name": "read_finaltab_v3_narration_generation",
+      "args": 2,
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "function",
+      "name": "reconcile_reviewed_settlement_proof",
+      "args": 12,
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "function",
+      "name": "record_approval_decision",
+      "args": 3,
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "function",
+      "name": "record_durable_settlement_acceptance",
+      "args": 8,
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "function",
+      "name": "record_durable_settlement_observation",
+      "args": 14,
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "function",
+      "name": "record_reviewed_settlement_execution",
+      "args": 12,
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "function",
+      "name": "record_reviewed_settlement_simulation",
+      "args": 11,
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "function",
+      "name": "record_reviewed_settlement_terminal",
+      "args": 13,
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "function",
+      "name": "record_settlement_agent_stage",
+      "args": 14,
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "function",
+      "name": "remember_settlement_agent_run",
+      "args": 9,
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "function",
+      "name": "reserve_finaltab_v3_narration_generation",
+      "args": 4,
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "function",
+      "name": "reserve_voice_budget",
+      "args": 3,
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "function",
+      "name": "reserve_voice_budget_service",
+      "args": 3,
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    },
+    {
+      "kind": "function",
+      "name": "upsert_tab_draft",
+      "args": 7,
+      "status": 401,
+      "code": "42501",
+      "denied": true
+    }
+  ],
+  "finishedAt": "2026-08-12T20:04:13.428Z",
+  "verdict": "ANON_DENIED_EVERY_SURFACE",
+  "failedSurfaces": [],
+  "rowsRead": 0,
+  "rowsWritten": 0,
+  "sessionTokensStored": false
+}

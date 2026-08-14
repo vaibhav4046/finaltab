@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 3,
+  "status": "approved-v3-captures",
+  "approvedAt": "2026-08-12T04:40:16.137Z",
+  "attestationPath": "data/capture-attestations.json",
+  "attestationSha256": "c451ddfda0644662e5f290d4f3c9b20cb16a61e2d19575ffb5b3c6f544006f41",
+  "captures": [
+    {
+      "id": "C05",
+      "path": "assets/capture-v3/C05-final-site-demo.mp4",
+      "kind": "video",
+      "bytes": 1021994,
+      "sha256": "ac639623c35fd4e3029646cda57ea8860ca8d04c2ef6e867aa61bbd49b5d4184",
+      "media": {
+        "width": 2560,
+        "height": 1440,
+        "fps": 60,
+        "durationSeconds": 20
+      }
+    },
+    {
+      "id": "C06",
+      "path": "assets/capture-v3/C06-complex-agent-task.mp4",
+      "kind": "video",
+      "bytes": 972789,
+      "sha256": "0cfe875ea6075d77b9fd3d6cb85a7ead4a8eaea7b52ea47686d10e7362f9b70a",
+      "media": {
+        "width": 2560,
+        "height": 1440,
+        "fps": 60,
+        "durationSeconds": 18
+      }
+    },
+    {
+      "id": "C07",
+      "path": "assets/capture-v3/C07-mcp-nonbroadcast.mp4",
+      "kind": "video",
+      "bytes": 488197,
+      "sha256": "98b4af677f3fba7f660281b8fbbe7f19173617f70d996a231621055370e17235",
+      "media": {
+        "width": 2560,
+        "height": 1440,
+        "fps": 60,
+        "durationSeconds": 17
+      }
+    },
+    {
+      "id": "C08",
+      "path": "assets/capture-v3/C08-retained-proof.png",
+      "kind": "still",
+      "bytes": 359777,
+      "sha256": "a8d91e5ccdca3dd14a47f7f397326ea328d4dad8ba2f6ace2d375fc0e5fd49fe",
+      "media": {
+        "width": 3840,
+        "height": 2160
+      }
+    }
+  ]
+}

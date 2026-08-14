@@ -14,9 +14,9 @@ bootstrap and tool-list requests require `settlements:read`; tool calls also
 require their specific scope. Batched JSON-RPC requests must satisfy every
 scope in the batch.
 
-The current source registers nine production tools plus three separately
-labelled `demo_*` tools. Demo tools are disabled by default and are not the
-external-wallet product flow.
+The current source registers exactly nine production tools. The retired
+fixed-wallet tools and their server-held signer path are absent from the
+production source.
 
 Generate a client token without printing it:
 
@@ -37,9 +37,7 @@ client must be able to invoke the value-moving tool.
 | `split_equal`, `split_weighted`, `net_debts` | `tabs:read` |
 | `allocate_receipt`, `prepare_receipt_settlement`, `simulate_signed_settlement`, `create_broadcast_approval_challenge` | `settlements:prepare` |
 | `submit_signed_settlement` | `settlements:submit` |
-| `settlement_status`, `demo_get_balances` | `settlements:read` |
-| `demo_prepare_settlement` | `settlements:prepare` |
-| `demo_settle_tab` | `settlements:submit` |
+| `settlement_status` | `settlements:read` |
 
 ## Production receipt-to-proof sequence
 
@@ -61,8 +59,15 @@ client must be able to invoke the value-moving tool.
    principal, chain, V2 contract, ledger, and settlement plan. It may be retried
    until expiry; it is not described as a single-use credential.
 6. Call `submit_signed_settlement` with the signed settlement and signed
-   approval artifact. The server revalidates V2, verifies the human artifact,
-   re-simulates, and submits an idempotent atomic KeeperHub call.
+   approval artifact. Every value-moving surface uses the same service-authored
+   durable submission journal. For new work, the server revalidates V2,
+   verifies the human artifact, simulates, records the successful simulation and
+   exact bindings, then submits one deterministic-idempotency KeeperHub call.
+   A retry whose acceptance is already durable skips both simulation and
+   execution and returns the recorded execution. A crash-recovery retry still in
+   `prepared` state reuses the stored successful simulation and identical
+   idempotency key while the persisted approval lease remains bounded; a fresh
+   approval may renew only an unresolved prepared intent.
 7. Poll `settlement_status` with the returned `executionId`, `settlementId`, and
    `ledgerHash`. `VERIFIED_SETTLED` is returned only when KeeperHub
    proves successful receipts and an independent Base Sepolia RPC fetch finds
@@ -92,14 +97,28 @@ ChatGPT desktop, Codex CLI, and the Codex IDE extension share this config.
 ChatGPT web does not read it; connect the HTTPS endpoint through a permitted
 workspace plugin instead.
 
-## V2 and demo gates
+## V2 fail-closed gates
 
 MCP money tools require both a valid `NEXT_PUBLIC_SETTLEMENT_CONTRACT` and
 `FINALTAB_SETTLEMENT_CONTRACT_VERSION=2`. An unversioned or V1 address fails
 closed.
 
-The fixed Vee/Hem/Ravi path is retained only as `demo_*`, is Base Sepolia
-testnet-only, and is disabled unless
-`FINALTAB_ENABLE_DEMO_MONEY_TOOLS=true`. `demo_settle_tab` additionally requires
-a fresh approval signed by `FINALTAB_DEMO_APPROVER_ADDRESS`. This path is not
-the production user-wallet workflow.
+Only Base Sepolia is implemented. Every participant name and wallet comes from
+the caller's request; a receipt without names cannot manufacture them. Every
+debtor supplies both external-wallet typed-data signatures, and submission also
+requires a permitted wallet's short-lived approval. No Solana or mainnet adapter
+is claimed.
+
+The first-party settlement room adds an attested four-stage review before its
+Freeze control. That UI review is not an undocumented tenth MCP tool: external
+MCP clients use the explicit signed-payload sequence above and cannot bypass its
+signature, simulation, approval, or proof boundaries.
+
+The shared journal covers the first-party UI, `POST /api/settle/execute`, and MCP
+`submit_signed_settlement`. Fresh first-party submission additionally requires
+current database-backed participant approvals, and all fresh submissions
+recheck the wallet-signed approval at the final pre-broadcast boundary.
+Migrations `20260811073000` and `20260811074000` are applied and their tables are
+inside the verified 31/31-public-table RLS posture. Journal and first-party flow
+behavior remain source/test-only claims until tenant isolation and crash recovery
+are probed on the candidate deployment.

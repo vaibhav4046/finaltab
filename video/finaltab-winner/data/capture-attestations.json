@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 3,
+  "status": "approved-independent-review",
+  "captures": [
+    {
+      "id": "C05",
+      "inspectedBy": "Codex final-media audit",
+      "reviewerType": "independent-automated-visual-and-source-audit",
+      "inspectedAt": "2026-08-12T05:05:00.000Z",
+      "sourceMatches": true,
+      "noSecretsOrPrivateIdentity": true,
+      "noValueMovement": true,
+      "required": {
+        "real canonical landing surface": true,
+        "authenticated Supabase-secured app state": true,
+        "durable tab creation boundary": true,
+        "newly created synced tab workspace": true,
+        "real agents and memory route": true,
+        "real proof lookup route": true,
+        "real developers route": true,
+        "real open-source route": true
+      },
+      "forbiddenAbsent": {
+        "invented participant identity": true,
+        "fake receipt data presented as captured": true,
+        "synthetic product UI presented as captured": true,
+        "private account text": true,
+        "success overlay not present in the product": true
+      },
+      "notes": "Full decode plus all eight slide midpoints and original source screenshots inspected. Generated framing is visibly labelled; the product surfaces inside it are canonical captures."
+    },
+    {
+      "id": "C06",
+      "inspectedBy": "Codex final-media audit",
+      "reviewerType": "independent-automated-visual-and-source-audit",
+      "inspectedAt": "2026-08-12T05:05:00.000Z",
+      "sourceMatches": true,
+      "noSecretsOrPrivateIdentity": true,
+      "noValueMovement": true,
+      "required": {
+        "separate live MCP receipt facts for nineteen lines and eight people": true,
+        "real voice idle state with no success claim": true,
+        "exact USD 172.04 live MCP allocation": true,
+        "explicit separation from the retained product run": true,
+        "actual retained Extraction event": true,
+        "actual retained Allocation event": true,
+        "actual retained Consent risk event": true,
+        "actual retained Proof readiness event": true,
+        "loaded retained evidence lineage, balance sheet, and compact memory": true
+      },
+      "forbiddenAbsent": {
+        "invented model response": true,
+        "invented review event": true,
+        "invented memory node or metric": true,
+        "claiming voice succeeded when no voice event exists": true,
+        "fake agent progress": true
+      },
+      "notes": "Full decode and every slide inspected. Live MCP facts and the different retained product run are explicitly separated. Voice is IDLE/NONE and no success is claimed."
+    },
+    {
+      "id": "C07",
+      "inspectedBy": "Codex final-media audit",
+      "reviewerType": "independent-automated-visual-and-source-audit",
+      "inspectedAt": "2026-08-12T05:05:00.000Z",
+      "sourceMatches": true,
+      "noSecretsOrPrivateIdentity": true,
+      "noValueMovement": true,
+      "required": {
+        "authenticated initialize": true,
+        "tools/list with exactly nine current tools": true,
+        "allocate_receipt using the same complex receipt": true,
+        "prepare_receipt_settlement": true,
+        "create_broadcast_approval_challenge": true,
+        "visible hard stop before wallet action": true,
+        "separate retained-proof lane declared but not queried by this client": true
+      },
+      "forbiddenAbsent": {
+        "token or authorization header": true,
+        "wallet signature": true,
+        "invocation of submit_signed_settlement": true,
+        "any sign operation": true,
+        "broadcast action": true,
+        "new value movement": true,
+        "claim that the earlier transaction came from this MCP test": true
+      },
+      "notes": "Full decode, every slide, sanitized transcript, and capture lock inspected. Transcript SHA matches its lock. Exact live sequence ends after approval-challenge creation; no submit invocation, signature, broadcast, or value movement occurred."
+    },
+    {
+      "id": "C08",
+      "inspectedBy": "Codex final-media audit",
+      "reviewerType": "independent-automated-visual-and-source-audit",
+      "inspectedAt": "2026-08-12T05:05:00.000Z",
+      "sourceMatches": true,
+      "noSecretsOrPrivateIdentity": true,
+      "noValueMovement": true,
+      "required": {
+        "EARLIER AUTHORIZED RUN label": true,
+        "READ ONLY label": true,
+        "NOT CREATED BY THIS MCP TEST label": true,
+        "transaction hash": true,
+        "block 45327128": true,
+        "settlement ID": true,
+        "ledger hash": true,
+        "verified settled state": true
+      },
+      "forbiddenAbsent": {
+        "signature bytes": true,
+        "private wallet material": true,
+        "deployment transaction substituted for the settlement": true,
+        "claim that C07 submitted the transaction": true
+      },
+      "notes": "Original 3840x2160 proof plate inspected and compared with the locally locked release proof. Transaction, block, settlement ID, ledger hash, KeeperHub completion, and independent-RPC match agree; this review made no fresh network call."
+    }
+  ]
+}

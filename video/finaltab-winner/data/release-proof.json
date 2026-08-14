@@ -1,0 +1,140 @@
+{
+  "schemaVersion": 1,
+  "network": "Base Sepolia",
+  "chainId": 84532,
+  "v2Contract": "0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB",
+  "token": {
+    "symbol": "USDC",
+    "address": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+    "decimals": 6
+  },
+  "deployment": {
+    "executionId": "xasakw5nfxkh2s0fh4stn",
+    "transactionHash": "0x904ec881ef7c2ec7375c20887b4181cf58224b44162d837743fa869b0a598e8f",
+    "blockNumber": 45321107,
+    "sourcifyMatchId": "43497805",
+    "label": "CONTRACT DEPLOYMENT · NOT A SETTLEMENT"
+  },
+  "settlement": {
+    "runId": "06a41159-2332-4fd3-91fc-486ae137d405",
+    "executionId": "3hmlqi36zweiwg6fc5o2u",
+    "transactionHash": "0x7a6fb760f691954a41c71d5d508629c58aa09207bba0de4eaf164f097c59a789",
+    "blockNumber": 45327128,
+    "settlementId": "0x8b670800d9856a90baa7492adefaf06ae86ac345d053db3dc7f01b065aadb9db",
+    "ledgerHash": "0x1581eb7f56485ff4d2a684a832fc8d085b9b0e5d8540c85e2d550e8f7b0cb91e",
+    "debtor": "0x07918AB993d701e286cD2f3AF65ab7502B25550B",
+    "creditor": "0x8edD1eB1e3522a1e9D6db7ce82Ad5F2ADB59192c",
+    "amountAtomic": "1",
+    "amountDisplay": "0.000001 USDC",
+    "pullCount": 1,
+    "payoutCount": 1,
+    "contractRetainedAtomic": "0",
+    "conservationAtomic": "0",
+    "keeperHubReceiptStatus": "success",
+    "keeperHubTerminalState": "completed",
+    "independentRpcEventMatch": true,
+    "verdict": "VERIFIED_SETTLED"
+  },
+  "publicUrls": {
+    "product": "https://finaltab.vercel.app",
+    "github": "https://github.com/vaibhav4046/finaltab",
+    "mcp": "https://finaltab.vercel.app/api/mcp",
+    "keeperHubWorkflow": "https://finaltab.vercel.app/integrations/keeperhub/workflow",
+    "transaction": "https://sepolia.basescan.org/tx/0x7a6fb760f691954a41c71d5d508629c58aa09207bba0de4eaf164f097c59a789"
+  },
+  "currentSource": {
+    "productionMcpTools": 9,
+    "retiredFixedWalletTools": 0,
+    "walletModel": "external debtor wallets",
+    "firstPartyFreezeReviewStages": 4,
+    "additiveMigrationsApplied": [
+      "20260811052236_settlement_agent_control_plane",
+      "20260811060000_cover_agent_event_composite_fk",
+      "20260811064822_voice_spend_reservations",
+      "20260811073000_durable_first_party_settlement_flow",
+      "20260811074000_durable_submission_intents",
+      "20260812023200_v3_narration_generation_journal",
+      "20260812090000_durable_prefreeze_tab_drafts"
+    ],
+    "publicTablesWithRls": "31/31",
+    "sensitiveMutationRpcAccess": "service_role_only",
+    "advisorErrors": 0,
+    "unindexedForeignKeyWarning": false,
+    "agentMigrationApplied": true,
+    "postPromotionCutoverApplied": true,
+    "applicationFlowProbeComplete": true,
+    "privyConfigured": false,
+    "privyRequiredForReadiness": false,
+    "privyCaptureAllowed": false,
+    "chainAdapter": "base-sepolia"
+  },
+  "deliveryTarget": {
+    "width": 3840,
+    "height": 2160,
+    "fps": 60,
+    "durationSeconds": 90,
+    "frames": 5400
+  },
+  "v3Film": {
+    "revision": "v3-90s-eight-scene",
+    "sourceLocked": true,
+    "productCaptureComplete": true,
+    "complexAgentCaptureComplete": true,
+    "mcpNonBroadcastCaptureComplete": true,
+    "retainedProofCaptureComplete": true,
+    "singleBatchNarrationComplete": true,
+    "captionsComplete": true,
+    "eightNewScenesComplete": true,
+    "finalMasterVerified": true,
+    "finalMaster": {
+      "path": "../../proof-output/finaltab-winner/finaltab-winner-90s-4k.mp4",
+      "bytes": 35617576,
+      "sha256": "a14cfef364c0fe7d4c62e2f9cfb73ca228a692e8738a85d5a6f615e361b09c69",
+      "completedAt": "2026-08-12T06:44:52.131Z",
+      "verifiedAt": "2026-08-12T06:48:06.165Z",
+      "width": 3840,
+      "height": 2160,
+      "fps": 60,
+      "frameCount": 5400,
+      "durationSeconds": 90.005,
+      "video": {
+        "codec": "h264",
+        "pixelFormat": "yuv420p"
+      },
+      "audio": {
+        "codec": "aac",
+        "sampleRateHz": 48000,
+        "channels": 2,
+        "channelLayout": "stereo",
+        "integratedLufs": -14,
+        "truePeakDbtp": -3.8
+      },
+      "asr": {
+        "wordErrorRatePercent": 8.2,
+        "artifactPath": "../../proof-output/finaltab-winner/finaltab-winner-90s-rendered-asr.json",
+        "artifactBytes": 21416,
+        "artifactSha256": "987259c50596346c734985d440816b3629ed2b5ed941d4378dc45e6aac972a7a",
+        "sourceMediaSha256": "a14cfef364c0fe7d4c62e2f9cfb73ca228a692e8738a85d5a6f615e361b09c69"
+      },
+      "sourceIndexSha256": "4c2121d225e44ec9d5fa47a5f23c0871f1ef8a1f780103f55ea51bbf59b38aa9",
+      "technicalGate": "passed",
+      "fullDecode": true,
+      "mediaAudit": "GO"
+    },
+    "narrationFallback": {
+      "status": "approved-local-offline-after-no-charge-quota-denial",
+      "provider": "Kokoro-82M (local)",
+      "ttsProviderCalls": 0,
+      "elevenLabsSynthesisPosts": 0
+    }
+  },
+  "truthBoundary": {
+    "settlementProofVerified": true,
+    "productCaptureComplete": true,
+    "liveMcpToolListCaptureComplete": true,
+    "mcpNonBroadcastCaptureComplete": true,
+    "retainedRunReadOnlyStatusCaptureComplete": true,
+    "mcpBroadcastClaimed": false,
+    "retainedRunOrigin": "authorized simulate-then-single-broadcast runner; not an MCP submission"
+  }
+}

@@ -41,10 +41,9 @@ and contains `schemaVersion`, shared UUID `runId`, contiguous `seq`, UTC `at`,
 14. `trace.end`.
 
 Pure calculation tools may precede allocation. Failed calls remain in the
-trace. The canonical production trace must not call fixed-wallet `demo_*`
-tools. If a separate demo-fixture trace is recorded, label it
-`demoOnly: true`; demo money tools are disabled by default and do not satisfy
-the production V2 gate.
+trace. A live `tools/list` must return exactly the nine current production tools;
+any retired fixed-wallet name means the wrong deployment was captured and fails
+the V2 release gate.
 
 ## Event data
 
@@ -117,7 +116,11 @@ The event must follow challenge creation and precede submission. A literal
 Retain execution ID, terminal status, transaction hash/link, chain and block,
 `verified: true`, `receiptStatus: "success"`, sponsorship and timestamps when
 returned. The V2 deployment execution `xasakw5nfxkh2s0fh4stn` is deployment
-proof only; the settlement trace requires a different value-moving execution.
+proof only. The retained value-moving execution is `3hmlqi36zweiwg6fc5o2u`
+(tx `0x7a6fb760…a789`, block `45327128`), but it was produced by an explicitly
+authorized simulate-then-single-broadcast runner. It can anchor the chain-proof
+portion of the final capture; it does not satisfy the MCP challenge/submission
+sequence by itself.
 
 ### `chain.proof`
 

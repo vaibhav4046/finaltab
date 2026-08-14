@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
-import { motion } from "framer-motion";
 import {
   ParsedReceiptSchema,
   checkReceiptArithmetic,
@@ -21,6 +20,16 @@ interface ReceiptPanelProps {
 
 const MAX_FILE_BYTES = 10 * 1024 * 1024;
 const ALLOWED_TYPES = new Set(["image/png", "image/jpeg", "image/webp"]);
+
+export function validateReceiptUpload(
+  file: Pick<File, "size" | "type">,
+  consent: boolean,
+): string | null {
+  if (!consent) return "Confirm the receipt-processing consent before uploading.";
+  if (!ALLOWED_TYPES.has(file.type)) return "Use a PNG, JPEG, or WebP image.";
+  if (file.size > MAX_FILE_BYTES) return "That image is over 10 MB. Crop or compress it first.";
+  return null;
+}
 
 function amountToMinor(value: string): bigint | null {
   if (!/^\d+(\.\d{1,2})?$/.test(value)) return null;
@@ -65,16 +74,9 @@ export function ReceiptPanel({ receipt, onReceipt, locked = false }: ReceiptPane
 
   const handleFile = useCallback(
     async (file: File) => {
-      if (!consent) {
-        setError("Confirm the receipt-processing consent before uploading.");
-        return;
-      }
-      if (!ALLOWED_TYPES.has(file.type)) {
-        setError("Use a PNG, JPEG, or WebP image.");
-        return;
-      }
-      if (file.size > MAX_FILE_BYTES) {
-        setError("That image is over 10 MB. Crop or compress it first.");
+      const validationError = validateReceiptUpload(file, consent);
+      if (validationError) {
+        setError(validationError);
         return;
       }
 
@@ -120,11 +122,14 @@ export function ReceiptPanel({ receipt, onReceipt, locked = false }: ReceiptPane
         onReceipt({
           receipt: parsed,
           attempts: json.attempts ?? 1,
+          provider: typeof json.provider === "string" ? json.provider : undefined,
           arithmeticIssues: Array.isArray(json.arithmeticIssues) ? json.arithmeticIssues : [],
           // The full image has served its purpose and is deliberately released.
           imageDataUrl: "",
           confirmedAt: undefined,
         });
+        // Provider consent is one-shot: replacing this image requires a fresh confirmation.
+        setConsent(false);
       } catch (cause) {
         if (cause instanceof DOMException && cause.name === "AbortError") return;
         setError(cause instanceof Error ? cause.message : "Upload failed.");
@@ -188,7 +193,16 @@ export function ReceiptPanel({ receipt, onReceipt, locked = false }: ReceiptPane
       />
 
       {!parsed ? (
-        <div>
+        <div
+          onPaste={(event) => {
+            const file = Array.from(event.clipboardData.files).find((candidate) =>
+              ALLOWED_TYPES.has(candidate.type),
+            );
+            if (!file) return;
+            event.preventDefault();
+            void handleFile(file);
+          }}
+        >
           <label className="mb-3 flex min-h-11 cursor-pointer items-start gap-1 rounded-lg border border-edge-soft bg-panel-2 p-2 text-sm text-fog sm:gap-2">
             <span className="grid h-11 w-11 shrink-0 place-items-center">
               <input
@@ -228,8 +242,9 @@ export function ReceiptPanel({ receipt, onReceipt, locked = false }: ReceiptPane
             ) : (
               <>
                 <span aria-hidden="true" className="text-2xl">⌁</span>
-                <span className="font-mono text-xs uppercase tracking-wider">Take photo, drop, or browse</span>
+                <span className="font-mono text-xs uppercase tracking-wider">Take photo, drop, browse, or paste</span>
                 <span className="text-xs text-fog-dim">PNG · JPEG · WebP · 10 MB max</span>
+                <span className="text-xs text-fog-dim">Confirm consent, then paste while this panel is focused.</span>
               </>
             )}
           </button>
@@ -261,6 +276,18 @@ export function ReceiptPanel({ receipt, onReceipt, locked = false }: ReceiptPane
             )}
             <Badge tone="fog">{receipt.attempts} extraction pass{receipt.attempts === 1 ? "" : "es"}</Badge>
           </div>
+          <label className="flex min-h-11 items-start gap-2 rounded-lg border border-edge-soft bg-panel-2 p-3 text-sm text-fog">
+            <input
+              type="checkbox"
+              checked={consent}
+              disabled={busy || locked}
+              onChange={(event) => setConsent(event.target.checked)}
+              className="mt-0.5 h-5 w-5 shrink-0 accent-signal"
+            />
+            <span>
+              I consent to sending the next replacement image to the configured vision provider for extraction.
+            </span>
+          </label>
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
             <Button variant="ghost" onClick={() => setDraft(structuredClone(parsed))} disabled={busy || locked}>
               Edit receipt
@@ -295,11 +322,7 @@ export function ReceiptPanel({ receipt, onReceipt, locked = false }: ReceiptPane
 
 function ReceiptPaper({ receipt, currency }: { receipt: ParsedReceipt; currency: string }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="receipt-paper relative mx-auto max-w-sm px-5 pb-6 pt-5 text-ink"
-    >
+    <div className="receipt-paper entry-rise relative mx-auto max-w-sm px-5 pb-6 pt-5 text-ink">
       <div className="text-center">
         <p className="font-mono text-sm font-bold uppercase tracking-widest">{receipt.merchant}</p>
         <p className="mt-1 font-mono text-xs text-ink-soft">{receipt.date ?? "date unknown"} · {receipt.currency}</p>
@@ -329,7 +352,7 @@ function ReceiptPaper({ receipt, currency }: { receipt: ParsedReceipt; currency:
         </div>
       </div>
       <div className="receipt-tear absolute -bottom-[10px] left-0 w-full" />
-    </motion.div>
+    </div>
   );
 }
 
@@ -367,7 +390,7 @@ function ReceiptEditor({
             <label className="block text-sm text-fog">Description
               <input className={`${inputClass} mt-1 w-full`} value={item.description} onChange={(event) => patchItem(index, { description: event.target.value })} />
             </label>
-            <div className="mt-2 grid grid-cols-[1fr_1.3fr_auto] gap-2">
+            <div className="mt-2 grid gap-2 sm:grid-cols-[1fr_1.3fr_auto]">
               <label className="text-sm text-fog">Qty
                 <input type="number" min={1} max={999} className={`${inputClass} mt-1 w-full`} value={item.quantity} onChange={(event) => patchItem(index, { quantity: Math.max(1, Number(event.target.value) || 1) })} />
               </label>
@@ -379,7 +402,7 @@ function ReceiptEditor({
                 aria-label={`Delete item ${index + 1}`}
                 disabled={draft.items.length === 1}
                 onClick={() => onDraft(recalculate({ ...draft, items: draft.items.filter((_, itemIndex) => itemIndex !== index) }))}
-                className="mt-6 min-h-11 rounded-lg border border-coral/40 px-3 text-coral disabled:opacity-40"
+                className="min-h-11 rounded-lg border border-coral/40 px-3 text-coral disabled:opacity-40 sm:mt-6"
               >
                 Delete
               </button>

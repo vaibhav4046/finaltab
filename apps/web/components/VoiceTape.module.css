@@ -1,0 +1,70 @@
+.tape {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(77, 86, 90, 0.45);
+  border-radius: 7px;
+  background-color: #f4eee2;
+  background-image: repeating-linear-gradient(
+    180deg,
+    transparent 0,
+    transparent 27px,
+    rgba(77, 86, 90, 0.12) 27px,
+    rgba(77, 86, 90, 0.12) 28px
+  );
+  color: #161a1c;
+  box-shadow: 0 16px 30px -24px rgba(0, 0, 0, 0.9), inset 0 1px rgba(255, 255, 255, 0.68);
+}
+
+.tape::before {
+  position: absolute;
+  inset: 0 auto 0 36px;
+  width: 1px;
+  background: rgba(255, 123, 116, 0.38);
+  content: "";
+  pointer-events: none;
+}
+
+.trace {
+  display: flex;
+  height: 36px;
+  align-items: center;
+  gap: 3px;
+  border-block: 1px dashed rgba(77, 86, 90, 0.28);
+  padding-inline: 3px;
+}
+
+.bar {
+  height: 25px;
+  flex: 1;
+  transform: scaleY(0.08);
+  transform-origin: center;
+  border-radius: 1px;
+  background: #4d565a;
+  opacity: 0.38;
+  transition: transform 70ms linear, opacity 100ms linear;
+}
+
+.stamp {
+  transform: rotate(-1.5deg);
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  padding: 2px 6px;
+}
+
+.control {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.control:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar {
+    transition: none;
+    transform: scaleY(0.18) !important;
+    opacity: 0.44 !important;
+  }
+}

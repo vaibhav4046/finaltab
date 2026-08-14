@@ -1,4 +1,4 @@
-# Scaling FINALTab: from hackathon demo to product
+# Scaling FINALTab: from hackathon release to settlement infrastructure
 
 Honest feasibility research. Every claim below is tagged:
 
@@ -14,24 +14,35 @@ is just a new way to get a receipt or a debt graph into the same engine.
 
 ## 1. MCP distribution — ship the engine to every agent
 
-**Current V2 state: implemented and test-covered; live value-moving proof is
-pending.** The MCP server now requires scoped authentication and supports
+**Current V2 state: implemented, test-covered, value-proven at the rail, and
+live-proven for the canonical non-value MCP surface.** The MCP server requires scoped authentication and supports
 arbitrary caller participants with external debtor-wallet signatures. Its
 production sequence is `allocate_receipt → prepare_receipt_settlement →
 simulate_signed_settlement → create_broadcast_approval_challenge → human
-personal_sign → submit_signed_settlement → settlement_status`. Three
-fixed-wallet `demo_*` tools are disabled by default. `confirm: true` is not a V2
-approval mechanism.
+personal_sign → submit_signed_settlement → settlement_status`. Exactly nine
+production tools remain in source; the fixed-wallet path has been removed.
+`confirm: true` is not a V2 approval mechanism.
 
-The V2 contract is deployed and source-matched exactly, but no retained V2 USDC
-settlement proves this current loop yet. Do not promote this section to
-`LIVE_PROVEN` until that receipt, event, and balance proof exists.
+The V2 contract is deployed and source-matched exactly. KeeperHub execution
+`3hmlqi36zweiwg6fc5o2u` moved one atomic unit of Base Sepolia USDC in tx
+`0x7a6fb760…a789` at block `45327128`; the retained manifest proves the dual
+signatures, exact V2 event binding, and conserved balances. That explicitly
+authorized standalone runner did not exercise the production MCP short-lived
+human approval boundary, so the complete value-moving MCP loop remains
+unproven.
+
+Canonical deployment `dpl_F5PgMqo7A9zecQW2LKos2FcCNVMs` at commit
+`039582fc44901d1f436b61a426f1523a936427f9` is `READY` at
+`finaltab.vercel.app`. The public film's authenticated MCP run initialized,
+listed exactly nine production tools, allocated and prepared the complex
+receipt, created an approval challenge, and then stopped. No signing,
+submission, broadcast, or value movement occurred.
 
 ### Historical V1 evidence — preserved
 
-FINALTab is live as an MCP server at `https://finaltab.vercel.app/api/mcp`
-(Streamable HTTP). Any MCP-capable client — Claude Desktop, Claude Code, or any
-agent framework — can call:
+On 2026-08-10, the former V1 MCP server was live at the same URL and exposed the
+seven tools below without the current V2 authorization model. This table is an
+archive of that interface, not client documentation for the live endpoint:
 
 | Tool | What it does |
 |---|---|
@@ -43,7 +54,8 @@ agent framework — can call:
 | `settle_tab` | Execute onchain via KeeperHub — refuses without explicit `confirm: true` |
 | `settlement_status` | Fail-closed KeeperHub verdict for an execution id |
 
-Verified with real JSON-RPC calls (initialize → tools/list → tools/call):
+The V1 interface was verified with real JSON-RPC calls (initialize → tools/list
+→ tools/call):
 `split_equal {"total":"54.00","people":["vee","hem","ravi"]}` returned three
 `"18.00"` shares with `sumsToTotal: true`, and `settlement_status` on execution
 `g0w11wukbk1v0psyditx4` returned `VERIFIED_SETTLED` with the real Base Sepolia
@@ -54,22 +66,27 @@ over this endpoint — `get_balances` → `prepare_settlement` → `settle_tab`
 atomically in under 3 seconds (tx `0x314189b4…c5eb`, block 45315909,
 executionId `69zzrj7z676u89ce1x76j`).
 
-Why this matters for scale: the marginal cost of a new "client" is zero. Instead
-of building N frontends, one MCP endpoint makes FINALTab the money-math and
-settlement-verification layer for any agent. LLMs are notoriously bad at cent
-arithmetic; an agent that delegates to `split_equal` never produces a split that
-doesn't sum. This is the highest-leverage, lowest-cost scaling path and it is
-already shipped.
+Those runs remain valid V1 evidence only. The current V2 endpoint does not
+expose `get_balances`, `prepare_settlement`, or `settle_tab`, and it does not
+accept `confirm: true` as authorization.
 
-Claude Desktop config:
+Why this matters for scale: the marginal integration cost of a new client stays
+low. One authenticated MCP endpoint can provide deterministic money math and
+settlement verification to many agent clients; an agent delegating to
+`split_equal` receives shares that reconcile exactly. The reusable surface is
+shipped, while value movement remains deliberately gated by external signatures
+and a human broadcast approval.
 
-```json
-{
-  "mcpServers": {
-    "finaltab": { "url": "https://finaltab.vercel.app/api/mcp" }
-  }
-}
+Current Codex and ChatGPT desktop config requires a scoped bearer token:
+
+```toml
+[mcp_servers.finaltab]
+url = "https://finaltab.vercel.app/api/mcp"
+bearer_token_env_var = "FINALTAB_MCP_TOKEN"
 ```
+
+See [integrations/mcp.md](integrations/mcp.md) for scopes, production tools,
+and the wallet-signed approval flow.
 
 ## 2. Bank-feed receipt ingest — Open Banking (VERIFIED surface, not integrated)
 
@@ -155,21 +172,38 @@ Mainnet honestly:
 - KeeperHub's gas-refuel on mainnet is a paid x402 flow; sponsorship terms for
   production apps are a business conversation, not an API call (checked: no free
   mainnet faucet/funding route exists in their REST surface).
-- The `FinalTabBatchSettlement` contract (Hardhat-tested, 11 passing tests)
-  batches transfers so per-tab cost approaches one transaction regardless of
+- The batch settlement contracts (Hardhat-tested; 27 passing tests measured
+  2026-08-12, 16 of them against the current `FinalTabBatchSettlementV2`)
+  batch transfers so per-tab cost approaches one transaction regardless of
   group size.
 
 The fail-closed verifier is the part that scales *because* it is conservative:
 at 10 tabs or 10 million, "a bare tx hash is never proof" is the same check.
 
-## 6. Per-user accounts (SHIPPED honest version, upgrade path defined)
+## 6. Per-user accounts and bounded review agents
 
-Today `/auth` is device-local identity: a profile and tab history in
-`localStorage`, labelled as exactly that in the UI — no fake cloud, no invented
-accounts. The upgrade path is Supabase (auth + Postgres row-level security), at
-which point tab history, group membership, and Splitwise/bank links attach to a
-real user id. The `Profile`/`TabRecord` shapes in `lib/identity.ts` were designed
-to survive that migration unchanged.
+The London Supabase project has its four baseline plus seven ordered additive
+migrations applied: agent control (`52236`), agent-event composite-FK index
+coverage (`60000`), voice spend reservations (`64822`), first-party settlement
+flow (`73000`), the shared UI/REST/MCP submission journal (`74000`), the V3
+narration-generation journal (`20260812023200`), and durable pre-Freeze tab
+drafts (`20260812090000`). All 31 public tables have RLS; sensitive new mutation RPCs are service-role-only,
+and the unindexed-FK warning is cleared. Database advisors have zero error-level
+findings, with reviewed warnings remaining. Post-promotion cutover `74500` is
+applied: legacy direct financial writes and the old quota RPC deny browser
+roles. The agent migration adds fixed four-stage
+review runs, provenance events, and bounded, expiring, user-deletable audit
+memory. That memory cannot rewrite code, policy, prompts, or authorization and
+must not be marketed as self-evolving.
+
+Supabase Auth remains the canonical RLS identity. The Privy bridge is
+code-complete, optional, fail-closed, and deliberately disabled because its
+required Custom Authentication capability needs a paid tier. It does not block
+core health readiness, and unconfigured UI does not advertise a broken setup.
+The branded return page is implemented; branded inbound email still requires a
+verified sender domain and custom SMTP or a Send Email Hook. The canonical
+application is deployed and ready, but until the multi-identity browser probe
+passes, product copy must not imply live two-user or cross-device behavior.
 
 ## Priority order (opinionated)
 

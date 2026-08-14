@@ -1,0 +1,82 @@
+{
+  "record": "finaltab-blockscout-verification",
+  "version": 1,
+  "capturedAt": "2026-08-14T00:48:24Z",
+  "mode": "READ_ONLY_HTTP_GET",
+  "capture": "manual HTTPS GETs against the public Blockscout API v2 and the public Base Sepolia RPC; nothing signed, nothing broadcast, no key used",
+  "chain": "Base Sepolia",
+  "chainId": 84532,
+  "chainIdCheck": {
+    "rpcUrl": "https://sepolia.base.org",
+    "method": "eth_chainId",
+    "result": "0x14a34",
+    "decoded": 84532
+  },
+  "explorer": "https://base-sepolia.blockscout.com",
+  "contract": "0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB",
+  "contractPage": "https://base-sepolia.blockscout.com/address/0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB?tab=contract",
+  "contractVerification": {
+    "endpoint": "https://base-sepolia.blockscout.com/api/v2/smart-contracts/0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB",
+    "name": "FinalTabBatchSettlementV2",
+    "is_verified": true,
+    "is_fully_verified": true,
+    "is_partially_verified": false,
+    "is_verified_via_verifier_alliance": true,
+    "is_verified_via_eth_bytecode_db": true,
+    "is_verified_via_sourcify": false,
+    "sourcify_repo_url": null,
+    "verified_twin_address_hash": null,
+    "verified_at": "2026-08-14T00:24:16.048942Z",
+    "language": "solidity",
+    "compiler_version": "0.8.24+commit.e11b9ed9",
+    "evm_version": "paris",
+    "optimization_enabled": true,
+    "optimization_runs": 200,
+    "file_path": "contracts/FinalTabBatchSettlementV2.sol",
+    "license_type": "none",
+    "proxy_type": null,
+    "abiEntries": 37
+  },
+  "sourcifyFlagNote": "Blockscout reports is_verified_via_sourcify: false and sourcify_repo_url: null. That flag records the route the verification arrived by, not whether the source matches: this contract reached Blockscout through the Verifier Alliance database, so a re-check that reads only the Sourcify flag will wrongly conclude the contract is unverified. Read is_verified, is_fully_verified and is_verified_via_verifier_alliance. Sourcify's own repository is a separate, independent match and is recorded elsewhere in docs/release/status.md.",
+  "settlementTransaction": {
+    "endpoint": "https://base-sepolia.blockscout.com/api/v2/transactions/0x7a6fb760f691954a41c71d5d508629c58aa09207bba0de4eaf164f097c59a789",
+    "hash": "0x7a6fb760f691954a41c71d5d508629c58aa09207bba0de4eaf164f097c59a789",
+    "page": "https://base-sepolia.blockscout.com/tx/0x7a6fb760f691954a41c71d5d508629c58aa09207bba0de4eaf164f097c59a789",
+    "result": "success",
+    "status": "ok",
+    "block_number": 45327128,
+    "timestamp": "2026-08-11T04:29:04.000000Z",
+    "gas_used": "168660",
+    "method": "execute",
+    "from": "0xDcF4bac4bD805948168Ff63483BC493894A29613",
+    "to": "0x5aF5194B4b0909eB978e3Cf1e25333852277f07D",
+    "toName": "TKGasStation"
+  },
+  "decodedLogs": {
+    "endpoint": "https://base-sepolia.blockscout.com/api/v2/transactions/0x7a6fb760f691954a41c71d5d508629c58aa09207bba0de4eaf164f097c59a789/logs",
+    "count": 6,
+    "undecoded": 0,
+    "items": [
+      { "index": 126, "address": "0x036CbD53842c5426634e7929541eC2318f3dCF7e", "event": "AuthorizationUsed" },
+      { "index": 127, "address": "0x036CbD53842c5426634e7929541eC2318f3dCF7e", "event": "Transfer" },
+      { "index": 128, "address": "0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB", "event": "PullExecuted" },
+      { "index": 129, "address": "0x036CbD53842c5426634e7929541eC2318f3dCF7e", "event": "Transfer" },
+      { "index": 130, "address": "0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB", "event": "PayoutExecuted" },
+      { "index": 131, "address": "0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB", "event": "SettlementExecuted" }
+    ],
+    "note": "The three settlement events decode against the published ABI because the source is verified; the token events belong to Circle's already-verified USDC contract 0x036CbD53842c5426634e7929541eC2318f3dCF7e."
+  },
+  "basescan": {
+    "verified": false,
+    "note": "BaseScan source verification was never submitted for this contract, and it could not be re-checked here: the Etherscan V2 API refuses an unauthenticated request and no API key is available in this environment.",
+    "attempt": {
+      "endpoint": "https://api.etherscan.io/v2/api?chainid=84532&module=contract&action=getsourcecode&address=0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB",
+      "response": { "status": "0", "message": "NOTOK", "result": "Missing/Invalid API Key" }
+    }
+  },
+  "verdict": "VERIFIED_ON_BLOCKSCOUT_VIA_VERIFIER_ALLIANCE",
+  "failedChecks": [],
+  "valueMoved": false,
+  "transactionsSigned": 0,
+  "transactionsBroadcast": 0
+}

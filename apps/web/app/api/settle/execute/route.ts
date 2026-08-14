@@ -11,6 +11,8 @@ import { jsonError, keeperHubDetail } from "@/lib/server/clients";
 import { SettleBodySchema } from "@/lib/server/settlement";
 import type { SignedBroadcastApproval } from "@/lib/server/mcpSettlement";
 import {
+  SettlementPersistenceCommitError,
+  SettlementPersistenceUnavailableError,
   SettlementSubmissionBlockedError,
   submitApprovedSettlement,
 } from "@/lib/server/settlementSubmission";
@@ -79,6 +81,7 @@ export async function POST(request: Request): Promise<Response> {
       approval: result.verifiedApproval,
       simulation: { success: result.simulation.success, wouldRevert: result.simulation.wouldRevert },
       accepted: result.accepted,
+      durableReplay: result.durableReplay,
       proofCapability: result.proofCapability,
       principal: { subject: access.principal.subject },
     }));
@@ -90,6 +93,12 @@ export async function POST(request: Request): Promise<Response> {
       ));
     }
     if (error instanceof SettlementSubmissionBlockedError) return secured(jsonError(error.message, 501));
+    if (error instanceof SettlementPersistenceUnavailableError) {
+      return secured(jsonError("SETTLEMENT_PERSISTENCE_NOT_CONFIGURED: value movement is disabled.", 503));
+    }
+    if (error instanceof SettlementPersistenceCommitError) {
+      return secured(jsonError(error.message, 503));
+    }
     if (error instanceof KeeperHubError) {
       return secured(jsonError(`KeeperHub ${error.httpStatus}: ${keeperHubDetail(error)}`, 502));
     }

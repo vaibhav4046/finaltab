@@ -24,6 +24,41 @@ const SETTLEMENT_REQUEST_SCHEMA = {
   },
 } as const;
 
+const VOICE_QUOTA_RESPONSE_HEADERS = {
+  "x-voice-ratelimit-remaining": {
+    description: "Requests remaining in the evaluated per-user voice quota window.",
+    schema: { type: "integer", minimum: 0, maximum: 20 },
+  },
+  "x-voice-ratelimit-reset": {
+    description: "Database-clock timestamp at which the evaluated fixed-minute window resets.",
+    schema: { type: "string", format: "date-time" },
+  },
+  "x-voice-ratelimit-durable": {
+    description: "Whether this decision came from the durable Supabase quota store.",
+    schema: { type: "boolean" },
+  },
+  "x-voice-budget-durable": {
+    description: "Whether spend units were atomically reserved in Supabase before the provider boundary.",
+    schema: { type: "boolean" },
+  },
+  "x-voice-budget-unit": {
+    description: "The reserved provider-usage unit: seconds or characters.",
+    schema: { type: "string", enum: ["seconds", "characters"] },
+  },
+  "x-voice-budget-reserved-units": {
+    description: "Worst-case units reserved before the provider call; zero when the decision was denied.",
+    schema: { type: "integer", minimum: 0, maximum: 600 },
+  },
+  "x-voice-budget-user-day-remaining": {
+    description: "Units remaining in the caller's UTC-day budget after this decision.",
+    schema: { type: "integer", minimum: 0 },
+  },
+  "x-voice-budget-user-month-remaining": {
+    description: "Units remaining in the caller's UTC-calendar-month budget after this decision.",
+    schema: { type: "integer", minimum: 0 },
+  },
+} as const;
+
 /**
  * Prefer an operator-pinned origin so proxy Host headers cannot rewrite
  * discovery URLs. Local HTTP remains available for development only.
@@ -160,7 +195,7 @@ export function buildFinalTabOpenApi(origin: string) {
       title: "FINALTab Integration API",
       version: "2.0.0-testnet",
       description:
-        "Authenticated receipt, allocation, V2 settlement, proof, and KeeperHub observer surfaces. Money movement is Base Sepolia testnet only.",
+        "Authenticated receipt, allocation, configuration-gated voice, V2 settlement, proof, and KeeperHub observer surfaces. Money movement is Base Sepolia testnet only.",
       license: { name: "MIT", identifier: "MIT" },
     },
     servers: [{ url: origin }],
@@ -168,6 +203,7 @@ export function buildFinalTabOpenApi(origin: string) {
     tags: [
       { name: "Discovery" },
       { name: "Receipts" },
+      { name: "Voice" },
       { name: "Settlement" },
       { name: "KeeperHub" },
     ],
@@ -234,6 +270,111 @@ export function buildFinalTabOpenApi(origin: string) {
           },
         },
       },
+      "/api/voice/token": {
+        post: {
+          tags: ["Voice"],
+          operationId: "createVoiceTranscriptionSession",
+          description:
+            "Configuration-gated AssemblyAI live speech-to-text session bootstrap. Requires a signed-in Supabase user (same-origin cookie session or validated Supabase bearer JWT) whose effective scopes include receipts:write; opaque FINALTab API tokens are rejected. The route binds the verified Supabase user ID to a service-role-only durable budget reservation before any provider call. Accepts no request body. Returns a short-lived browser redemption credential plus constrained streaming settings; permanent provider and Supabase server keys stay server-side. This contract does not assert that a deployment has the provider configured.",
+          "x-finaltab-required-scope": "receipts:write",
+          "x-finaltab-configuration-gated": true,
+          "x-finaltab-authenticated-user-required": true,
+          "x-finaltab-accepted-authentication": ["same-origin-supabase-cookie-session", "supabase-bearer-jwt"],
+          "x-finaltab-opaque-bearer-accepted": false,
+          "x-finaltab-durable-quota": {
+            backend: "supabase-postgres-rpc",
+            identity: "route-verified-supabase-user-id",
+            databaseExecutionRole: "service_role_only",
+            limit: 8,
+            capability: "transcription",
+            window: "fixed-database-minute",
+          },
+          "x-finaltab-durable-budget": {
+            reservation: "before-provider-token-mint",
+            unit: "seconds",
+            reservedPerRequest: 180,
+            user: { daily: 720, monthly: 3600 },
+            project: { daily: 3600, monthly: 18000 },
+            concurrency: { user: 1, project: 4, leaseSeconds: 240 },
+            windows: "utc-calendar-day-and-month",
+          },
+          responses: {
+            "200": {
+              description: "Short-lived AssemblyAI live-transcription session settings",
+              headers: VOICE_QUOTA_RESPONSE_HEADERS,
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/voiceStreamingSession" },
+                },
+              },
+            },
+            "400": { description: "A request body was supplied; this endpoint accepts no body" },
+            "401": { $ref: "#/components/responses/authError" },
+            "403": { description: "A Supabase user session/JWT is required, receipts:write is missing, or the session origin was rejected; opaque FINALTab API tokens cannot invoke paid voice" },
+            "413": { description: "A non-empty request body was declared" },
+            "429": { description: "Per-minute quota, user/project spend budget, or AssemblyAI concurrency lease exceeded", headers: VOICE_QUOTA_RESPONSE_HEADERS },
+            "501": { description: "AssemblyAI transcription is not configured on the server", headers: VOICE_QUOTA_RESPONSE_HEADERS },
+            "502": { description: "AssemblyAI rejected or returned an invalid/unavailable session response", headers: VOICE_QUOTA_RESPONSE_HEADERS },
+            "503": { description: "Durable budget storage is unavailable before token mint, or AssemblyAI rate-limited session creation", headers: VOICE_QUOTA_RESPONSE_HEADERS },
+          },
+        },
+      },
+      "/api/voice/speak": {
+        post: {
+          tags: ["Voice"],
+          operationId: "streamVoiceReadback",
+          description:
+            "Configuration-gated ElevenLabs spoken readback for short product confirmations. Requires a signed-in Supabase user (same-origin cookie session or validated Supabase bearer JWT) whose effective scopes include tabs:read; opaque FINALTab API tokens are rejected. The route binds the verified Supabase user ID to a service-role-only durable budget reservation before any provider call. Returns uncached MP3 audio; the current browser client buffers the short clip before playback. Permanent provider and Supabase server keys stay server-side. This interactive readback is separate from the submission video's prerecorded narration, which uses ElevenLabs only.",
+          "x-finaltab-required-scope": "tabs:read",
+          "x-finaltab-configuration-gated": true,
+          "x-finaltab-authenticated-user-required": true,
+          "x-finaltab-accepted-authentication": ["same-origin-supabase-cookie-session", "supabase-bearer-jwt"],
+          "x-finaltab-opaque-bearer-accepted": false,
+          "x-finaltab-durable-quota": {
+            backend: "supabase-postgres-rpc",
+            identity: "route-verified-supabase-user-id",
+            databaseExecutionRole: "service_role_only",
+            limit: 20,
+            capability: "readback",
+            window: "fixed-database-minute",
+          },
+          "x-finaltab-durable-budget": {
+            reservation: "before-provider-request",
+            unit: "characters",
+            reservedPerRequest: "normalized-text-length-1-to-600",
+            user: { daily: 2400, monthly: 12000 },
+            project: { daily: 12000, monthly: 60000 },
+            windows: "utc-calendar-day-and-month",
+          },
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/voiceSpeakRequest" },
+              },
+            },
+          },
+          responses: {
+            "200": {
+              description: "ElevenLabs MP3 spoken readback",
+              headers: VOICE_QUOTA_RESPONSE_HEADERS,
+              content: {
+                "audio/mpeg": {
+                  schema: { type: "string", format: "binary" },
+                },
+              },
+            },
+            "400": { description: "Missing or invalid readback text" },
+            "401": { $ref: "#/components/responses/authError" },
+            "403": { description: "A Supabase user session/JWT is required, tabs:read is missing, or the session origin was rejected; opaque FINALTab API tokens cannot invoke paid voice" },
+            "413": { description: "JSON body exceeds 2,048 bytes" },
+            "429": { description: "Per-minute quota or user/project character budget exceeded", headers: VOICE_QUOTA_RESPONSE_HEADERS },
+            "501": { description: "ElevenLabs readback is not configured on the server", headers: VOICE_QUOTA_RESPONSE_HEADERS },
+            "502": { description: "ElevenLabs rejected or returned invalid/unavailable audio", headers: VOICE_QUOTA_RESPONSE_HEADERS },
+            "503": { description: "Durable budget storage is unavailable before the provider call, or ElevenLabs rate-limited readback generation", headers: VOICE_QUOTA_RESPONSE_HEADERS },
+          },
+        },
+      },
       "/api/settle/simulate": {
         post: {
           tags: ["Settlement", "KeeperHub"],
@@ -255,7 +396,7 @@ export function buildFinalTabOpenApi(origin: string) {
           tags: ["Settlement", "KeeperHub"],
           operationId: "executeV2Settlement",
           description:
-            "Verify a principal-bound, short-lived debtor-wallet EIP-191 approval, re-simulate, then submit the exact V2 plan through KeeperHub with deterministic idempotency. Approval may be retried until expiry; V2 settlement state prevents duplicate settlement.",
+            "Verify a principal-bound, short-lived debtor-wallet EIP-191 approval, durably prepare and simulate a new exact V2 plan, then submit through KeeperHub with deterministic idempotency. A prepared crash-recovery retry reuses the stored successful simulation and still requires a valid approval; V2 settlement state prevents duplicate settlement.",
           requestBody: {
             required: true,
             content: {
@@ -376,6 +517,60 @@ export function buildFinalTabOpenApi(origin: string) {
         address: { type: "string", pattern: "^0x[0-9a-fA-F]{40}$" },
         bytes32: { type: "string", pattern: "^0x[0-9a-fA-F]{64}$" },
         uintString: { type: "string", pattern: "^[0-9]+$" },
+        voiceStreamingSession: {
+          type: "object",
+          additionalProperties: false,
+          required: [
+            "token",
+            "expiresInSeconds",
+            "maxSessionDurationSeconds",
+            "websocketUrl",
+            "sampleRate",
+            "encoding",
+            "model",
+            "mode",
+            "languageDetection",
+            "keyterms",
+            "voiceFocus",
+          ],
+          properties: {
+            token: {
+              type: "string",
+              minLength: 20,
+              maxLength: 8192,
+              description:
+                "Short-lived AssemblyAI redemption credential. This is not the permanent provider API key.",
+            },
+            expiresInSeconds: { type: "integer", minimum: 1, maximum: 600 },
+            maxSessionDurationSeconds: { type: "integer", const: 180 },
+            websocketUrl: {
+              type: "string",
+              pattern: "^wss://",
+              description: "Constrained AssemblyAI streaming URL; the browser appends only the short-lived token.",
+            },
+            sampleRate: { type: "integer", const: 16000 },
+            encoding: { type: "string", const: "pcm_s16le" },
+            model: { type: "string", const: "universal-3-5-pro" },
+            mode: { type: "string", const: "balanced" },
+            languageDetection: { type: "boolean", const: true },
+            keyterms: { type: "array", items: { type: "string" } },
+            voiceFocus: { type: "string", const: "far-field" },
+          },
+        },
+        voiceSpeakRequest: {
+          type: "object",
+          additionalProperties: false,
+          required: ["text"],
+          properties: {
+            text: {
+              type: "string",
+              minLength: 1,
+              maxLength: 600,
+              pattern: "\\S",
+              description: "Readback text; FINALTab trims it before enforcing the 1-600 character bound.",
+            },
+          },
+        },
         signedDebit: {
           type: "object",
           additionalProperties: false,
@@ -459,7 +654,7 @@ export function buildFinalTabOpenApi(origin: string) {
           scheme: "bearer",
           bearerFormat: "opaque-token-or-supabase-jwt",
           description:
-            "Use a scoped FINALTab token. Only its SHA-256 digest is stored in FINALTAB_API_TOKENS_JSON.",
+            "Most API routes accept either a scoped opaque FINALTab token (only its SHA-256 digest is stored) or a validated Supabase access JWT. Paid voice routes explicitly require Supabase user identity and reject opaque FINALTab tokens.",
         },
       },
     },
@@ -467,6 +662,58 @@ export function buildFinalTabOpenApi(origin: string) {
       url: `${origin}/api/mcp`,
       transport: "streamable-http",
       authentication: "FinalTabBearer",
+    },
+    "x-finaltab-voice": {
+      configurationGated: true,
+      authentication: {
+        requiredIdentity: "supabase-auth-uid",
+        accepted: ["same-origin-supabase-cookie-session", "supabase-bearer-jwt"],
+        opaqueFinalTabBearerAccepted: false,
+      },
+      durableQuota: {
+        backend: "supabase-postgres-rpc",
+        function: "reserve_voice_budget_service(uuid, text, bigint)",
+        identity: "route-verified-supabase-user-id",
+        databaseExecutionRole: "service_role_only",
+        window: "fixed-database-minute",
+        limitsPerMinute: { transcriptionSessions: 8, readbacks: 20 },
+        budgets: {
+          transcriptionSeconds: {
+            user: { daily: 720, monthly: 3600 },
+            project: { daily: 3600, monthly: 18000 },
+            reservedPerMint: 180,
+          },
+          readbackCharacters: {
+            user: { daily: 2400, monthly: 12000 },
+            project: { daily: 12000, monthly: 60000 },
+          },
+        },
+        assemblyAIConcurrency: { user: 1, project: 4, leaseSeconds: 240 },
+        failClosedBeforeProvider: true,
+        responseHeaders: [
+          "x-voice-ratelimit-remaining",
+          "x-voice-ratelimit-reset",
+          "x-voice-ratelimit-durable",
+          "x-voice-budget-durable",
+          "x-voice-budget-unit",
+          "x-voice-budget-reserved-units",
+          "x-voice-budget-user-day-remaining",
+          "x-voice-budget-user-month-remaining",
+        ],
+      },
+      transcription: {
+        provider: "AssemblyAI",
+        mode: "live-streaming-stt",
+        route: `${origin}/api/voice/token`,
+      },
+      readback: {
+        provider: "ElevenLabs",
+        mode: "buffered-browser-audio-mpeg",
+        route: `${origin}/api/voice/speak`,
+      },
+      permanentProviderKeys: "server-only",
+      submissionNarrationProvider: "ElevenLabs-only",
+      deploymentAvailability: "configuration-dependent-not-asserted",
     },
     "x-keeperhub": {
       mode: "direct-execution-api",

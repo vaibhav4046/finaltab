@@ -1,0 +1,22 @@
+# Line-ending policy.
+#
+# Several gate tests assert on multi-line source content (migration SQL, route
+# handlers, components). Without an explicit policy, a Windows checkout with
+# core.autocrlf=true materialises those files as CRLF, so `\n` assertions that
+# pass on the Linux CI runner fail locally. Pinning the working tree to LF makes
+# `pnpm test` produce the same result on every platform.
+* text=auto eol=lf
+
+# Windows-native scripts keep CRLF.
+*.ps1 text eol=crlf
+
+# Binary assets must never be line-ending normalised.
+*.png binary
+*.svg text eol=lf
+*.mp3 binary
+*.wav binary
+*.mp4 binary
+*.woff2 binary
+*.ttf binary
+*.pptx binary
+video/finaltab-winner/assets/vendor/*.min.js binary

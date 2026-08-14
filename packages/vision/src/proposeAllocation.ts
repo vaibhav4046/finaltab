@@ -1,5 +1,11 @@
 import { AllocationProposalSchema, type AllocationProposal, type ParsedReceipt } from "@finaltab/engine";
-import { GroqClient, extractJsonObject, isRetryableGroqError, type GroqMessage } from "./groqClient.js";
+import {
+  GroqClient,
+  extractJsonObject,
+  isRetryableGroqError,
+  type GroqMessage,
+  type GroqTokenUsage,
+} from "./groqClient.js";
 import { ALLOCATION_SYSTEM } from "./prompts.js";
 
 export interface Participant {
@@ -18,6 +24,8 @@ export interface ProposeAllocationResult {
   proposal: AllocationProposal;
   rawModelOutput: string;
   attempts: number;
+  model: string;
+  usage: GroqTokenUsage;
 }
 
 const MAX_ATTEMPTS = 3;
@@ -37,18 +45,36 @@ export async function proposeAllocation(
     throw new Error(`payerId ${input.payerId} is not in participants`);
   }
 
+  // Compact JSON is materially smaller than pretty-printed JSON for large
+  // tables. Human readability is irrelevant to the model transport; keeping
+  // the prompt tight protects the free-tier TPM boundary.
   const userPayload = JSON.stringify(
     {
-      receipt: { currency: input.receipt.currency, items: input.receipt.items },
+      // Allocation needs item identity and quantity, not prices or receipt
+      // totals. Keeping the advisory prompt this small makes complex tables
+      // fit conservative provider TPM limits; the deterministic reconciler
+      // still receives the complete receipt and remains the money authority.
+      receipt: {
+        items: input.receipt.items.map((item, itemIndex) => ({
+          itemIndex,
+          description: item.description,
+          quantity: item.quantity,
+        })),
+      },
       participants: input.participants,
       payerId: input.payerId,
       instruction: input.instruction,
     },
-    null,
-    2,
   );
 
   let lastError: unknown = null;
+  const aggregateUsage: GroqTokenUsage = {};
+  const addUsage = (usage: GroqTokenUsage) => {
+    for (const key of ["promptTokens", "completionTokens", "totalTokens"] as const) {
+      const value = usage[key];
+      if (value !== undefined) aggregateUsage[key] = (aggregateUsage[key] ?? 0) + value;
+    }
+  };
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
     const messages: GroqMessage[] = [
       { role: "system", content: ALLOCATION_SYSTEM },
@@ -62,8 +88,14 @@ export async function proposeAllocation(
     }
 
     let raw: string;
+    let model: string;
+    let usage: GroqTokenUsage;
     try {
-      raw = await client.completeJson(messages);
+      const completion = await client.completeJsonWithMetadata(messages);
+      raw = completion.content;
+      model = completion.model;
+      usage = completion.usage;
+      addUsage(usage);
     } catch (e) {
       // Retryable API failures (json_validate_failed, 429, 5xx) stay in the
       // loop; auth/permanent errors surface immediately.
@@ -75,7 +107,7 @@ export async function proposeAllocation(
     }
     try {
       const proposal = AllocationProposalSchema.parse(extractJsonObject(raw));
-      return { proposal, rawModelOutput: raw, attempts: attempt };
+      return { proposal, rawModelOutput: raw, attempts: attempt, model, usage: aggregateUsage };
     } catch (e) {
       lastError = e;
     }

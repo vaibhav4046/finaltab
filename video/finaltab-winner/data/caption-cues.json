@@ -1,0 +1,166 @@
+{
+  "schemaVersion": 3,
+  "status": "approved-v3-captions",
+  "durationSeconds": 90,
+  "maxLineLength": 42,
+  "scriptWordCount": 183,
+  "cues": [
+    {
+      "scene": 1,
+      "start": 0.3,
+      "end": 3.7,
+      "lines": [
+        "FINALTab One receipt One clear settlement"
+      ]
+    },
+    {
+      "scene": 2,
+      "start": 4.25,
+      "end": 9.755458,
+      "lines": [
+        "Turn a shared receipt into an exact split",
+        "gather approvals move test funds once and"
+      ]
+    },
+    {
+      "scene": 2,
+      "start": 9.755458,
+      "end": 11.003,
+      "lines": [
+        "leave public proof"
+      ]
+    },
+    {
+      "scene": 3,
+      "start": 12.25,
+      "end": 17.365847,
+      "lines": [
+        "For dinners trips team expenses or",
+        "agent-led payments everyone sees each"
+      ]
+    },
+    {
+      "scene": 3,
+      "start": 17.365847,
+      "end": 19.259,
+      "lines": [
+        "amount approval and result"
+      ]
+    },
+    {
+      "scene": 4,
+      "start": 20.2,
+      "end": 25.716492,
+      "lines": [
+        "Vision reads the bill Math checks every",
+        "cent Reviewers check the split and wallet"
+      ]
+    },
+    {
+      "scene": 4,
+      "start": 25.716492,
+      "end": 29.491667,
+      "lines": [
+        "safety A service runs it Public test",
+        "records confirm it"
+      ]
+    },
+    {
+      "scene": 5,
+      "start": 30.25,
+      "end": 35.915587,
+      "lines": [
+        "Watch the product sign in create a durable",
+        "tab enter the receipt workspace inspect"
+      ]
+    },
+    {
+      "scene": 5,
+      "start": 35.915587,
+      "end": 41.581174,
+      "lines": [
+        "exact-cent reviews open the evidence graph",
+        "and reach the proof route one traceable"
+      ]
+    },
+    {
+      "scene": 5,
+      "start": 41.581174,
+      "end": 43.765667,
+      "lines": [
+        "path from input to verification"
+      ]
+    },
+    {
+      "scene": 6,
+      "start": 50.2,
+      "end": 55.316453,
+      "lines": [
+        "Now try a hard request weighted items",
+        "shared service exclusions and a payer"
+      ]
+    },
+    {
+      "scene": 6,
+      "start": 55.316453,
+      "end": 60.848877,
+      "lines": [
+        "correction Typed input stays visible The",
+        "model suggests assignments Math balances"
+      ]
+    },
+    {
+      "scene": 6,
+      "start": 60.848877,
+      "end": 65.951464,
+      "lines": [
+        "every cent Four reviewers record what",
+        "passed and why Memory keeps a compact"
+      ]
+    },
+    {
+      "scene": 6,
+      "start": 65.951464,
+      "end": 66.894333,
+      "lines": [
+        "audit summary"
+      ]
+    },
+    {
+      "scene": 7,
+      "start": 68.2,
+      "end": 73.887402,
+      "lines": [
+        "MCP the tool connection signs in lists",
+        "nine tools allocates the receipt prepares"
+      ]
+    },
+    {
+      "scene": 7,
+      "start": 73.887402,
+      "end": 79.270122,
+      "lines": [
+        "wallet details and asks for approval Then",
+        "it stops no signing no sending and"
+      ]
+    },
+    {
+      "scene": 7,
+      "start": 79.270122,
+      "end": 84.638333,
+      "lines": [
+        "no money moves A read-only check verifies",
+        "the earlier authorized settlement"
+      ]
+    },
+    {
+      "scene": 8,
+      "start": 85.2,
+      "end": 89.75,
+      "lines": [
+        "FINALTab People approve The earlier run",
+        "executed once Anyone can verify"
+      ]
+    }
+  ]
+}

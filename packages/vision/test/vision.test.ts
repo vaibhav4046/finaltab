@@ -55,6 +55,37 @@ describe("extractJsonObject", () => {
   it("throws when no object present", () => {
     expect(() => extractJsonObject("no json here")).toThrow(/no JSON object/);
   });
+
+  // The closing fence used to be stripped with `\s*```$`, which the engine
+  // retries from every position inside a whitespace run. These two tests pin
+  // the replacement: same characters removed, without the quadratic scan.
+  it("strips the closing fence and the whitespace before it, in every shape", () => {
+    const shapes = [
+      '```json\n{"a":1}\n```',
+      '```\n{"a":1}\n```',
+      '```JSON  {"a":1}   ```',
+      '{"a":1}\t\n  ```',
+      '{"a":1}```',
+      '  ```json\r\n{"a":1}\r\n```  ',
+      '{"a":1}',
+      'prose {"a":1} more prose',
+    ];
+    for (const shape of shapes) {
+      const legacy = shape.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "");
+      const unfenced = shape.trim().replace(/^```(?:json)?\s*/i, "");
+      const current = unfenced.endsWith("```") ? unfenced.slice(0, -3).trimEnd() : unfenced;
+      expect(current).toBe(legacy);
+      expect(extractJsonObject(shape)).toEqual({ a: 1 });
+    }
+  });
+
+  it("stays fast on a long whitespace run in model output", () => {
+    const hostile = `{"a":1}${" ".repeat(200_000)}x`;
+    const start = Date.now();
+    expect(extractJsonObject(hostile)).toEqual({ a: 1 });
+    // The old expression needed roughly twelve seconds for this input.
+    expect(Date.now() - start).toBeLessThan(1_000);
+  });
 });
 
 describe("parseReceiptImage", () => {
@@ -177,15 +208,82 @@ describe("proposeAllocation", () => {
     ).rejects.toThrow(/failed after 3 attempts/);
   });
 
-  it("retryable 429 then valid proposal -> succeeds on attempt 2", async () => {
-    const res = await proposeAllocation(
-      client([
-        { status: 429, body: { error: { code: "rate_limit_exceeded", message: "slow down" } } },
-        JSON.stringify(validProposal),
-      ]),
-      { receipt, participants, payerId: "p1", instruction: "x" },
-    );
+  it("surfaces a 429 once instead of retrying inside the same cooldown", async () => {
+    let calls = 0;
+    const fetchImpl = (async () => {
+      calls += 1;
+      return new Response(
+        JSON.stringify({ error: { code: "rate_limit_exceeded", message: "slow down" } }),
+        { status: 429 },
+      );
+    }) as typeof fetch;
+    await expect(
+      proposeAllocation(new GroqClient({ apiKey: "gsk_test", fetchImpl }), {
+        receipt,
+        participants,
+        payerId: "p1",
+        instruction: "x",
+      }),
+    ).rejects.toMatchObject({ httpStatus: 429 });
+    expect(calls).toBe(1);
+  });
+
+  it("sends only allocation-relevant item fields to the advisory model", async () => {
+    let body = "";
+    const fetchImpl = (async (_url: string | URL | Request, init?: RequestInit) => {
+      body = String(init?.body ?? "");
+      return new Response(JSON.stringify({ choices: [{ message: { content: JSON.stringify(validProposal) } }] }), {
+        status: 200,
+      });
+    }) as typeof fetch;
+    await proposeAllocation(new GroqClient({ apiKey: "gsk_test", fetchImpl }), {
+      receipt,
+      participants,
+      payerId: "p1",
+      instruction: "split it",
+    });
+    const request = JSON.parse(body) as { messages: Array<{ role: string; content: string }> };
+    const payload = request.messages.find((message) => message.role === "user")?.content ?? "";
+    expect(payload).toContain('"itemIndex":0');
+    expect(payload).toContain('"quantity":1');
+    expect(payload).not.toContain("\n");
+    expect(payload).not.toContain("unitPrice");
+    expect(payload).not.toContain("lineTotal");
+    expect(payload).not.toContain('"currency"');
+  });
+
+  it("retains provider-reported usage across schema retries", async () => {
+    let call = 0;
+    const fetchImpl = (async () => {
+      call += 1;
+      const content = call === 1 ? JSON.stringify({ allocations: "invalid" }) : JSON.stringify(validProposal);
+      return new Response(JSON.stringify({
+        model: "usage-test-model",
+        choices: [{ message: { content } }],
+        usage: { prompt_tokens: 10, completion_tokens: 5, total_tokens: 15 },
+      }), { status: 200 });
+    }) as typeof fetch;
+    const res = await proposeAllocation(new GroqClient({ apiKey: "gsk_test", fetchImpl }), {
+      receipt,
+      participants,
+      payerId: "p1",
+      instruction: "x",
+    });
     expect(res.attempts).toBe(2);
-    expect(res.proposal.payerId).toBe("p1");
+    expect(res.model).toBe("usage-test-model");
+    expect(res.usage).toEqual({ promptTokens: 20, completionTokens: 10, totalTokens: 30 });
+  });
+});
+
+describe("Groq request bounds", () => {
+  it("sets a provider-side completion token cap", async () => {
+    let requestBody: Record<string, unknown> | null = null;
+    const fetchImpl = (async (_url: string | URL | Request, init?: RequestInit) => {
+      requestBody = JSON.parse(String(init?.body)) as Record<string, unknown>;
+      return new Response(JSON.stringify({ choices: [{ message: { content: "{}" } }] }), { status: 200 });
+    }) as typeof fetch;
+    await new GroqClient({ apiKey: "gsk_test", fetchImpl, maxCompletionTokens: 999999 })
+      .completeJson([{ role: "user", content: "bounded" }]);
+    expect(requestBody).toMatchObject({ max_completion_tokens: 8192 });
   });
 });

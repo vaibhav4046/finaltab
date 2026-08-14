@@ -18,6 +18,44 @@ describe("canonicalAmount", () => {
     expect(() => canonicalAmount("-1")).toThrow();
     expect(() => canonicalAmount("abc")).toThrow();
   });
+
+  // Trailing zeros used to be stripped with `0+$`, which the engine retries
+  // from every position inside a run of zeros. This function decides an
+  // idempotency key, so the replacement has to remove exactly the same
+  // characters as the expression it replaced, on every shape of input.
+  it("matches the expression it replaced on every zero shape", () => {
+    const shapes = [
+      "0",
+      "00",
+      "0.0",
+      "0.000",
+      "10.500",
+      "010.500",
+      "1.000000000000000000",
+      "0.000000000000000001",
+      "100",
+      "100.001",
+      ".5",
+      ".500",
+      "1.",
+      "000.000",
+      "123456789.123456789",
+    ];
+    for (const shape of shapes) {
+      const [, fracRaw = ""] = shape.split(".");
+      let end = fracRaw.length;
+      while (end > 0 && fracRaw[end - 1] === "0") end -= 1;
+      expect(fracRaw.slice(0, end)).toBe(fracRaw.replace(/0+$/, ""));
+    }
+  });
+
+  it("stays fast on a long run of trailing zeros", () => {
+    const hostile = `1.${"0".repeat(200_000)}`;
+    const start = Date.now();
+    expect(canonicalAmount(hostile)).toBe("1");
+    // The old expression needed roughly twelve seconds for this input.
+    expect(Date.now() - start).toBeLessThan(1_000);
+  });
 });
 
 describe("canonicalIdempotencyString", () => {

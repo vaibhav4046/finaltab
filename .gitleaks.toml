@@ -1,0 +1,84 @@
+# Secret scanning configuration.
+#
+# The default rule set is extended rather than replaced, so a real provider
+# credential is caught even if nobody thought to write a rule for it. The
+# allowlist below is deliberately narrow: it names the synthetic fixtures this
+# repository documents on purpose, and nothing else. A broad path exclusion
+# would make the scan pass while a real key sat inside the excluded directory.
+#
+# This repository handles live money on a testnet rail and holds provider keys
+# for AssemblyAI and ElevenLabs, which exist only as sensitive Vercel
+# environment variables. None of them may ever appear in source, history or
+# logs, so the scan is fail-closed: it runs over full history, not just the
+# diff, because a secret removed in a later commit is still published.
+
+title = "FINALTab secret scanning"
+
+[extend]
+useDefault = true
+
+# secp256k1 signer keys.
+#
+# The default rules catch `PRIVATE_KEY=0x…` and `{"privateKey": "0x…"}`, because
+# both carry the word "key" for the generic entropy rule to anchor on. They do
+# not catch `const PK = "0x…"`, and this repository signs Base Sepolia
+# settlements, so a 32-byte key pasted under a short name is a realistic
+# accident rather than a theoretical one.
+#
+# The match is anchored to an assignment with a signer-shaped name instead of
+# to the 32-byte shape alone. Anchoring on shape would flag every transaction
+# hash, settlement id, ledger hash and code hash in docs/release/evidence,
+# which is the load-bearing proof this repository is built on: a gate that
+# forces those to be deleted would destroy evidence to protect it.
+#
+# Residual limit, stated rather than hidden: a bare 32-byte value with no
+# assignment context at all is still missed. The signer file that holds real
+# keys is gitignored, and this rule covers the shapes a leak would actually
+# take on its way into source.
+[[rules]]
+id = "evm-signer-private-key"
+description = "secp256k1 private key assigned to a signer-shaped name"
+regex = '''(?i)\b(?:pk|privkey|signer|deployer|mnemonic|seed(?:[_-]?phrase)?)\b\s*[:=]\s*["'`]?(?:0x)?[0-9a-fA-F]{64}\b'''
+keywords = ["pk", "privkey", "signer", "deployer", "mnemonic", "seed"]
+
+[allowlist]
+description = "Documented synthetic fixtures and public onchain identifiers"
+
+# Test doubles. Each string is a deliberately non-functional placeholder that
+# exists to satisfy a length or presence check in a unit test. They are matched
+# by their literal self-describing prefixes rather than by excluding the test
+# directory, so a real credential pasted into a test file is still caught.
+regexes = [
+  '''(?:unit-)?test-only-[a-z0-9-]+''',
+  '''invite-handoff-test-secret-[a-z0-9-]+''',
+  '''different-invite-handoff-secret-[a-z0-9-]+''',
+  '''mock-elevenlabs-api-key''',
+  '''CONFIGURED_SENSITIVE_VERCEL_PRODUCTION''',
+
+  # A 20-byte EVM address. The generic entropy rule flags these whenever the
+  # surrounding key contains "token", which is unavoidable in settlement
+  # evidence: the Base Sepolia USDC address is recorded beside every proof.
+  # Addresses are public by construction and cannot be key material, because a
+  # secp256k1 private key is 32 bytes. That distinction is the whole reason
+  # this exemption is written by length instead of by path or by keyword: the
+  # 32-byte shape stays fail-closed, so a leaked private key is still caught
+  # in exactly the evidence files this line makes quieter.
+  '''0x[0-9a-fA-F]{40}\b''',
+
+  # The published runtime code hash of FinalTabBatchSettlementV2, recorded so a
+  # verifier can confirm the deployed bytecode. Exempted as one literal rather
+  # than as a 32-byte class, which would blanket-exempt private keys.
+  '''0xedc5281a85c0efecd49999a1ef668390c59b88702f2d4a07029d7f5d63059d6c''',
+
+  # Throwaway test keys such as packages/engine/test/eip3009.test.ts's
+  # `0x00…01`, used to sign an EIP-3009 payload the test then verifies. The
+  # exemption is written as 48 leading zero nibbles, which means the value is
+  # below 2^64: a generated secp256k1 key cannot land there, so this cannot
+  # excuse a real key. That is why the property is used instead of a path
+  # exclusion over the test directory.
+  '''0x0{48}[0-9a-fA-F]{16}\b''',
+]
+
+paths = [
+  '''pnpm-lock\.yaml''',
+]

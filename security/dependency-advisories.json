@@ -1,0 +1,140 @@
+{
+  "$comment": [
+    "Accepted high and critical advisories, one entry per GHSA id.",
+    "An entry is not a suppression. It is a claim that the vulnerable code cannot be",
+    "reached from the deployed application, and it is only honoured while the exact",
+    "dependency path named in `paths` is the only way the package enters the tree.",
+    "scripts/dependency-advisories.mjs fails the build if a path changes, if an entry",
+    "outlives `reviewBy`, or if an entry stops matching anything, so the list cannot",
+    "silently rot into a blanket ignore.",
+    "Anything reachable from the shipped Next.js runtime is fixed, not listed here.",
+    "Honest limit: `reachability` is a reviewed human judgement, not a machine-proven",
+    "property. Scanning the production build for a package name cannot establish it —",
+    "the output is minified and retains no module paths, so packages that certainly do",
+    "ship (viem, @privy-io/react-auth) scan as absent too, and a gate built on that",
+    "would pass for every input. What is machine-checked is the part that can be: the",
+    "severity floor, the exact dependency path, the expiry, and that no entry lingers",
+    "after the advisory it names is gone."
+  ],
+  "severityFloor": "high",
+  "accepted": [
+    {
+      "id": "GHSA-5xrq-8626-4rwp",
+      "module": "vitest",
+      "severity": "critical",
+      "title": "When Vitest UI server is listening, arbitrary file can be read and executed",
+      "reachability": "test-only",
+      "justification": "The advisory requires the Vitest UI server to be listening. The UI is never started: no script in any manifest passes --ui or --api, and CI runs `vitest run`. Vitest is a devDependency of apps/web and packages/engine and is not part of any build output. Upgrading to the patched >=3.2.6 is a major-version migration across 344 tests and is tracked separately rather than rushed under a gate.",
+      "paths": ["apps__web>vitest", "packages__engine>vitest"],
+      "reviewBy": "2026-11-12"
+    },
+    {
+      "id": "GHSA-fx2h-pf6j-xcff",
+      "module": "vite",
+      "severity": "high",
+      "title": "vite: `server.fs.deny` bypass on Windows alternate paths",
+      "reachability": "test-only",
+      "justification": "A bypass in the Vite dev server's file-serving deny list. Vite enters the tree only as the transform pipeline underneath Vitest; this repository serves its application through Next.js and never starts a Vite dev server. Patched in vite >=6.4.3, which arrives with the Vitest 3 upgrade above.",
+      "paths": ["apps__web>vitest>vite", "packages__engine>vitest>vite"],
+      "reviewBy": "2026-11-12"
+    },
+    {
+      "id": "GHSA-r5fr-rjxr-66jc",
+      "module": "lodash",
+      "severity": "high",
+      "title": "lodash prototype pollution",
+      "reachability": "contracts-toolchain",
+      "justification": "Reached only through Hardhat Ignition inside the contracts workspace, which compiles and tests Solidity on a developer machine and in CI. It is not installed by apps/web and no contracts tooling runs in production.",
+      "paths": [
+        "contracts>@nomicfoundation/hardhat-toolbox>@nomicfoundation/hardhat-ignition-ethers>@nomicfoundation/ignition-core>lodash"
+      ],
+      "reviewBy": "2026-11-12"
+    },
+    {
+      "id": "GHSA-5c6j-r48x-rmvq",
+      "module": "serialize-javascript",
+      "severity": "high",
+      "title": "serialize-javascript cross-site scripting",
+      "reachability": "contracts-toolchain",
+      "justification": "Reached through the gas reporter's copy of Mocha in the contracts workspace. It serialises test-run data locally and its output is never served to a browser.",
+      "paths": [
+        "contracts>@nomicfoundation/hardhat-toolbox>hardhat-gas-reporter>eth-gas-reporter>mocha>serialize-javascript"
+      ],
+      "reviewBy": "2026-11-12"
+    },
+    {
+      "id": "GHSA-v9p9-hfj2-hcw8",
+      "module": "undici",
+      "severity": "high",
+      "title": "undici vulnerability reached through hardhat-verify",
+      "reachability": "contracts-toolchain",
+      "justification": "undici is the HTTP client hardhat-verify uses to talk to a block explorer during contract verification, a developer-invoked step. The application's own HTTP calls use the platform fetch supplied by Node 22 and by the Next.js runtime, not this copy.",
+      "paths": ["contracts>@nomicfoundation/hardhat-toolbox>@nomicfoundation/hardhat-verify>undici"],
+      "reviewBy": "2026-11-12"
+    },
+    {
+      "id": "GHSA-vrm6-8vpv-qv8q",
+      "module": "undici",
+      "severity": "high",
+      "title": "undici vulnerability reached through hardhat-verify",
+      "reachability": "contracts-toolchain",
+      "justification": "Same copy of undici as GHSA-v9p9-hfj2-hcw8: contract-verification tooling in the contracts workspace, absent from the deployed application.",
+      "paths": ["contracts>@nomicfoundation/hardhat-toolbox>@nomicfoundation/hardhat-verify>undici"],
+      "reviewBy": "2026-11-12"
+    },
+    {
+      "id": "GHSA-vxpw-j846-p89q",
+      "module": "undici",
+      "severity": "high",
+      "title": "undici vulnerability reached through hardhat-verify",
+      "reachability": "contracts-toolchain",
+      "justification": "Same copy of undici as GHSA-v9p9-hfj2-hcw8: contract-verification tooling in the contracts workspace, absent from the deployed application.",
+      "paths": ["contracts>@nomicfoundation/hardhat-toolbox>@nomicfoundation/hardhat-verify>undici"],
+      "reviewBy": "2026-11-12"
+    },
+    {
+      "id": "GHSA-ph9p-34f9-6g65",
+      "module": "tmp",
+      "severity": "high",
+      "title": "tmp arbitrary file write via symbolic link",
+      "reachability": "contracts-toolchain",
+      "justification": "Reached through solc, which Hardhat runs to compile Solidity. The temporary files are created on the machine doing the compiling, from input this repository controls.",
+      "paths": ["contracts>hardhat>solc>tmp"],
+      "reviewBy": "2026-11-12"
+    },
+    {
+      "id": "GHSA-xcpc-8h2w-3j85",
+      "module": "adm-zip",
+      "severity": "high",
+      "title": "adm-zip arbitrary file write through path traversal",
+      "reachability": "contracts-toolchain",
+      "justification": "Hardhat uses adm-zip to unpack the compiler downloads it fetches from the official solc release feed. The archives are not attacker-supplied and nothing in the deployed application unzips anything.",
+      "paths": ["contracts>hardhat>adm-zip"],
+      "reviewBy": "2026-11-12"
+    },
+    {
+      "id": "GHSA-5p2g-fcmc-qvqq",
+      "module": "image-size",
+      "severity": "high",
+      "title": "image-size denial of service",
+      "reachability": "react-native-bundler",
+      "justification": "No patched version exists, so this cannot be resolved by an upgrade. It arrives under Metro, the React Native bundler, which is pulled in by the Solana mobile wallet adapter's optional React Native support. Metro is build tooling for a React Native app; this repository builds a Next.js web app and never invokes it. Supporting observation, not a proof: the webpack module cache from a production build lists @solana/wallet-adapter-react but no react-native, metro or image-size module, so the bundler did not follow that branch.",
+      "paths": [
+        "apps__web>@farcaster/mini-app-solana>@solana/wallet-adapter-react>@solana-mobile/wallet-adapter-mobile>react-native>@react-native/community-cli-plugin>metro>image-size"
+      ],
+      "reviewBy": "2026-11-12"
+    },
+    {
+      "id": "GHSA-w3rx-r6r6-pgpr",
+      "module": "image-size",
+      "severity": "high",
+      "title": "image-size denial of service through a crafted image",
+      "reachability": "react-native-bundler",
+      "justification": "Same unpatched copy of image-size as GHSA-5p2g-fcmc-qvqq, under the Metro bundler that this repository never runs.",
+      "paths": [
+        "apps__web>@farcaster/mini-app-solana>@solana/wallet-adapter-react>@solana-mobile/wallet-adapter-mobile>react-native>@react-native/community-cli-plugin>metro>image-size"
+      ],
+      "reviewBy": "2026-11-12"
+    }
+  ]
+}

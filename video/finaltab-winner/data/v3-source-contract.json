@@ -1,0 +1,145 @@
+{
+  "schemaVersion": 3,
+  "status": "source-locked-v3-prerequisites-pending",
+  "compositionId": "finaltab-winner",
+  "durationSeconds": 90,
+  "width": 3840,
+  "height": 2160,
+  "fps": 60,
+  "frameCount": 5400,
+  "wordCount": 183,
+  "scenes": [
+    {
+      "scene": 1,
+      "slug": "logo",
+      "title": "Text-only logo",
+      "start": 0,
+      "duration": 4,
+      "end": 4,
+      "src": "compositions/frames-v3/01-logo.html",
+      "captureId": null,
+      "narration": "FINALTab. One receipt. One clear settlement."
+    },
+    {
+      "scene": 2,
+      "slug": "product-thesis",
+      "title": "What it does",
+      "start": 4,
+      "duration": 8,
+      "end": 12,
+      "src": "compositions/frames-v3/02-product-thesis.html",
+      "captureId": null,
+      "narration": "Turn a shared receipt into an exact split, gather approvals, move test funds once, and leave public proof."
+    },
+    {
+      "scene": 3,
+      "slug": "use-cases",
+      "title": "Use cases",
+      "start": 12,
+      "duration": 8,
+      "end": 20,
+      "src": "compositions/frames-v3/03-use-cases.html",
+      "captureId": null,
+      "narration": "For dinners, trips, team expenses, or agent-led payments, everyone sees each amount, approval, and result."
+    },
+    {
+      "scene": 4,
+      "slug": "simple-architecture",
+      "title": "How it works",
+      "start": 20,
+      "duration": 10,
+      "end": 30,
+      "src": "compositions/frames-v3/04-simple-architecture.html",
+      "captureId": null,
+      "narration": "Vision reads the bill. Math checks every cent. Reviewers check the split and wallet safety. A service runs it. Public test records confirm it."
+    },
+    {
+      "scene": 5,
+      "slug": "real-site-demo",
+      "title": "Real final-site demonstration",
+      "start": 30,
+      "duration": 20,
+      "end": 50,
+      "src": "compositions/frames-v3/05-real-site-demo.html",
+      "captureId": "C05",
+      "narration": "Watch the product: sign in, create a durable tab, enter the receipt workspace, inspect exact-cent reviews, open the evidence graph, and reach the proof route—one traceable path from input to verification."
+    },
+    {
+      "scene": 6,
+      "slug": "complex-agent-task",
+      "title": "Complex typed agent task",
+      "start": 50,
+      "duration": 18,
+      "end": 68,
+      "src": "compositions/frames-v3/06-complex-agent-task.html",
+      "captureId": "C06",
+      "narration": "Now try a hard request: weighted items, shared service, exclusions, and a payer correction. Typed input stays visible. The model suggests assignments. Math balances every cent. Four reviewers record what passed and why. Memory keeps a compact audit summary."
+    },
+    {
+      "scene": 7,
+      "slug": "mcp-nonbroadcast",
+      "title": "Authenticated MCP hard stop",
+      "start": 68,
+      "duration": 17,
+      "end": 85,
+      "src": "compositions/frames-v3/07-mcp-nonbroadcast.html",
+      "captureId": "C07",
+      "narration": "MCP, the tool connection, signs in, lists nine tools, allocates the receipt, prepares wallet details, and asks for approval. Then it stops: no signing, no sending, and no money moves. A read-only check verifies the earlier authorized settlement."
+    },
+    {
+      "scene": 8,
+      "slug": "proof-cta",
+      "title": "Proof CTA",
+      "start": 85,
+      "duration": 5,
+      "end": 90,
+      "src": "compositions/frames-v3/08-proof-cta.html",
+      "captureId": "C08",
+      "narration": "FINALTab. People approve. The earlier run executed once. Anyone can verify."
+    }
+  ],
+  "narration": {
+    "provider": "Kokoro-82M (local)",
+    "voiceName": "George (British male)",
+    "voiceId": "bm_george",
+    "model": "kokoro-v1.0",
+    "outputFormat": "mp3_44100_128",
+    "providerCallsRequired": 0,
+    "batchScope": "complete-eight-scene-script-local",
+    "reuseAllowed": false,
+    "masterPath": "assets/audio/voice-v3/finaltab-v3-local-kokoro-master.mp3",
+    "alignmentPath": "assets/audio/voice-v3/finaltab-v3-local-kokoro-alignment.json"
+  },
+  "mastering": {
+    "integratedLufs": -14,
+    "maxTruePeakDbtp": -1,
+    "loudnessRange": 7,
+    "toleranceLufs": 0.3,
+    "finalPath": "../../proof-output/finaltab-winner/finaltab-winner-90s-4k.mp4"
+  },
+  "requiredCaptureIds": ["C05", "C06", "C07", "C08"],
+  "spokenTermRules": {
+    "forbidden": [
+      "deterministic",
+      "consent-bound",
+      "integer arithmetic",
+      "bounded agents",
+      "V2 typed data",
+      "RPC",
+      "provenance",
+      "EIP-3009",
+      "durable journal"
+    ],
+    "requiredTranslations": [
+      "MCP, the tool connection"
+    ]
+  },
+  "safety": {
+    "valueMovingCallsAllowed": false,
+    "walletSignatureAllowed": false,
+    "submitAllowed": false,
+    "broadcastAllowed": false,
+    "retainedRunMustBeSeparate": true,
+    "retainedRunOrigin": "earlier authorized run; not the filmed MCP test"
+  }
+}

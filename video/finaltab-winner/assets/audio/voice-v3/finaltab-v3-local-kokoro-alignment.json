@@ -1,0 +1,1187 @@
+{
+  "schemaVersion": 3,
+  "status": "approved-v3-alignment",
+  "source": "exact-script-local-kokoro",
+  "scriptWordCount": 183,
+  "durationSeconds": 90,
+  "createdAt": "2026-08-12T04:29:59.952Z",
+  "timingMapping": {
+    "method": "local-kokoro-known-source-proportional-v1",
+    "lockedWordCount": 183,
+    "mappedWordCount": 183,
+    "fullMonotonicMapping": true,
+    "transcriptSource": "exact text supplied directly to the local synthesizer"
+  },
+  "scenes": [
+    {
+      "scene": 1,
+      "start": 0.3,
+      "end": 3.7,
+      "text": "FINALTab. One receipt. One clear settlement.",
+      "atempoFactor": 1.013627,
+      "words": [
+        {
+          "id": "w0",
+          "text": "FINALTab",
+          "start": 0.3,
+          "end": 1.033333
+        },
+        {
+          "id": "w1",
+          "text": "One",
+          "start": 1.033333,
+          "end": 1.35
+        },
+        {
+          "id": "w2",
+          "text": "receipt",
+          "start": 1.35,
+          "end": 2
+        },
+        {
+          "id": "w3",
+          "text": "One",
+          "start": 2,
+          "end": 2.316667
+        },
+        {
+          "id": "w4",
+          "text": "clear",
+          "start": 2.316667,
+          "end": 2.8
+        },
+        {
+          "id": "w5",
+          "text": "settlement",
+          "start": 2.8,
+          "end": 3.7
+        }
+      ]
+    },
+    {
+      "scene": 2,
+      "start": 4.25,
+      "end": 11.003,
+      "text": "Turn a shared receipt into an exact split, gather approvals, move test funds once, and leave public proof.",
+      "atempoFactor": 1,
+      "words": [
+        {
+          "id": "w6",
+          "text": "Turn",
+          "start": 4.25,
+          "end": 4.575446
+        },
+        {
+          "id": "w7",
+          "text": "a",
+          "start": 4.575446,
+          "end": 4.711048
+        },
+        {
+          "id": "w8",
+          "text": "shared",
+          "start": 4.711048,
+          "end": 5.172096
+        },
+        {
+          "id": "w9",
+          "text": "receipt",
+          "start": 5.172096,
+          "end": 5.700946
+        },
+        {
+          "id": "w10",
+          "text": "into",
+          "start": 5.700946,
+          "end": 6.026392
+        },
+        {
+          "id": "w11",
+          "text": "an",
+          "start": 6.026392,
+          "end": 6.216235
+        },
+        {
+          "id": "w12",
+          "text": "exact",
+          "start": 6.216235,
+          "end": 6.609482
+        },
+        {
+          "id": "w13",
+          "text": "split",
+          "start": 6.609482,
+          "end": 7.002729
+        },
+        {
+          "id": "w14",
+          "text": "gather",
+          "start": 7.002729,
+          "end": 7.463777
+        },
+        {
+          "id": "w15",
+          "text": "approvals",
+          "start": 7.463777,
+          "end": 8.128229
+        },
+        {
+          "id": "w16",
+          "text": "move",
+          "start": 8.128229,
+          "end": 8.453675
+        },
+        {
+          "id": "w17",
+          "text": "test",
+          "start": 8.453675,
+          "end": 8.77912
+        },
+        {
+          "id": "w18",
+          "text": "funds",
+          "start": 8.77912,
+          "end": 9.172367
+        },
+        {
+          "id": "w19",
+          "text": "once",
+          "start": 9.172367,
+          "end": 9.497813
+        },
+        {
+          "id": "w20",
+          "text": "and",
+          "start": 9.497813,
+          "end": 9.755458
+        },
+        {
+          "id": "w21",
+          "text": "leave",
+          "start": 9.755458,
+          "end": 10.148705
+        },
+        {
+          "id": "w22",
+          "text": "public",
+          "start": 10.148705,
+          "end": 10.609753
+        },
+        {
+          "id": "w23",
+          "text": "proof",
+          "start": 10.609753,
+          "end": 11.003
+        }
+      ]
+    },
+    {
+      "scene": 3,
+      "start": 12.25,
+      "end": 19.259,
+      "text": "For dinners, trips, team expenses, or agent-led payments, everyone sees each amount, approval, and result.",
+      "atempoFactor": 1,
+      "words": [
+        {
+          "id": "w24",
+          "text": "For",
+          "start": 12.25,
+          "end": 12.524579
+        },
+        {
+          "id": "w25",
+          "text": "dinners",
+          "start": 12.524579,
+          "end": 13.08819
+        },
+        {
+          "id": "w26",
+          "text": "trips",
+          "start": 13.08819,
+          "end": 13.507285
+        },
+        {
+          "id": "w27",
+          "text": "team",
+          "start": 13.507285,
+          "end": 13.854122
+        },
+        {
+          "id": "w28",
+          "text": "expenses",
+          "start": 13.854122,
+          "end": 14.48999
+        },
+        {
+          "id": "w29",
+          "text": "or",
+          "start": 14.48999,
+          "end": 14.692311
+        },
+        {
+          "id": "w30",
+          "text": "agent-led",
+          "start": 14.692311,
+          "end": 15.400437
+        },
+        {
+          "id": "w31",
+          "text": "payments",
+          "start": 15.400437,
+          "end": 16.036305
+        },
+        {
+          "id": "w32",
+          "text": "everyone",
+          "start": 16.036305,
+          "end": 16.672173
+        },
+        {
+          "id": "w33",
+          "text": "sees",
+          "start": 16.672173,
+          "end": 17.01901
+        },
+        {
+          "id": "w34",
+          "text": "each",
+          "start": 17.01901,
+          "end": 17.365847
+        },
+        {
+          "id": "w35",
+          "text": "amount",
+          "start": 17.365847,
+          "end": 17.8572
+        },
+        {
+          "id": "w36",
+          "text": "approval",
+          "start": 17.8572,
+          "end": 18.493068
+        },
+        {
+          "id": "w37",
+          "text": "and",
+          "start": 18.493068,
+          "end": 18.767647
+        },
+        {
+          "id": "w38",
+          "text": "result",
+          "start": 18.767647,
+          "end": 19.259
+        }
+      ]
+    },
+    {
+      "scene": 4,
+      "start": 20.2,
+      "end": 29.491667,
+      "text": "Vision reads the bill. Math checks every cent. Reviewers check the split and wallet safety. A service runs it. Public test records confirm it.",
+      "atempoFactor": 1,
+      "words": [
+        {
+          "id": "w39",
+          "text": "Vision",
+          "start": 20.2,
+          "end": 20.673638
+        },
+        {
+          "id": "w40",
+          "text": "reads",
+          "start": 20.673638,
+          "end": 21.077624
+        },
+        {
+          "id": "w41",
+          "text": "the",
+          "start": 21.077624,
+          "end": 21.342304
+        },
+        {
+          "id": "w42",
+          "text": "bill",
+          "start": 21.342304,
+          "end": 21.676637
+        },
+        {
+          "id": "w43",
+          "text": "Math",
+          "start": 21.676637,
+          "end": 22.01097
+        },
+        {
+          "id": "w44",
+          "text": "checks",
+          "start": 22.01097,
+          "end": 22.484608
+        },
+        {
+          "id": "w45",
+          "text": "every",
+          "start": 22.484608,
+          "end": 22.888593
+        },
+        {
+          "id": "w46",
+          "text": "cent",
+          "start": 22.888593,
+          "end": 23.222926
+        },
+        {
+          "id": "w47",
+          "text": "Reviewers",
+          "start": 23.222926,
+          "end": 23.905522
+        },
+        {
+          "id": "w48",
+          "text": "check",
+          "start": 23.905522,
+          "end": 24.309508
+        },
+        {
+          "id": "w49",
+          "text": "the",
+          "start": 24.309508,
+          "end": 24.574188
+        },
+        {
+          "id": "w50",
+          "text": "split",
+          "start": 24.574188,
+          "end": 24.978174
+        },
+        {
+          "id": "w51",
+          "text": "and",
+          "start": 24.978174,
+          "end": 25.242854
+        },
+        {
+          "id": "w52",
+          "text": "wallet",
+          "start": 25.242854,
+          "end": 25.716492
+        },
+        {
+          "id": "w53",
+          "text": "safety",
+          "start": 25.716492,
+          "end": 26.19013
+        },
+        {
+          "id": "w54",
+          "text": "A",
+          "start": 26.19013,
+          "end": 26.329436
+        },
+        {
+          "id": "w55",
+          "text": "service",
+          "start": 26.329436,
+          "end": 26.872726
+        },
+        {
+          "id": "w56",
+          "text": "runs",
+          "start": 26.872726,
+          "end": 27.207059
+        },
+        {
+          "id": "w57",
+          "text": "it",
+          "start": 27.207059,
+          "end": 27.402087
+        },
+        {
+          "id": "w58",
+          "text": "Public",
+          "start": 27.402087,
+          "end": 27.875725
+        },
+        {
+          "id": "w59",
+          "text": "test",
+          "start": 27.875725,
+          "end": 28.210058
+        },
+        {
+          "id": "w60",
+          "text": "records",
+          "start": 28.210058,
+          "end": 28.753349
+        },
+        {
+          "id": "w61",
+          "text": "confirm",
+          "start": 28.753349,
+          "end": 29.29664
+        },
+        {
+          "id": "w62",
+          "text": "it",
+          "start": 29.29664,
+          "end": 29.491667
+        }
+      ]
+    },
+    {
+      "scene": 5,
+      "start": 30.25,
+      "end": 43.765667,
+      "text": "Watch the product: sign in, create a durable tab, enter the receipt workspace, inspect exact-cent reviews, open the evidence graph, and reach the proof route—one traceable path from input to verification.",
+      "atempoFactor": 1,
+      "words": [
+        {
+          "id": "w63",
+          "text": "Watch",
+          "start": 30.25,
+          "end": 30.658712
+        },
+        {
+          "id": "w64",
+          "text": "the",
+          "start": 30.658712,
+          "end": 30.926488
+        },
+        {
+          "id": "w65",
+          "text": "product",
+          "start": 30.926488,
+          "end": 31.476135
+        },
+        {
+          "id": "w66",
+          "text": "sign",
+          "start": 31.476135,
+          "end": 31.814379
+        },
+        {
+          "id": "w67",
+          "text": "in",
+          "start": 31.814379,
+          "end": 32.011688
+        },
+        {
+          "id": "w68",
+          "text": "create",
+          "start": 32.011688,
+          "end": 32.490867
+        },
+        {
+          "id": "w69",
+          "text": "a",
+          "start": 32.490867,
+          "end": 32.631802
+        },
+        {
+          "id": "w70",
+          "text": "durable",
+          "start": 32.631802,
+          "end": 33.181448
+        },
+        {
+          "id": "w71",
+          "text": "tab",
+          "start": 33.181448,
+          "end": 33.449225
+        },
+        {
+          "id": "w72",
+          "text": "enter",
+          "start": 33.449225,
+          "end": 33.857936
+        },
+        {
+          "id": "w73",
+          "text": "the",
+          "start": 33.857936,
+          "end": 34.125713
+        },
+        {
+          "id": "w74",
+          "text": "receipt",
+          "start": 34.125713,
+          "end": 34.675359
+        },
+        {
+          "id": "w75",
+          "text": "workspace",
+          "start": 34.675359,
+          "end": 35.365941
+        },
+        {
+          "id": "w76",
+          "text": "inspect",
+          "start": 35.365941,
+          "end": 35.915587
+        },
+        {
+          "id": "w77",
+          "text": "exact-cent",
+          "start": 35.915587,
+          "end": 36.676636
+        },
+        {
+          "id": "w78",
+          "text": "reviews",
+          "start": 36.676636,
+          "end": 37.226283
+        },
+        {
+          "id": "w79",
+          "text": "open",
+          "start": 37.226283,
+          "end": 37.564527
+        },
+        {
+          "id": "w80",
+          "text": "the",
+          "start": 37.564527,
+          "end": 37.832303
+        },
+        {
+          "id": "w81",
+          "text": "evidence",
+          "start": 37.832303,
+          "end": 38.452417
+        },
+        {
+          "id": "w82",
+          "text": "graph",
+          "start": 38.452417,
+          "end": 38.861129
+        },
+        {
+          "id": "w83",
+          "text": "and",
+          "start": 38.861129,
+          "end": 39.128905
+        },
+        {
+          "id": "w84",
+          "text": "reach",
+          "start": 39.128905,
+          "end": 39.537617
+        },
+        {
+          "id": "w85",
+          "text": "the",
+          "start": 39.537617,
+          "end": 39.805393
+        },
+        {
+          "id": "w86",
+          "text": "proof",
+          "start": 39.805393,
+          "end": 40.214105
+        },
+        {
+          "id": "w87",
+          "text": "route",
+          "start": 40.214105,
+          "end": 40.622816
+        },
+        {
+          "id": "w88",
+          "text": "one",
+          "start": 40.622816,
+          "end": 40.890593
+        },
+        {
+          "id": "w89",
+          "text": "traceable",
+          "start": 40.890593,
+          "end": 41.581174
+        },
+        {
+          "id": "w90",
+          "text": "path",
+          "start": 41.581174,
+          "end": 41.919418
+        },
+        {
+          "id": "w91",
+          "text": "from",
+          "start": 41.919418,
+          "end": 42.257662
+        },
+        {
+          "id": "w92",
+          "text": "input",
+          "start": 42.257662,
+          "end": 42.666374
+        },
+        {
+          "id": "w93",
+          "text": "to",
+          "start": 42.666374,
+          "end": 42.863683
+        },
+        {
+          "id": "w94",
+          "text": "verification",
+          "start": 42.863683,
+          "end": 43.765667
+        }
+      ]
+    },
+    {
+      "scene": 6,
+      "start": 50.2,
+      "end": 66.894333,
+      "text": "Now try a hard request: weighted items, shared service, exclusions, and a payer correction. Typed input stays visible. The model suggests assignments. Math balances every cent. Four reviewers record what passed and why. Memory keeps a compact audit summary.",
+      "atempoFactor": 1,
+      "words": [
+        {
+          "id": "w95",
+          "text": "Now",
+          "start": 50.2,
+          "end": 50.463449
+        },
+        {
+          "id": "w96",
+          "text": "try",
+          "start": 50.463449,
+          "end": 50.726898
+        },
+        {
+          "id": "w97",
+          "text": "a",
+          "start": 50.726898,
+          "end": 50.865555
+        },
+        {
+          "id": "w98",
+          "text": "hard",
+          "start": 50.865555,
+          "end": 51.198332
+        },
+        {
+          "id": "w99",
+          "text": "request",
+          "start": 51.198332,
+          "end": 51.739095
+        },
+        {
+          "id": "w100",
+          "text": "weighted",
+          "start": 51.739095,
+          "end": 52.349187
+        },
+        {
+          "id": "w101",
+          "text": "items",
+          "start": 52.349187,
+          "end": 52.751293
+        },
+        {
+          "id": "w102",
+          "text": "shared",
+          "start": 52.751293,
+          "end": 53.222728
+        },
+        {
+          "id": "w103",
+          "text": "service",
+          "start": 53.222728,
+          "end": 53.763491
+        },
+        {
+          "id": "w104",
+          "text": "exclusions",
+          "start": 53.763491,
+          "end": 54.512241
+        },
+        {
+          "id": "w105",
+          "text": "and",
+          "start": 54.512241,
+          "end": 54.775689
+        },
+        {
+          "id": "w106",
+          "text": "a",
+          "start": 54.775689,
+          "end": 54.914347
+        },
+        {
+          "id": "w107",
+          "text": "payer",
+          "start": 54.914347,
+          "end": 55.316453
+        },
+        {
+          "id": "w108",
+          "text": "correction",
+          "start": 55.316453,
+          "end": 56.065202
+        },
+        {
+          "id": "w109",
+          "text": "Typed",
+          "start": 56.065202,
+          "end": 56.467308
+        },
+        {
+          "id": "w110",
+          "text": "input",
+          "start": 56.467308,
+          "end": 56.869414
+        },
+        {
+          "id": "w111",
+          "text": "stays",
+          "start": 56.869414,
+          "end": 57.27152
+        },
+        {
+          "id": "w112",
+          "text": "visible",
+          "start": 57.27152,
+          "end": 57.812283
+        },
+        {
+          "id": "w113",
+          "text": "The",
+          "start": 57.812283,
+          "end": 58.075732
+        },
+        {
+          "id": "w114",
+          "text": "model",
+          "start": 58.075732,
+          "end": 58.477838
+        },
+        {
+          "id": "w115",
+          "text": "suggests",
+          "start": 58.477838,
+          "end": 59.08793
+        },
+        {
+          "id": "w116",
+          "text": "assignments",
+          "start": 59.08793,
+          "end": 59.906008
+        },
+        {
+          "id": "w117",
+          "text": "Math",
+          "start": 59.906008,
+          "end": 60.238785
+        },
+        {
+          "id": "w118",
+          "text": "balances",
+          "start": 60.238785,
+          "end": 60.848877
+        },
+        {
+          "id": "w119",
+          "text": "every",
+          "start": 60.848877,
+          "end": 61.250983
+        },
+        {
+          "id": "w120",
+          "text": "cent",
+          "start": 61.250983,
+          "end": 61.58376
+        },
+        {
+          "id": "w121",
+          "text": "Four",
+          "start": 61.58376,
+          "end": 61.916538
+        },
+        {
+          "id": "w122",
+          "text": "reviewers",
+          "start": 61.916538,
+          "end": 62.595958
+        },
+        {
+          "id": "w123",
+          "text": "record",
+          "start": 62.595958,
+          "end": 63.067393
+        },
+        {
+          "id": "w124",
+          "text": "what",
+          "start": 63.067393,
+          "end": 63.40017
+        },
+        {
+          "id": "w125",
+          "text": "passed",
+          "start": 63.40017,
+          "end": 63.871605
+        },
+        {
+          "id": "w126",
+          "text": "and",
+          "start": 63.871605,
+          "end": 64.135054
+        },
+        {
+          "id": "w127",
+          "text": "why",
+          "start": 64.135054,
+          "end": 64.398502
+        },
+        {
+          "id": "w128",
+          "text": "Memory",
+          "start": 64.398502,
+          "end": 64.869937
+        },
+        {
+          "id": "w129",
+          "text": "keeps",
+          "start": 64.869937,
+          "end": 65.272043
+        },
+        {
+          "id": "w130",
+          "text": "a",
+          "start": 65.272043,
+          "end": 65.4107
+        },
+        {
+          "id": "w131",
+          "text": "compact",
+          "start": 65.4107,
+          "end": 65.951464
+        },
+        {
+          "id": "w132",
+          "text": "audit",
+          "start": 65.951464,
+          "end": 66.35357
+        },
+        {
+          "id": "w133",
+          "text": "summary",
+          "start": 66.35357,
+          "end": 66.894333
+        }
+      ]
+    },
+    {
+      "scene": 7,
+      "start": 68.2,
+      "end": 84.638333,
+      "text": "MCP, the tool connection, signs in, lists nine tools, allocates the receipt, prepares wallet details, and asks for approval. Then it stops: no signing, no sending, and no money moves. A read-only check verifies the earlier authorized settlement.",
+      "atempoFactor": 1,
+      "words": [
+        {
+          "id": "w134",
+          "text": "MCP",
+          "start": 68.2,
+          "end": 68.475665
+        },
+        {
+          "id": "w135",
+          "text": "the",
+          "start": 68.475665,
+          "end": 68.75133
+        },
+        {
+          "id": "w136",
+          "text": "tool",
+          "start": 68.75133,
+          "end": 69.099538
+        },
+        {
+          "id": "w137",
+          "text": "connection",
+          "start": 69.099538,
+          "end": 69.883007
+        },
+        {
+          "id": "w138",
+          "text": "signs",
+          "start": 69.883007,
+          "end": 70.303758
+        },
+        {
+          "id": "w139",
+          "text": "in",
+          "start": 70.303758,
+          "end": 70.50688
+        },
+        {
+          "id": "w140",
+          "text": "lists",
+          "start": 70.50688,
+          "end": 70.927632
+        },
+        {
+          "id": "w141",
+          "text": "nine",
+          "start": 70.927632,
+          "end": 71.27584
+        },
+        {
+          "id": "w142",
+          "text": "tools",
+          "start": 71.27584,
+          "end": 71.696592
+        },
+        {
+          "id": "w143",
+          "text": "allocates",
+          "start": 71.696592,
+          "end": 72.407517
+        },
+        {
+          "id": "w144",
+          "text": "the",
+          "start": 72.407517,
+          "end": 72.683182
+        },
+        {
+          "id": "w145",
+          "text": "receipt",
+          "start": 72.683182,
+          "end": 73.24902
+        },
+        {
+          "id": "w146",
+          "text": "prepares",
+          "start": 73.24902,
+          "end": 73.887402
+        },
+        {
+          "id": "w147",
+          "text": "wallet",
+          "start": 73.887402,
+          "end": 74.380697
+        },
+        {
+          "id": "w148",
+          "text": "details",
+          "start": 74.380697,
+          "end": 74.946536
+        },
+        {
+          "id": "w149",
+          "text": "and",
+          "start": 74.946536,
+          "end": 75.222201
+        },
+        {
+          "id": "w150",
+          "text": "asks",
+          "start": 75.222201,
+          "end": 75.570409
+        },
+        {
+          "id": "w151",
+          "text": "for",
+          "start": 75.570409,
+          "end": 75.846074
+        },
+        {
+          "id": "w152",
+          "text": "approval",
+          "start": 75.846074,
+          "end": 76.484456
+        },
+        {
+          "id": "w153",
+          "text": "Then",
+          "start": 76.484456,
+          "end": 76.832664
+        },
+        {
+          "id": "w154",
+          "text": "it",
+          "start": 76.832664,
+          "end": 77.035785
+        },
+        {
+          "id": "w155",
+          "text": "stops",
+          "start": 77.035785,
+          "end": 77.456537
+        },
+        {
+          "id": "w156",
+          "text": "no",
+          "start": 77.456537,
+          "end": 77.659659
+        },
+        {
+          "id": "w157",
+          "text": "signing",
+          "start": 77.659659,
+          "end": 78.225497
+        },
+        {
+          "id": "w158",
+          "text": "no",
+          "start": 78.225497,
+          "end": 78.428619
+        },
+        {
+          "id": "w159",
+          "text": "sending",
+          "start": 78.428619,
+          "end": 78.994457
+        },
+        {
+          "id": "w160",
+          "text": "and",
+          "start": 78.994457,
+          "end": 79.270122
+        },
+        {
+          "id": "w161",
+          "text": "no",
+          "start": 79.270122,
+          "end": 79.473243
+        },
+        {
+          "id": "w162",
+          "text": "money",
+          "start": 79.473243,
+          "end": 79.893995
+        },
+        {
+          "id": "w163",
+          "text": "moves",
+          "start": 79.893995,
+          "end": 80.314747
+        },
+        {
+          "id": "w164",
+          "text": "A",
+          "start": 80.314747,
+          "end": 80.459834
+        },
+        {
+          "id": "w165",
+          "text": "read-only",
+          "start": 80.459834,
+          "end": 81.170759
+        },
+        {
+          "id": "w166",
+          "text": "check",
+          "start": 81.170759,
+          "end": 81.59151
+        },
+        {
+          "id": "w167",
+          "text": "verifies",
+          "start": 81.59151,
+          "end": 82.229892
+        },
+        {
+          "id": "w168",
+          "text": "the",
+          "start": 82.229892,
+          "end": 82.505557
+        },
+        {
+          "id": "w169",
+          "text": "earlier",
+          "start": 82.505557,
+          "end": 83.071396
+        },
+        {
+          "id": "w170",
+          "text": "authorized",
+          "start": 83.071396,
+          "end": 83.854864
+        },
+        {
+          "id": "w171",
+          "text": "settlement",
+          "start": 83.854864,
+          "end": 84.638333
+        }
+      ]
+    },
+    {
+      "scene": 8,
+      "start": 85.2,
+      "end": 89.75,
+      "text": "FINALTab. People approve. The earlier run executed once. Anyone can verify.",
+      "atempoFactor": 1.066886,
+      "words": [
+        {
+          "id": "w172",
+          "text": "FINALTab",
+          "start": 85.2,
+          "end": 85.773639
+        },
+        {
+          "id": "w173",
+          "text": "People",
+          "start": 85.773639,
+          "end": 86.216905
+        },
+        {
+          "id": "w174",
+          "text": "approve",
+          "start": 86.216905,
+          "end": 86.725358
+        },
+        {
+          "id": "w175",
+          "text": "The",
+          "start": 86.725358,
+          "end": 86.973066
+        },
+        {
+          "id": "w176",
+          "text": "earlier",
+          "start": 86.973066,
+          "end": 87.481519
+        },
+        {
+          "id": "w177",
+          "text": "run",
+          "start": 87.481519,
+          "end": 87.729226
+        },
+        {
+          "id": "w178",
+          "text": "executed",
+          "start": 87.729226,
+          "end": 88.302865
+        },
+        {
+          "id": "w179",
+          "text": "once",
+          "start": 88.302865,
+          "end": 88.615759
+        },
+        {
+          "id": "w180",
+          "text": "Anyone",
+          "start": 88.615759,
+          "end": 89.059026
+        },
+        {
+          "id": "w181",
+          "text": "can",
+          "start": 89.059026,
+          "end": 89.306734
+        },
+        {
+          "id": "w182",
+          "text": "verify",
+          "start": 89.306734,
+          "end": 89.75
+        }
+      ]
+    }
+  ]
+}

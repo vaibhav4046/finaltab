@@ -1,0 +1,147 @@
+{
+  "schemaVersion": 3,
+  "status": "approved-v3-local-offline",
+  "provider": "Kokoro-82M (local)",
+  "model": "kokoro-v1.0",
+  "voiceName": "George (British male)",
+  "voiceId": "bm_george",
+  "outputFormat": "mp3_44100_128",
+  "source": "video/finaltab-winner/SCRIPT.md",
+  "durationSeconds": 90,
+  "wordCount": 183,
+  "batchScope": "complete-eight-scene-script-local",
+  "expectedProviderCalls": 0,
+  "selectedProviderCalls": 0,
+  "reuseAllowed": false,
+  "reusedAssets": [],
+  "master": {
+    "path": "assets/audio/voice-v3/finaltab-v3-local-kokoro-master.mp3",
+    "alignmentPath": "assets/audio/voice-v3/finaltab-v3-local-kokoro-alignment.json",
+    "bytes": 1441167,
+    "sha256": "11a255159a567b944ed275672544832cd969d78a4ece35fd2c448ce1e28c33f0",
+    "durationSeconds": 90.044082,
+    "generatedAt": "2026-08-12T04:29:59.952Z",
+    "batchId": null
+  },
+  "scenes": [
+    {
+      "scene": 1,
+      "start": 0,
+      "end": 4,
+      "text": "FINALTab. One receipt. One clear settlement."
+    },
+    {
+      "scene": 2,
+      "start": 4,
+      "end": 12,
+      "text": "Turn a shared receipt into an exact split, gather approvals, move test funds once, and leave public proof."
+    },
+    {
+      "scene": 3,
+      "start": 12,
+      "end": 20,
+      "text": "For dinners, trips, team expenses, or agent-led payments, everyone sees each amount, approval, and result."
+    },
+    {
+      "scene": 4,
+      "start": 20,
+      "end": 30,
+      "text": "Vision reads the bill. Math checks every cent. Reviewers check the split and wallet safety. A service runs it. Public test records confirm it."
+    },
+    {
+      "scene": 5,
+      "start": 30,
+      "end": 50,
+      "text": "Watch the product: sign in, create a durable tab, enter the receipt workspace, inspect exact-cent reviews, open the evidence graph, and reach the proof route—one traceable path from input to verification."
+    },
+    {
+      "scene": 6,
+      "start": 50,
+      "end": 68,
+      "text": "Now try a hard request: weighted items, shared service, exclusions, and a payer correction. Typed input stays visible. The model suggests assignments. Math balances every cent. Four reviewers record what passed and why. Memory keeps a compact audit summary."
+    },
+    {
+      "scene": 7,
+      "start": 68,
+      "end": 85,
+      "text": "MCP, the tool connection, signs in, lists nine tools, allocates the receipt, prepares wallet details, and asks for approval. Then it stops: no signing, no sending, and no money moves. A read-only check verifies the earlier authorized settlement."
+    },
+    {
+      "scene": 8,
+      "start": 85,
+      "end": 90,
+      "text": "FINALTab. People approve. The earlier run executed once. Anyone can verify."
+    }
+  ],
+  "captionAssets": {
+    "status": "approved-v3-captions",
+    "cueJsonSha256": "bfb9b5e473319260f3c04f28d792bb2900ae8987cd354cad2ccf08c196596163",
+    "srtSha256": "92d5bcc56edf531746a44b83aee5f8e08fb3d0ff68bd5865cc5a300a2cc8afb6",
+    "vttSha256": "6a8fea3ce9a091fcc32ef7d4b0e9feb57c4b42f87d684092186db8a96d08dc15",
+    "bakedIndexSha256": "4c2121d225e44ec9d5fa47a5f23c0871f1ef8a1f780103f55ea51bbf59b38aa9"
+  },
+  "mastering": {
+    "integratedLufs": -14,
+    "maxTruePeakDbtp": -1,
+    "loudnessRange": 7
+  },
+  "scriptNarrationSha256": "e69e44afa21165bba883851a7fe756b90f8d5dc62f452f94b293f86baf24a19a",
+  "sourceAssets": [
+    {
+      "scene": 1,
+      "path": "assets/audio/voice-v3/source-local/scene-01-kokoro.wav",
+      "bytes": 170028,
+      "sha256": "bc7d072f8613bfeff3a6ad3574bd6728ca6732b8f9cca30b4de0057ded135f5f",
+      "durationSeconds": 3.541333
+    },
+    {
+      "scene": 2,
+      "path": "assets/audio/voice-v3/source-local/scene-02-kokoro.wav",
+      "bytes": 328748,
+      "sha256": "f83932ebca05bd511fb04d373bcfc0c7a68f75f6e386d85f1a5f2a6b5546c5e9",
+      "durationSeconds": 6.848
+    },
+    {
+      "scene": 3,
+      "path": "assets/audio/voice-v3/source-local/scene-03-kokoro.wav",
+      "bytes": 341036,
+      "sha256": "4178ff41747a77317b4a21dd5439e81c779cad883d98c08f3612e2b453993af0",
+      "durationSeconds": 7.104
+    },
+    {
+      "scene": 4,
+      "path": "assets/audio/voice-v3/source-local/scene-04-kokoro.wav",
+      "bytes": 450604,
+      "sha256": "5f6187afe7cd13b81a4551d5e49a74dcfc4912ae55fb657d2c39856a9cb553c1",
+      "durationSeconds": 9.386667
+    },
+    {
+      "scene": 5,
+      "path": "assets/audio/voice-v3/source-local/scene-05-kokoro.wav",
+      "bytes": 653356,
+      "sha256": "815827b17f8bef92918b06da9ffc9b44680155ec9139aed52177d174e1061848",
+      "durationSeconds": 13.610667
+    },
+    {
+      "scene": 6,
+      "path": "assets/audio/voice-v3/source-local/scene-06-kokoro.wav",
+      "bytes": 805932,
+      "sha256": "3e71c40cd419ea4b88a499ec2ba7fc6e1ce2ff44caf47f05f60e6480bf3f7a41",
+      "durationSeconds": 16.789333
+    },
+    {
+      "scene": 7,
+      "path": "assets/audio/voice-v3/source-local/scene-07-kokoro.wav",
+      "bytes": 793644,
+      "sha256": "dd68d394d65678660e501b226ee64ccb16127a35be30ae38c856360ff03e7d60",
+      "durationSeconds": 16.533333
+    },
+    {
+      "scene": 8,
+      "path": "assets/audio/voice-v3/source-local/scene-08-kokoro.wav",
+      "bytes": 237612,
+      "sha256": "df6646c9e8454fd42db6e156e4a545bd50e6406daada21cc26923f7f69571169",
+      "durationSeconds": 4.949333
+    }
+  ]
+}

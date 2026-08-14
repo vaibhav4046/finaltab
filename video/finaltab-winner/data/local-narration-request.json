@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "provider": "Kokoro-82M (local)",
+  "model": "kokoro-v1.0",
+  "voiceName": "George (British male)",
+  "voiceId": "bm_george",
+  "language": "en-gb",
+  "ttsProviderCallsAllowed": 0,
+  "scenes": [
+    {
+      "scene": 1,
+      "text": "FINALTab. One receipt. One clear settlement.",
+      "speed": 1.05
+    },
+    {
+      "scene": 2,
+      "text": "Turn a shared receipt into an exact split, gather approvals, move test funds once, and leave public proof.",
+      "speed": 1.05
+    },
+    {
+      "scene": 3,
+      "text": "For dinners, trips, team expenses, or agent-led payments, everyone sees each amount, approval, and result.",
+      "speed": 1.05
+    },
+    {
+      "scene": 4,
+      "text": "Vision reads the bill. Math checks every cent. Reviewers check the split and wallet safety. A service runs it. Public test records confirm it.",
+      "speed": 1.05
+    },
+    {
+      "scene": 5,
+      "text": "Watch the product: sign in, create a durable tab, enter the receipt workspace, inspect exact-cent reviews, open the evidence graph, and reach the proof route—one traceable path from input to verification.",
+      "speed": 1.05
+    },
+    {
+      "scene": 6,
+      "text": "Now try a hard request: weighted items, shared service, exclusions, and a payer correction. Typed input stays visible. The model suggests assignments. Math balances every cent. Four reviewers record what passed and why. Memory keeps a compact audit summary.",
+      "speed": 1.05
+    },
+    {
+      "scene": 7,
+      "text": "MCP, the tool connection, signs in, lists nine tools, allocates the receipt, prepares wallet details, and asks for approval. Then it stops: no signing, no sending, and no money moves. A read-only check verifies the earlier authorized settlement.",
+      "speed": 1.05
+    },
+    {
+      "scene": 8,
+      "text": "FINALTab. People approve. The earlier run executed once. Anyone can verify.",
+      "speed": 1.25
+    }
+  ]
+}

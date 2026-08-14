@@ -27,6 +27,20 @@ export interface GroqClientOptions {
   fetchImpl?: typeof fetch;
   /** Per-request timeout in ms. */
   timeoutMs?: number;
+  /** Hard provider-side completion cap. Defaults to 4096 and cannot exceed 8192. */
+  maxCompletionTokens?: number;
+}
+
+export interface GroqTokenUsage {
+  promptTokens?: number;
+  completionTokens?: number;
+  totalTokens?: number;
+}
+
+export interface GroqCompletionResult {
+  content: string;
+  model: string;
+  usage: GroqTokenUsage;
 }
 
 export class GroqApiError extends Error {
@@ -48,6 +62,7 @@ export class GroqClient {
   private readonly model: string;
   private readonly fetchImpl: typeof fetch;
   private readonly timeoutMs: number;
+  private readonly maxCompletionTokens: number;
 
   constructor(opts: GroqClientOptions) {
     if (!opts.apiKey) throw new Error("GroqClient requires an apiKey (GROQ_API_KEY)");
@@ -56,6 +71,9 @@ export class GroqClient {
     this.model = opts.model ?? DEFAULT_GROQ_MODEL;
     this.fetchImpl = opts.fetchImpl ?? fetch;
     this.timeoutMs = opts.timeoutMs ?? 60000;
+    const requestedCompletionTokens = opts.maxCompletionTokens ?? 4096;
+    if (!Number.isFinite(requestedCompletionTokens)) throw new Error("maxCompletionTokens must be finite");
+    this.maxCompletionTokens = Math.max(256, Math.min(8192, Math.trunc(requestedCompletionTokens)));
   }
 
   /**
@@ -63,6 +81,16 @@ export class GroqClient {
    * response_format json_object + temperature 0 for deterministic-ish JSON.
    */
   async completeJson(messages: GroqMessage[]): Promise<string> {
+    return (await this.completeJsonWithMetadata(messages)).content;
+  }
+
+  /**
+   * Same completion contract with the provider-reported model and token usage.
+   * Callers that persist AI runs should use this method instead of estimating
+   * tokens from characters. Missing provider fields remain absent rather than
+   * being invented.
+   */
+  async completeJsonWithMetadata(messages: GroqMessage[]): Promise<GroqCompletionResult> {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), this.timeoutMs);
     let res: Response;
@@ -77,6 +105,7 @@ export class GroqClient {
           model: this.model,
           messages,
           temperature: 0,
+          max_completion_tokens: this.maxCompletionTokens,
           response_format: { type: "json_object" },
         }),
         signal: controller.signal,
@@ -100,12 +129,27 @@ export class GroqClient {
         body,
       );
     }
-    const content = (body as { choices?: Array<{ message?: { content?: string } }> })?.choices?.[0]?.message
-      ?.content;
+    const parsed = body as {
+      choices?: Array<{ message?: { content?: string } }>;
+      model?: unknown;
+      usage?: { prompt_tokens?: unknown; completion_tokens?: unknown; total_tokens?: unknown };
+    };
+    const content = parsed.choices?.[0]?.message?.content;
     if (typeof content !== "string" || content.length === 0) {
       throw new GroqApiError("Groq API returned no assistant content", res.status, body);
     }
-    return content;
+    const safeTokenCount = (value: unknown): number | undefined =>
+      typeof value === "number" && Number.isSafeInteger(value) && value >= 0 ? value : undefined;
+    const usage: GroqTokenUsage = {
+      promptTokens: safeTokenCount(parsed.usage?.prompt_tokens),
+      completionTokens: safeTokenCount(parsed.usage?.completion_tokens),
+      totalTokens: safeTokenCount(parsed.usage?.total_tokens),
+    };
+    return {
+      content,
+      model: typeof parsed.model === "string" && parsed.model.length > 0 ? parsed.model : this.model,
+      usage: Object.fromEntries(Object.entries(usage).filter(([, value]) => value !== undefined)),
+    };
   }
 }
 
@@ -121,14 +165,15 @@ function groqErrorDetail(body: unknown): string | null {
 }
 
 /**
- * True for Groq failures worth one more attempt: 400 json_validate_failed
- * (model emitted invalid JSON under json_object mode), timeouts, rate limits,
- * and transient 5xx. Auth/permission errors are never retryable.
+ * True for Groq failures worth one immediate retry: 400 json_validate_failed
+ * (model emitted invalid JSON under json_object mode), timeouts, and transient
+ * 5xx. A 429 needs the provider's cooldown, so retrying it inside the same
+ * request only burns latency and repeats the rejection.
  */
 export function isRetryableGroqError(e: unknown): boolean {
   if (!(e instanceof GroqApiError)) return false;
   if (e.httpStatus === 401 || e.httpStatus === 403) return false;
-  return e.httpStatus === 400 || e.httpStatus === 408 || e.httpStatus === 429 || e.httpStatus >= 500;
+  return e.httpStatus === 400 || e.httpStatus === 408 || e.httpStatus >= 500;
 }
 
 /**
@@ -137,7 +182,13 @@ export function isRetryableGroqError(e: unknown): boolean {
  * data, it only unwraps.
  */
 export function extractJsonObject(raw: string): unknown {
-  const trimmed = raw.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "");
+  // The opening fence is anchored, so it is attempted from one position and
+  // scans once. A trailing `\s*```$` is not anchored: the engine retries from
+  // every position inside a whitespace run, which is quadratic in the length
+  // of the model's output. The closing fence is therefore removed by
+  // comparison instead, which strips exactly the same characters.
+  const unfenced = raw.trim().replace(/^```(?:json)?\s*/i, "");
+  const trimmed = unfenced.endsWith("```") ? unfenced.slice(0, -3).trimEnd() : unfenced;
   const start = trimmed.indexOf("{");
   const end = trimmed.lastIndexOf("}");
   if (start === -1 || end === -1 || end <= start) {

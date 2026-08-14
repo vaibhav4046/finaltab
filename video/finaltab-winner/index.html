@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>FINALTab V3 — 90-second judge film</title>
+  <script src="assets/vendor/gsap-3.14.2.min.js"></script>
+  <style>
+    @font-face{font-family:Geist;src:url("assets/fonts/Geist-Variable.woff2") format("woff2");font-weight:100 900}
+    @font-face{font-family:GeistMono;src:url("assets/fonts/GeistMono-Regular.woff2") format("woff2");font-weight:400}
+    html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#050706}
+    #root{position:relative;width:3840px;height:2160px;overflow:hidden;color:#F4F8F1;background:#050706}
+    .clip{position:absolute;inset:0;overflow:hidden}.master-ground{background:#050706}
+    .handoff{pointer-events:none}.handoff-inner{position:absolute;inset:0;background:#45AFFF}.handoff-inner:after{content:"";position:absolute;top:0;bottom:0;left:0;width:28px;background:#C8FF3D;box-shadow:0 0 70px rgba(200,255,61,.5)}
+  </style>
+</head>
+<body>
+  <div id="root" data-composition-id="finaltab-winner" data-build-revision="v3-90s-eight-scene" data-start="0" data-width="3840" data-height="2160" data-fps="60" data-duration="90">
+    <section id="master-ground" class="clip master-ground" data-start="0" data-duration="90" data-track-index="0"></section>
+    <div id="host-v3-01" class="clip" data-composition-id="finaltab-v3-logo" data-composition-src="compositions/frames-v3/01-logo.html" data-start="0" data-duration="4" data-track-index="10" data-width="3840" data-height="2160"></div>
+    <div id="host-v3-02" class="clip" data-composition-id="finaltab-v3-product-thesis" data-composition-src="compositions/frames-v3/02-product-thesis.html" data-start="4" data-duration="8" data-track-index="10" data-width="3840" data-height="2160"></div>
+    <div id="host-v3-03" class="clip" data-composition-id="finaltab-v3-use-cases" data-composition-src="compositions/frames-v3/03-use-cases.html" data-start="12" data-duration="8" data-track-index="10" data-width="3840" data-height="2160"></div>
+    <div id="host-v3-04" class="clip" data-composition-id="finaltab-v3-simple-architecture" data-composition-src="compositions/frames-v3/04-simple-architecture.html" data-start="20" data-duration="10" data-track-index="10" data-width="3840" data-height="2160"></div>
+    <div id="host-v3-05" class="clip" data-composition-id="finaltab-v3-real-site-demo" data-composition-src="compositions/frames-v3/05-real-site-demo.html" data-start="30" data-duration="20" data-track-index="10" data-width="3840" data-height="2160"></div>
+    <div id="host-v3-06" class="clip" data-composition-id="finaltab-v3-complex-agent-task" data-composition-src="compositions/frames-v3/06-complex-agent-task.html" data-start="50" data-duration="18" data-track-index="10" data-width="3840" data-height="2160"></div>
+    <div id="host-v3-07" class="clip" data-composition-id="finaltab-v3-mcp-nonbroadcast" data-composition-src="compositions/frames-v3/07-mcp-nonbroadcast.html" data-start="68" data-duration="17" data-track-index="10" data-width="3840" data-height="2160"></div>
+    <div id="host-v3-08" class="clip" data-composition-id="finaltab-v3-proof-cta" data-composition-src="compositions/frames-v3/08-proof-cta.html" data-start="85" data-duration="5" data-track-index="10" data-width="3840" data-height="2160"></div>
+
+    <section id="handoff-01" class="clip handoff" data-layout-allow-occlusion data-layout-allow-overflow data-start="3.6" data-duration="0.4" data-track-index="15"><div class="handoff-inner" data-layout-allow-overflow></div></section>
+    <section id="handoff-02" class="clip handoff" data-layout-allow-occlusion data-layout-allow-overflow data-start="11.6" data-duration="0.4" data-track-index="16"><div class="handoff-inner" data-layout-allow-overflow></div></section>
+    <section id="handoff-03" class="clip handoff" data-layout-allow-occlusion data-layout-allow-overflow data-start="19.6" data-duration="0.4" data-track-index="17"><div class="handoff-inner" data-layout-allow-overflow></div></section>
+    <section id="handoff-04" class="clip handoff" data-layout-allow-occlusion data-layout-allow-overflow data-start="29.6" data-duration="0.4" data-track-index="18"><div class="handoff-inner" data-layout-allow-overflow></div></section>
+    <section id="handoff-05" class="clip handoff" data-layout-allow-occlusion data-layout-allow-overflow data-start="49.6" data-duration="0.4" data-track-index="19"><div class="handoff-inner" data-layout-allow-overflow></div></section>
+    <section id="handoff-06" class="clip handoff" data-layout-allow-occlusion data-layout-allow-overflow data-start="67.6" data-duration="0.4" data-track-index="21"><div class="handoff-inner" data-layout-allow-overflow></div></section>
+    <section id="handoff-07" class="clip handoff" data-layout-allow-occlusion data-layout-allow-overflow data-start="84.6" data-duration="0.4" data-track-index="22"><div class="handoff-inner" data-layout-allow-overflow></div></section>
+
+    <audio id="sfx-handoff-01" src="assets/audio/sfx/whoosh-short.mp3" preload="auto" data-start="3.78" data-duration="0.57" data-volume="0.12" data-track-index="32"></audio>
+    <audio id="sfx-handoff-02" src="assets/audio/sfx/whoosh-short.mp3" preload="auto" data-start="11.78" data-duration="0.57" data-volume="0.12" data-track-index="32"></audio>
+    <audio id="sfx-handoff-03" src="assets/audio/sfx/whoosh-short.mp3" preload="auto" data-start="19.78" data-duration="0.57" data-volume="0.12" data-track-index="32"></audio>
+    <audio id="sfx-handoff-04" src="assets/audio/sfx/whoosh-short.mp3" preload="auto" data-start="29.78" data-duration="0.57" data-volume="0.12" data-track-index="32"></audio>
+    <audio id="sfx-handoff-05" src="assets/audio/sfx/whoosh-short.mp3" preload="auto" data-start="49.78" data-duration="0.57" data-volume="0.12" data-track-index="32"></audio>
+    <audio id="sfx-scene-05-room-tone" src="assets/audio/sfx/scene-05-room-tone.mp3" preload="auto" data-start="40" data-duration="10" data-volume="0.5" data-track-index="34"></audio>
+    <audio id="sfx-handoff-06" src="assets/audio/sfx/whoosh-short.mp3" preload="auto" data-start="67.78" data-duration="0.57" data-volume="0.12" data-track-index="32"></audio>
+    <audio id="sfx-mcp-stop" src="assets/audio/sfx/click-soft.mp3" preload="auto" data-start="79.4" data-duration="0.37" data-volume="0.16" data-track-index="33"></audio>
+    <audio id="sfx-handoff-07" src="assets/audio/sfx/whoosh-short.mp3" preload="auto" data-start="84.78" data-duration="0.57" data-volume="0.12" data-track-index="32"></audio>
+    <audio id="sfx-proof-ping" src="assets/audio/sfx/ping.mp3" preload="auto" data-start="86.4" data-duration="1.32" data-volume="0.18" data-track-index="33"></audio>
+
+    <!-- V3_CAPTIONS_START -->
+    <audio id="v3-narration-master" src="assets/audio/voice-v3/finaltab-v3-local-kokoro-master.mp3" data-start="0" data-duration="90" data-track-index="30" data-volume="1"></audio>
+    <style id="v3-caption-style">.v3-caption-cue.clip{inset:auto 240px 60px;height:144px;box-sizing:border-box;margin:0;padding:18px 34px;border:2px solid rgba(183,192,184,.45);border-radius:22px;background:rgba(5,7,6,.94);color:#F4F8F1;text-align:center;font:650 46px/1.16 Geist,Arial,sans-serif}.v3-caption-line{display:block;white-space:nowrap}</style>
+    <p id="v3-caption-01" class="clip caption-cue v3-caption-cue" data-layout-allow-caption-zone data-start="0.300000" data-duration="3.400000" data-track-index="40"><span class="v3-caption-line">FINALTab One receipt One clear settlement</span></p>
+    <p id="v3-caption-02" class="clip caption-cue v3-caption-cue" data-layout-allow-caption-zone data-start="4.250000" data-duration="5.505458" data-track-index="41"><span class="v3-caption-line">Turn a shared receipt into an exact split</span><span class="v3-caption-line">gather approvals move test funds once and</span></p>
+    <p id="v3-caption-03" class="clip caption-cue v3-caption-cue" data-layout-allow-caption-zone data-start="9.755458" data-duration="1.247542" data-track-index="42"><span class="v3-caption-line">leave public proof</span></p>
+    <p id="v3-caption-04" class="clip caption-cue v3-caption-cue" data-layout-allow-caption-zone data-start="12.250000" data-duration="5.115847" data-track-index="43"><span class="v3-caption-line">For dinners trips team expenses or</span><span class="v3-caption-line">agent-led payments everyone sees each</span></p>
+    <p id="v3-caption-05" class="clip caption-cue v3-caption-cue" data-layout-allow-caption-zone data-start="17.365847" data-duration="1.893153" data-track-index="44"><span class="v3-caption-line">amount approval and result</span></p>
+    <p id="v3-caption-06" class="clip caption-cue v3-caption-cue" data-layout-allow-caption-zone data-start="20.200000" data-duration="5.516492" data-track-index="45"><span class="v3-caption-line">Vision reads the bill Math checks every</span><span class="v3-caption-line">cent Reviewers check the split and wallet</span></p>
+    <p id="v3-caption-07" class="clip caption-cue v3-caption-cue" data-layout-allow-caption-zone data-start="25.716492" data-duration="3.775175" data-track-index="46"><span class="v3-caption-line">safety A service runs it Public test</span><span class="v3-caption-line">records confirm it</span></p>
+    <p id="v3-caption-08" class="clip caption-cue v3-caption-cue" data-layout-allow-caption-zone data-start="30.250000" data-duration="5.665587" data-track-index="47"><span class="v3-caption-line">Watch the product sign in create a durable</span><span class="v3-caption-line">tab enter the receipt workspace inspect</span></p>
+    <p id="v3-caption-09" class="clip caption-cue v3-caption-cue" data-layout-allow-caption-zone data-start="35.915587" data-duration="5.665587" data-track-index="48"><span class="v3-caption-line">exact-cent reviews open the evidence graph</span><span class="v3-caption-line">and reach the proof route one traceable</span></p>
+    <p id="v3-caption-10" class="clip caption-cue v3-caption-cue" data-layout-allow-caption-zone data-start="41.581174" data-duration="2.184493" data-track-index="49"><span class="v3-caption-line">path from input to verification</span></p>
+    <p id="v3-caption-11" class="clip caption-cue v3-caption-cue" data-layout-allow-caption-zone data-start="50.200000" data-duration="5.116453" data-track-index="50"><span class="v3-caption-line">Now try a hard request weighted items</span><span class="v3-caption-line">shared service exclusions and a payer</span></p>
+    <p id="v3-caption-12" class="clip caption-cue v3-caption-cue" data-layout-allow-caption-zone data-start="55.316453" data-duration="5.532424" data-track-index="51"><span class="v3-caption-line">correction Typed input stays visible The</span><span class="v3-caption-line">model suggests assignments Math balances</span></p>
+    <p id="v3-caption-13" class="clip caption-cue v3-caption-cue" data-layout-allow-caption-zone data-start="60.848877" data-duration="5.102587" data-track-index="52"><span class="v3-caption-line">every cent Four reviewers record what</span><span class="v3-caption-line">passed and why Memory keeps a compact</span></p>
+    <p id="v3-caption-14" class="clip caption-cue v3-caption-cue" data-layout-allow-caption-zone data-start="65.951464" data-duration="0.942869" data-track-index="53"><span class="v3-caption-line">audit summary</span></p>
+    <p id="v3-caption-15" class="clip caption-cue v3-caption-cue" data-layout-allow-caption-zone data-start="68.200000" data-duration="5.687402" data-track-index="54"><span class="v3-caption-line">MCP the tool connection signs in lists</span><span class="v3-caption-line">nine tools allocates the receipt prepares</span></p>
+    <p id="v3-caption-16" class="clip caption-cue v3-caption-cue" data-layout-allow-caption-zone data-start="73.887402" data-duration="5.382720" data-track-index="55"><span class="v3-caption-line">wallet details and asks for approval Then</span><span class="v3-caption-line">it stops no signing no sending and</span></p>
+    <p id="v3-caption-17" class="clip caption-cue v3-caption-cue" data-layout-allow-caption-zone data-start="79.270122" data-duration="5.368211" data-track-index="56"><span class="v3-caption-line">no money moves A read-only check verifies</span><span class="v3-caption-line">the earlier authorized settlement</span></p>
+    <p id="v3-caption-18" class="clip caption-cue v3-caption-cue" data-layout-allow-caption-zone data-start="85.200000" data-duration="4.550000" data-track-index="57"><span class="v3-caption-line">FINALTab People approve The earlier run</span><span class="v3-caption-line">executed once Anyone can verify</span></p>
+    <!-- V3_CAPTIONS_END -->
+
+  </div>
+  <script>
+    window.__timelines=window.__timelines||{};
+    const tl=gsap.timeline({paused:true});
+    [3.6,11.6,19.6,29.6,49.6,67.6,84.6].forEach((at,index)=>{
+      const target=`#handoff-0${index+1} .handoff-inner`;
+      tl.fromTo(target,{x:-3840},{x:0,duration:.22,ease:"power3.in"},at)
+        .to(target,{x:3840,duration:.18,ease:"power3.out"},at+.22);
+    });
+    window.__timelines["finaltab-winner"]=tl;
+  </script>
+</body>
+</html>

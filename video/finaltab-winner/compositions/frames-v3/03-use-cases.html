@@ -1,0 +1,30 @@
+<!doctype html><html lang="en"><head><meta charset="UTF-8"/><title>FINALTab V3 — Use cases</title></head><body>
+<template>
+  <style>
+    @font-face{font-family:Geist;src:url("assets/fonts/Geist-Variable.woff2") format("woff2");font-weight:100 900}@font-face{font-family:GeistMono;src:url("assets/fonts/GeistMono-Regular.woff2") format("woff2");font-weight:400}@font-face{font-family:GeistMono;src:url("assets/fonts/GeistMono-Bold.woff2") format("woff2");font-weight:700}
+    #v3-03-root{position:absolute;inset:0;width:3840px;height:2160px;overflow:hidden;color:#F4F8F1}.clip{position:absolute;inset:0;overflow:hidden}.ground{background:#050706}.ground:after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 78% 35%,rgba(200,255,61,.13),transparent 28%)}
+    .stage{box-sizing:border-box;padding:180px 220px 330px}.header{display:flex;justify-content:space-between;align-items:flex-start}.eyebrow{font:700 34px/1 GeistMono,monospace;letter-spacing:.14em;color:#C8FF3D}.counter{font:700 32px/1 GeistMono,monospace;color:#B7C0B8}.case-window{position:relative;margin-top:155px;height:650px;border-top:2px solid #31403A;border-bottom:2px solid #31403A;overflow:hidden}.case{position:absolute;inset:0;display:flex;align-items:center;font:790 246px/.9 Geist,Arial,sans-serif;letter-spacing:-.07em;color:#F4F8F1}.case small{display:block;width:170px;margin-right:90px;font:700 36px/1 GeistMono,monospace;letter-spacing:.08em;color:#45AFFF}.case.agent{font-size:196px;color:#45AFFF}
+    .guarantee{display:grid;grid-template-columns:repeat(3,1fr);gap:36px;margin-top:110px}.guarantee-item{position:relative;padding:52px 48px;border:2px solid #31403A;background:#090D0B;font:720 50px/1.05 Geist,Arial,sans-serif;letter-spacing:-.03em}.guarantee-item:before{content:"";position:absolute;left:-2px;right:-2px;top:-2px;height:8px;background:#45AFFF;transform-origin:0 50%}.guarantee-item b{display:block;margin-bottom:22px;font:700 28px/1 GeistMono,monospace;color:#B7C0B8;letter-spacing:.1em}.rail{position:absolute;left:220px;right:220px;bottom:330px;height:7px;background:#26312B}.rail-fill{width:100%;height:100%;background:#C8FF3D;transform-origin:0 50%}.rail-dots{position:absolute;inset:-13px 0;display:flex;justify-content:space-between}.rail-dots span{width:32px;height:32px;border-radius:50%;background:#050706;border:5px solid #C8FF3D}
+    .all-cases{position:absolute;left:220px;right:220px;bottom:395px;display:flex;justify-content:space-between;font:700 30px/1 GeistMono,monospace;letter-spacing:.08em;color:#B7C0B8}
+  </style>
+  <div id="v3-03-root" data-composition-id="finaltab-v3-use-cases" data-start="0" data-width="3840" data-height="2160" data-duration="8">
+    <section id="v3-03-ground" class="clip ground" data-start="0" data-duration="8" data-track-index="0"></section>
+    <section id="v3-03-stage" class="clip stage" data-layout-allow-occlusion data-start="0" data-duration="8" data-track-index="1">
+      <div class="header"><div id="v3-03-eyebrow" class="eyebrow">03 / ONE CLEAR RECORD</div><div class="counter">FOUR WAYS IN · SAME GUARANTEES OUT</div></div>
+      <div class="case-window" data-layout-allow-overflow><div id="v3-03-case-1" class="case" data-layout-allow-overlap data-layout-allow-overflow><small>01 / 04</small>DINNERS</div><div id="v3-03-case-2" class="case" data-layout-allow-overlap data-layout-allow-overflow><small>02 / 04</small>TRIPS</div><div id="v3-03-case-3" class="case" data-layout-allow-overlap data-layout-allow-overflow><small>03 / 04</small>TEAM EXPENSES</div><div id="v3-03-case-4" class="case agent" data-layout-allow-overlap data-layout-allow-overflow><small>04 / 04</small>AGENT-LED PAYMENTS</div></div>
+      <div id="v3-03-title" class="guarantee"><div id="v3-03-g1" class="guarantee-item"><b>ALWAYS VISIBLE</b>EVERY AMOUNT</div><div id="v3-03-g2" class="guarantee-item"><b>ALWAYS RECORDED</b>EVERY APPROVAL</div><div id="v3-03-g3" class="guarantee-item"><b>ALWAYS INSPECTABLE</b>EVERY RESULT</div></div>
+      <div id="v3-03-copy" class="all-cases"><span>DINNERS</span><span>TRIPS</span><span>TEAMS</span><span>AGENTS</span></div><div class="rail"><div id="v3-03-rail" class="rail-fill"></div><div class="rail-dots" data-layout-allow-overflow><span></span><span></span><span></span><span></span></div></div>
+    </section>
+  </div>
+  <script>
+    window.__timelines=window.__timelines||{};const tl=gsap.timeline({paused:true});
+    tl.fromTo("#v3-03-eyebrow",{x:-50,opacity:0},{x:0,opacity:1,duration:.5,ease:"power3.out"},.1)
+      .fromTo("#v3-03-case-1",{y:120,opacity:0},{y:0,opacity:1,duration:.68,ease:"expo.out"},.35)
+      .to("#v3-03-case-1",{y:-130,opacity:0,duration:.45,ease:"power3.in"},1.72).fromTo("#v3-03-case-2",{y:130,opacity:0},{y:0,opacity:1,duration:.58,ease:"power3.out"},1.82)
+      .to("#v3-03-case-2",{y:-130,opacity:0,duration:.45,ease:"power3.in"},3.08).fromTo("#v3-03-case-3",{y:130,opacity:0},{y:0,opacity:1,duration:.58,ease:"power3.out"},3.18)
+      .to("#v3-03-case-3",{y:-130,opacity:0,duration:.45,ease:"power3.in"},4.52).fromTo("#v3-03-case-4",{y:130,opacity:0},{y:0,opacity:1,duration:.64,ease:"power3.out"},4.62)
+      .fromTo("#v3-03-g1",{y:46,opacity:0},{y:0,opacity:1,duration:.48,ease:"power3.out"},5.25).fromTo("#v3-03-g2",{y:46,opacity:0},{y:0,opacity:1,duration:.48,ease:"power3.out"},5.62).fromTo("#v3-03-g3",{y:46,opacity:0},{y:0,opacity:1,duration:.48,ease:"power3.out"},5.99)
+      .fromTo("#v3-03-copy",{opacity:0},{opacity:1,duration:.35},6.55).fromTo("#v3-03-rail",{scaleX:0},{scaleX:1,duration:1.15,ease:"power3.out"},6.45);
+    window.__timelines["finaltab-v3-use-cases"]=tl;
+  </script>
+</template></body></html>

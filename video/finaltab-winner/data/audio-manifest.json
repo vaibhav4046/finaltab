@@ -1,0 +1,151 @@
+{
+  "schemaVersion": 3,
+  "status": "approved-v3-local-narration",
+  "durationSeconds": 90,
+  "bgm": null,
+  "bgmDecision": "No background music. Keep the local Kokoro narration clear and use restrained local SFX only.",
+  "mastering": {
+    "integratedLufs": -14,
+    "maxTruePeakDbtp": -1,
+    "loudnessRange": 7,
+    "toleranceLufs": 0.3,
+    "method": "two-pass ffmpeg loudnorm after picture render"
+  },
+  "narration": {
+    "status": "approved-v3-local-offline",
+    "provider": "Kokoro-82M (local)",
+    "model": "kokoro-v1.0",
+    "voiceName": "George (British male)",
+    "voiceId": "bm_george",
+    "path": "assets/audio/voice-v3/finaltab-v3-local-kokoro-master.mp3",
+    "bytes": 1441167,
+    "sha256": "11a255159a567b944ed275672544832cd969d78a4ece35fd2c448ce1e28c33f0",
+    "integratedLufs": -14.34,
+    "truePeakDbtp": -1.32
+  },
+  "sfxLicense": {
+    "name": "Pixabay Content License",
+    "source": "HyperFrames media-use bundled local SFX library",
+    "creditFile": "assets/audio/sfx/CREDITS.md"
+  },
+  "generatedSfx": {
+    "id": "scene-05-room-tone",
+    "source": "Deterministic local FFmpeg pink-noise synthesis with bounded filtering and fades",
+    "license": "Project-generated; no third-party media dependency"
+  },
+  "files": [
+    {
+      "path": "assets/audio/sfx/click-soft.mp3",
+      "bytes": 11702,
+      "sha256": "075e17bdac5c13662a1c9530050e0046f81d4138e00eb3bf30427a7b4404103d"
+    },
+    {
+      "path": "assets/audio/sfx/impact-bass-1.mp3",
+      "bytes": 67709,
+      "sha256": "634d5eda5eb7b501aca98393a64f3815eccf24157cd1d95df55aaec1b5000bd7"
+    },
+    {
+      "path": "assets/audio/sfx/ping.mp3",
+      "bytes": 26400,
+      "sha256": "c54d088fa2709e6b3c9ce87594a9187d0d5338d3a8c683271f9c4353a8ee8c91"
+    },
+    {
+      "path": "assets/audio/sfx/riser.mp3",
+      "bytes": 321024,
+      "sha256": "d2f29d49f27dee7d3b25af22ffe5bebc39390cc5d5fb3b3e1c433499c77f3d1d"
+    },
+    {
+      "path": "assets/audio/sfx/whoosh-short.mp3",
+      "bytes": 18390,
+      "sha256": "c2efd9d902a59bf9ec5019035d7deadd17762136896b6e3cb6dd99ea50997a30"
+    },
+    {
+      "path": "assets/audio/sfx/scene-05-room-tone.mp3",
+      "bytes": 160941,
+      "sha256": "3daf446f3d36b39c8d22ad2a2232926b10a254afb3cabc314f5a81c5ae0878de",
+      "origin": "generated-local-ffmpeg"
+    }
+  ],
+  "cues": [
+    {
+      "id": "handoff-01",
+      "file": "whoosh-short.mp3",
+      "start": 3.78,
+      "duration": 0.57,
+      "volume": 0.12,
+      "trackIndex": 32
+    },
+    {
+      "id": "handoff-02",
+      "file": "whoosh-short.mp3",
+      "start": 11.78,
+      "duration": 0.57,
+      "volume": 0.12,
+      "trackIndex": 32
+    },
+    {
+      "id": "handoff-03",
+      "file": "whoosh-short.mp3",
+      "start": 19.78,
+      "duration": 0.57,
+      "volume": 0.12,
+      "trackIndex": 32
+    },
+    {
+      "id": "handoff-04",
+      "file": "whoosh-short.mp3",
+      "start": 29.78,
+      "duration": 0.57,
+      "volume": 0.12,
+      "trackIndex": 32
+    },
+    {
+      "id": "handoff-05",
+      "file": "whoosh-short.mp3",
+      "start": 49.78,
+      "duration": 0.57,
+      "volume": 0.12,
+      "trackIndex": 32
+    },
+    {
+      "id": "scene-05-room-tone",
+      "file": "scene-05-room-tone.mp3",
+      "start": 40,
+      "duration": 10,
+      "volume": 0.5,
+      "trackIndex": 34
+    },
+    {
+      "id": "handoff-06",
+      "file": "whoosh-short.mp3",
+      "start": 67.78,
+      "duration": 0.57,
+      "volume": 0.12,
+      "trackIndex": 32
+    },
+    {
+      "id": "mcp-stop",
+      "file": "click-soft.mp3",
+      "start": 79.4,
+      "duration": 0.37,
+      "volume": 0.16,
+      "trackIndex": 33
+    },
+    {
+      "id": "handoff-07",
+      "file": "whoosh-short.mp3",
+      "start": 84.78,
+      "duration": 0.57,
+      "volume": 0.12,
+      "trackIndex": 32
+    },
+    {
+      "id": "proof-ping",
+      "file": "ping.mp3",
+      "start": 86.4,
+      "duration": 1.32,
+      "volume": 0.18,
+      "trackIndex": 33
+    }
+  ]
+}

@@ -11,9 +11,8 @@ interface SessionResponse {
 }
 
 const TOKEN_RE = /^[A-Za-z0-9_-]{43}$/;
-
 export function JoinInvitePanel() {
-  const [token, setToken] = useState<string | null>(null);
+  const [handoffReady, setHandoffReady] = useState(false);
   const [session, setSession] = useState<SessionResponse | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -21,36 +20,59 @@ export function JoinInvitePanel() {
 
   useEffect(() => {
     const url = new URL(window.location.href);
-    const candidate = url.hash.slice(1) || url.searchParams.get("token") || "";
-    if (TOKEN_RE.test(candidate)) setToken(candidate);
-    else setError("This invite link is incomplete or malformed.");
+    const fragmentToken = url.hash.slice(1);
     window.history.replaceState(null, "", "/join");
 
     let live = true;
-    void fetch("/api/session", { cache: "no-store" })
-      .then(async (response) => {
+    void (async () => {
+      try {
+        let handoffResponse: Response;
+        if (fragmentToken) {
+          if (!TOKEN_RE.test(fragmentToken)) {
+            await fetch("/api/invites/handoff", { method: "DELETE" });
+            throw new Error("This invite link is incomplete or malformed.");
+          }
+          handoffResponse = await fetch("/api/invites/handoff", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ token: fragmentToken }),
+          });
+        } else {
+          handoffResponse = await fetch("/api/invites/handoff", { cache: "no-store" });
+        }
+        const handoff = await handoffResponse.json() as { available?: boolean; message?: string };
+        if (!handoffResponse.ok || !handoff.available) {
+          throw new Error(handoff.message ?? "Open the original invite link to continue.");
+        }
+        if (live) setHandoffReady(true);
+      } catch (cause) {
+        if (live) setError(cause instanceof Error ? cause.message : "The invite handoff could not be secured.");
+      }
+
+      try {
+        const response = await fetch("/api/session", { cache: "no-store" });
         if (!response.ok) throw new Error("Session check failed");
-        return await response.json() as SessionResponse;
-      })
-      .then((value) => { if (live) setSession(value); })
-      .catch(() => { if (live) setSession({ configured: false, authenticated: false, user: null }); });
+        const value = await response.json() as SessionResponse;
+        if (live) setSession(value);
+      } catch {
+        if (live) setSession({ configured: false, authenticated: false, user: null });
+      }
+    })();
     return () => { live = false; };
   }, []);
 
   const join = async () => {
-    if (!token || busy) return;
+    if (!handoffReady || busy) return;
     setBusy(true);
     setError(null);
     try {
       const response = await fetch("/api/invites/join", {
         method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ token }),
       });
       const body = await response.json() as { tab?: { id: string; title: string }; message?: string };
       if (!response.ok || !body.tab) throw new Error(body.message ?? "The invite could not be accepted.");
       setJoined(body.tab);
-      setToken(null);
+      setHandoffReady(false);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "The invite could not be accepted.");
     } finally {
@@ -58,10 +80,8 @@ export function JoinInvitePanel() {
     }
   };
 
-  const signInNext = token ? `/join?token=${encodeURIComponent(token)}` : "/join";
-
   return (
-    <main className="min-h-dvh bg-canvas px-4 py-10 text-txt sm:py-16">
+    <main className="app-shell min-h-dvh bg-canvas px-4 py-10 text-txt sm:py-16">
       <div className="mx-auto max-w-xl">
         <Link href="/" className="touch-target inline-flex items-center gap-2 rounded-lg text-sm font-semibold text-txt">
           <span className="grid h-9 w-9 place-items-center rounded-xl bg-signal text-ink"><Link2 size={18} aria-hidden="true" /></span>
@@ -81,14 +101,14 @@ export function JoinInvitePanel() {
             </div>
           ) : null}
 
-          {session?.configured && !session.authenticated ? (
+          {session?.configured && !session.authenticated && handoffReady ? (
             <div className="mt-6 rounded-2xl border border-quiet bg-surface-2 p-5">
-              <div className="flex gap-3"><LogIn size={20} className="mt-0.5 shrink-0 text-info" aria-hidden="true" /><div><h2 className="font-semibold text-txt">Sign in before joining</h2><p className="mt-2 text-sm leading-6 text-muted">The invite remains unclaimed. After passwordless sign-in, FINALTab will ask for confirmation again.</p></div></div>
-              <Link href={`/auth?next=${encodeURIComponent(signInNext)}`} className="touch-target mt-4 inline-flex items-center gap-2 rounded-xl bg-signal px-5 text-sm font-semibold text-ink">Continue to sign in <ArrowRight size={16} aria-hidden="true" /></Link>
+              <div className="flex gap-3"><LogIn size={20} className="mt-0.5 shrink-0 text-info" aria-hidden="true" /><div><h2 className="font-semibold text-txt">Sign in before joining</h2><p className="mt-2 text-sm leading-6 text-muted">The invite remains unclaimed. After secure sign-in, FINALTab will ask for confirmation again.</p></div></div>
+              <Link href="/auth?next=%2Fjoin" className="touch-target mt-4 inline-flex items-center gap-2 rounded-xl bg-signal px-5 text-sm font-semibold text-ink">Continue to sign in <ArrowRight size={16} aria-hidden="true" /></Link>
             </div>
           ) : null}
 
-          {session?.authenticated && token && !joined ? (
+          {session?.authenticated && handoffReady && !joined ? (
             <div className="mt-6 rounded-2xl border border-info/30 bg-info/5 p-5">
               <div className="flex gap-3"><ShieldCheck size={20} className="mt-0.5 shrink-0 text-info" aria-hidden="true" /><div><h2 className="font-semibold text-txt">Ready to claim this invite</h2><p className="mt-2 text-sm leading-6 text-muted">Signed in as {session.user?.email ?? "your cloud account"}. The token is single-use and will be removed after acceptance.</p></div></div>
               <button type="button" onClick={() => void join()} disabled={busy} className="touch-target mt-4 inline-flex items-center gap-2 rounded-xl bg-info px-5 text-sm font-semibold text-ink disabled:opacity-50">{busy ? "Joining…" : "Join shared tab"} <ArrowRight size={16} aria-hidden="true" /></button>

@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "captureId": "C07",
+  "capturedAt": "2026-08-12T03:59:15.482Z",
+  "endpoint": "https://finaltab.vercel.app/api/mcp",
+  "client": "finaltab-v3-evidence-capture",
+  "mode": "authenticated-nonbroadcast",
+  "credential": {
+    "source": "ignored-local-capability",
+    "copiedToArtifact": false
+  },
+  "receipt": {
+    "id": "north-line-kitchen-v3",
+    "currency": "USD",
+    "total": "172.04",
+    "lineCount": 19,
+    "participantCount": 8,
+    "payerId": "p02"
+  },
+  "inputSha256": "b91ae5a71eb53f6ec645c5b6ef3c15a961496352a30c821defe268c07b72509c",
+  "events": [
+    {
+      "order": 1,
+      "operation": "initialize",
+      "status": "passed",
+      "elapsedMs": 707,
+      "facts": {
+        "server": "finaltab",
+        "version": "2.0.0",
+        "authenticated": true
+      }
+    },
+    {
+      "order": 2,
+      "operation": "tools/list",
+      "status": "passed",
+      "elapsedMs": 255,
+      "facts": {
+        "toolCount": 9,
+        "tools": [
+          "split_equal",
+          "split_weighted",
+          "net_debts",
+          "allocate_receipt",
+          "prepare_receipt_settlement",
+          "simulate_signed_settlement",
+          "create_broadcast_approval_challenge",
+          "submit_signed_settlement",
+          "settlement_status"
+        ]
+      }
+    },
+    {
+      "order": 3,
+      "operation": "allocate_receipt",
+      "status": "passed",
+      "elapsedMs": 391,
+      "facts": {
+        "receiptId": "north-line-kitchen-v3",
+        "currency": "USD",
+        "total": "172.04",
+        "participantCount": 8,
+        "lineCount": 19,
+        "sumsToTotal": true
+      }
+    },
+    {
+      "order": 4,
+      "operation": "prepare_receipt_settlement",
+      "status": "passed",
+      "elapsedMs": 255,
+      "facts": {
+        "v2": true,
+        "chainId": 84532,
+        "contract": "0x7b58791cebd9a82f8ee4e4cf87e7ad1b64a3ccdb",
+        "settlementId": "0xc2a47af9816210b03d1e7f3cb1001413acc282bc71147f72e41524be606624dd",
+        "ledgerHash": "0xddb0f5efc43e121e07a708902270df236dc938fce2520416bd0cee8db4595e67",
+        "payerId": "p02",
+        "debitCount": 7,
+        "payoutCount": 1,
+        "externalWalletRequestCount": 7
+      }
+    },
+    {
+      "order": 5,
+      "operation": "create_broadcast_approval_challenge",
+      "status": "passed",
+      "elapsedMs": 147,
+      "facts": {
+        "created": true,
+        "broadcast": false,
+        "walletActionPerformed": false,
+        "challengePayloadRetained": false
+      }
+    },
+    {
+      "order": 6,
+      "operation": "HARD_STOP",
+      "status": "enforced",
+      "elapsedMs": 0,
+      "facts": {
+        "nextOperation": "none",
+        "walletApprovalRequested": false,
+        "walletApprovalPerformed": false,
+        "simulationPerformed": false,
+        "submissionPerformed": false,
+        "broadcastPerformed": false,
+        "valueMoved": false
+      }
+    }
+  ],
+  "terminalBoundary": "approval-challenge-created-no-wallet-action",
+  "retainedProofLane": {
+    "separate": true,
+    "readOnly": true,
+    "queriedByThisUtility": false,
+    "source": "assets/capture-v3/C08-retained-proof.png",
+    "label": "EARLIER AUTHORIZED RUN · READ ONLY · NOT CREATED BY THIS MCP TEST"
+  }
+}

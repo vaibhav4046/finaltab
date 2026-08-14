@@ -8,6 +8,25 @@
 > `0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB`. See
 > [../integrations/mcp.md](../integrations/mcp.md) and [status.md](status.md).
 > Old address and `confirm: true` references below are preserved V1 history.
+> Current overrides: the V2 rail moved one atomic unit through KeeperHub
+> execution `3hmlqi36zweiwg6fc5o2u`, and Supabase project
+> `yoavihmldqbkuxinrsih` has the baseline plus additive
+> `52236`/`60000`/`64822`/`73000`/`74000`/`20260812023200`/`20260812090000`,
+> financial cutover, and owner-select
+> repair applied: 31/31 public tables use RLS, sensitive mutation RPCs and legacy
+> writes deny browser roles, advisors report zero error-level findings with reviewed warnings
+> remaining, and the unindexed-FK warning is cleared. Production lists exactly
+> nine MCP tools, external-wallet dual signing, and a mandatory attested
+> four-stage first-party review before Freeze. UI, REST, and MCP submissions use
+> one durable journal in source; accepted recovery skips simulation and execute,
+> while prepared recovery reuses its successful simulation and deterministic
+> idempotency key under a bounded approval expiry. A real GitHub OAuth/reload and
+> authenticated owner tab create/read passed; two-identity and journal-recovery
+> behavior remain unclaimed. Privy is
+> an optional, code-complete bridge that remains fail-closed and deliberately
+> disabled because its required custom-auth feature needs a paid tier. The real
+> voice-provider lifecycle remains open; do not rewrite the archived V1 rows
+> below as current facts.
 
 **Gate 0 Inventory — 2026-08-10**
 
@@ -39,17 +58,17 @@ Verify (RPC) → Proof Capsule
 
 ## Module Dependencies
 
-**packages/engine** (52 tests)
+**packages/engine** (60 tests)
 - exports: `money`, `reconcile`, `netting`, `ledger`, `validation`, `split`, `eip3009`
 - zero external deps except `viem`, `zod`
 - no side effects, pure functions
 
-**packages/vision** (32 tests, + 1 skipped: the live-key test, env-gated)
+**packages/vision** (37 tests, + 1 skipped: the live-key test, env-gated)
 - exports: Groq receipt extraction + allocation NL
 - depends: engine, zod, groq-sdk
 - client-only; server-only key
 
-**packages/keeperhub** (32 tests)
+**packages/keeperhub** (37 tests)
 - exports: KeeperHub API client, simulation, execution, polling, receipt verification
 - depends: viem, axios, zod
 - server-only; credential in env
@@ -59,16 +78,23 @@ Verify (RPC) → Proof Capsule
 - depends: keeperhub client, axios
 - reproducible polling, honest exit codes
 
-**apps/web** (78 tests)
+**apps/web** (356 tests across 39 files)
+- `test/securityRoutes.test.ts` (41) locks route-level authorization and the fail-closed defaults
+- `test/v3NarrationOperator.test.ts` (21) locks the operator narration surface
 - `test/apiText.test.ts` (20) locks the error-text coercion that caused the Simulate white-screen
-- `test/demoKeys.test.ts` (46) locks demo-signer persistence and the opt-in flag behaviour
-- `test/agentSettlement.test.ts` (12) locks the MCP agent-settlement path: the explicit
-  `confirm: true` gate, integer-minor-unit amounts, and fail-closed status mapping
+- `test/agentMemoryGraph.test.ts` (16) locks proof lineage in the agent memory graph
+- `test/agentControl.test.ts` (16) locks bounded agent authority
+- `test/durableSubmissionJournalEnforcement.test.ts` (14) and
+  `test/durableSubmissionApplicationReplay.test.ts` (3) exercise journal enforcement and
+  replay against a real Postgres, not a mock
+- `test/mcpSettlement.test.ts` (7) locks the MCP settlement path: the explicit `confirm: true`
+  gate, integer-minor-unit amounts, and fail-closed status mapping
 
-The five figures above sum to 201; 52 + 32 + 32 + 7 + 78. The recorded gate run in
-[gates.md](gates.md) predates the MCP agent-settlement tests and shows 189 — its post-run
-annotation reconciles the two. If these figures ever stop reconciling, one of the documents
-is stale.
+The five figures above sum to 497; 60 + 37 + 37 + 7 + 356. Adding the 27 Hardhat contract tests
+gives the 524 that `pnpm test` reports. The recorded gate run in [gates.md](gates.md) is a dated
+2026-08-10 snapshot showing 189 Vitest / 200 total, and its two post-run annotations reconcile
+that snapshot with this figure. If these numbers ever stop reconciling, one of the documents is
+stale.
 
 **contracts**
 - `FinalTabBatchSettlement.sol` (11 tests)
@@ -76,6 +102,11 @@ is stale.
   - pulls USDC via signed authorization, distributes atomically
   - validates settlementId = keccak256(ledgerHash)
   - zero balance delta check
+- `FinalTabBatchSettlementV2.sol` (16 tests) — **the deployed contract**,
+  `0x7b58791cEBD9A82F8Ee4E4cF87e7AD1B64A3cCDB` on Base Sepolia, source-verified
+  - adds the explicit `SettlementConsent` signature from every debtor, on top of the
+    ReceiveWithAuthorization pull V1 already had
+  - V1 and V2 together are the 27 Hardhat tests (11 + 16)
 - `MockUSDC3009.sol` (test fixture)
   - implements IERC3009Receive interface
   - nonce-bound recipient pattern
@@ -123,15 +154,15 @@ is stale.
 | Allocation reconciliation | Engine tests (52 pass) + real allocation proof | ✓ Live + Tested |
 | Ledger hash stability | keccak256, canonical JSON in engine tests | ✓ Tested |
 | EIP-712 domain match | Hardhat test vs on-chain; domain separator verified | ✓ Tested |
-| Settlement contract safe pattern | ReceiveWithAuthorization signature binding, atomicity, nonce derivation | ✓ 11 contract tests |
+| Settlement contract safe pattern | ReceiveWithAuthorization signature binding, atomicity, nonce derivation | ✓ 27 contract tests (11 V1 + 16 V2) |
 | KeeperHub integration | Live settlement tx 0x7bf655f3…45c12d, executionId `dthckv3julum6m5ktmdik`, verified: true; earlier rail proof tx 0x1130...278c (`g0w11wukbk1v0psyditx4`) | ✓ Proven live |
 | Batch settlement onchain | Four settlements 2026-08-10, all chain-verified, exact balance deltas; e.g. 8.00 USDC moved atomically (2 EIP-3009 pulls + 1 payout); reports in [evidence/](evidence/) | ✓ Proven live |
 | Historical V1 agent settlement over MCP | Five JSON-RPC `tools/call` requests drove the former fixed-demo-signer flow: 2.00 USDC, tx 0x314189b4…c5eb, block 45315909, executionId `69zzrj7z676u89ce1x76j`; not V2 proof | ✓ V1 proven live |
 | CLI contribution | PR KeeperHub/cli#95 (open, not merged) | ⚠️ Pending review |
-| All tests passing | pnpm test + hardhat test | ✓ 201 + 11 = 212 tests, 1 skipped (measured 2026-08-10) |
+| All tests passing | `pnpm test` (builds contracts, then runs every workspace suite) | ✓ 497 Vitest + 27 Hardhat = 524 tests, 1 skipped, exit 0 (re-measured 2026-08-14; was 212 on 2026-08-10) |
 | LLM fallback cascade | 12 tests driving the real router with each SDK mocked at the module boundary | ⚠️ Cascade FIXTURE_PROVEN; only the Groq leg has ever contacted a real API |
 
-## Known Blockers (measured, not assumed)
+## Historical V1 blockers (measured on 2026-08-10)
 
 1. **Supabase Persistence**: Schema in `supabase/migrations/` but **not applied** — no project credentials. There is no server-side audit trail, no idempotency, and nothing is durable. The app is stateless per session; device-local state plus the KeeperHub transaction are the only sources of truth.
 2. **Historical V1 deployment gas**: Superseded. V1 was deployed at `0xCcf6b4Def9A70b52F5fB78Aa38CD274a05aB7e64`. Current V2 deployment proof is recorded separately in `evidence/v2-deployment-2026-08-11T01-08-17-421Z.json`.
@@ -141,7 +172,7 @@ is stale.
 
 The "Sign Button Silent Failure" listed here in a prior revision was **disproven** by live browser testing — the button works. The real defect in that area was a React crash on the Simulate path (untyped `res.json()` flowing into `string` state), now fixed and locked by 20 tests in `apps/web/test/apiText.test.ts`.
 
-## Deployment Readiness
+## Historical V1 deployment readiness
 
 **Production (finaltab.vercel.app)**
 - Live as of last commit

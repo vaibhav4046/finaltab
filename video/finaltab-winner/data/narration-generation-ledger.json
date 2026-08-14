@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 3,
+  "status": "approved-v3-local-offline",
+  "sanitized": true,
+  "containsCredentials": false,
+  "provider": "Kokoro-82M (local)",
+  "model": "kokoro-v1.0",
+  "voiceName": "George (British male)",
+  "voiceId": "bm_george",
+  "outputFormat": "mp3_44100_128",
+  "scriptWordCount": 183,
+  "batchScope": "complete-eight-scene-script-local",
+  "callSummary": {
+    "expectedProviderCalls": 0,
+    "attemptedProviderCalls": 0,
+    "selectedProviderCalls": 0,
+    "supersededProviderCalls": 0,
+    "reusedSceneCalls": 0
+  },
+  "selectedBatch": null,
+  "note": "The authorized no-charge ElevenLabs preflight denied generation. No synthesis POST occurred and no retry was made. This approved narration was generated on-device with the locally cached Kokoro model.",
+  "scriptNarrationSha256": "e69e44afa21165bba883851a7fe756b90f8d5dc62f452f94b293f86baf24a19a",
+  "localGeneration": {
+    "generatedAt": "2026-08-12T04:29:59.952Z",
+    "provider": "Kokoro-82M (local)",
+    "model": "kokoro-v1.0",
+    "voiceId": "bm_george",
+    "ttsProviderCalls": 0,
+    "sourceAssetCount": 8,
+    "masterPath": "assets/audio/voice-v3/finaltab-v3-local-kokoro-master.mp3",
+    "masterSha256": "11a255159a567b944ed275672544832cd969d78a4ece35fd2c448ce1e28c33f0"
+  },
+  "elevenLabsDecision": {
+    "result": "quota-preflight-denied",
+    "subscriptionGetsAlreadyConsumed": 1,
+    "synthesisPosts": 0,
+    "retryAllowed": false,
+    "detailsRedacted": true
+  }
+}

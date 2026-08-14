@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { proposeAllocation } from "@finaltab/vision";
+import { GroqApiError, proposeAllocation } from "@finaltab/vision";
 import {
   ParsedReceiptSchema,
   reconcileAllocation,
@@ -30,7 +30,9 @@ export async function POST(req: Request): Promise<Response> {
   if (!access.ok) return access.response;
   const secured = (response: Response) => withAccessHeaders(response, access.headers);
 
-  const client = groqClient();
+  // Allocation JSON is compact (one row per receipt item). A bounded output
+  // cap keeps complex tables inside conservative provider TPM limits.
+  const client = groqClient({ maxCompletionTokens: 1536 });
   if (!client) return secured(jsonError("GROQ_API_KEY is not configured on the server.", 501));
 
   let body: z.infer<typeof BodySchema>;
@@ -91,6 +93,11 @@ export async function POST(req: Request): Promise<Response> {
       settlement: { eligible: true, currency },
     }));
   } catch (e) {
-    return secured(jsonError(e instanceof Error ? e.message : "allocation failed", 502));
+    if (e instanceof GroqApiError && e.httpStatus === 429) {
+      return secured(jsonError("Allocation model is busy. Wait a moment, then try again.", 429));
+    }
+    // Never reflect provider bodies, organization identifiers, billing links,
+    // or model diagnostics into the product UI.
+    return secured(jsonError("Allocation model is temporarily unavailable.", 502));
   }
 }

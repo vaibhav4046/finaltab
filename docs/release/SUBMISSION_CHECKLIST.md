@@ -8,8 +8,9 @@ non-value MCP probe are proven. The verified 4K/60 product film is public, and
 `Under Review`; its Best Onboarding UX Improvement bounty application is saved.
 Production voice-session minting is live-proven — a bodyless authenticated
 `POST /api/voice/token` returns `200` with a real provider session and durable
-quota headers, and a declared request body is still refused with `413` — while
-the real browser microphone-capture and readback lifecycle remains unproven.
+quota headers, and a declared request body is still refused with `413`. The real
+browser microphone-capture lifecycle is live-proven too, on a real device on
+2026-08-14; in-app ElevenLabs readback remains unproven.
 Deployment `dpl_58fvFVcAAUFpP55Pi1aYTp3ot6Fi` at commit
 `cb8b6484427d30cb31a0a2dd511e617ff42dda06` is `READY`, and the live alias
 reports `commit: cb8b6484427d`.
@@ -188,9 +189,16 @@ behavior.
 - [x] Product-film narration was generated locally with Kokoro. The no-charge
       ElevenLabs preflight made one denied quota-check GET, zero synthesis
       POSTs, and no retry.
-- [ ] A deployed browser probe exercises microphone permission, validated
-      provider `Begin`, final-turn shutdown, `Termination`, buffered readback,
-      mute, captions, and text fallback without exposing a credential.
+- [x] A real device exercises the deployed capture lifecycle without exposing a
+      credential: microphone permission `granted`, a live `429
+      VOICE_CONCURRENCY_LIMITED` budget refusal, a `200` token mint, the
+      `LISTENING` state, and a clean release back to `READY` that frees the
+      device. A scan of all 11 same-origin scripts (515,245 bytes) found zero
+      ElevenLabs and zero AssemblyAI key shapes. 2026-08-14.
+- [ ] The same probe exercises validated provider `Begin`, final-turn shutdown,
+      `Termination`, buffered readback, mute, captions, and text fallback. No
+      dictation was spoken during the capture run above, so none of these are
+      observed live yet; they remain source- and test-proven only.
 
 ## 7. V2 video — public and verified
 

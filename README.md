@@ -230,11 +230,17 @@ The settlement workspace includes an optional, text-first voice layer:
 These paths are deployed and their provider keys are stored as sensitive Vercel
 Production variables. Supabase enforces durable per-user quotas of 8
 transcription sessions and 20 readbacks per minute through the server-only
-reservation path. A real production microphone/readback provider lifecycle has
-not completed, so voice remains **configured and deployed, not live-proven**.
+reservation path. The capture half of that path is live-proven: on 2026-08-14 a
+signed-in production session on a real device with a granted microphone went
+permission `granted` → a live `429 VOICE_CONCURRENCY_LIMITED` budget refusal →
+a `200` token mint once the 180-second lease expired → `LISTENING` → a clean
+release back to `READY` that freed the device. No dictation was spoken during
+that run, so transcript delivery and **ElevenLabs readback remain configured and
+deployed, not live-proven**.
 [`tests/e2e/voice-lifecycle.spec.ts`](tests/e2e/voice-lifecycle.spec.ts) is the
-runnable probe for that gate; it skips by default because minting a capture
-credential requires a signed-in Supabase session that only a human can produce.
+automated probe for the rest of that gate; it skips by default because it needs
+`E2E_VOICE_STORAGE_STATE`, which a live browser session cannot export under the
+app's `connect-src 'self'` CSP.
 Section 7 of [docs/release/user-actions.md](docs/release/user-actions.md) has the
 operator runbook. AssemblyAI is not used to narrate the product video.
 
@@ -350,9 +356,11 @@ the separate 2026-08-11 one-atomic-unit run above. Likewise, the historical
 - Keep the canonical non-value MCP probe and retained V2 settlement visibly
   separate; do not imply the standalone runner exercised the MCP human
   broadcast-challenge path.
-- Complete a real production microphone/readback lifecycle before advertising
-  hybrid voice as live; the release and durable server-side budget controls are
-  deployed, but the browser microphone did not complete its permission flow.
+- Complete a real production readback lifecycle before advertising hybrid voice
+  as live end to end. The capture half is done: a real device exercised
+  permission grant, a live `429` budget refusal, a `200` mint, `LISTENING`, and
+  a clean release on 2026-08-14. No dictation was spoken, so transcript
+  delivery and ElevenLabs synthesis from the deployed app are still unexercised.
 - Keep two-identity tenant isolation, review invalidation, durable value
   submission, and crash recovery labeled source/test/schema-proven until each
   receives its own production exercise.

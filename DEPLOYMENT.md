@@ -173,8 +173,12 @@ The verified public film is <https://youtu.be/eXZACnOdt5w>: 90.005s,
 3840×2160 at 60 fps, 5,400 H.264 video frames with AAC audio, 35,617,576 bytes,
 SHA-256 `a14cfef364c0fe7d4c62e2f9cfb73ca228a692e8738a85d5a6f615e361b09c69`.
 Narration was generated locally with Kokoro. The no-charge ElevenLabs preflight
-made one denied quota-check GET, zero synthesis POSTs, and no retry. This does
-not prove the production browser microphone/readback lifecycle.
+made one denied quota-check GET, zero synthesis POSTs, and no retry. That
+preflight proves nothing about the in-app voice path. The production
+microphone-capture lifecycle was proven separately on 2026-08-14 (real device,
+real permission grant: acquisition, a live `429` budget refusal, a `200` token
+mint, `LISTENING`, then a clean release). In-app ElevenLabs readback is still
+unproven — no synthesis request has been made from the deployed app.
 
 [DoraHacks BUIDL 47656](https://dorahacks.io/buidl/47656) is submitted and
 `Under Review`; its Best Onboarding UX Improvement bounty application is saved.

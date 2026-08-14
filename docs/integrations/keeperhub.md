@@ -53,8 +53,10 @@ provider errors. If the store is unavailable, the provider is not called. See
 facts. Production session minting is separately live-proven — a bodyless
 authenticated `POST /api/voice/token` returns `200` with a real provider session
 and durable quota headers, and a declared request body is still refused with
-`413` — while the rest of the live provider lifecycle remains unproven until a
-real microphone-capture/readback probe passes.
+`413`. The browser microphone-capture lifecycle is also live-proven as of
+2026-08-14 on a real device: acquisition, a live `429` concurrency refusal, a
+`200` mint, `LISTENING`, and a clean device release. In-app ElevenLabs readback
+remains unproven — no synthesis request has been issued from the deployed app.
 
 The routes and OpenAPI contract describe configuration-gated capability on the
 current deployment; they do not claim a successful provider lifecycle. The

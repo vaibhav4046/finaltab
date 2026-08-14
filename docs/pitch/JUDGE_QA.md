@@ -85,9 +85,12 @@
     production-scale gas benchmarking remains future work.
 
 18. **What is the voice status?**
-    The optional microphone/readback path is deployed and configured but its
-    complete provider lifecycle is not live-proven. The film uses local Kokoro
-    narration; voice never has settlement authority.
+    Capture is live-proven on a real device against production (2026-08-14:
+    permission grant, a live `429` budget refusal, a `200` token mint,
+    `LISTENING`, then a clean release). Readback is deployed and configured but
+    has never run from the app, and no dictation was spoken during the capture
+    run, so the complete provider lifecycle is not live-proven. The film uses
+    local Kokoro narration; voice never has settlement authority.
 
 19. **What did PR #95 contribute?**
     The fail-closed `--require-verified` option, so KeeperHub CLI status can reject

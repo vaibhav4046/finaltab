@@ -62,7 +62,7 @@ const CLOSE_REASON: Record<number, string> = {
   3009: "All live transcription slots are busy. Try again in a moment.",
 };
 
-async function requestMicrophoneStream(timeoutMs = 12_000): Promise<MediaStream> {
+export async function requestMicrophoneStream(timeoutMs = 12_000): Promise<MediaStream> {
   const request = navigator.mediaDevices.getUserMedia({
     audio: {
       channelCount: 1,
@@ -144,7 +144,7 @@ function sendTerminate(resources: VoiceResources): void {
   resources.terminateSent = true;
 }
 
-function microphoneError(error: unknown): string {
+export function microphoneError(error: unknown): string {
   if (error instanceof DOMException) {
     if (error.name === "NotAllowedError" || error.name === "SecurityError") {
       return "Microphone access is blocked. Allow it in browser settings, then start listening again.";

@@ -308,7 +308,7 @@ export function buildFinalTabOpenApi(origin: string) {
                 },
               },
             },
-            "400": { description: "A request body was supplied; this endpoint accepts no body" },
+            "400": { description: "An undeclared chunked request body was supplied; this endpoint accepts no body" },
             "401": { $ref: "#/components/responses/authError" },
             "403": { description: "A Supabase user session/JWT is required, receipts:write is missing, or the session origin was rejected; opaque FINALTab API tokens cannot invoke paid voice" },
             "413": { description: "A non-empty request body was declared" },

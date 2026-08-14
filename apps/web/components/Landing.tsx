@@ -279,11 +279,15 @@ function AmountTag({ x, y, children }: { x: number; y: number; children: string 
   );
 }
 
+// Node box is wide enough that the longest label ("paid $68.40" at 14px mono, ~85 user
+// units from x=45) keeps a margin instead of touching the right border.
+const LEDGER_NODE_WIDTH = 142;
+
 function LedgerNode({ x, y, name, detail, payer = false }: { x: number; y: number; name: string; detail: string; payer?: boolean }) {
   return (
     <g transform={`translate(${x} ${y})`}>
       <rect
-        width="132"
+        width={LEDGER_NODE_WIDTH}
         height="72"
         rx="15"
         fill={payer ? "#11180b" : "#101511"}
@@ -291,8 +295,8 @@ function LedgerNode({ x, y, name, detail, payer = false }: { x: number; y: numbe
         strokeWidth="2"
       />
       <circle cx="24" cy="25" r="9" fill={payer ? "#c8ff3d" : "#45afff"} />
-      <text x="43" y="31" fill="#f4f8f1" fontFamily="ui-sans-serif, system-ui" fontSize="20" fontWeight="650">{name}</text>
-      <text x="17" y="56" fill="#b7c0b8" fontFamily="ui-monospace, monospace" fontSize="14">{detail}</text>
+      <text x="45" y="31" fill="#f4f8f1" fontFamily="ui-sans-serif, system-ui" fontSize="20" fontWeight="650">{name}</text>
+      <text x="45" y="56" fill="#b7c0b8" fontFamily="ui-monospace, monospace" fontSize="14">{detail}</text>
     </g>
   );
 }
@@ -319,50 +323,52 @@ function DebtGraph({ stage }: { stage: "raw" | "netted" }) {
         </marker>
       </defs>
 
-      <path d="M0 122H600M0 298H600" stroke="#182018" strokeWidth="1" strokeDasharray="4 8" />
+      {/* Lane rules start clear of their gutter labels and stop short of the canvas edge, and
+          each sits 20 units outside its node band so it never crosses a node or an amount pill. */}
+      <path d="M64 122H584M64 224H584" stroke="#182018" strokeWidth="1" strokeDasharray="4 8" />
       <text x="16" y="112" fill="#7e8b82" fontFamily="ui-monospace, monospace" fontSize="13" letterSpacing="2">PAID</text>
-      <text x="16" y="324" fill="#7e8b82" fontFamily="ui-monospace, monospace" fontSize="13" letterSpacing="2">OWES</text>
+      <text x="16" y="214" fill="#7e8b82" fontFamily="ui-monospace, monospace" fontSize="13" letterSpacing="2">OWES</text>
 
       <path
         className="flow-draw"
-        d={raw ? "M184 251 C213 177 257 127 293 102" : "M184 251 C215 171 257 122 293 102"}
+        pathLength={1}
+        d={raw ? "M194 251 C222 178 258 128 293 102" : "M194 251 C224 172 258 123 293 102"}
         fill="none"
         stroke={raw ? "#45afff" : "#c8ff3d"}
         strokeWidth={raw ? 3 : 4.5}
         strokeLinecap="round"
         markerEnd={raw ? "url(#ledger-arrow-info)" : "url(#ledger-arrow-signal)"}
-        vectorEffect="non-scaling-stroke"
       />
       <path
         className="flow-draw"
-        d={raw ? "M468 251 C439 177 395 127 359 102" : "M468 251 C437 171 395 122 359 102"}
+        pathLength={1}
+        d={raw ? "M458 251 C430 178 394 128 359 102" : "M458 251 C428 172 394 123 359 102"}
         fill="none"
         stroke={raw ? "#45afff" : "#c8ff3d"}
         strokeWidth={raw ? 3 : 4.5}
         strokeLinecap="round"
         markerEnd={raw ? "url(#ledger-arrow-info)" : "url(#ledger-arrow-signal)"}
-        vectorEffect="non-scaling-stroke"
       />
       {raw ? (
         <path
           className="flow-draw"
-          d="M199 293 C278 328 375 328 454 293"
+          pathLength={1}
+          d="M209 293 C284 328 369 328 444 293"
           fill="none"
           stroke="#45afff"
           strokeWidth="3"
           strokeLinecap="round"
           markerEnd="url(#ledger-arrow-info)"
-          vectorEffect="non-scaling-stroke"
         />
       ) : null}
 
-      <AmountTag x={raw ? 222 : 225} y={169}>{`$${raw ? "18.40" : "24.10"}`}</AmountTag>
-      <AmountTag x={raw ? 430 : 425} y={169}>{`$${raw ? "17.10" : "11.40"}`}</AmountTag>
+      <AmountTag x={raw ? 222 : 224} y={169}>{`$${raw ? "18.40" : "24.10"}`}</AmountTag>
+      <AmountTag x={raw ? 430 : 428} y={169}>{`$${raw ? "17.10" : "11.40"}`}</AmountTag>
       {raw ? <AmountTag x={326} y={314}>$5.70</AmountTag> : null}
 
-      <LedgerNode x={260} y={30} name="Payer" detail="paid $68.40" payer />
+      <LedgerNode x={255} y={30} name="Payer" detail="paid $68.40" payer />
       <LedgerNode x={65} y={244} name="Guest 01" detail={raw ? "raw debtor" : "owes $24.10"} />
-      <LedgerNode x={455} y={244} name="Guest 02" detail={raw ? "raw debtor" : "owes $11.40"} />
+      <LedgerNode x={445} y={244} name="Guest 02" detail={raw ? "raw debtor" : "owes $11.40"} />
     </svg>
   );
 }

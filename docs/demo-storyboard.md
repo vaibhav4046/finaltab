@@ -1,28 +1,35 @@
-# FINALTab V2 product video storyboard — value proof retained, master rendered, not yet published
+# FINALTab V2 product video storyboard — master rendered, published, verified
 
 This is a recording plan, not evidence. Target timing below is editorial
 guidance and must never be copied into submission metadata.
 
-**Render status (measured 2026-08-14).** A master exists locally at
-`proof-output/finaltab-demo.mp4` and was measured with `ffprobe`, not estimated:
+**Published master (verified live 2026-08-14).** The V2 master is at
+<https://youtu.be/eXZACnOdt5w>, titled "FINALtab Product for KeeperHub -
+Agents Onchain Hackathon". The player reports a 90.021 s duration and the page
+metadata `PT1M31S`, both consistent with the recorded render:
 
-| Property | Measured |
+| Property | Recorded |
 |---|---|
-| Duration | 101.64 s |
-| Resolution | 1920×1080 |
-| Frame rate | 25 fps |
-| Codecs | h264 + aac |
-| Size | 7,472,357 bytes |
-| SHA-256 | `de8aa3018f690cbf31ce1737924a0e59a1ca30bdd715489db5ff46459262fbb7` |
+| Duration | 90.005 s |
+| Resolution | 3840×2160 |
+| Frame rate | 60 fps |
+| Frames | 5,400 H.264 video frames with AAC audio |
+| Size | 35,617,576 bytes |
+| SHA-256 | `a14cfef364c0fe7d4c62e2f9cfb73ca228a692e8738a85d5a6f615e361b09c69` |
 
-Two things about that master are not what the creative target below asks for:
-it is 1080p25, not 3840×2160 at 60 fps, and it runs 101.64 s against a 96 s
-target. The target is retained as the editorial intent; the table is what was
-actually produced. Do not describe the master as 4K.
+That master meets the 4K60 creative target below and runs 90 s against a 96 s
+target. Its YouTube visibility is **Unlisted**, not listed-public: the link
+resolves for anyone who has it, which satisfies a submission link, but the
+video will not appear in search or on the channel.
 
-`proof-output/` is gitignored, so this file is **not** obtainable from the
-repository. The **public URL remains PENDING** — no upload has been performed,
-and no URL may be put in submission metadata until one has.
+**Do not confuse it with the local working file.** `proof-output/` holds
+`finaltab-demo.mp4`, which `ffprobe` measures at 101.64 s, 1920×1080, 25 fps,
+7,472,357 bytes, SHA-256
+`de8aa3018f690cbf31ce1737924a0e59a1ca30bdd715489db5ff46459262fbb7`. That is a
+different file with a different hash, and its 101.64 s duration matches the V1
+master described in the appendix at the end of this document. It is **not** the
+published V2 master and must never be cited as one. `proof-output/` is
+gitignored, so neither file is obtainable from the repository.
 
 The canonical video must anchor its onchain proof in the retained V2 settlement
 and follow the trace discipline in
@@ -37,8 +44,8 @@ V1” label.
 
 Target: 96 seconds, 3840×2160 at 60 fps, premium carbon/acid/blue ledger
 aesthetic, decisive pacing, captions that work without audio, and narration
-synchronized to visible state. The delivered master differs from this target on
-duration and format — see the measured table above.
+synchronized to visible state. The delivered master matches the format and
+runs 90 s — see the table above.
 
 | Target | Beat | Required on-screen truth |
 |---|---|---|

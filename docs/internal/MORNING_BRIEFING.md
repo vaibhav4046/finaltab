@@ -10,9 +10,8 @@ not drift between documents.
 - Human-only actions: [docs/release/user-actions.md](../release/user-actions.md)
 
 Updated 2026-08-14. The V2 external-wallet USDC settlement is proven and the
-matching video master is rendered and measured — neither is a blocker any
-more. The remaining gate is the **public video URL**: no upload has happened,
-and no URL may be recorded in the canonical documents until one has.
+matching video master is published at <https://youtu.be/eXZACnOdt5w>, verified
+live the same day (90.005 s, 4K60, unlisted). Neither is a blocker any more.
 
 The submission window stated in those documents (2026-08-13 12:00 UTC+2) has
 elapsed as of 2026-08-14, and the submission state is not verifiable from this

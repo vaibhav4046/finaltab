@@ -109,10 +109,18 @@ produced instead:
   Hardhat. Both the original 200 and the first annotation's 212 predate the voice, RLS, replay and
   agent-control suites. `pnpm test` also builds `contracts` first, so it is still the single command
   that produces the total.
-- **Gate 10 (video).** The re-recorded master measures **101.64 s, 1920×1080, 25 fps, h264 + aac,
-  7,472,357 bytes**, sha256 `de8aa3018f690cbf31ce1737924a0e59a1ca30bdd715489db5ff46459262fbb7`.
-  It lives in gitignored `proof-output/`, so it is not obtainable from the repository and has no
-  public URL yet.
+- **Gate 10 (video).** The published V2 master is <https://youtu.be/eXZACnOdt5w>, verified live on
+  2026-08-14 (title "FINALtab Product for KeeperHub - Agents Onchain Hackathon", player duration
+  90.021 s, visibility **Unlisted**). The render behind it measures **90.005 s, 3840×2160, 60 fps,
+  h264 + aac, 35,617,576 bytes**, sha256
+  `a14cfef364c0fe7d4c62e2f9cfb73ca228a692e8738a85d5a6f615e361b09c69`.
+
+  An earlier revision of this line described the gitignored working file
+  `proof-output/finaltab-demo.mp4` (**101.64 s, 1920×1080, 25 fps, h264 + aac, 7,472,357 bytes**,
+  sha256 `de8aa3018f690cbf31ce1737924a0e59a1ca30bdd715489db5ff46459262fbb7`) as the master and said
+  no public URL existed. That was wrong on both counts: it is a different file with a different
+  hash, and the master was already published. Neither file is obtainable from the repository,
+  because `proof-output/` is gitignored.
 
 Gate 14 (coverage) is still **NOT MEASURED** — no coverage run has been performed, and a larger test
 count is not a coverage figure.

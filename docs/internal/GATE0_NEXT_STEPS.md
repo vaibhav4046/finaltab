@@ -21,16 +21,20 @@ are no longer blockers.
   block `45327128`, 1 USDC atomic unit, debtor `-1` / creditor `+1` /
   contract retained `0`. Source:
   [../release/evidence/v2-live-settlement-2026-08-11T04-28-59-530Z.json](../release/evidence/v2-live-settlement-2026-08-11T04-28-59-530Z.json).
-- **Video master — rendered and measured, not published.** 101.64 s,
-  1920×1080, 25 fps, h264+aac, 7,472,357 bytes, sha256
-  `de8aa3018f690cbf31ce1737924a0e59a1ca30bdd715489db5ff46459262fbb7`. It sits
-  in gitignored `proof-output/`, so it cannot be obtained from this
-  repository. See [../demo-storyboard.md](../demo-storyboard.md).
+- **Video master — published and verified.** <https://youtu.be/eXZACnOdt5w>,
+  90.005 s, 3840×2160 at 60 fps, 5,400 H.264 frames with AAC audio,
+  35,617,576 bytes, sha256
+  `a14cfef364c0fe7d4c62e2f9cfb73ca228a692e8738a85d5a6f615e361b09c69`. The live
+  page was loaded on 2026-08-14: title "FINALtab Product for KeeperHub - Agents
+  Onchain Hackathon", player duration 90.021 s, visibility **Unlisted** — the
+  link resolves for anyone holding it but the video is not listed publicly.
+  See [../demo-storyboard.md](../demo-storyboard.md).
+
+  The gitignored `proof-output/finaltab-demo.mp4` is a different file
+  (101.64 s, 1080p25, sha256 `de8aa301…`) and is not the published master.
 
 ## What is still outstanding
 
-- **A public video URL.** No upload has been performed. Nothing may be written
-  into submission metadata as the video link until one has.
 - **Human submission on DoraHacks.** This is a human-only action; see
   [../release/user-actions.md](../release/user-actions.md).
 

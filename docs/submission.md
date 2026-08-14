@@ -211,7 +211,9 @@ current production source.
   transaction decode. Not verified on BaseScan.
 - Canonical release: deployment `dpl_58fvFVcAAUFpP55Pi1aYTp3ot6Fi` serves
   commit `cb8b6484427d30cb31a0a2dd511e617ff42dda06` and is `READY`; the live
-  alias reports that commit, and later commits are documentation-only.
+  alias reports that commit. Later commits carry no runtime change — one new
+  test file plus two `export` keywords in `apps/web/hooks/useVoiceAllocation.ts`
+  that let it reach the microphone gate.
 - Authenticated MCP: production listed exactly nine tools and passed non-value
   calculation and arbitrary-participant V2 preparation. No submission call was
   made; the retained value proof is separately labeled.

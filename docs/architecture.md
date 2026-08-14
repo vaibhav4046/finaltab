@@ -2,8 +2,10 @@
 
 How the current V2 system is put together, in six diagrams.
 
-This document describes the code on `agent/finaltab-voice-hybrid`, whose tip is
-also the `main` tip. It is not a deployment claim:
+This document describes the code on `main`. The working branch
+`agent/finaltab-voice-hybrid` was merged into `main` through
+[PR #14](https://github.com/vaibhav4046/finaltab/pull/14), so the two carry the
+same source. It is not a deployment claim:
 [docs/release/status.md](release/status.md) is the operational source of truth
 for what is running, and production currently serves commit
 `cb8b6484427d30cb31a0a2dd511e617ff42dda06`, which the live `/api/health`

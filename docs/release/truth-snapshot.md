@@ -16,7 +16,9 @@
 > dual signatures, exact event binding, and conserved balances. Canonical
 > deployment `dpl_58fvFVcAAUFpP55Pi1aYTp3ot6Fi` serves commit
 > `cb8b6484427d30cb31a0a2dd511e617ff42dda06` and is `READY`, with the live alias
-> reporting `commit: cb8b6484427d` and later commits documentation-only; CI
+> reporting `commit: cb8b6484427d` and later commits carrying no runtime change
+> (one new test file plus two `export` keywords in
+> `apps/web/hooks/useVoiceAllocation.ts`); CI
 > and Playwright for a newer commit are not inferred from that deployment.
 > Supabase project
 > `yoavihmldqbkuxinrsih` is provisioned in London on the free plan. Its four

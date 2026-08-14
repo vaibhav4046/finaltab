@@ -84,9 +84,14 @@ Canonical deployment `dpl_58fvFVcAAUFpP55Pi1aYTp3ot6Fi` at commit
 alias rather than inferred from the CLI result: `/` returns `200`, and
 `/api/health` reports `status: ready`, every required check `true`, and
 `commit: cb8b6484427d` — the alias names the deployed commit itself rather than
-leaving it inferred. Commits after that SHA are documentation-only; confirm with
+leaving it inferred. Commits after that SHA carry no runtime change; confirm with
 `git diff --stat cb8b6484427d..HEAD -- apps packages contracts supabase scripts`,
-which prints nothing. The superseded deployment
+which prints exactly two entries — the new test
+`apps/web/test/voiceMicrophoneLifecycle.test.ts`, and the two-line change in
+`apps/web/hooks/useVoiceAllocation.ts` that adds `export` to
+`requestMicrophoneStream` and `microphoneError` so that test can reach them. No
+function body, route, migration, contract, or script differs from what
+production serves. The superseded deployment
 `dpl_FWLzoyni3SExLtnQ2gLPJu8PjTKb` at commit `47a1ff248495` is the rollback
 target.
 

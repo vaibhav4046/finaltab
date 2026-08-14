@@ -330,9 +330,11 @@ The canonical production release is Vercel deployment
 Its five exact-SHA GitHub Actions check runs completed `success`, and
 `/api/health` reports `ready` while echoing `commit: cb8b6484427d`, so the alias
 names the deployed commit instead of leaving it inferred. Commits after that SHA
-are documentation-only:
+carry no runtime change:
 `git diff --stat cb8b6484427d..HEAD -- apps packages contracts supabase scripts`
-prints nothing. The **14/14** desktop-and-mobile Playwright journeys against
+prints one new test file and a two-line `export`-keyword change in
+`apps/web/hooks/useVoiceAllocation.ts` that lets that test reach the microphone
+gate, and nothing else. The **14/14** desktop-and-mobile Playwright journeys against
 `https://finaltab.vercel.app` were measured on the earlier release
 `039582fc44901d1f436b61a426f1523a936427f9` and are deliberately not
 re-attributed to this commit. Volatile local test totals are intentionally not

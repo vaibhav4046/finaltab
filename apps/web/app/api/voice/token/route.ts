@@ -21,9 +21,14 @@ export async function POST(request: Request): Promise<Response> {
   if (!access.ok) return access.response;
   const secured = (response: Response) => withAccessHeaders(response, access.headers);
 
-  // This endpoint has no request payload. Reject even a chunked body so a
-  // token mint can never become an unbounded upload surface.
-  if (request.body) {
+  // This endpoint has no request payload. `authorizeApiRequest` already rejects
+  // any declared Content-Length with 413 because maxBytes is 0, so the only
+  // payload that can still arrive here is an undeclared chunked one. Test that
+  // with the transfer-encoding header rather than `request.body`: the Node
+  // server runtime attaches a request body stream to every non-GET request, so
+  // a truthiness check also rejected the bodyless POST the browser voice client
+  // actually sends, and no production voice session could ever be minted.
+  if (request.headers.get("transfer-encoding")) {
     return secured(Response.json({ error: "BODY_NOT_ALLOWED" }, { status: 400 }));
   }
 

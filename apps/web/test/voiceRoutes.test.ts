@@ -84,6 +84,39 @@ function jsonRequest(path: string, body: unknown): Request {
   });
 }
 
+const streamingSession = {
+  token: "assembly-temporary-token",
+  expiresInSeconds: 60,
+  maxSessionDurationSeconds: 180,
+  websocketUrl: "wss://streaming.eu.assemblyai.com/v3/ws?speech_model=universal-3-5-pro",
+  sampleRate: 16_000,
+  encoding: "pcm_s16le",
+  model: "universal-3-5-pro",
+  mode: "balanced",
+  languageDetection: true,
+  keyterms: ["FINALTab"],
+  voiceFocus: "far-field",
+} as const;
+
+/**
+ * The browser voice client sends `POST /api/voice/token` with no payload, but the
+ * Node server runtime still hands the route a Request carrying a body stream. This
+ * reproduces that exact shape so the route can never again reject the real client.
+ */
+function runtimeStreamTokenRequest(headers: Record<string, string> = {}): Request {
+  const init: RequestInit & { duplex: "half" } = {
+    method: "POST",
+    headers: { origin: "https://finaltab.example", accept: "application/json", ...headers },
+    body: new ReadableStream<Uint8Array>({
+      start(controller) {
+        controller.close();
+      },
+    }),
+    duplex: "half",
+  };
+  return new Request("https://finaltab.example/api/voice/token", init);
+}
+
 describe("paid voice route boundary", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -104,6 +137,28 @@ describe("paid voice route boundary", () => {
 
     expect(response.status).toBe(403);
     expect(await response.json()).toMatchObject({ error: "VOICE_SESSION_REQUIRED" });
+    expect(createAssemblyStreamingSession).not.toHaveBeenCalled();
+  });
+
+  it("mints a session for the bodyless browser POST the Node runtime hands over as a stream", async () => {
+    vi.mocked(reserveDurableVoiceBudget).mockResolvedValue(transcriptionQuota);
+    vi.mocked(createAssemblyStreamingSession).mockResolvedValue(streamingSession);
+
+    const response = await createVoiceSession(runtimeStreamTokenRequest());
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({ token: streamingSession.token });
+    expect(createAssemblyStreamingSession).toHaveBeenCalledTimes(1);
+  });
+
+  it("rejects an undeclared chunked payload before reserving any transcription budget", async () => {
+    const response = await createVoiceSession(
+      runtimeStreamTokenRequest({ "transfer-encoding": "chunked" }),
+    );
+
+    expect(response.status).toBe(400);
+    expect(await response.json()).toMatchObject({ error: "BODY_NOT_ALLOWED" });
+    expect(reserveDurableVoiceBudget).not.toHaveBeenCalled();
     expect(createAssemblyStreamingSession).not.toHaveBeenCalled();
   });
 

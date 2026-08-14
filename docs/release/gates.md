@@ -100,6 +100,23 @@ including one driven end to end by an AI agent over MCP (tx `0x314189b4…c5eb`,
 executionId `69zzrj7z676u89ce1x76j`, 2.00 USDC, <3s). Gate 10's ffprobe line reflects the video
 cut current at run time; the master has since been re-recorded.
 
+**Second post-run annotation (2026-08-14).** The 2026-08-10 table above is left exactly as that run
+measured it. Two of its lines are now stale, and here is what a re-measurement on 2026-08-14
+produced instead:
+
+- **Gate 1 (tests).** `pnpm test` exits 0 with **524 passing, 1 skipped** — 497 Vitest (engine 60,
+  keeperhub 37, vision 37 +1 skipped, flight-recorder 7, `apps/web` 356 across 39 files) plus 27
+  Hardhat. Both the original 200 and the first annotation's 212 predate the voice, RLS, replay and
+  agent-control suites. `pnpm test` also builds `contracts` first, so it is still the single command
+  that produces the total.
+- **Gate 10 (video).** The re-recorded master measures **101.64 s, 1920×1080, 25 fps, h264 + aac,
+  7,472,357 bytes**, sha256 `de8aa3018f690cbf31ce1737924a0e59a1ca30bdd715489db5ff46459262fbb7`.
+  It lives in gitignored `proof-output/`, so it is not obtainable from the repository and has no
+  public URL yet.
+
+Gate 14 (coverage) is still **NOT MEASURED** — no coverage run has been performed, and a larger test
+count is not a coverage figure.
+
 ## Gate 17 — the journey, as actually observed
 
 Every number in this section was read off the running app, not computed here and asserted. The run

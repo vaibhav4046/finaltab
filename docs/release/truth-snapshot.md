@@ -169,18 +169,27 @@ renders a mocked, replayed, or screenshotted receipt as if it were live.
 
 ## Tests — measured, not remembered
 
-Run: `pnpm -r --if-present test` plus `npx hardhat test`. Exit 0.
+Run: `pnpm test` (which is `pnpm --dir contracts build && pnpm -r --if-present test`,
+so the Hardhat suite is included in the one command). Exit 0. Re-measured
+**2026-08-14** against the working tree, not carried over from an earlier run.
 
 | Package | Passing |
 |---|---|
-| engine | 52 |
-| keeperhub | 32 |
-| vision | 32 (+1 skipped without a live `GROQ_API_KEY`) |
+| engine | 60 |
+| keeperhub | 37 |
+| vision | 37 (+1 skipped without a live `GROQ_API_KEY`) |
 | keeperhub-flight-recorder | 7 |
-| web (`apps/web`) | 78 |
-| **workspace subtotal** | **201** |
-| contracts (Hardhat) | 11 |
-| **Total** | **212 passing, 1 skipped** |
+| web (`apps/web`) | 356 |
+| **Vitest subtotal** | **497** |
+| contracts (Hardhat) | 27 |
+| **Total** | **524 passing, 1 skipped** |
+
+The previous revision of this table read 212 passing (201 Vitest + 11 Hardhat)
+and was correct when written on 2026-08-10. The suite has roughly doubled since,
+almost all of it in `apps/web` (78 → 356 across 39 files) as the voice, RLS,
+replay, MCP-settlement and agent-control paths gained coverage. The figure is
+restated here rather than edited silently, because the older number appears in
+dated gate records that are deliberately preserved.
 
 No coverage percentage is claimed anywhere, because no coverage run has been
 performed. `apps/web` previously had typecheck only and no test runner; a vitest
